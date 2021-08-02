@@ -27,3 +27,6 @@ captura_pallet_no_estandar BIT NOT NULL DEFAULT 0;
 
 --#EJC20210607: Valor iva.
 alter table bodega add valor_porcentaje_iva float null default 12
+
+--#EJC20210728: Verificación consolidada
+alter table bodega add Permitir_Verificacion_Consolidada bit default 1
