@@ -1,0 +1,30 @@
+--#EJC20210805_1544:
+
+CREATE TABLE [dbo].[trans_packing_enc](
+	[idpackingenc] [int] NOT NULL,
+	[idbodega] [int] NOT NULL,
+	[idpickingenc] [int] NOT NULL,
+	[iddespachoenc] [int] NULL,
+	[idproductobodega] [int] NOT NULL,
+	[idproductoestado] [int] NOT NULL,
+	[idpresentacion] [int] NULL,
+	[idunidadmedida] [int] NOT NULL,
+	[lote] [nvarchar](50) NULL,
+	[fecha_vence] [date] NULL,
+	[lic_plate] [nvarchar](50) NULL,
+	[no_linea] [int] NOT NULL,
+	[cantidad_bultos_packing] [float] NOT NULL,
+	[cantidad_camas_packing] [float] NOT NULL,
+	[idoperadorbodega] [int] NOT NULL,
+	[idempresaservicio] [int] NULL,
+	[referencia] [nvarchar](50) NULL,
+	[fecha_packing] [date] NOT NULL,
+ CONSTRAINT [PK_trans_packing_enc] PRIMARY KEY CLUSTERED 
+(
+	[idpackingenc] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[trans_packing_enc] ADD  DEFAULT (getdate()) FOR [fecha_packing]
+GO
