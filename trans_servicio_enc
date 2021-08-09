@@ -72,3 +72,192 @@ GO
 
 --#EJC20210614: Estado
 ALTER TABLE TRANS_SERVICIO_ENC ADD Estado nvarchar(50) null default 'Abierto'
+
+
+/*
+   lunes, 9 de agosto de 202109:41:54
+   User: sa
+   Server: PROGRAX\SQLEXPRESS
+   Database: IMS4MB_CEALSA_QAS
+   Application: 
+*/
+
+/* To prevent any potential data loss issues, you should review this script in detail before running it outside the context of the database designer.*/
+BEGIN TRANSACTION
+SET QUOTED_IDENTIFIER ON
+SET ARITHABORT ON
+SET NUMERIC_ROUNDABORT OFF
+SET CONCAT_NULL_YIELDS_NULL ON
+SET ANSI_NULLS ON
+SET ANSI_PADDING ON
+SET ANSI_WARNINGS ON
+COMMIT
+BEGIN TRANSACTION
+GO
+ALTER TABLE dbo.trans_servicio_enc
+	DROP CONSTRAINT FK_trans_servicio_enc_propietarios
+GO
+ALTER TABLE dbo.propietarios SET (LOCK_ESCALATION = TABLE)
+GO
+COMMIT
+select Has_Perms_By_Name(N'dbo.propietarios', 'Object', 'ALTER') as ALT_Per, Has_Perms_By_Name(N'dbo.propietarios', 'Object', 'VIEW DEFINITION') as View_def_Per, Has_Perms_By_Name(N'dbo.propietarios', 'Object', 'CONTROL') as Contr_Per BEGIN TRANSACTION
+GO
+ALTER TABLE dbo.trans_servicio_enc
+	DROP CONSTRAINT FK_trans_servicio_enc_empresa
+GO
+ALTER TABLE dbo.empresa SET (LOCK_ESCALATION = TABLE)
+GO
+COMMIT
+select Has_Perms_By_Name(N'dbo.empresa', 'Object', 'ALTER') as ALT_Per, Has_Perms_By_Name(N'dbo.empresa', 'Object', 'VIEW DEFINITION') as View_def_Per, Has_Perms_By_Name(N'dbo.empresa', 'Object', 'CONTROL') as Contr_Per BEGIN TRANSACTION
+GO
+ALTER TABLE dbo.trans_servicio_enc
+	DROP CONSTRAINT FK_trans_servicio_enc_bodega
+GO
+ALTER TABLE dbo.bodega SET (LOCK_ESCALATION = TABLE)
+GO
+COMMIT
+select Has_Perms_By_Name(N'dbo.bodega', 'Object', 'ALTER') as ALT_Per, Has_Perms_By_Name(N'dbo.bodega', 'Object', 'VIEW DEFINITION') as View_def_Per, Has_Perms_By_Name(N'dbo.bodega', 'Object', 'CONTROL') as Contr_Per BEGIN TRANSACTION
+GO
+ALTER TABLE dbo.trans_servicio_enc
+	DROP CONSTRAINT FK_servicio_enc_trans_oc_enc
+GO
+ALTER TABLE dbo.trans_oc_enc SET (LOCK_ESCALATION = TABLE)
+GO
+COMMIT
+select Has_Perms_By_Name(N'dbo.trans_oc_enc', 'Object', 'ALTER') as ALT_Per, Has_Perms_By_Name(N'dbo.trans_oc_enc', 'Object', 'VIEW DEFINITION') as View_def_Per, Has_Perms_By_Name(N'dbo.trans_oc_enc', 'Object', 'CONTROL') as Contr_Per BEGIN TRANSACTION
+GO
+ALTER TABLE dbo.trans_servicio_enc
+	DROP CONSTRAINT DF__trans_ser__fecha__0D9D2B73
+GO
+ALTER TABLE dbo.trans_servicio_enc
+	DROP CONSTRAINT DF__trans_ser__fecha__0E914FAC
+GO
+ALTER TABLE dbo.trans_servicio_enc
+	DROP CONSTRAINT DF__trans_ser__envia__0F8573E5
+GO
+ALTER TABLE dbo.trans_servicio_enc
+	DROP CONSTRAINT DF__trans_ser__activ__1079981E
+GO
+ALTER TABLE dbo.trans_servicio_enc
+	DROP CONSTRAINT DF__trans_ser__Estad__30E667B0
+GO
+CREATE TABLE dbo.Tmp_trans_servicio_enc
+	(
+	IdServicioEnc int NOT NULL,
+	IdBodega int NOT NULL,
+	IdEmpresa int NOT NULL,
+	IdOrdenCompraEnc int NULL,
+	IdPedidoEnc int NULL,
+	IdPropietario int NULL,
+	no_poliza nvarchar(50) NULL,
+	no_orden nvarchar(50) NULL,
+	fecha_doc_ingreso datetime NULL,
+	fecha_doc_salida datetime NULL,
+	fecha_servicio datetime NULL,
+	enviado_a_erp bit NULL,
+	activo bit NULL,
+	user_agr nvarchar(50) NULL,
+	fec_agr datetime NULL,
+	user_mod nvarchar(50) NULL,
+	fec_mod datetime NULL,
+	Estado nvarchar(50) NULL,
+	es_ingreso bit NULL DEFAULT 1
+	)  ON [PRIMARY]
+GO
+ALTER TABLE dbo.Tmp_trans_servicio_enc SET (LOCK_ESCALATION = TABLE)
+GO
+ALTER TABLE dbo.Tmp_trans_servicio_enc ADD CONSTRAINT
+	DF__trans_ser__fecha__0D9D2B73 DEFAULT (getdate()) FOR fecha_doc_ingreso
+GO
+ALTER TABLE dbo.Tmp_trans_servicio_enc ADD CONSTRAINT
+	DF__trans_ser__fecha__0E914FAC DEFAULT (getdate()) FOR fecha_servicio
+GO
+ALTER TABLE dbo.Tmp_trans_servicio_enc ADD CONSTRAINT
+	DF__trans_ser__envia__0F8573E5 DEFAULT ((0)) FOR enviado_a_erp
+GO
+ALTER TABLE dbo.Tmp_trans_servicio_enc ADD CONSTRAINT
+	DF__trans_ser__activ__1079981E DEFAULT ((1)) FOR activo
+GO
+ALTER TABLE dbo.Tmp_trans_servicio_enc ADD CONSTRAINT
+	DF__trans_ser__Estad__30E667B0 DEFAULT ('Abierto') FOR Estado
+GO
+IF EXISTS(SELECT * FROM dbo.trans_servicio_enc)
+	 EXEC('INSERT INTO dbo.Tmp_trans_servicio_enc (IdServicioEnc, IdBodega, IdEmpresa, IdOrdenCompraEnc, IdPedidoEnc, IdPropietario, no_poliza, no_orden, fecha_doc_ingreso, fecha_servicio, enviado_a_erp, activo, user_agr, fec_agr, user_mod, fec_mod, Estado)
+		SELECT IdServicioEnc, IdBodega, IdEmpresa, IdOrdenCompraEnc, IdPedidoEnc, IdPropietario, no_poliza, no_orden, fecha_doc_ingreso, fecha_servicio, enviado_a_erp, activo, user_agr, fec_agr, user_mod, fec_mod, Estado FROM dbo.trans_servicio_enc WITH (HOLDLOCK TABLOCKX)')
+GO
+ALTER TABLE dbo.trans_servicio_det
+	DROP CONSTRAINT FK_trans_servicio_det_trans_servicio_det
+GO
+DROP TABLE dbo.trans_servicio_enc
+GO
+EXECUTE sp_rename N'dbo.Tmp_trans_servicio_enc', N'trans_servicio_enc', 'OBJECT' 
+GO
+ALTER TABLE dbo.trans_servicio_enc ADD CONSTRAINT
+	PK_servicio_enc PRIMARY KEY CLUSTERED 
+	(
+	IdServicioEnc
+	) WITH( STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+
+GO
+ALTER TABLE dbo.trans_servicio_enc ADD CONSTRAINT
+	FK_servicio_enc_trans_oc_enc FOREIGN KEY
+	(
+	IdOrdenCompraEnc
+	) REFERENCES dbo.trans_oc_enc
+	(
+	IdOrdenCompraEnc
+	) ON UPDATE  NO ACTION 
+	 ON DELETE  NO ACTION 
+	
+GO
+ALTER TABLE dbo.trans_servicio_enc ADD CONSTRAINT
+	FK_trans_servicio_enc_bodega FOREIGN KEY
+	(
+	IdBodega
+	) REFERENCES dbo.bodega
+	(
+	IdBodega
+	) ON UPDATE  NO ACTION 
+	 ON DELETE  NO ACTION 
+	
+GO
+ALTER TABLE dbo.trans_servicio_enc ADD CONSTRAINT
+	FK_trans_servicio_enc_empresa FOREIGN KEY
+	(
+	IdEmpresa
+	) REFERENCES dbo.empresa
+	(
+	IdEmpresa
+	) ON UPDATE  NO ACTION 
+	 ON DELETE  NO ACTION 
+	
+GO
+ALTER TABLE dbo.trans_servicio_enc ADD CONSTRAINT
+	FK_trans_servicio_enc_propietarios FOREIGN KEY
+	(
+	IdPropietario
+	) REFERENCES dbo.propietarios
+	(
+	IdPropietario
+	) ON UPDATE  NO ACTION 
+	 ON DELETE  NO ACTION 
+	
+GO
+COMMIT
+select Has_Perms_By_Name(N'dbo.trans_servicio_enc', 'Object', 'ALTER') as ALT_Per, Has_Perms_By_Name(N'dbo.trans_servicio_enc', 'Object', 'VIEW DEFINITION') as View_def_Per, Has_Perms_By_Name(N'dbo.trans_servicio_enc', 'Object', 'CONTROL') as Contr_Per BEGIN TRANSACTION
+GO
+ALTER TABLE dbo.trans_servicio_det ADD CONSTRAINT
+	FK_trans_servicio_det_trans_servicio_det FOREIGN KEY
+	(
+	IdServicioEnc
+	) REFERENCES dbo.trans_servicio_enc
+	(
+	IdServicioEnc
+	) ON UPDATE  NO ACTION 
+	 ON DELETE  NO ACTION 
+	
+GO
+ALTER TABLE dbo.trans_servicio_det SET (LOCK_ESCALATION = TABLE)
+GO
+COMMIT
+select Has_Perms_By_Name(N'dbo.trans_servicio_det', 'Object', 'ALTER') as ALT_Per, Has_Perms_By_Name(N'dbo.trans_servicio_det', 'Object', 'VIEW DEFINITION') as View_def_Per, Has_Perms_By_Name(N'dbo.trans_servicio_det', 'Object', 'CONTROL') as Contr_Per 
