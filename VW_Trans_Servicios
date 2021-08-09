@@ -49,3 +49,14 @@ FROM            dbo.trans_servicio_enc AS t INNER JOIN
 GO
 
 
+/****** EJC20210715 **************/
+--IdDocumentoSalida agregado.
+ALTER VIEW [dbo].[VW_Trans_Servicios]
+SELECT  t.IdBodega, b.codigo AS CodigoBodega, b.nombre AS Bodega, p.nombre_comercial AS Propietario, t.IdOrdenCompraEnc AS IdDocumentoIngreso, o.No_Documento AS Documento_Ingreso, t.IdPedidoEnc AS IdDocumentoSalida, 
+dbo.trans_pe_enc.referencia AS RefDocSalida, dbo.trans_pe_enc.no_documento AS Documento_Salida, t.no_orden, t.no_poliza, t.fecha_servicio AS Fecha, b.activo, t.Estado AS Estado_Servicio, 
+t.enviado_a_erp AS MI3_Estatus
+FROM dbo.trans_servicio_enc AS t INNER JOIN
+dbo.bodega AS b ON t.IdBodega = b.IdBodega AND t.IdEmpresa = b.IdEmpresa INNER JOIN
+dbo.propietarios AS p ON p.IdPropietario = t.IdPropietario LEFT OUTER JOIN
+dbo.trans_oc_enc AS o ON t.IdBodega = o.IdBodega AND o.IdOrdenCompraEnc = t.IdOrdenCompraEnc LEFT OUTER JOIN
+dbo.trans_pe_enc ON t.IdPedidoEnc = dbo.trans_pe_enc.IdPedidoEnc AND t.IdBodega = dbo.trans_pe_enc.IdBodega
