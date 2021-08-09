@@ -128,4 +128,25 @@ ALTER TABLE MENU_SISTEMA
 ALTER COLUMN PADRE NVARCHAR(50) COLLATE Modern_Spanish_CI_AS
 
 
+--#EJC20210809: Servicios de ingreso y salida para CEALSA.
+insert into menu_sistema values (8,'Servicios','Servicios',1,0,0)
+insert into menu_sistema values ('8.1','pgRegistroServicios','pgRegistroServicios',2,'8',0)
+insert into menu_sistema values ('8.1.1','Registro de servicios','mnuRegistroServicios',2,'8.1',0)
+
+insert into menu_sistema values ('8.2','pgReporteServicios','pgReporteServicios',2,'8',0)
+insert into menu_sistema values ('8.2.1','Reportes de Servicios','mnuReporteServicios',2,'8.1',0)
+
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'8',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'8.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'8.1.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'8.2',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'8.2',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'8.2.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+
+
+
+
+
+
 
