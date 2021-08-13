@@ -1,2 +1,5 @@
 #CKFK 20210312 Alter a la tabla 
 ALTER TABLE proveedor ALTER COLUMN contacto NVARCHAR(100) NULL
+
+#CKFK 20210812 ADD es_proveedor_servicio
+ALTER TABLE proveedor ADD es_proveedor_servicio BIT NULL
