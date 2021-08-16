@@ -42,3 +42,8 @@ INCLUDE ([IdOrdenCompraEnc],[IdPropietarioBodega],[IdProveedorBodega],[IdEstadoO
 CREATE NONCLUSTERED INDEX NCLI_TRANS_OC_DET_20210623_EJC
 ON [dbo].[trans_oc_det] ([IdOrdenCompraEnc])
 INCLUDE ([IdProductoBodega],[IdPresentacion],[IdUnidadMedidaBasica],[nombre_producto],[cantidad],[cantidad_recibida],[activo],[codigo_producto])
+
+CREATE NONCLUSTERED INDEX NCLI_BODEGA_UBICACION_BARRA_20210815_EJC
+ON [dbo].[bodega_ubicacion] ([IdTramo])
+INCLUDE ([codigo_barra])
+
