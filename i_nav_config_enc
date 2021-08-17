@@ -25,3 +25,11 @@ alter table i_nav_config_enc add crear_recepcion_de_compra_nav bit default 0
 
 --#EJC20210602: cealsa
 alter table i_nav_config_enc add IdAcuerdoEnc int null default 0
+
+--#GT20210816 cealsa
+alter table i_nav_config_enc
+add equiparar_cliente_con_propietario_en_doc_salida BIT NOT NULL DEFAULT 0
+
+--#GT20210816 update solo para CEALSA
+update i_nav_config_enc
+SET equiparar_cliente_con_propietario_en_doc_salida = 1 where idbodega=11
