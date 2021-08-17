@@ -1,0 +1,44 @@
+/*
+   martes, 17 de agosto de 202117:11:17
+   User: mi3_user
+   Server: 192.168.126.80
+   Database: IMS4MB_IDEALSA_QA
+   Application: 
+*/
+
+/* To prevent any potential data loss issues, you should review this script in detail before running it outside the context of the database designer.*/
+BEGIN TRANSACTION
+SET QUOTED_IDENTIFIER ON
+SET ARITHABORT ON
+SET NUMERIC_ROUNDABORT OFF
+SET CONCAT_NULL_YIELDS_NULL ON
+SET ANSI_NULLS ON
+SET ANSI_PADDING ON
+SET ANSI_WARNINGS ON
+COMMIT
+BEGIN TRANSACTION
+GO
+CREATE TABLE dbo.trans_pe_docu_ref_det
+	(
+	IdDocumentoRef int NOT NULL,
+	IdDocumentoRefDet int NOT NULL,
+	codigo_producto nvarchar(50) NULL,
+	nombre_producto nchar(10) NULL,
+	cantidad float(53) NULL,
+	peso float(53) NULL,
+	umbas nvarchar(50) NULL,
+	presentaacion nvarchar(50) NULL
+	)  ON [PRIMARY]
+GO
+ALTER TABLE dbo.trans_pe_docu_ref_det ADD CONSTRAINT
+	PK_trans_pe_docu_ref_det PRIMARY KEY CLUSTERED 
+	(
+	IdDocumentoRef,
+	IdDocumentoRefDet
+	) WITH( STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+
+GO
+ALTER TABLE dbo.trans_pe_docu_ref_det SET (LOCK_ESCALATION = TABLE)
+GO
+COMMIT
+select Has_Perms_By_Name(N'dbo.trans_pe_docu_ref_det', 'Object', 'ALTER') as ALT_Per, Has_Perms_By_Name(N'dbo.trans_pe_docu_ref_det', 'Object', 'VIEW DEFINITION') as View_def_Per, Has_Perms_By_Name(N'dbo.trans_pe_docu_ref_det', 'Object', 'CONTROL') as Contr_Per 
