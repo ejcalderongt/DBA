@@ -21,4 +21,8 @@ ALTER TABLE dbo.trans_pe_docu_ref ADD CONSTRAINT
 --#EJC20210629: Idealsa.	
 alter table trans_pe_docu_ref add Empresa nvarchar(50), Bodega nvarchar(50)
 
+--#EJC 20210817
+alter table trans_pe_docu_ref add referencia nvarchar(50) null
+alter table trans_pe_docu_ref add codigo_cliente nvarchar(50) null
+
 	
