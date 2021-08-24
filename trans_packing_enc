@@ -28,3 +28,6 @@ GO
 
 ALTER TABLE [dbo].[trans_packing_enc] ADD  DEFAULT (getdate()) FOR [fecha_packing]
 GO
+
+--#EJC20210824_1706:
+alter table trans_packing_enc add IdDespachoEnc int null default 0
