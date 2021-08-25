@@ -47,3 +47,9 @@ CREATE NONCLUSTERED INDEX NCLI_BODEGA_UBICACION_BARRA_20210815_EJC
 ON [dbo].[bodega_ubicacion] ([IdTramo])
 INCLUDE ([codigo_barra])
 
+CREATE NONCLUSTERED INDEX NCLI_Producto_Presentacion_20210825_EJC
+ON [dbo].[producto_presentacion] ([IdProducto])
+INCLUDE ([nombre],[peso])
+
+
+
