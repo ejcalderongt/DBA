@@ -144,6 +144,26 @@ insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'8.2',1,'Er
 insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'8.2',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
 insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'8.2.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
 
+--#CKFK 20210830 Corrección a los menús de servicios.
+delete from menu_sistema where IdMenu like '8%'
+delete from menu_rol where IdMenu  like '8%'
+
+insert into menu_sistema values ('8','Servicios','Servicios',1,'0',1)
+insert into menu_sistema values ('8.1','pgRegistroServicios','pgRegistroServicios',2,'8',0)
+insert into menu_sistema values ('8.1.1','Registro de servicios','mnuRegistroServicios',3,'8.1',0)
+insert into menu_sistema values ('8.2','pgReporteServicios','pgReporteServicios',2,'8',0)
+insert into menu_sistema values ('8.2.1','Reportes de Servicios','mnuReporteServicios',3,'8.1',0)
+insert into menu_sistema values ('8.1.1.1','Ingresos','mnuServiciosIngreso',4,'8.1.1',0)
+insert into menu_sistema values('8.1.1.2','Salidas','mnuServiciosSalidas',4,'8.1.1',0)
+
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'8',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'8.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'8.1.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'8.2',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'8.2.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'8.1.1.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'8.1.1.2',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+
 
 
 
