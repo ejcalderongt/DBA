@@ -13,4 +13,5 @@ alter table trans_pe_tipo add Generar_pedido_ingreso_bodega_destino bit default 
 --#EJC20210702A
 alter table trans_pe_tipo add IdTipoIngresoOC int null default 1
 
-
+--#EJC20210831_1320
+alter table trans_pe_tipo add trasladar_lotes_doc_ingreso bit null default 0
