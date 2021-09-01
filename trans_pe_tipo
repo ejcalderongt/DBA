@@ -18,3 +18,6 @@ alter table trans_pe_tipo add trasladar_lotes_doc_ingreso bit null default 0
 
 --#EJC20210901
 ALTER TABLE trans_pe_tipo add activo bit null default 0
+
+--#EJC20210901
+alter table trans_pe_tipo add requerir_cliente_es_bodega_wms bit default 0
