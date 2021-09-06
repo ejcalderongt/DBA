@@ -1,4 +1,4 @@
-alter table trans_oc_ti add control_poliza bit default 0
+a:ter table trans_oc_ti add control_poliza bit default 0
 #EJC20210207:
 alter table trans_oc_ti add requerir_documento_ref bit default 0
 
@@ -32,4 +32,7 @@ INSERT INTO TRANS_OC_TI VALUES(10,'Ingreso Almacén General con Póliza',0,1,GET
 INSERT INTO TRANS_OC_TI VALUES(11,'Liquidación de ruta (Devolución)',0,1,GETDATE(),1,GETDATE(), 1,1,0,0)
 
 alter table trans_oc_ti add genera_tarea_ingreso bit default 0
+
+--#EJC20210906: requerir_proveedor_es_bodega_wms
+ALTER TABLE TRANS_OC_TI ADD requerir_proveedor_es_bodega_wms bit default 0
 
