@@ -51,5 +51,13 @@ CREATE NONCLUSTERED INDEX NCLI_Producto_Presentacion_20210825_EJC
 ON [dbo].[producto_presentacion] ([IdProducto])
 INCLUDE ([nombre],[peso])
 
+--#EJC20210908
+CREATE NONCLUSTERED INDEX NCLI_trans_despacho_det_20210908_EJC
+ON [dbo].[trans_despacho_det] ([IdPickingUbic],[IdProductoBodega],[IdUnidadMedidaBasica])
+INCLUDE ([IdDespachoDet],[IdDespachoEnc],[IdPedidoEnc],[CantidadDespachada],[PesoDespachado])
+
+CREATE NONCLUSTERED INDEX NCLI_trans_picking_ubic_20210908_EJC
+ON [dbo].[trans_picking_ubic] ([IdProductoBodega],[IdProductoEstado])
+INCLUDE ([IdPickingUbic],[IdPickingDet],[IdUbicacion],[IdStock],[IdPropietarioBodega],[IdPresentacion],[IdUnidadMedida],[IdRecepcion],[lote],[fecha_vence],[acepto],[peso_recibido],[peso_verificado],[cantidad_recibida],[cantidad_verificada],[encontrado],[IdPedidoDet])
 
 
