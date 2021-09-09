@@ -1,0 +1,86 @@
+TABLA PORTAL MENU
+
+CREATE TABLE [dbo].[portal_menu](
+	[IdPortalMenu] [int] IDENTITY(1,1) NOT NULL,
+	[nombre] [nchar](250) NOT NULL,
+	[enlace] [nchar](250) NULL,
+	[icono] [nchar](150) NULL,
+	[padre] [int] NULL,
+	[activo] [bit] NOT NULL,
+ CONSTRAINT [PK_menu_opcion] PRIMARY KEY CLUSTERED 
+(
+	[IdPortalMenu] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[portal_menu] ADD  CONSTRAINT [DF_menu_opcion_activo]  DEFAULT ((1)) FOR [activo]
+GO
+
+ALTER TABLE [dbo].[portal_menu]  WITH CHECK ADD  CONSTRAINT [FK_menu_opcion_menu_opcion1] FOREIGN KEY([padre])
+REFERENCES [dbo].[portal_menu] ([IdPortalMenu])
+GO
+
+ALTER TABLE [dbo].[portal_menu] CHECK CONSTRAINT [FK_menu_opcion_menu_opcion1]
+GO
+
+
+
+================================================================================================================================
+
+
+TABLA PORTAL ROL
+
+CREATE TABLE [dbo].[portal_rol](
+	[IdPortalRol] [int] IDENTITY(1,1) NOT NULL,
+	[nombre] [varchar](250) NOT NULL,
+	[descripcion] [varchar](500) NULL,
+	[fecha] [datetime] NULL,
+ CONSTRAINT [PK_rol_portal] PRIMARY KEY CLUSTERED 
+(
+	[IdPortalRol] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[portal_rol] ADD  CONSTRAINT [DF_rol_portal_fecha]  DEFAULT (getdate()) FOR [fecha]
+GO
+
+
+
+================================================================================================================================
+
+TABLA PORTAL MENU ROL
+
+CREATE TABLE [dbo].[portal_menu_rol](
+	[IdPortalMenuRol] [int] IDENTITY(1,1) NOT NULL,
+	[IdPortalMenu] [int] NOT NULL,
+	[IdPortalRol] [int] NOT NULL,
+	[fecha] [datetime] NULL,
+	[activo] [bit] NULL,
+ CONSTRAINT [PK_rol_menu_opcion] PRIMARY KEY CLUSTERED 
+(
+	[IdPortalMenuRol] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[portal_menu_rol] ADD  CONSTRAINT [DF_rol_menu_opcion_fecha]  DEFAULT (getdate()) FOR [fecha]
+GO
+
+ALTER TABLE [dbo].[portal_menu_rol] ADD  CONSTRAINT [DF_rol_menu_opcion_activo]  DEFAULT ((1)) FOR [activo]
+GO
+
+ALTER TABLE [dbo].[portal_menu_rol]  WITH CHECK ADD  CONSTRAINT [FK_rol_menu_opcion_menu_opcion] FOREIGN KEY([IdPortalMenu])
+REFERENCES [dbo].[portal_menu] ([IdPortalMenu])
+GO
+
+ALTER TABLE [dbo].[portal_menu_rol] CHECK CONSTRAINT [FK_rol_menu_opcion_menu_opcion]
+GO
+
+ALTER TABLE [dbo].[portal_menu_rol]  WITH CHECK ADD  CONSTRAINT [FK_rol_menu_opcion_rol_portal] FOREIGN KEY([IdPortalRol])
+REFERENCES [dbo].[portal_rol] ([IdPortalRol])
+GO
+
+ALTER TABLE [dbo].[portal_menu_rol] CHECK CONSTRAINT [FK_rol_menu_opcion_rol_portal]
+GO
