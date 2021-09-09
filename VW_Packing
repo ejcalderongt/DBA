@@ -1,16 +1,23 @@
 /****** Object:  View [dbo].[VW_Packing]  - EJC  Script Date: 7/09/2021 11:56:25 ******/
 
-CREATE VIEW [dbo].[VW_Packing]
+/****** Object:  View [dbo].[VW_Packing]    Script Date: 9/09/2021 09:59:09 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER VIEW [dbo].[VW_Packing]
 AS
-SELECT        dbo.trans_packing_enc.idpackingenc, dbo.producto.codigo, dbo.producto.nombre, dbo.trans_packing_enc.lote, dbo.trans_packing_enc.fecha_vence, dbo.unidad_medida.Nombre AS UMBas, 
-dbo.producto_presentacion.nombre AS Presentacion, dbo.trans_packing_enc.lic_plate AS licencia, dbo.trans_packing_enc.no_linea, dbo.trans_packing_enc.cantidad_bultos_packing, 
-dbo.trans_packing_enc.cantidad_camas_packing, dbo.trans_packing_enc.fecha_packing, dbo.operador.nombres AS Operador, dbo.trans_packing_enc.idpickingenc, dbo.trans_packing_enc.iddespachoenc
+SELECT        dbo.trans_packing_enc.idpackingenc, dbo.trans_packing_enc.no_linea, dbo.producto.codigo, dbo.producto.nombre, dbo.trans_packing_enc.lote, dbo.trans_packing_enc.fecha_vence, dbo.unidad_medida.Nombre AS umbas, 
+                         dbo.producto_presentacion.nombre AS presentacion, dbo.producto_estado.nombre AS estado, dbo.trans_packing_enc.lic_plate AS licencia, dbo.trans_packing_enc.cantidad_bultos_packing, 
+                         dbo.trans_packing_enc.cantidad_camas_packing, dbo.trans_packing_enc.fecha_packing, dbo.operador.nombres AS operador, dbo.trans_packing_enc.idpickingenc, dbo.trans_packing_enc.iddespachoenc
 FROM            dbo.trans_packing_enc INNER JOIN
-dbo.producto_bodega ON dbo.trans_packing_enc.idproductobodega = dbo.producto_bodega.IdProductoBodega INNER JOIN
-dbo.producto ON dbo.producto_bodega.IdProducto = dbo.producto.IdProducto INNER JOIN
-dbo.unidad_medida ON dbo.trans_packing_enc.idunidadmedida = dbo.unidad_medida.IdUnidadMedida INNER JOIN
-dbo.producto_presentacion ON dbo.trans_packing_enc.idpresentacion = dbo.producto_presentacion.IdPresentacion INNER JOIN
-dbo.operador_bodega ON dbo.trans_packing_enc.idoperadorbodega = dbo.operador_bodega.IdOperadorBodega INNER JOIN
-dbo.operador ON dbo.operador_bodega.IdOperador = dbo.operador.IdOperador LEFT OUTER JOIN
-dbo.producto_estado ON dbo.trans_packing_enc.idproductoestado = dbo.producto_estado.IdEstado
+                         dbo.producto_bodega ON dbo.trans_packing_enc.idproductobodega = dbo.producto_bodega.IdProductoBodega INNER JOIN
+                         dbo.producto ON dbo.producto_bodega.IdProducto = dbo.producto.IdProducto INNER JOIN
+                         dbo.unidad_medida ON dbo.trans_packing_enc.idunidadmedida = dbo.unidad_medida.IdUnidadMedida INNER JOIN
+                         dbo.producto_presentacion ON dbo.trans_packing_enc.idpresentacion = dbo.producto_presentacion.IdPresentacion INNER JOIN
+                         dbo.operador_bodega ON dbo.trans_packing_enc.idoperadorbodega = dbo.operador_bodega.IdOperadorBodega INNER JOIN
+                         dbo.operador ON dbo.operador_bodega.IdOperador = dbo.operador.IdOperador LEFT OUTER JOIN
+                         dbo.producto_estado ON dbo.trans_packing_enc.idproductoestado = dbo.producto_estado.IdEstado
 GO
