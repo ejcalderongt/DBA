@@ -21,3 +21,30 @@ FROM            dbo.trans_packing_enc INNER JOIN
                          dbo.operador ON dbo.operador_bodega.IdOperador = dbo.operador.IdOperador LEFT OUTER JOIN
                          dbo.producto_estado ON dbo.trans_packing_enc.idproductoestado = dbo.producto_estado.IdEstado
 GO
+
+
+/**********gt 13092021 mas campos para el reporte **************/
+
+ALTER VIEW [dbo].[VW_Packing]
+AS
+SELECT        dbo.trans_packing_enc.idpackingenc, dbo.trans_packing_enc.no_linea, dbo.producto.codigo, dbo.producto.nombre, dbo.trans_packing_enc.lote, dbo.trans_packing_enc.fecha_vence, dbo.unidad_medida.Nombre AS umbas, 
+                         dbo.producto_presentacion.nombre AS presentacion, dbo.producto_estado.nombre AS estado, dbo.trans_packing_enc.lic_plate AS licencia, dbo.trans_packing_enc.cantidad_bultos_packing, 
+                         dbo.trans_packing_enc.cantidad_camas_packing, dbo.trans_packing_enc.fecha_packing, dbo.operador.nombres AS operador, dbo.trans_packing_enc.idpickingenc, dbo.trans_packing_enc.iddespachoenc, 
+                         dbo.trans_despacho_enc.marchamo, dbo.empresa_transporte_vehiculos.placa, dbo.empresa_transporte_pilotos.nombres AS nombre_piloto, dbo.empresa_transporte_pilotos.apellidos AS apellido_piloto, 
+                         dbo.empresa_transporte_pilotos.no_licencia, dbo.empresa_transporte_vehiculos.placa_comercial, dbo.empresa_transporte_vehiculos.marca, dbo.empresa_transporte_vehiculos.modelo, 
+                         dbo.propietarios.nombre_comercial AS propietario
+FROM            dbo.trans_packing_enc INNER JOIN
+                         dbo.producto_bodega ON dbo.trans_packing_enc.idproductobodega = dbo.producto_bodega.IdProductoBodega INNER JOIN
+                         dbo.producto ON dbo.producto_bodega.IdProducto = dbo.producto.IdProducto INNER JOIN
+                         dbo.unidad_medida ON dbo.trans_packing_enc.idunidadmedida = dbo.unidad_medida.IdUnidadMedida INNER JOIN
+                         dbo.producto_presentacion ON dbo.trans_packing_enc.idpresentacion = dbo.producto_presentacion.IdPresentacion INNER JOIN
+                         dbo.operador_bodega ON dbo.trans_packing_enc.idoperadorbodega = dbo.operador_bodega.IdOperadorBodega INNER JOIN
+                         dbo.operador ON dbo.operador_bodega.IdOperador = dbo.operador.IdOperador INNER JOIN
+                         dbo.trans_despacho_enc ON dbo.trans_packing_enc.iddespachoenc = dbo.trans_despacho_enc.IdDespachoEnc INNER JOIN
+                         dbo.empresa ON dbo.operador.IdEmpresa = dbo.empresa.IdEmpresa INNER JOIN
+                         dbo.propietarios ON dbo.producto.IdPropietario = dbo.propietarios.IdPropietario AND dbo.unidad_medida.IdPropietario = dbo.propietarios.IdPropietario AND 
+                         dbo.empresa.IdEmpresa = dbo.propietarios.IdEmpresa LEFT OUTER JOIN
+                         dbo.producto_estado ON dbo.propietarios.IdPropietario = dbo.producto_estado.IdPropietario AND dbo.propietarios.IdPropietario = dbo.producto_estado.IdPropietario AND 
+                         dbo.trans_packing_enc.idproductoestado = dbo.producto_estado.IdEstado LEFT OUTER JOIN
+                         dbo.empresa_transporte_vehiculos ON dbo.trans_despacho_enc.IdVehiculo = dbo.empresa_transporte_vehiculos.IdVehiculo LEFT OUTER JOIN
+                         dbo.empresa_transporte_pilotos ON dbo.trans_despacho_enc.IdPiloto = dbo.empresa_transporte_pilotos.IdPiloto
