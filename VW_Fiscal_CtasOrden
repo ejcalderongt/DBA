@@ -61,6 +61,8 @@ FROM            dbo.i_nav_transacciones_out AS nav LEFT OUTER JOIN
 
 /***********************UPDATE 17032021 TOTAL VALOR COMO SUMA DE DAI, IVA Y VALOR ADUANA **************************************/
 
+ALTER VIEW VW_Fiscal_CtasOrden as
+
 SELECT        nav.IdTipoDocumento, nav.tipo_transaccion, nav.idordencompra, nav.idempresa, nav.idpropietario, ISNULL(pr.nombre_comercial, N'ND') AS nombre_comercial, nav.idpropietariobodega, nav.unidad_medida, 
                          nav.cantidad_presentacion, nav.Cantidad_Esperada AS cantidad, nav.fecha_recepcion, nav.fecha_despacho, nav.codigo_producto, '' AS codigo_poliza, pd.codigo_barra, ISNULL(nav.valor_dai, 0) AS valor_dai, 
                          ISNULL(nav.valor_iva, 0) AS valor_iva, ISNULL(nav.valor_aduana, 0) AS valor_aduana, nav.idbodega, BD.es_bodega_fiscal, 
