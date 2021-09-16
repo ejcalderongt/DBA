@@ -186,3 +186,35 @@ FROM            dbo.trans_oc_enc AS oc_enc INNER JOIN
                          dbo.usuario AS usr ON re_enc.user_agr = usr.IdUsuario
 
 
+/***********************EJC20210916 LEFTJOIN CON OPERADORHH CUANDO NO TIENE D.I La recpeción ****************************/
+ALTER VIEW [dbo].[VW_Recepcion_Det]
+AS
+SELECT        pb.IdBodega, re_det.IdRecepcionEnc, pr.nombre_comercial AS Propietario, oc_pol.codigo_poliza AS Poliza, bd.codigo AS Codigo_Bodega, oc_enc.IdOrdenCompraEnc, prov.codigo AS Codigo_Proveedor, 
+                         prov.nombre AS Nombre_Proveedor, oc_enc.No_Documento AS No_DocumentoOC, oc_enc.Referencia AS ReferenciaOC, re_enc.fecha_recepcion AS Fecha, re_enc.estado, re_tr.TipoTrans, re_tr.Descripcion, re_enc.activo, 
+                         usr.nombres AS Usuario_Agrego, op.nombres AS Operador_HH, re_enc.fec_agr AS Fecha_Agrego, prod.codigo AS CodigoProd, prod.codigo_barra AS BarraProd, prod.nombre AS NombreProd, 
+                         re_det.cantidad_recibida AS Recibido, um.Nombre AS UM, pr_estado.nombre AS EstadoProd, prod_pr.nombre AS PresProd, re_det.lic_plate, re_det.lote, re_det.fecha_vence, oc_enc.IdPedidoEncDevolucion, 
+                         oc_enc.No_Documento_Devolucion, dbo.cliente.nombre_comercial AS Nombre_Cliente_Devolucion
+FROM            dbo.trans_pe_enc RIGHT OUTER JOIN
+                         dbo.cliente ON dbo.trans_pe_enc.IdCliente = dbo.cliente.IdCliente RIGHT OUTER JOIN
+                         dbo.producto_estado AS pr_estado INNER JOIN
+                         dbo.trans_oc_enc AS oc_enc INNER JOIN
+                         dbo.trans_re_oc AS re_oc ON oc_enc.IdOrdenCompraEnc = re_oc.IdOrdenCompraEnc INNER JOIN
+                         dbo.trans_re_enc AS re_enc ON re_oc.IdRecepcionEnc = re_enc.IdRecepcionEnc RIGHT OUTER JOIN
+                         dbo.trans_re_det AS re_det ON re_enc.IdRecepcionEnc = re_det.IdRecepcionEnc INNER JOIN
+                         dbo.trans_re_tr AS re_tr ON re_enc.IdTipoTransaccion = re_tr.IdTipoTransaccion LEFT OUTER JOIN
+                         dbo.trans_oc_pol AS oc_pol ON oc_enc.IdOrdenCompraEnc = oc_pol.IdOrdenCompraEnc INNER JOIN
+                         dbo.bodega AS bd ON oc_enc.IdBodega = bd.IdBodega INNER JOIN
+                         dbo.producto_bodega AS pb ON pb.IdBodega = bd.IdBodega AND re_det.IdProductoBodega = pb.IdProductoBodega INNER JOIN
+                         dbo.propietario_bodega AS pb2 ON oc_enc.IdPropietarioBodega = pb2.IdPropietarioBodega INNER JOIN
+                         dbo.propietarios AS pr ON pb2.IdPropietario = pr.IdPropietario INNER JOIN
+                         dbo.unidad_medida AS um ON re_det.IdUnidadMedida = um.IdUnidadMedida ON pr_estado.IdEstado = re_det.IdProductoEstado INNER JOIN
+                         dbo.producto AS prod ON pb.IdProducto = prod.IdProducto INNER JOIN
+                         dbo.proveedor_bodega AS prov_b ON oc_enc.IdProveedorBodega = prov_b.IdAsignacion INNER JOIN
+                         dbo.proveedor AS prov ON prov_b.IdProveedor = prov.IdProveedor ON dbo.trans_pe_enc.IdPedidoEnc = oc_enc.IdPedidoEncDevolucion LEFT OUTER JOIN
+                         dbo.operador AS op INNER JOIN
+                         dbo.operador_bodega AS op_b ON op.IdOperador = op_b.IdOperador ON re_det.IdOperadorBodega = op_b.IdOperadorBodega LEFT OUTER JOIN
+                         dbo.producto_presentacion AS prod_pr ON prod_pr.IdPresentacion = re_det.IdPresentacion LEFT OUTER JOIN
+                         dbo.usuario AS usr ON re_enc.user_agr = usr.IdUsuario
+GO
+
+
