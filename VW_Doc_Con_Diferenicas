@@ -68,7 +68,7 @@ WHERE        (TIPO.activo = 1) AND (ESTADO.IdEstadoOC <> 5)
 
 
 
-/********************* EJC20210920 se añade el campo IdOrdenCompraEnc, Codigo_Bodega, se quitan Ids inecesarios *************************************/
+/********************* EJC20210920 se añade el campo IdOrdenCompraEnc, Codigo_Bodega, Referencia se quitan Ids inecesarios *************************************/
 
 Alter view VW_Doc_Con_Diferencias AS
 SELECT       enc.IdOrdenCompraEnc, ENC.No_Documento AS ORDENCOMPRA, DET.codigo_producto, DET.nombre_producto, DET.cantidad, DET.cantidad_recibida, CASE WHEN ISNULL(DET.IdPresentacion, 0) 
