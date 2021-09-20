@@ -65,3 +65,10 @@ ON [dbo].[producto_presentacion] ([IdProducto])
 INCLUDE ([nombre],[peso])
 
 
+CREATE NONCLUSTERED INDEX NCLI_TRANS_OC_DET_20210920_ENC
+ON [dbo].[trans_oc_det] ([IdOrdenCompraEnc])
+INCLUDE ([IdProductoBodega],[IdPresentacion],[IdUnidadMedidaBasica],[nombre_producto],[cantidad],[cantidad_recibida],[activo],[codigo_producto])
+
+CREATE NONCLUSTERED INDEX NCLI_20210920_Trans_Oc_Enc_EJC
+ON [dbo].[trans_oc_enc] ([IdTipoIngresoOC])
+INCLUDE ([IdOrdenCompraEnc],[IdPropietarioBodega],[IdProveedorBodega],[IdEstadoOC],[Fecha_Creacion],[No_Documento])
