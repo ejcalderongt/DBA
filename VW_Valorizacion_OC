@@ -1,3 +1,12 @@
+/****** Object:  View [dbo].[VW_Valorizacion_OC]    Script Date: 20/09/2021 15:30:45 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE VIEW [dbo].[VW_Valorizacion_OC]
+AS
 SELECT        dbo.producto_bodega.IdBodega, dbo.bodega.codigo AS Bodega, dbo.propietarios.IdPropietario, dbo.propietario_bodega.IdPropietarioBodega, dbo.producto.IdProducto, dbo.producto_bodega.IdProductoBodega, 
                          dbo.stock.IdStock, dbo.stock.pallet_no_estandar, ISNULL(dbo.stock_det.posiciones, 1) AS Posiciones, dbo.stock.IdUbicacion_anterior, dbo.unidad_medida.IdUnidadMedida, dbo.stock.IdProductoEstado, dbo.stock.IdPresentacion,
                           dbo.stock.IdRecepcionEnc, dbo.propietarios.nombre_comercial AS Propietario, dbo.producto.codigo, dbo.producto.nombre, dbo.unidad_medida.Nombre AS UnidadMedida, dbo.producto_presentacion.nombre AS Presentacion, 
