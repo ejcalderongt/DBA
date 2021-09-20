@@ -180,3 +180,9 @@ insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'1.1.1.7',1
 insert into menu_sistema values ('6.1.1.14','7. Movimientos kárdex por lote', 'mnuKardexLote',4,'6.1.1',0)
 insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol), '6.1.1.14',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
 
+/******** GT 20092021 Reporte valorizacion por OC ***************************/
+insert into menu_sistema values ('6.1.1.21','Valorizacion por doc ingreso', 'cmdValorizacionOC',4,'6.1.1',0)
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol), '6.1.1.21',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+
+
+
