@@ -1,0 +1,1 @@
+ALTER TABLE I_NAV_ENT_FILTROS ADD tipo_filtro nvarchar(50)
