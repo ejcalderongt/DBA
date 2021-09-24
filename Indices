@@ -77,3 +77,17 @@ CREATE NONCLUSTERED INDEX NCLI_Trans_Pe_Det_20210923_EJC
 ON [dbo].[trans_pe_det] ([IdPedidoEnc])
 INCLUDE ([IdPedidoDet])
 
+CREATE NONCLUSTERED INDEX [IndexSJ_20210924]
+ON [dbo].[stock_jornada] ([No_DocumentoOC],[codigo_producto],[numero_orden],[IdPropietario],[Regimen],[Fecha])
+INCLUDE ([nombre_producto],[existencia],[nom_umBas])
+GO
+
+CREATE NONCLUSTERED INDEX [IndexSJ_20210924_1]
+ON [dbo].[stock_jornada] ([codigo_producto],[factor],[IdPropietario],[Regimen],[Fecha])
+INCLUDE ([No_DocumentoOC],[nombre_producto],[existencia],[nom_umBas],[numero_orden])
+GO
+
+CREATE NONCLUSTERED INDEX [<Name of Missing Index, sysname,>]
+ON [dbo].[stock_jornada] ([IdPropietario],[IdClasificacion],[Regimen],[Fecha])
+INCLUDE ([existencia],[Clasificacion])
+GO
