@@ -1,0 +1,7 @@
+Create View as 
+
+SELECT        sj.Fecha, sj.Regimen, ba.Descripcion AS bodega, sj.IdStock, sj.no_poliza, ba.IdArea, sj.IdBodega, sj.codigo_producto, sj.IdProductoBodega, sj.valor_aduana, sj.valor_dai, sj.valor_flete, sj.valor_fob, sj.valor_iva, 
+                         sj.valor_seguro
+FROM            dbo.stock_jornada AS sj INNER JOIN
+                         dbo.bodega_ubicacion AS bu ON sj.IdUbicacion = bu.IdUbicacion AND sj.IdBodega = bu.IdBodega INNER JOIN
+                         dbo.bodega_area AS ba ON bu.IdArea = ba.IdArea AND bu.IdBodega = ba.IdBodega
