@@ -1,0 +1,1 @@
+alter table trans_re_oc alter column no_docto nvarchar(100)
