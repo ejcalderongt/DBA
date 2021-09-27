@@ -185,4 +185,7 @@ insert into menu_sistema values ('6.1.1.21','Valorizacion por doc ingreso', 'cmd
 insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol), '6.1.1.21',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
 
 
+/********GT 27092021 reporte pago seguro y sat valorización ****************/
 
+insert into menu_sistema values ('2.5.1.6','Resumen Valorizacion', 'cmdResValorizacion',4,'2.5.1',0)
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol), '2.5.1.6',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
