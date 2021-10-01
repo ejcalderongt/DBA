@@ -189,3 +189,11 @@ insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol), '6.1.1.21'
 
 insert into menu_sistema values ('2.5.1.6','Resumen Valorizacion', 'cmdResValorizacion',4,'2.5.1',0)
 insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol), '2.5.1.6',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+
+
+/******* GT 01102021 Reporte movimientos por lote  ****************************/
+insert into menu_sistema values ('6.1.1.22','Movimientos por lote', 'cmdMovporLote',4,'6.1.1',0)
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol), '6.1.1.22',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+
+
+
