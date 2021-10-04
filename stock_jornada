@@ -102,3 +102,6 @@ alter table stock_jornada add costo_unitario float null default 0
 alter table stock_jornada add no_documento_procesado_erp nvarchar(50)
 alter table stock_jornada add procesado_erp bit null default 0
 
+--#EJC20211004: CEALSA - ERP sync process.
+alter table stock_jornada add no_documento_procesado_erp nvarchar null
+
