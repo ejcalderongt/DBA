@@ -1,1 +1,11 @@
 Alter table bodega_area add grupo nvarchar(50)
+
+/****** GT 05102021  agrupación para cealsa ***************************/
+
+
+update  bodega_area set Grupo='Sector 1' where IdArea in (1,2,3,4)
+update  bodega_area set Grupo='Sector 2' where IdArea in (5,6,7)
+update  bodega_area set Grupo='Sector 3' where IdArea in (8,9)
+update  bodega_area set Grupo='Sector 5' where IdArea in (10)
+update  bodega_area set Grupo='Sector 6' where IdArea in (11,12)
+update  bodega_area set Grupo='Sector 7' where IdArea in (13)
