@@ -16,3 +16,12 @@ sj.IdProductoBodega,sj.valor_aduana,valor_dai,valor_flete,valor_fob,valor_iva,va
 from stock_jornada sj inner join bodega_ubicacion bu
 on sj.IdUbicacion = bu.IdUbicacion and sj.IdBodega = bu.IdBodega inner join bodega_area ba
 on bu.IdArea = ba.IdArea and bu.IdBodega = ba.IdBodega
+
+/************* GT 05102021 se añade grupo  **************************/
+
+Alter view VW_Stock_res_jornada as
+SELECT        sj.Fecha, sj.Regimen, ba.Descripcion AS bodega, sj.IdStock, sj.no_poliza, ba.IdArea, sj.IdBodega, sj.codigo_producto, sj.IdProductoBodega, sj.valor_aduana, sj.valor_dai, sj.valor_flete, sj.valor_fob, sj.valor_iva, 
+                         sj.valor_seguro, ba.Codigo,ba.Grupo
+FROM            dbo.stock_jornada AS sj INNER JOIN
+                         dbo.bodega_ubicacion AS bu ON sj.IdUbicacion = bu.IdUbicacion AND sj.IdBodega = bu.IdBodega INNER JOIN
+                         dbo.bodega_area AS ba ON bu.IdArea = ba.IdArea AND bu.IdBodega = ba.IdBodega
