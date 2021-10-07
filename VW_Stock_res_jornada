@@ -27,28 +27,4 @@ FROM            dbo.stock_jornada AS sj INNER JOIN
                          dbo.bodega_area AS ba ON bu.IdArea = ba.IdArea AND bu.IdBodega = ba.IdBodega
 
 
-/************* EJC07102021 Query de código a vista  **************************/
-
-Alter view VW_Stock_res_jornada as
-select codigo_barra as codigobodega,
-'3' codigomercaderia,
-'' certificadodeposito,
-'' bonoprenda,
-round(sum(valor_aduana),2) as saldosincertificado, 
-CAST(CAST(CAST(convert(nvarchar(50),floor(round(sum(valor_aduana),2))) AS FLOAT) AS NUMERIC) AS NVARCHAR)
- + '' + RIGHT('00' + REPLACE(round(sum(valor_aduana)- floor(round(sum(valor_aduana),2)),2),'.',''),2) as saldo_sin_certificado_fromat,
-
-'' saldocertificado,''saldobono,'' nombreacreedor,nombre_producto descripcionmercaderia,'' fechaemisioncertificado,
-'' fechavencimientocertificado,'' fechaemisionbono,'' fechavencimientobono,
-FORMAT (fecha_ingreso_ticket_tms, 'ddMMyyyy') fechaemisionds,FORMAT (DATEADD(year, 1, fecha_ingreso_ticket_tms), 'ddMMyyyy') fechavencimientods,
-valor_fob+valor_flete+valor_seguro as cif,
-case Regimen when 'Fiscal' then valor_dai + valor_iva else 0 end  impuestos,
-'' seguros,'' seguros2,'' primerapellido,'' segundoapellido,'' apellidocasada,'' primernombre,'' segundonombre,
-'' tercernombre, Proveedor as razon_social,nombre_comercial nombrecomercial, '>' terminacion 
-from   dbo.stock_jornada INNER JOIN
-dbo.bodega ON stock_jornada.IdBodega = dbo.bodega.IdBodega 
-where stock_jornada.activo =1
-group by Regimen,nombre_producto,fecha_ingreso_ticket_tms,nombre_comercial,
-valor_fob,valor_flete,valor_seguro,valor_dai,valor_iva,codigo_barra,Proveedor
-GO
 
