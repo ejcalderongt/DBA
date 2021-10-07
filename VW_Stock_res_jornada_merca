@@ -1,0 +1,6 @@
+create View VW_Stock_res_jornada_merca as
+
+SELECT        IdBodega, IdStock, IdPropietarioBodega, IdPropietario, Fecha, fecha_ingreso, fecha_ingreso_ticket_tms, activo, Regimen, Proveedor AS razon_social, Propietario AS nombre_comercial, IdClasificacion, Clasificacion, 
+                         codigo_producto, nombre_producto, cantidad, existencia, IdPresentacion, no_poliza, valor_aduana, valor_fob, valor_iva, valor_dai, valor_seguro, valor_flete, es_retroactivo
+FROM            dbo.stock_jornada AS vw
+WHERE        (activo = 1)
