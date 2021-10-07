@@ -33,3 +33,9 @@ alter table bodega add Permitir_Verificacion_Consolidada bit default 1
 
 --#EJC20210909: control_banderas_cliente (Determina como se listan los clientes en base a parámetros, CEALSA/IDEALSA)
 alter table bodega add control_banderas_cliente bit null default 0
+
+
+/*************** GT 07102021 se usa codigo_barra para pivote de reporte SAT Cealsa  ******************/
+update bodega set codigo_barra='1' where IdBodega=11
+update bodega set codigo_barra='4' where IdBodega=12
+
