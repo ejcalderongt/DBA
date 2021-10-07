@@ -4,3 +4,17 @@ SELECT        IdBodega, IdStock, IdPropietarioBodega, IdPropietario, Fecha, fech
                          codigo_producto, nombre_producto, cantidad, existencia, IdPresentacion, no_poliza, valor_aduana, valor_fob, valor_iva, valor_dai, valor_seguro, valor_flete, es_retroactivo
 FROM            dbo.stock_jornada AS vw
 WHERE        (activo = 1)
+
+
+
+/******** GT 07102021 Se asocia con tabla bodega para conversion del tipo bodega *******************************/
+
+ALTER VIEW [dbo].[VW_Stock_res_jornada_merca]
+AS
+SELECT        vw.IdBodega, dbo.bodega.codigo_barra, vw.IdStock, vw.IdPropietarioBodega, vw.IdPropietario, vw.Fecha, vw.fecha_ingreso, vw.fecha_ingreso_ticket_tms, vw.activo, vw.Regimen, vw.Proveedor AS razon_social, 
+                         vw.Propietario AS nombre_comercial, vw.IdClasificacion, vw.Clasificacion, vw.codigo_producto, vw.nombre_producto, vw.cantidad, vw.existencia, vw.IdPresentacion, vw.no_poliza, vw.valor_aduana, vw.valor_fob, vw.valor_iva, 
+                         vw.valor_dai, vw.valor_seguro, vw.valor_flete, vw.es_retroactivo
+FROM            dbo.stock_jornada AS vw INNER JOIN
+                         dbo.bodega ON vw.IdBodega = dbo.bodega.IdBodega
+WHERE        (vw.activo = 1)
+GO
