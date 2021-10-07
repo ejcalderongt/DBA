@@ -1,0 +1,39 @@
+/**************** GT 07102021 valores para pivote de reporte pago SAT Cealsa  *****************/
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[valores_fijos_reporte_mercancias](
+	[Regimen] [nvarchar](20) NULL,
+	[codigobodega] [nvarchar](50) NOT NULL,
+	[certificadodeposito] [nvarchar](50) NOT NULL,
+	[bonoprenda] [nvarchar](50) NOT NULL,
+	[saldosincertificado] [float] NULL,
+	[saldocertificado] [float] NULL,
+	[saldobono] [nvarchar](50) NOT NULL,
+	[nombreacreedor] [nvarchar](50) NOT NULL,
+	[descripcionmercaderia] [nvarchar](100) NULL,
+	[fechaemisioncertificado] [nvarchar](50) NOT NULL,
+	[fechavencimientocertificado] [nvarchar](50) NOT NULL,
+	[fechaemisionbono] [nvarchar](50) NOT NULL,
+	[fechavencimientobono] [nvarchar](50) NOT NULL,
+	[fechaemisionds] [nvarchar](50) NULL,
+	[fechavencimientods] [nvarchar](50) NULL,
+	[cif] [nvarchar](50) NULL,
+	[impuestos] [float] NULL,
+	[seguros] [nvarchar](50) NOT NULL,
+	[seguros2] [nvarchar](50) NOT NULL,
+	[primerapellido] [nvarchar](50) NOT NULL,
+	[segundoapellido] [nvarchar](50) NOT NULL,
+	[apellidocasada] [nvarchar](50) NOT NULL,
+	[primernombre] [nvarchar](50) NOT NULL,
+	[segundonombre] [nvarchar](50) NOT NULL,
+	[tercernombre] [nvarchar](50) NOT NULL,
+	[razonsocial] [nvarchar](150) NULL,
+	[nombrecomercial] [nvarchar](150) NULL,
+	[terminacion] [nvarchar](50) NOT NULL
+) ON [PRIMARY]
+GO
