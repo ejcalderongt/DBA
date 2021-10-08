@@ -45,3 +45,34 @@ select * from valores_fijos_reporte_mercancias
 GO
 
 
+/************ GT vista ajustada con el campo fecha en tabla pivote ***********************/
+alter view VW_Stock_res_jornada_merca as
+select regimen, codigo_barra as codigobodega,
+fecha,
+'3' codigomercaderia,
+'' certificadodeposito,
+'' bonoprenda,
+(cast(round(sum(valor_aduana), 2) as numeric(36,2))) as saldosincertificado,
+0.00 saldocertificado,''saldobono,'' nombreacreedor,nombre_producto descripcionmercaderia,'' fechaemisioncertificado,
+'' fechavencimientocertificado,'' fechaemisionbono,'' fechavencimientobono,
+FORMAT (fecha_ingreso_ticket_tms, 'ddMMyyyy') fechaemisionds,FORMAT (DATEADD(year, 1, fecha_ingreso_ticket_tms), 'ddMMyyyy') fechavencimientods,
+(cast(round(valor_fob+valor_flete+valor_seguro,2) as numeric(36,2))) as cif,
+case Regimen when 'Fiscal' then cast(round(valor_dai + valor_iva,2) as numeric(36,2)) else 0.00 end impuestos,
+'0.00' seguros,'0.00' seguros2,'' primerapellido,'' segundoapellido,'' apellidocasada,'' primernombre,'' segundonombre,
+'' tercernombre, Proveedor as razonsocial,nombre_comercial nombrecomercial, '>' terminacion 
+from   dbo.stock_jornada INNER JOIN
+dbo.bodega ON stock_jornada.IdBodega = dbo.bodega.IdBodega 
+where stock_jornada.activo =1
+group by Regimen,nombre_producto,fecha_ingreso_ticket_tms,nombre_comercial,
+valor_fob,valor_flete,valor_seguro,valor_dai,valor_iva,codigo_barra,Proveedor,fecha
+union
+select * from valores_fijos_reporte_mercancias
+GO
+
+
+
+
+
+
+
+
