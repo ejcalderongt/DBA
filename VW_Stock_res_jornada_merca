@@ -23,6 +23,7 @@ GO
 
 alter view VW_Stock_res_jornada as
 select codigo_barra as codigobodega,
+fecha,
 '3' codigomercaderia,
 '' certificadodeposito,
 '' bonoprenda,
@@ -38,7 +39,7 @@ from   dbo.stock_jornada INNER JOIN
 dbo.bodega ON stock_jornada.IdBodega = dbo.bodega.IdBodega 
 where stock_jornada.activo =1
 group by Regimen,nombre_producto,fecha_ingreso_ticket_tms,nombre_comercial,
-valor_fob,valor_flete,valor_seguro,valor_dai,valor_iva,codigo_barra,Proveedor
+valor_fob,valor_flete,valor_seguro,valor_dai,valor_iva,codigo_barra,Proveedor,fecha
 union
 select * from valores_fijos_reporte_mercancias
 GO
