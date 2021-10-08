@@ -47,10 +47,8 @@ INSERT [dbo].[valores_fijos_reporte_mercancias] ([codigobodega], [codigomercader
 
 
 
-
-
 /*
-   jueves, 7 de octubre de 202119:35:07
+   jueves, 7 de octubre de 202120:06:37
    User: sa
    Server: 192.168.0.98
    Database: IMS4MB_CEALSA_PRD
@@ -69,48 +67,48 @@ SET ANSI_WARNINGS ON
 COMMIT
 BEGIN TRANSACTION
 GO
-CREATE TABLE dbo.Tmp_valores_fijos_reporte_mercancias
+CREATE TABLE dbo.Tmp_valores_fijos_reporte_mercancias_1
 	(
-	codigobodega nvarchar(20) NULL,
+	codigobodega nvarchar(150) NULL,
 	fecha date NULL,
-	codigomercaderia nvarchar(50) NOT NULL,
-	certificadodeposito nvarchar(50) NOT NULL,
-	bonoprenda nvarchar(50) NOT NULL,
-	saldosincertificado float(53) NULL,
-	saldocertificado float(53) NULL,
-	saldobono nvarchar(50) NOT NULL,
-	nombreacreedor nvarchar(50) NOT NULL,
+	codigomercaderia nvarchar(50) NULL,
+	certificadodeposito nvarchar(50) NULL,
+	bonoprenda nvarchar(50) NULL,
+	saldosincertificado numeric(36, 2) NULL,
+	saldocertificado nvarchar(50) NULL,
+	saldobono nvarchar(50) NULL,
+	nombreacreedor nvarchar(50) NULL,
 	descripcionmercaderia nvarchar(100) NULL,
-	fechaemisioncertificado nvarchar(50) NOT NULL,
-	fechavencimientocertificado nvarchar(50) NOT NULL,
-	fechaemisionbono nvarchar(50) NOT NULL,
-	fechavencimientobono nvarchar(50) NOT NULL,
-	fechaemisionds nvarchar(50) NULL,
-	fechavencimientods nvarchar(50) NULL,
-	cif nvarchar(50) NULL,
-	impuestos float(53) NULL,
-	seguros nvarchar(50) NOT NULL,
-	seguros2 nvarchar(50) NOT NULL,
-	primerapellido nvarchar(50) NOT NULL,
-	segundoapellido nvarchar(50) NOT NULL,
-	apellidocasada nvarchar(50) NOT NULL,
-	primernombre nvarchar(50) NOT NULL,
-	segundonombre nvarchar(50) NOT NULL,
-	tercernombre nvarchar(50) NOT NULL,
-	razonsocial nvarchar(150) NULL,
+	fechaemisioncertificado nvarchar(50) NULL,
+	fechavencimientocertificado nvarchar(50) NULL,
+	fechaemisionbono nvarchar(50) NULL,
+	fechavencimientobono nvarchar(50) NULL,
+	fechaemisionds nvarchar(4000) NULL,
+	fechavencimientods nvarchar(4000) NULL,
+	cif numeric(36, 2) NULL,
+	impuestos numeric(36, 2) NULL,
+	seguros nvarchar(50) NULL,
+	seguros2 nvarchar(50) NULL,
+	primerapellido nvarchar(50) NULL,
+	segundoapellido nvarchar(50) NULL,
+	apellidocasada nvarchar(50) NULL,
+	primernombre nvarchar(50) NULL,
+	segundonombre nvarchar(50) NULL,
+	tercernombre nvarchar(50) NULL,
+	razon_social nvarchar(150) NULL,
 	nombrecomercial nvarchar(150) NULL,
-	terminacion nvarchar(50) NOT NULL
+	terminacion nvarchar(1) NULL
 	)  ON [PRIMARY]
 GO
-ALTER TABLE dbo.Tmp_valores_fijos_reporte_mercancias SET (LOCK_ESCALATION = TABLE)
+ALTER TABLE dbo.Tmp_valores_fijos_reporte_mercancias_1 SET (LOCK_ESCALATION = TABLE)
 GO
 IF EXISTS(SELECT * FROM dbo.valores_fijos_reporte_mercancias)
-	 EXEC('INSERT INTO dbo.Tmp_valores_fijos_reporte_mercancias (codigobodega, codigomercaderia, certificadodeposito, bonoprenda, saldosincertificado, saldocertificado, saldobono, nombreacreedor, descripcionmercaderia, fechaemisioncertificado, fechavencimientocertificado, fechaemisionbono, fechavencimientobono, fechaemisionds, fechavencimientods, cif, impuestos, seguros, seguros2, primerapellido, segundoapellido, apellidocasada, primernombre, segundonombre, tercernombre, razonsocial, nombrecomercial, terminacion)
-		SELECT codigobodega, codigomercaderia, certificadodeposito, bonoprenda, saldosincertificado, saldocertificado, saldobono, nombreacreedor, descripcionmercaderia, fechaemisioncertificado, fechavencimientocertificado, fechaemisionbono, fechavencimientobono, fechaemisionds, fechavencimientods, cif, impuestos, seguros, seguros2, primerapellido, segundoapellido, apellidocasada, primernombre, segundonombre, tercernombre, razonsocial, nombrecomercial, terminacion FROM dbo.valores_fijos_reporte_mercancias WITH (HOLDLOCK TABLOCKX)')
+	 EXEC('INSERT INTO dbo.Tmp_valores_fijos_reporte_mercancias_1 (codigobodega, fecha, codigomercaderia, certificadodeposito, bonoprenda, saldosincertificado, saldocertificado, saldobono, nombreacreedor, descripcionmercaderia, fechaemisioncertificado, fechavencimientocertificado, fechaemisionbono, fechavencimientobono, fechaemisionds, fechavencimientods, cif, impuestos, seguros, seguros2, primerapellido, segundoapellido, apellidocasada, primernombre, segundonombre, tercernombre, razon_social, nombrecomercial, terminacion)
+		SELECT codigobodega, fecha, codigomercaderia, certificadodeposito, bonoprenda, saldosincertificado, saldocertificado, saldobono, nombreacreedor, descripcionmercaderia, fechaemisioncertificado, fechavencimientocertificado, fechaemisionbono, fechavencimientobono, fechaemisionds, fechavencimientods, cif, impuestos, seguros, seguros2, primerapellido, segundoapellido, apellidocasada, primernombre, segundonombre, tercernombre, razon_social, nombrecomercial, terminacion FROM dbo.valores_fijos_reporte_mercancias WITH (HOLDLOCK TABLOCKX)')
 GO
 DROP TABLE dbo.valores_fijos_reporte_mercancias
 GO
-EXECUTE sp_rename N'dbo.Tmp_valores_fijos_reporte_mercancias', N'valores_fijos_reporte_mercancias', 'OBJECT' 
+EXECUTE sp_rename N'dbo.Tmp_valores_fijos_reporte_mercancias_1', N'valores_fijos_reporte_mercancias', 'OBJECT' 
 GO
 COMMIT
 select Has_Perms_By_Name(N'dbo.valores_fijos_reporte_mercancias', 'Object', 'ALTER') as ALT_Per, Has_Perms_By_Name(N'dbo.valores_fijos_reporte_mercancias', 'Object', 'VIEW DEFINITION') as View_def_Per, Has_Perms_By_Name(N'dbo.valores_fijos_reporte_mercancias', 'Object', 'CONTROL') as Contr_Per 
