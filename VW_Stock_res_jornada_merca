@@ -21,18 +21,18 @@ GO
 
 /************* EJC07102021 Query de código a vista  **************************/
 
-alter view VW_Stock_res_jornada as
+alter view VW_Stock_res_jornada_merca as
 select codigo_barra as codigobodega,
 fecha,
 '3' codigomercaderia,
 '' certificadodeposito,
 '' bonoprenda,
-round(sum(valor_aduana),2) as saldosincertificado, 
+(cast(round(sum(valor_aduana), 2) as numeric(36,2))) as saldosincertificado,
 '' saldocertificado,''saldobono,'' nombreacreedor,nombre_producto descripcionmercaderia,'' fechaemisioncertificado,
 '' fechavencimientocertificado,'' fechaemisionbono,'' fechavencimientobono,
 FORMAT (fecha_ingreso_ticket_tms, 'ddMMyyyy') fechaemisionds,FORMAT (DATEADD(year, 1, fecha_ingreso_ticket_tms), 'ddMMyyyy') fechavencimientods,
-valor_fob+valor_flete+valor_seguro as cif,
-case Regimen when 'Fiscal' then valor_dai + valor_iva else 0 end  impuestos,
+(cast(round(valor_fob+valor_flete+valor_seguro,2) as numeric(36,2))) as cif,
+case Regimen when 'Fiscal' then cast(round(valor_dai + valor_iva,2) as numeric(36,2)) else 0 end impuestos,
 '' seguros,'' seguros2,'' primerapellido,'' segundoapellido,'' apellidocasada,'' primernombre,'' segundonombre,
 '' tercernombre, Proveedor as razon_social,nombre_comercial nombrecomercial, '>' terminacion 
 from   dbo.stock_jornada INNER JOIN
