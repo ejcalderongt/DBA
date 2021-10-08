@@ -91,3 +91,12 @@ CREATE NONCLUSTERED INDEX [<Name of Missing Index, sysname,>]
 ON [dbo].[stock_jornada] ([IdPropietario],[IdClasificacion],[Regimen],[Fecha])
 INCLUDE ([existencia],[Clasificacion])
 GO
+
+CREATE NONCLUSTERED INDEX NCLI_stock_jornada_20211007_EJC
+ON [dbo].[stock_jornada] ([activo])
+INCLUDE ([IdBodega],[Proveedor],[nombre_producto],[valor_aduana],[valor_fob],[valor_iva],[valor_dai],[valor_seguro],[valor_flete],[fecha_ingreso_ticket_tms],[Regimen])
+
+CREATE NONCLUSTERED INDEX NCLI_stock_jornada_20211007_EJCA
+ON [dbo].[stock_jornada] ([IdBodega],[activo])
+INCLUDE ([Proveedor],[nombre_producto],[valor_aduana],[valor_fob],[valor_iva],[valor_dai],[valor_seguro],[valor_flete],[fecha_ingreso_ticket_tms],[Regimen])
+
