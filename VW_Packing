@@ -76,5 +76,4 @@ FROM            dbo.empresa_transporte_vehiculos INNER JOIN
                          dbo.producto_presentacion ON dbo.trans_packing_enc.idpresentacion = dbo.producto_presentacion.IdPresentacion ON dbo.trans_despacho_enc.IdDespachoEnc = dbo.trans_packing_enc.iddespachoenc LEFT OUTER JOIN
                          dbo.producto_estado ON dbo.trans_packing_enc.idproductoestado = dbo.producto_estado.IdEstado LEFT OUTER JOIN
                          dbo.empresa_transporte_pilotos ON dbo.trans_despacho_enc.IdPiloto = dbo.empresa_transporte_pilotos.IdPiloto
-WHERE        (dbo.trans_packing_enc.idpickingenc = 5613)
 GO
