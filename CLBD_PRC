@@ -62,3 +62,6 @@ DELETE FROM i_nav_ejecucion_res
 DELETE FROM i_nav_ejecucion_enc
 DELETE FROM I_nav_transacciones_out
 DELETE FROM trans_movimiento_pallet
+DELETE FROM dbo.trans_servicio_det
+DELETE FROM dbo.trans_servicio_enc
+END
