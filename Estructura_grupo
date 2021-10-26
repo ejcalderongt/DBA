@@ -1,0 +1,1 @@
+alter table Estructura_grupo add IdBodega int null default 0
