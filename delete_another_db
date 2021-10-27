@@ -1,0 +1,27 @@
+exec CLBD_PRC
+delete from bodega where IdBodega <> 14
+delete from cliente_bodega where IdBodega <> 14
+delete from operador_bodega where IdBodega <> 14
+delete from proveedor_bodega where IdBodega <> 14
+delete from propietario_bodega where IdBodega <> 14
+delete from  regla_ubic_det_prop where IdPropietarioBodega in (select IdPropietarioBodega from propietario_bodega where IdBodega <> 14)
+delete from motivo_devolucion_bodega where IdBodega <> 14
+delete from motivo_anulacion_bodega where IdBodega <> 14
+delete from empresa_transporte_bodega where IdBodega <> 14
+delete from turno where IdBodega <> 14
+delete from horario_laboral_enc  where IdBodega <> 14
+delete from horario_laboral_det  where IdHorarioLaboralEnc in (select IdHorarioLaboralEnc from horario_laboral_enc where IdBodega <> 14)
+delete from jornada_laboral where IdBodega <> 14
+delete from operador where IdJornada in (select IdJornada from  jornada_laboral where IdBodega <> 14)
+delete from jornada_laboral where IdBodega <> 14
+delete from jornada_sistema where IdBodega <> 14
+delete from i_nav_config_enc where IdBodega <> 14
+delete from usuario_bodega where IdBodega <> 14
+delete from producto_bodega where IdBodega <> 14
+delete from bodega_area where IdBodega <> 14
+delete from bodega_sector where IdBodega <> 14
+delete from bodega_tramo where IdBodega <> 14
+delete from bodega_ubicacion where IdBodega <> 14
+delete from trans_re_det
+delete from stock_jornada
+delete from bodega_monitor_parametro where IdBodega <> 14
