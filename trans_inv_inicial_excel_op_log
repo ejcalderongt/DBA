@@ -61,3 +61,10 @@ GO
 
 ALTER TABLE [dbo].[trans_inv_inicial_excel_op_log] ADD  CONSTRAINT [DF__trans_inv__regul__21C41FB1]  DEFAULT ((0)) FOR [regularizado]
 GO
+
+
+/********GT 27102021 campo para identificar si es consolidado *****************/
+alter table Trans_inv_inicial_excel_op_log
+add consolidado bit null
+
+
