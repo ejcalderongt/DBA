@@ -1,0 +1,7 @@
+ALTER VIEW [dbo].[VW_Bodega]
+AS
+SELECT        b.IdBodega AS Correlativo, p.NOMBRE AS Pais, e.nombre AS Empresa, b.codigo AS Código, b.nombre, b.nombre_comercial AS NombreComercial, b.encargado AS Responsable, b.activo, b.IdEmpresa
+FROM            dbo.bodega AS b INNER JOIN
+                         dbo.empresa AS e ON b.IdEmpresa = e.IdEmpresa LEFT OUTER JOIN
+                         dbo.paises AS p ON b.IdPais = p.IdPais
+GO
