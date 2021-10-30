@@ -1,0 +1,1 @@
+alter table estructura_tramo add orden_descendente bit null default 0
