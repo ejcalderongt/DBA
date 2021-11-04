@@ -39,3 +39,7 @@ alter table bodega add control_banderas_cliente bit null default 0
 update bodega set codigo_barra='1' where IdBodega=11
 update bodega set codigo_barra='4' where IdBodega=12
 
+/*************** EJC20211104 Tamaño de etiqueta por defecto para impresión CEALSA.  ******************/
+alter table bodega add IdTamañoEtiquetaUbicacionDefecto int null default 0
+
+
