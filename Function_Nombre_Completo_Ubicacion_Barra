@@ -41,3 +41,46 @@ BEGIN
 
 END
 GO
+
+/****** Object: UserDefinedFunction [dbo].[Nombre_Completo_Ubicacion_Barra] Script Date: 4/11/2021 22:10:50 ******/
+SET ANSI_NULLS ON
+GO
+
+
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+ALTER FUNCTION [dbo].[Nombre_Completo_Ubicacion_Barra]
+(
+@Barra NVARCHAR(50),
+@IdBodega INT
+)
+RETURNS NVARCHAR(200)
+AS
+BEGIN
+
+DECLARE @resultado NVARCHAR(200)
+-- Declare the return variable here
+
+SELECT @resultado = CASE WHEN T.es_rack = 1 THEN
+iif(CHARINDEX('-',t.descripcion,0)<0, t.descripcion, SUBSTRING(REPLACE(t.descripcion,'-',''),1, LEN(t.descripcion)-1)) + ' - ' +
+'C' + RIGHT('00'+ CONVERT(NVARCHAR(10),u.indice_x),2 )+ ' - ' +
+'T' + SUBSTRING(t.descripcion,iif(CHARINDEX('-',t.descripcion,0)<0,0,CHARINDEX('-',t.descripcion,0)+1),1)+ ' - ' +
+'N' + RIGHT('00' + CONVERT(NVARCHAR(10),u.nivel),2 )+ ' - ' +
+'Pos' + u.orientacion_pos+ ' - ' +
+'#' + CONVERT(NVARCHAR(10),u.IdUbicacion)
+ELSE U.descripcion + ' - #' + CONVERT(NVARCHAR(10),u.IdUbicacion) END
+FROM bodega_ubicacion u
+inner join bodega_tramo t on u.idtramo = t.idtramo
+and t.IdBodega = u.IdBodega
+WHERE (u.IdUbicacion=@Barra OR u.codigo_barra=@Barra OR u.codigo_barra2=@Barra)
+And u.idbodega = @IdBodega
+
+
+RETURN @resultado;
+
+END
+GO
