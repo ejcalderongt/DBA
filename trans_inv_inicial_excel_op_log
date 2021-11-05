@@ -67,4 +67,8 @@ GO
 alter table Trans_inv_inicial_excel_op_log
 add consolidado bit null
 
+/********#EJC20211105 *****************/
+alter table Trans_inv_inicial_excel_op_log
+add licencia nvarchar(50) null
+
 
