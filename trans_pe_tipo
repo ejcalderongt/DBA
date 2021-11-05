@@ -21,3 +21,10 @@ ALTER TABLE trans_pe_tipo add activo bit null default 0
 
 --#EJC20210901
 alter table trans_pe_tipo add requerir_cliente_es_bodega_wms bit default 0
+
+
+update trans_pe_tipo set Descripcion = 'Pedido_De_Bodega' where IdTipoPedido =1
+update trans_pe_tipo set Descripcion = 'Pedido_Consolidado' where IdTipoPedido =2
+update trans_pe_tipo set Descripcion = 'Pedido_De_Cliente' where IdTipoPedido =3
+update trans_pe_tipo set Descripcion = 'Transferencia_Interna_WMS' where IdTipoPedido =4
+update trans_pe_tipo set Descripcion = 'Pedido_De_Exportacion' where IdTipoPedido =5
