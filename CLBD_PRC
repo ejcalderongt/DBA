@@ -1,6 +1,8 @@
+--#CKFK 20211108 Agregué el delete de stock_jornada
 ALTER PROCEDURE [dbo].[CLBD_PRC]
 AS
 BEGIN
+DELETE FROM stock_jornada
 DELETE FROM transacciones_log
 DELETE FROM trans_ubic_tarima
 DELETE FROM trans_ubic_hh_se
