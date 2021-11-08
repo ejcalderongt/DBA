@@ -42,45 +42,194 @@ BEGIN
 END
 GO
 
-/****** Object: UserDefinedFunction [dbo].[Nombre_Completo_Ubicacion_Barra] Script Date: 4/11/2021 22:10:50 ******/
+/***************************************************************************************************************/
+/******A continuación las cuatro versiones del Nombre_Completo_Ubicacion****************************************/
+/**************************08-11-2021***************************************************************************/
+/***************************************************************************************************************/
+
+/****** Object:  UserDefinedFunction [dbo].[Nombre_Completo_Ubicacion_Barra]    Script Date: 8/11/2021 00:45:06 ******/
 SET ANSI_NULLS ON
 GO
 
+SET QUOTED_IDENTIFIER ON
+GO
 
+ALTER FUNCTION [dbo].[Nombre_Completo_Ubicacion_Barra] 
+(
+	@Barra NVARCHAR(50),
+	@IdBodega INT
+)
+RETURNS NVARCHAR(200)
+AS
+BEGIN
+	
+	DECLARE @resultado NVARCHAR(200)
+	-- Declare the return variable here
+	
+	SELECT @resultado = CASE WHEN T.es_rack = 1 THEN
+			iif(CHARINDEX('-',t.descripcion,0)=0, t.descripcion, SUBSTRING(REPLACE(t.descripcion,'-',''),1, LEN(t.descripcion)-2)) + ' - ' +
+			'C' + CONVERT(NVARCHAR(10),u.indice_x) + ' - ' +
+			iif(CHARINDEX('-',t.descripcion,0)=0,'','T' + SUBSTRING(t.descripcion,iif(CHARINDEX('-',t.descripcion,0)<0,0,CHARINDEX('-',t.descripcion,0)+1),1)+ ' - ') +
+			'N' + CONVERT(NVARCHAR(10),u.nivel)+ ' - ' +
+			'#' + CONVERT(NVARCHAR(10),u.IdUbicacion)
+			ELSE U.descripcion + ' - #' + CONVERT(NVARCHAR(10),u.IdUbicacion) END
+	FROM bodega_ubicacion u 
+	inner join bodega_tramo t on u.idtramo = t.idtramo 
+	and t.IdBodega = u.IdBodega
+	WHERE (u.IdUbicacion=@Barra OR u.codigo_barra=@Barra OR u.codigo_barra2=@Barra) 
+	And u.idbodega = @IdBodega
+
+	RETURN @resultado;
+
+END
+GO
+
+
+/****** Object:  UserDefinedFunction [dbo].[Nombre_Completo_Ubicacion_Barra_1]    Script Date: 8/11/2021 00:45:26 ******/
+SET ANSI_NULLS ON
+GO
 
 SET QUOTED_IDENTIFIER ON
 GO
 
 
-
-ALTER FUNCTION [dbo].[Nombre_Completo_Ubicacion_Barra]
+CREATE FUNCTION [dbo].[Nombre_Completo_Ubicacion_Barra_1] 
 (
-@Barra NVARCHAR(50),
-@IdBodega INT
+	@Barra NVARCHAR(50),
+	@IdBodega INT
 )
 RETURNS NVARCHAR(200)
 AS
 BEGIN
+	
+	DECLARE @resultado NVARCHAR(200)
+	-- Declare the return variable here
+	
+	SELECT @resultado = CASE WHEN T.es_rack = 1 THEN
+			'R' + RIGHT('00'+ SUBSTRING(t.descripcion,2,iif(CHARINDEX('-',t.descripcion,0)<0,1,CHARINDEX('-',t.descripcion,0)-2)),2) + ' - ' +
+			'C' + RIGHT('00'+ CONVERT(NVARCHAR(10),u.indice_x),2 )+ ' - ' +
+			'T' + SUBSTRING(t.descripcion,iif(CHARINDEX('-',t.descripcion,0)<0,0,CHARINDEX('-',t.descripcion,0)+1),1)+ ' - ' +
+			'N' + RIGHT('00' + CONVERT(NVARCHAR(10),u.nivel),2 )+ ' - ' +
+			'Pos' + u.orientacion_pos+ ' - ' +
+			'#' + CONVERT(NVARCHAR(10),u.IdUbicacion)
+			ELSE U.descripcion + ' - #' + CONVERT(NVARCHAR(10),u.IdUbicacion) END
+	FROM bodega_ubicacion u 
+	inner join bodega_tramo t on u.idtramo = t.idtramo 
+	and t.IdBodega = u.IdBodega
+	WHERE (u.IdUbicacion=@Barra OR u.codigo_barra=@Barra OR u.codigo_barra2=@Barra) 
+	And u.idbodega = @IdBodega
 
-DECLARE @resultado NVARCHAR(200)
--- Declare the return variable here
-
-SELECT @resultado = CASE WHEN T.es_rack = 1 THEN
-iif(CHARINDEX('-',t.descripcion,0)<0, t.descripcion, SUBSTRING(REPLACE(t.descripcion,'-',''),1, LEN(t.descripcion)-1)) + ' - ' +
-'C' + RIGHT('00'+ CONVERT(NVARCHAR(10),u.indice_x),2 )+ ' - ' +
-'T' + SUBSTRING(t.descripcion,iif(CHARINDEX('-',t.descripcion,0)<0,0,CHARINDEX('-',t.descripcion,0)+1),1)+ ' - ' +
-'N' + RIGHT('00' + CONVERT(NVARCHAR(10),u.nivel),2 )+ ' - ' +
-'Pos' + u.orientacion_pos+ ' - ' +
-'#' + CONVERT(NVARCHAR(10),u.IdUbicacion)
-ELSE U.descripcion + ' - #' + CONVERT(NVARCHAR(10),u.IdUbicacion) END
-FROM bodega_ubicacion u
-inner join bodega_tramo t on u.idtramo = t.idtramo
-and t.IdBodega = u.IdBodega
-WHERE (u.IdUbicacion=@Barra OR u.codigo_barra=@Barra OR u.codigo_barra2=@Barra)
-And u.idbodega = @IdBodega
-
-
-RETURN @resultado;
+	RETURN @resultado;
 
 END
 GO
+
+
+/****** Object:  UserDefinedFunction [dbo].[Nombre_Completo_Ubicacion_Barra_2]    Script Date: 8/11/2021 00:45:48 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE FUNCTION [dbo].[Nombre_Completo_Ubicacion_Barra_2] 
+(
+	@Barra NVARCHAR(50),
+	@IdBodega INT
+)
+RETURNS NVARCHAR(200)
+AS
+BEGIN
+	
+	DECLARE @resultado NVARCHAR(200)
+	-- Declare the return variable here
+	
+	SELECT @resultado = CASE WHEN T.es_rack = 1 THEN
+			iif(CHARINDEX('-',t.descripcion,0)=0, t.descripcion, SUBSTRING(REPLACE(t.descripcion,'-',''),1, LEN(t.descripcion)-2)) + ' - ' +
+			'C' + CONVERT(NVARCHAR(10),u.indice_x) + ' - ' +
+			iif(CHARINDEX('-',t.descripcion,0)=0,'','T' + SUBSTRING(t.descripcion,iif(CHARINDEX('-',t.descripcion,0)<0,0,CHARINDEX('-',t.descripcion,0)+1),1)+ ' - ') +
+			'N' + CONVERT(NVARCHAR(10),u.nivel)+ ' - ' +
+			'Pos' + u.orientacion_pos+ ' - ' +
+			'#' + CONVERT(NVARCHAR(10),u.IdUbicacion)
+			ELSE U.descripcion + ' - #' + CONVERT(NVARCHAR(10),u.IdUbicacion) END
+	FROM bodega_ubicacion u 
+	inner join bodega_tramo t on u.idtramo = t.idtramo 
+	and t.IdBodega = u.IdBodega
+	WHERE (u.IdUbicacion=@Barra OR u.codigo_barra=@Barra OR u.codigo_barra2=@Barra) 
+	And u.idbodega = @IdBodega
+
+	RETURN @resultado;
+
+END
+GO
+
+
+/****** Object:  UserDefinedFunction [dbo].[Nombre_Completo_Ubicacion_Barra_3]    Script Date: 8/11/2021 00:46:14 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE FUNCTION [dbo].[Nombre_Completo_Ubicacion_Barra_3] 
+(
+	@Barra NVARCHAR(50),
+	@IdBodega INT, 
+	@IdTipo INT
+)
+RETURNS NVARCHAR(200)
+AS
+BEGIN
+	
+	DECLARE @resultado NVARCHAR(200) = ''
+	DECLARE @res_temp NVARCHAR(200) = ''
+	-- Declare the return variable here
+	
+	IF @IdTipo = 1
+		SELECT @resultado = CASE WHEN T.es_rack = 1 THEN
+					iif(CHARINDEX('-',t.descripcion,0)=0, t.descripcion, SUBSTRING(REPLACE(t.descripcion,'-',''),1, LEN(t.descripcion)-2)) + ' - ' +
+					'C' + CONVERT(NVARCHAR(10),u.indice_x) + ' - ' +
+					iif(CHARINDEX('-',t.descripcion,0)=0,'','T' + SUBSTRING(t.descripcion,iif(CHARINDEX('-',t.descripcion,0)<0,0,CHARINDEX('-',t.descripcion,0)+1),1)+ ' - ') +
+					'N' + CONVERT(NVARCHAR(10),u.nivel)+ ' - ' +
+					'#' + CONVERT(NVARCHAR(10),u.IdUbicacion)
+					ELSE U.descripcion + ' - #' + CONVERT(NVARCHAR(10),u.IdUbicacion) END
+			FROM bodega_ubicacion u 
+			inner join bodega_tramo t on u.idtramo = t.idtramo 
+			and t.IdBodega = u.IdBodega
+			WHERE (u.IdUbicacion=@Barra OR u.codigo_barra=@Barra OR u.codigo_barra2=@Barra) 
+			And u.idbodega = @IdBodega
+    ELSE IF @IdTipo = 2
+			SELECT @resultado = CASE WHEN T.es_rack = 1 THEN
+					'R' + RIGHT('00'+ SUBSTRING(t.descripcion,2,iif(CHARINDEX('-',t.descripcion,0)<0,1,CHARINDEX('-',t.descripcion,0)-2)),2) + ' - ' +
+					'C' + RIGHT('00'+ CONVERT(NVARCHAR(10),u.indice_x),2 )+ ' - ' +
+					'T' + SUBSTRING(t.descripcion,iif(CHARINDEX('-',t.descripcion,0)<0,0,CHARINDEX('-',t.descripcion,0)+1),1)+ ' - ' +
+					'N' + RIGHT('00' + CONVERT(NVARCHAR(10),u.nivel),2 )+ ' - ' +
+					'Pos' + u.orientacion_pos+ ' - ' +
+					'#' + CONVERT(NVARCHAR(10),u.IdUbicacion)
+					ELSE U.descripcion + ' - #' + CONVERT(NVARCHAR(10),u.IdUbicacion) END
+			FROM bodega_ubicacion u 
+			inner join bodega_tramo t on u.idtramo = t.idtramo 
+			and t.IdBodega = u.IdBodega
+			WHERE (u.IdUbicacion=@Barra OR u.codigo_barra=@Barra OR u.codigo_barra2=@Barra) 
+			And u.idbodega = @IdBodega
+	ELSE IF @IdTipo = 3
+			SELECT @resultado = CASE WHEN T.es_rack = 1 THEN
+					iif(CHARINDEX('-',t.descripcion,0)=0, t.descripcion, SUBSTRING(REPLACE(t.descripcion,'-',''),1, LEN(t.descripcion)-2)) + ' - ' +
+					'C' + CONVERT(NVARCHAR(10),u.indice_x) + ' - ' +
+					iif(CHARINDEX('-',t.descripcion,0)=0,'','T' + SUBSTRING(t.descripcion,iif(CHARINDEX('-',t.descripcion,0)<0,0,CHARINDEX('-',t.descripcion,0)+1),1)+ ' - ') +
+					'N' + CONVERT(NVARCHAR(10),u.nivel)+ ' - ' +
+					'Pos' + u.orientacion_pos+ ' - ' +
+					'#' + CONVERT(NVARCHAR(10),u.IdUbicacion)
+					ELSE U.descripcion + ' - #' + CONVERT(NVARCHAR(10),u.IdUbicacion) END
+			FROM bodega_ubicacion u 
+			inner join bodega_tramo t on u.idtramo = t.idtramo 
+			and t.IdBodega = u.IdBodega
+			WHERE (u.IdUbicacion=@Barra OR u.codigo_barra=@Barra OR u.codigo_barra2=@Barra) 
+			And u.idbodega = @IdBodega
+
+    RETURN @resultado;
+
+END
+GO
+
+
