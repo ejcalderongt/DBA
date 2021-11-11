@@ -1,0 +1,11 @@
+BEGIN TRANSACTION
+DECLARE @IdBodega int, @idFamilia int
+set @IdBodega = 21
+
+INSERT INTO proveedor_bodega
+SELECT ROW_NUMBER() OVER(ORDER BY IdProveedor ASC) + (select max(IdAsignacion) FROM proveedor_bodega) AS IdAsignacion,
+IdProveedor, @IdBodega as IdBodega,activo, 1, getdate(),1, GETDATE()
+FROM proveedor
+WHERE IdProveedor not in(select IdProveedor FROM proveedor_bodega pb where IdBodega = @IdBodega) and activo =1
+
+ROLLBACK TRANSACTION
