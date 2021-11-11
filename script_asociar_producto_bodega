@@ -1,0 +1,14 @@
+BEGIN TRANSACTION
+DECLARE @IdBodega int, @idFamilia int
+set @IdBodega = 18
+set @IdFamilia = 76
+
+INSERT INTO producto_bodega
+SELECT ROW_NUMBER() OVER(ORDER BY IdProducto ASC) + (select max(IdProductoBodega) FROM producto_bodega) AS IdProductoBodega,
+IdProducto, @IdBodega as IdBodega,
+1, 0, 1, getdate(),1, GETDATE()
+FROM producto
+WHERE IdFamilia in (115,118,126,112,113,121,124,110,119,125,116,122,117,123,111,120,114 )and
+IdProducto not in(select IdProducto FROM producto_bodega pb where IdBodega = @IdBodega)
+
+ROLLBACK TRANSACTION
