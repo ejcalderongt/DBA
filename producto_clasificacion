@@ -1,3 +1,7 @@
 /****** GT 15062021 ***********************/
 ALTER TABLE producto_clasificacion
 ALTER COLUMN nombre nvarchar(100)  NULL
+
+
+/****** EJC_PANAMA_20211115_IDEALSA INTERFACE ***********************/
+alter table producto_clasificacion add codigo nvarchar(50) null 
