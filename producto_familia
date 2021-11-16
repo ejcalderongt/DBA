@@ -1,0 +1,4 @@
+--#EJC20211115, Interface IDEALSA, Mercopan.
+
+alter table producto_familia add codigo nvarchar(50) null 
+
