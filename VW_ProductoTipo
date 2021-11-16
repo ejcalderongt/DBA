@@ -1,0 +1,15 @@
+/****** Object:  View [dbo].[VW_ProductoTipo]    Script Date: 16/11/2021 08:20:59 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+ALTER VIEW [dbo].[VW_ProductoTipo]
+AS
+SELECT        e.IdTipoProducto, p.IdPropietario, p.nombre_comercial AS Propietario, e.Codigo, e.NombreTipoProducto, e.Activo, e.user_agr, e.fec_agr, e.user_mod, e.fec_mod
+FROM            dbo.producto_tipo AS e INNER JOIN
+                         dbo.propietarios AS p ON e.IdPropietario = p.IdPropietario
+GO
+
