@@ -1,0 +1,3 @@
+#EJC20211115: Interface Idealsa, Mercopan.
+
+alter table producto_tipo add codigo nvarchar(50) null
