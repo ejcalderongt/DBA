@@ -1,0 +1,2 @@
+--#EJC202111174: Alamacenar el no de picking de NAV.
+alter table trans_pe_enc add No_Picking_ERP nvarchar(50)
