@@ -1,0 +1,4 @@
+/********************GT 18112021 campos para asignar ubicacion a producto que se importa desde excel ***********************************/
+
+alter table trans_inv_stock_prod
+add idbodega int null, idubicacion int null
