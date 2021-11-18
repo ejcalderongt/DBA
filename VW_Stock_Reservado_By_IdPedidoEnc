@@ -7,15 +7,7 @@ Sum(stock_res.cantidad)/producto_presentacion.factor
 else 0
 end) as Cantidad_Presentacion,
 SUM(stock_res.peso) AS Peso, stock_res.IdUbicacion, 
-CASE WHEN bodega_tramo.es_rack = 1 THEN 'R' + RIGHT('00'+ SUBSTRING(bodega_tramo.descripcion,2,iif(CHARINDEX('-',bodega_tramo.descripcion,0)<0,1,CHARINDEX('-',bodega_tramo.descripcion,0)-2)),2) + ' - ' +
-'C' + RIGHT('00'+ CONVERT(NVARCHAR(10),bodega_ubicacion.indice_x),2 )+ ' - ' +
-'T' + SUBSTRING(bodega_tramo.descripcion,iif(CHARINDEX('-',bodega_tramo.descripcion,0)<0,0,CHARINDEX('-',bodega_tramo.descripcion,0)+1),1)+ ' - ' +
-'N' + RIGHT('00' + CONVERT(NVARCHAR(10),bodega_ubicacion.nivel),2 )+ ' - ' +
-'Pos' + bodega_ubicacion.orientacion_pos + ' - ' +
-'#' + CONVERT(NVARCHAR(10),bodega_ubicacion.IdUbicacion)
-ELSE
-bodega_tramo.descripcion + ' - ' + '#' + CONVERT(NVARCHAR(10),bodega_ubicacion.IdUbicacion )
-END AS Nombre_Completo, unidad_medida.Nombre as UMBas, 
+dbo.Nombre_Completo_Ubicacion(stock_res.IdUbicacion, stock_res.IdBodega) AS Nombre_Completo, unidad_medida.Nombre as UMBas, 
 producto_presentacion.nombre as Presentacion, stock_res.lic_plate
 FROM stock_res INNER JOIN
 trans_pe_det ON stock_res.IdPedidoDet = trans_pe_det.IdPedidoDet INNER JOIN
@@ -31,5 +23,7 @@ bodega_ubicacion.IdBodega = bodega.IdBodega
 GROUP BY stock_res.IdStockRes, producto.codigo, stock_res.lote, stock_res.fecha_vence, stock_res.IdUbicacion, bodega_tramo.descripcion, 
 bodega_tramo.es_rack, bodega_ubicacion.indice_x, bodega_ubicacion.nivel, bodega_ubicacion.orientacion_pos, 
 bodega_ubicacion.IdUbicacion, producto.nombre, producto_presentacion.nombre, unidad_medida.Nombre, stock_res.lic_plate, 
-producto_estado.nombre, producto_presentacion.factor, stock_res.IdPresentacion, stock_res.IdPedido
+producto_estado.nombre, producto_presentacion.factor, stock_res.IdPresentacion, stock_res.IdPedido, stock_res.IdBodega
 GO
+
+
