@@ -23,7 +23,7 @@ FROM stock_res
      INNER JOIN
               trans_pe_det ON stock_res.IdPedidoDet = trans_pe_det.IdPedidoDet 
      INNER JOIN
-              producto_bodega ON producto_bodega.IdProductoBodega = trans_pe_det.IdProductoBodega '
+              producto_bodega ON producto_bodega.IdProductoBodega = trans_pe_det.IdProductoBodega
      INNER JOIN
               producto ON producto_bodega.IdProducto = producto.IdProducto 
      LEFT OUTER JOIN
