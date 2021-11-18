@@ -28,3 +28,4 @@ update trans_pe_tipo set Descripcion = 'Pedido_Consolidado' where IdTipoPedido =
 update trans_pe_tipo set Descripcion = 'Pedido_De_Cliente' where IdTipoPedido =3
 update trans_pe_tipo set Descripcion = 'Transferencia_Interna_WMS' where IdTipoPedido =4
 update trans_pe_tipo set Descripcion = 'Pedido_De_Exportacion' where IdTipoPedido =5
+update trans_pe_tipo set Descripcion = 'Transferencia_Inmediata' where IdTipoPedido =6
