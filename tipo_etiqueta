@@ -1,3 +1,7 @@
 INSERT INTO tipo_etiqueta
 SELECT 2 IdTipoEtiqueta, 'CEALSA' Nombre, 2.75 Alto, 3 Ancho, MargenIzq, MagenDer, MargenSup, MargenInf, user_agr,getdate() fec_agr, user_mod, getdate()fec_mod, activo
 FROM Tipo_etiqueta WHERE IdTipoEtiqueta = 1;
+
+--#EJC2211118: Mejoras que nacieron en PTY.
+alter table tipo_etiqueta add dpi int not null default 203
+alter table tipo_etiqueta add codigo_zpl nvarchar(5000) null
