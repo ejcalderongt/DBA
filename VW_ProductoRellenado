@@ -33,7 +33,7 @@ ALTER VIEW [dbo].[VW_ProductoRellenado]
 AS
 SELECT        pr.IdBodega, pr.IdProductoBodega, dbo.producto_bodega.IdProducto, dbo.Nombre_Completo_Ubicacion(bu.IdUbicacion, bu.IdBodega) AS Ubicación, pe.nombre AS Estado, pr.IdRellenado, pr.IdPresentacion, 
                          pp.nombre AS Presentación, pr.IdProductoEstado, pr.IdUbicacion, pr.IdTipoAccion, pr.Minimo, pr.Maximo, pr.user_agr, pr.fec_agr, pr.user_mod, pr.fec_mod, pr.Activo, pr.IdUmBasAbastercerCon, pr.IdPresentacionAbastercerCon, 
-                         pr.IdUnidadMedidaBasica, pp1.nombre AS NomPresentacionRellenarCon, um1.Nombre AS NomUmBasAbastecerCon, pr.IdPropietario, pr.IdOperadorDefecto 
+                         pr.IdUnidadMedidaBasica, pp1.nombre AS NomPresentacionRellenarCon, um1.Nombre AS NomUmBasAbastecerCon, pr.IdPropietario, pr.IdOperadorDefecto, op.nombres + ' ' + op.apellidos as NomOperador 
 FROM            dbo.producto_rellenado AS pr INNER JOIN
                          dbo.bodega_ubicacion AS bu ON pr.IdUbicacion = bu.IdUbicacion AND pr.IdBodega = bu.IdBodega INNER JOIN
                          dbo.producto_estado AS pe ON pr.IdProductoEstado = pe.IdEstado  INNER JOIN
