@@ -1,4 +1,5 @@
-/****** Object:  View [dbo].[VW_TransUbicacionHhEnc]    Script Date: 4/03/2021 16:54:12 ******/
+
+/****** Object:  View [dbo].[VW_TransUbicacionHhEnc]    Script Date: 19/11/2021 11:17:35 ******/
 SET ANSI_NULLS ON
 GO
 
