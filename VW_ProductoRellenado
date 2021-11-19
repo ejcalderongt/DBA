@@ -21,6 +21,14 @@ unidad_medida AS um1 ON pr.IdUmBasAbastercerCon = um1.IdUnidadMedida
 GO
 
 --#CKFK Add IdOperadorDefecto
+/****** Object:  View [dbo].[VW_ProductoRellenado]    Script Date: 19/11/2021 17:03:23 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
 ALTER VIEW [dbo].[VW_ProductoRellenado]
 AS
 SELECT        pr.IdBodega, pr.IdProductoBodega, dbo.producto_bodega.IdProducto, dbo.Nombre_Completo_Ubicacion(bu.IdUbicacion, bu.IdBodega) AS Ubicación, pe.nombre AS Estado, pr.IdRellenado, pr.IdPresentacion, 
@@ -28,11 +36,12 @@ SELECT        pr.IdBodega, pr.IdProductoBodega, dbo.producto_bodega.IdProducto, 
                          pr.IdUnidadMedidaBasica, pp1.nombre AS NomPresentacionRellenarCon, um1.Nombre AS NomUmBasAbastecerCon, pr.IdPropietario, pr.IdOperadorDefecto 
 FROM            dbo.producto_rellenado AS pr INNER JOIN
                          dbo.bodega_ubicacion AS bu ON pr.IdUbicacion = bu.IdUbicacion AND pr.IdBodega = bu.IdBodega INNER JOIN
-                         dbo.producto_estado AS pe ON pr.IdProductoEstado = pe.IdEstado INNER JOIN
-						 dbo.operador AS op ON op.IdOperador = pr.IdOperadorDefecto INNER JOIN
+                         dbo.producto_estado AS pe ON pr.IdProductoEstado = pe.IdEstado  INNER JOIN
                          dbo.producto_bodega ON pr.IdProductoBodega = dbo.producto_bodega.IdProductoBodega AND pr.IdBodega = dbo.producto_bodega.IdBodega LEFT OUTER JOIN
+						 dbo.operador AS op ON op.IdOperador = pr.IdOperadorDefecto LEFT OUTER JOIN
                          dbo.producto_presentacion AS pp1 ON pr.IdPresentacionAbastercerCon = pp1.IdPresentacion LEFT OUTER JOIN
                          dbo.producto_presentacion AS pp ON pr.IdPresentacion = pp.IdPresentacion LEFT OUTER JOIN
                          dbo.unidad_medida AS um1 ON pr.IdUmBasAbastercerCon = um1.IdUnidadMedida 
 GO
+
 
