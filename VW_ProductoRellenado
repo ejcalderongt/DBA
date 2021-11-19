@@ -1,4 +1,4 @@
-/****** Object:  View [dbo].[VW_ProductoRellenado]    Script Date: 1/03/2021 15:17:32 ******/
+/****** Object:  View [dbo].[VW_ProductoRellenado]    Script Date: 19/11/2021 11:46:59 ******/
 SET ANSI_NULLS ON
 GO
 
@@ -7,16 +7,17 @@ GO
 
 ALTER VIEW [dbo].[VW_ProductoRellenado]
 AS
-SELECT        pr.IdBodega, pr.IdProductoBodega, dbo.producto_bodega.IdProducto, bu.descripcion AS Ubicación, pe.nombre AS Estado, pr.IdRellenado, pr.IdPresentacion, pp.nombre AS Presentación, pr.IdProductoEstado, pr.IdUbicacion, 
-                         pr.IdTipoAccion, pr.Minimo, pr.Maximo, pr.user_agr, pr.fec_agr, pr.user_mod, pr.fec_mod, pr.Activo, pr.IdUmBasAbastercerCon, pr.IdPresentacionAbastercerCon, pr.IdUnidadMedidaBasica, 
-                         pp1.nombre AS NomPresentacionRellenarCon, um1.Nombre AS NomUmBasAbastecerCon, pr.IdPropietario
-FROM            dbo.producto_rellenado AS pr INNER JOIN
-                         dbo.bodega_ubicacion AS bu ON pr.IdUbicacion = bu.IdUbicacion AND pr.IdBodega = bu.IdBodega INNER JOIN
-                         dbo.producto_estado AS pe ON pr.IdProductoEstado = pe.IdEstado INNER JOIN
-                         dbo.producto_bodega ON pr.IdProductoBodega = dbo.producto_bodega.IdProductoBodega AND pr.IdBodega = dbo.producto_bodega.IdBodega LEFT OUTER JOIN
-                         dbo.producto_presentacion AS pp1 ON pr.IdPresentacionAbastercerCon = pp1.IdPresentacion LEFT OUTER JOIN
-                         dbo.producto_presentacion AS pp ON pr.IdPresentacion = pp.IdPresentacion LEFT OUTER JOIN
-                         dbo.unidad_medida AS um1 ON pr.IdUmBasAbastercerCon = um1.IdUnidadMedida
+SELECT pr.IdBodega, pr.IdProductoBodega, producto_bodega.IdProducto, 
+dbo.Nombre_Completo_Ubicacion(bu.IdUbicacion, bu.IdBodega) AS Ubicación, pe.nombre AS Estado, pr.IdRellenado, pr.IdPresentacion, pp.nombre AS Presentación, pr.IdProductoEstado, pr.IdUbicacion, 
+pr.IdTipoAccion, pr.Minimo, pr.Maximo, pr.user_agr, pr.fec_agr, pr.user_mod, pr.fec_mod, pr.Activo, pr.IdUmBasAbastercerCon, pr.IdPresentacionAbastercerCon, pr.IdUnidadMedidaBasica, 
+pp1.nombre AS NomPresentacionRellenarCon, um1.Nombre AS NomUmBasAbastecerCon, pr.IdPropietario
+FROM  producto_rellenado AS pr INNER JOIN
+bodega_ubicacion AS bu ON pr.IdUbicacion = bu.IdUbicacion AND pr.IdBodega = bu.IdBodega INNER JOIN
+producto_estado AS pe ON pr.IdProductoEstado = pe.IdEstado INNER JOIN
+producto_bodega ON pr.IdProductoBodega = producto_bodega.IdProductoBodega AND pr.IdBodega = producto_bodega.IdBodega LEFT OUTER JOIN
+producto_presentacion AS pp1 ON pr.IdPresentacionAbastercerCon = pp1.IdPresentacion LEFT OUTER JOIN
+producto_presentacion AS pp ON pr.IdPresentacion = pp.IdPresentacion LEFT OUTER JOIN
+unidad_medida AS um1 ON pr.IdUmBasAbastercerCon = um1.IdUnidadMedida
 GO
 
 
