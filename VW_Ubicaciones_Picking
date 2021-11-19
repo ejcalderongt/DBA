@@ -1,11 +1,20 @@
-CREATE VIEW [dbo].[VW_Ubicaciones_Picking]
+/****** Object:  View [dbo].[VW_Ubicaciones_Picking]    Script Date: 19/11/2021 10:24:28 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER VIEW [dbo].[VW_Ubicaciones_Picking]
 AS
 SELECT DISTINCT 
-                         u.IdBodega, u.IdUbicacion, u.descripcion, t.descripcion AS Tramo, s.descripcion AS Sector, a.Descripcion AS Area, u.nivel AS Nivel, u.indice_x AS Indice_X, u.codigo_barra AS Codigo_Barra, u.activo AS Activo, 
+                         u.IdBodega, u.IdUbicacion, dbo.Nombre_Completo_Ubicacion(u.IdUbicacion, u.IdBodega) as Descripcion , t.descripcion AS Tramo, s.descripcion AS Sector, a.Descripcion AS Area, u.nivel AS Nivel, u.indice_x AS Indice_X, u.codigo_barra AS Codigo_Barra, u.activo AS Activo, 
                          u.bloqueada AS Bloqueada, u.acepta_pallet AS Acepta_Pallet
-FROM            dbo.bodega_sector AS s INNER JOIN
-                         dbo.bodega_tramo AS t ON s.IdSector = t.IdSector AND s.IdBodega = t.IdBodega AND s.IdArea = t.IdArea INNER JOIN
-                         dbo.bodega_area AS a ON s.IdArea = a.IdArea AND s.IdBodega = a.IdBodega INNER JOIN
-                         dbo.bodega_ubicacion AS u ON t.IdBodega = u.IdBodega AND t.IdArea = u.IdArea AND t.IdSector = u.IdSector AND t.IdTramo = u.IdTramo
+FROM            bodega_sector AS s INNER JOIN
+                         bodega_tramo AS t ON s.IdSector = t.IdSector AND s.IdBodega = t.IdBodega AND s.IdArea = t.IdArea INNER JOIN
+                         bodega_area AS a ON s.IdArea = a.IdArea AND s.IdBodega = a.IdBodega INNER JOIN
+                         bodega_ubicacion AS u ON t.IdBodega = u.IdBodega AND t.IdArea = u.IdArea AND t.IdSector = u.IdSector AND t.IdTramo = u.IdTramo
 WHERE        (u.ubicacion_picking = 1) AND (u.activo = 1)
 GO
+
+
