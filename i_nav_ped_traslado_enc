@@ -1,4 +1,1 @@
 alter table i_nav_ped_traslado_enc add Document_Type int default 0
-
---#CKFK 20211121: Alamacenar el no de picking de NAV.
-alter table i_nav_ped_traslado_enc add No_Picking_ERP nvarchar(50)
