@@ -34,4 +34,57 @@ GROUP BY dbo.producto_rellenado.IdRellenado, dbo.producto_rellenado.IdBodega, db
                          dbo.producto_rellenado.user_mod, dbo.producto_rellenado.fec_mod, dbo.producto_rellenado.IdUmBasAbastercerCon, dbo.producto_rellenado.IdPresentacionAbastercerCon, dbo.producto_presentacion.nombre
 GO
 
+--#CKFK 20211121 Agregué IdOperadorBodega
+/****** Object:  View [dbo].[VW_Revision_Producto]    Script Date: 20/11/2021 21:05:07 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER VIEW [dbo].[VW_Revision_Producto]
+AS
+SELECT        dbo.producto_rellenado.IdRellenado, dbo.producto_rellenado.IdBodega, dbo.producto_rellenado.IdProductoBodega, dbo.producto_bodega.IdProducto, dbo.producto.codigo AS Codigo_Producto, 
+                         dbo.producto.nombre AS Nombre_Producto, dbo.producto_rellenado.IdUnidadMedidaBasica, dbo.unidad_medida.Nombre AS NombreUmBas, dbo.producto_rellenado.IdPresentacion, dbo.producto_presentacion.nombre AS Presentacion, 
+                         dbo.producto_rellenado.Minimo, dbo.producto_rellenado.Maximo, dbo.producto_rellenado.IdProductoEstado, dbo.producto_estado.nombre AS Estado, 
+						 ROUND(SUM(ISNULL(dbo.stock.cantidad, 0)),6) AS StockUMBas, 
+                         ROUND(SUM(ISNULL(dbo.stock_res.cantidad, 0)),6) AS ReservadoUmBas, 
+						 ROUND(SUM(ISNULL(dbo.stock.cantidad, 0)) - SUM(ISNULL(dbo.stock_res.cantidad, 0)),6) AS DisponibleUMBas, 
+						 producto_presentacion_1.factor, 
+                         ROUND(SUM(ISNULL(dbo.stock.cantidad / producto_presentacion_1.factor, 0)),6) AS StockPres, 
+						 ROUND(SUM(ISNULL(dbo.stock_res.cantidad / producto_presentacion_1.factor, 0)),6) AS ReservadoPres, 
+                         ROUND(SUM(ISNULL(dbo.stock.cantidad / producto_presentacion_1.factor, 0)) - SUM(ISNULL(dbo.stock_res.cantidad / producto_presentacion_1.factor, 0)),6) AS DisponiblePres, 
+                         dbo.Nombre_Completo_Ubicacion(dbo.producto_rellenado.IdUbicacion, dbo.producto_rellenado.IdBodega) AS Ubicacion, dbo.propietario_bodega.IdPropietarioBodega, dbo.producto_rellenado.IdUbicacion, 
+                         dbo.producto_rellenado.IdTipoAccion, dbo.producto_rellenado.Activo, dbo.producto.IdPropietario, dbo.propietarios.nombre_comercial AS Nombre_Propietario, dbo.producto_rellenado.user_agr, dbo.producto_rellenado.fec_agr, 
+                         dbo.producto_rellenado.user_mod, dbo.producto_rellenado.fec_mod, dbo.producto_rellenado.IdUmBasAbastercerCon, dbo.producto_rellenado.IdPresentacionAbastercerCon, 
+                         producto_presentacion_1.nombre AS NombrePresentacionAbastecerCon, dbo.operador_bodega.IdOperadorBodega
+FROM            dbo.propietario_bodega INNER JOIN
+                         dbo.propietarios INNER JOIN
+                         dbo.unidad_medida INNER JOIN
+                         dbo.producto_rellenado INNER JOIN
+                         dbo.producto_bodega INNER JOIN
+                         dbo.producto ON dbo.producto_bodega.IdProducto = dbo.producto.IdProducto ON dbo.producto_rellenado.IdProductoBodega = dbo.producto_bodega.IdProductoBodega AND 
+                         dbo.producto_rellenado.IdBodega = dbo.producto_bodega.IdBodega ON dbo.unidad_medida.IdUnidadMedida = dbo.producto_rellenado.IdUnidadMedidaBasica INNER JOIN
+                         dbo.producto_estado ON dbo.producto_rellenado.IdProductoEstado = dbo.producto_estado.IdEstado ON dbo.propietarios.IdPropietario = dbo.producto.IdPropietario ON 
+                         dbo.propietario_bodega.IdPropietario = dbo.propietarios.IdPropietario AND dbo.propietario_bodega.IdBodega = dbo.producto_bodega.IdBodega LEFT OUTER JOIN
+                         dbo.unidad_medida AS unidad_medida_1 ON dbo.producto_rellenado.IdUmBasAbastercerCon = unidad_medida_1.IdUnidadMedida LEFT OUTER JOIN
+                         dbo.producto_presentacion AS producto_presentacion_1 ON dbo.producto_rellenado.IdPresentacionAbastercerCon = producto_presentacion_1.IdPresentacion LEFT OUTER JOIN
+                         dbo.producto_presentacion ON dbo.producto_rellenado.IdPresentacion = dbo.producto_presentacion.IdPresentacion AND dbo.producto.IdProducto = dbo.producto_presentacion.IdProducto LEFT OUTER JOIN
+                         dbo.stock_res INNER JOIN
+                         dbo.stock ON dbo.stock_res.IdStock = dbo.stock.IdStock ON dbo.producto_presentacion.IdPresentacion = dbo.stock.IdPresentacion AND dbo.producto_presentacion.IdPresentacion = dbo.stock.IdPresentacion AND 
+                         dbo.producto_presentacion.IdPresentacion = dbo.stock.IdPresentacion AND dbo.producto_presentacion.IdPresentacion = dbo.stock.IdPresentacion AND 
+                         dbo.producto_rellenado.IdUnidadMedidaBasica = dbo.stock.IdUnidadMedida AND dbo.producto_rellenado.IdProductoBodega = dbo.stock.IdProductoBodega AND dbo.producto_rellenado.IdBodega = dbo.stock.IdBodega AND 
+                         dbo.producto_rellenado.IdProductoEstado = dbo.stock.IdProductoEstado AND dbo.producto_rellenado.IdPresentacion = dbo.stock.IdPresentacion AND dbo.producto_rellenado.IdUbicacion = dbo.stock.IdUbicacion LEFT OUTER JOIN
+						 dbo.operador ON dbo.producto_rellenado.IdOperadorDefecto = dbo.operador.IdOperador LEFT OUTER JOIN 
+						 dbo.operador_bodega ON dbo.operador.IdOperador = dbo.operador_bodega.IdOperador AND dbo.operador_bodega.IdBodega = producto_bodega.IdBodega and propietario_bodega.IdBodega = producto_bodega.IdBodega
+GROUP BY dbo.producto_rellenado.IdRellenado, dbo.producto_rellenado.IdBodega, dbo.producto_rellenado.IdProductoBodega, dbo.producto_bodega.IdProducto, dbo.producto.codigo, dbo.producto.nombre, 
+                         dbo.producto_rellenado.IdUnidadMedidaBasica, dbo.unidad_medida.Nombre, dbo.producto_rellenado.IdPresentacion, producto_presentacion_1.nombre, dbo.producto_rellenado.Minimo, dbo.producto_rellenado.Maximo, 
+                         dbo.producto_rellenado.IdProductoEstado, dbo.producto_estado.nombre, producto_presentacion_1.factor, dbo.producto_rellenado.IdBodega, dbo.producto_rellenado.IdUbicacion, dbo.propietario_bodega.IdPropietarioBodega, 
+                         dbo.producto_rellenado.IdTipoAccion, dbo.producto_rellenado.Activo, dbo.producto.IdPropietario, dbo.propietarios.nombre_comercial, dbo.producto_rellenado.user_agr, dbo.producto_rellenado.fec_agr, 
+                         dbo.producto_rellenado.user_mod, dbo.producto_rellenado.fec_mod, dbo.producto_rellenado.IdUmBasAbastercerCon, dbo.producto_rellenado.IdPresentacionAbastercerCon, dbo.producto_presentacion.nombre, dbo.operador_bodega.IdOperadorBodega
+GO
+
+
+
+
 
