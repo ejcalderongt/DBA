@@ -103,3 +103,12 @@ INCLUDE ([Proveedor],[nombre_producto],[valor_aduana],[valor_fob],[valor_iva],[v
 CREATE NONCLUSTERED INDEX NCLI_EJC_20211025
 ON [dbo].[bodega_ubicacion] ([IdTramo],[IdBodega])
 INCLUDE ([IdUbicacion],[descripcion],[ancho],[largo],[alto],[nivel],[indice_x],[IdIndiceRotacion],[IdTipoRotacion],[sistema],[codigo_barra],[codigo_barra2],[user_agr],[fec_agr],[user_mod],[fec_mod],[dañado],[activo],[bloqueada],[acepta_pallet],[ubicacion_picking],[ubicacion_recepcion],[ubicacion_despacho],[ubicacion_merma],[margen_izquierdo],[margen_derecho],[margen_superior],[margen_inferior],[orientacion_pos],[ubicacion_virtual],[ubicacion_ne],[IdArea],[IdSector])
+
+CREATE NONCLUSTERED INDEX NCLI_trans_picking_enc_20211124_EJC
+ON [dbo].[trans_picking_enc] ([IdBodega],[IdPropietarioBodega],[activo])
+INCLUDE ([IdPickingEnc],[IdUbicacionPicking],[fecha_picking],[hora_ini],[hora_fin],[estado],[detalle_operador])
+GO
+
+CREATE NONCLUSTERED INDEX NCLI_trans_picking_det_EJC
+ON [dbo].[trans_picking_det] ([IdPickingEnc])
+INCLUDE ([IdPedidoDet])
