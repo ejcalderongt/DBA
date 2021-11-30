@@ -71,4 +71,10 @@ add consolidado bit null
 alter table Trans_inv_inicial_excel_op_log
 add licencia nvarchar(50) null
 
+/********* GT29112021 Se renombra campo fecha para efectos de cobro cealsa******************************/
+EXEC sp_RENAME 'dbo.trans_inv_inicial_excel_op_log.pol_fecha_aceptacion', 'pol_fecha_llegada', 'COLUMN'
+
+
+
+
 
