@@ -1,0 +1,2 @@
+--#EJC20211201
+alter table trans_inv_operador add idbodega int null default 0
