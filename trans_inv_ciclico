@@ -1,0 +1,2 @@
+--#EJC20211201: IdBodegaa Add
+alter table trans_inv_ciclico add IdBodega int null default 0
