@@ -1,4 +1,9 @@
-/****** Object: UserDefinedFunction [dbo].[ConvertSecondsFFormatoFecha] Script Date: 30/03/2020 01:17:06 a.m. ******/
+/**Primer paso ejecutar Update**/
+UPDATE trans_oc_enc set Fecha_Recepcion = DATEADD(hour, 1, Fec_Agr)
+where Fecha_Recepcion<Fec_Agr
+
+/**Segundo paso Actualizar funcion **/
+/****** Object:  UserDefinedFunction [dbo].[ConvertSecondsFormatoFecha]    Script Date: 2/12/2021 17:16:13 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -10,21 +15,34 @@ GO
 -- =============================================
 ALTER FUNCTION [dbo].[ConvertSecondsFormatoFecha]
 (
-@Seconds BIGINT
+@Seconds DECIMAL
 )
-RETURNS NVARCHAR(20)
+RETURNS NVARCHAR(50)
 AS
 BEGIN
 
-DECLARE @resultado NVARCHAR(20)
+DECLARE @resultado NVARCHAR(50)
+DECLARE @dias DECIMAL
+DECLARE @segundos_sobrantes DECIMAL
+DECLARE @horas AS DECIMAL
+DECLARE @minutos AS DECIMAL
+DECLARE @segundos AS DECIMAL
+
+SELECT @dias = @Seconds / (24 * 60 * 60)
+SELECT @segundos_sobrantes =ABS(@Seconds -(@dias* (24 * 60 * 60)))
+SELECT @horas = (@segundos_sobrantes % (24.0 * 60.0 * 60.0)) / (60.0 * 60.0)
+SELECT @minutos = (((@segundos_sobrantes % (24.0 * 60.0 * 60.0)) % (60.0 * 60.0)) / 60.0)
+SELECT @segundos = (((@segundos_sobrantes % (24.0 * 60.0 * 60.0)) % (60.0 * 60.0)) % 60.0)
+
 -- Declare the return variable here
-SELECT @resultado = RIGHT('00'+ CONVERT(NVARCHAR(2),@Seconds / (24 * 60 * 60)),2) + ' ' +
-RIGHT('00'+ CONVERT(NVARCHAR(2),(@Seconds % (24.0 * 60.0 * 60.0)) / (60.0 * 60.0)),2) + ':' +
-RIGHT('00'+ CONVERT(NVARCHAR(2),((@Seconds % (24.0 * 60.0 * 60.0)) % (60.0 * 60.0)) / 60.0),2) + ':' +
-RIGHT('00'+ CONVERT(NVARCHAR(2),((@Seconds % (24.0 * 60.0 * 60.0)) % (60.0 * 60.0)) % 60.0),2);
+SELECT @resultado = CONVERT(NVARCHAR(50),@dias) + ' ' + 
+RIGHT('00'+ CONVERT(NVARCHAR(2),@horas),2) + ':' +
+RIGHT('00'+ CONVERT(NVARCHAR(2),@minutos),2) + ':' +
+RIGHT('00'+ CONVERT(NVARCHAR(2),@segundos),2);
 
 RETURN @resultado;
-END
+
+END ;
 
 
 ---Consultas
@@ -39,7 +57,7 @@ dbo.ConvertSecondsFormatoFecha(ABS(DATEDIFF(SECOND,oc.Fecha_Recepcion, ocre.hora
 dbo.ConvertSecondsFormatoFecha(ABS(DATEDIFF(SECOND, re.Fec_Agr, ocre.hora_fin_hh))) AS DIF4
 from trans_re_oc ocre inner join trans_re_enc re on ocre.IdRecepcionEnc = re.IdRecepcionEnc
 inner join trans_oc_enc oc on ocre.IdOrdenCompraEnc = oc.IdOrdenCompraEnc
-where re.IdTipoTransaccion = 'HCOC00' and oc.Fecha_Creacion>'20190201'
+where re.IdTipoTransaccion = 'HCOC00' and oc.Fecha_Creacion>'20190101'
 
 select * from trans_oc_enc where Fecha_Recepcion<Fec_Agr
 
@@ -49,5 +67,4 @@ from trans_re_oc ocre inner join trans_re_enc re on ocre.IdRecepcionEnc = re.IdR
 inner join trans_oc_enc oc on ocre.IdOrdenCompraEnc = oc.IdOrdenCompraEnc
 where re.IdTipoTransaccion = 'HCOC00' and oc.Fecha_Creacion>'20190301'
 
-UPDATE trans_oc_enc set Fecha_Recepcion = DATEADD(hour, 1, Fec_Agr)
-where Fecha_Recepcion<Fec_Agr
+
