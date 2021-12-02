@@ -1,0 +1,5 @@
+/***************GT 02122012  para busqueda por LP en HH  ************************/
+
+alter table trans_inv_detalle
+add lic_plate nvarchar(50) default null,
+cod_variante nvarchar(50) default null
