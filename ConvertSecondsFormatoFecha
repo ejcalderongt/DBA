@@ -1,0 +1,29 @@
+/****** Object: UserDefinedFunction [dbo].[ConvertSecondsFFormatoFecha] Script Date: 30/03/2020 01:17:06 a.m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author: <Author,,Name>
+-- Create date: <Create Date, ,>
+-- Description: <Description, ,>
+-- =============================================
+ALTER FUNCTION [dbo].[ConvertSecondsFormatoFecha]
+(
+@Seconds BIGINT
+)
+RETURNS NVARCHAR(20)
+AS
+BEGIN
+
+DECLARE @resultado NVARCHAR(20)
+-- Declare the return variable here
+SELECT @resultado = RIGHT('00'+ CONVERT(NVARCHAR(2),@Seconds / (24 * 60 * 60)),2) + ' ' +
+RIGHT('00'+ CONVERT(NVARCHAR(2),(@Seconds % (24.0 * 60.0 * 60.0)) / (60.0 * 60.0)),2) + ':' +
+RIGHT('00'+ CONVERT(NVARCHAR(2),((@Seconds % (24.0 * 60.0 * 60.0)) % (60.0 * 60.0)) / 60.0),2) + ':' +
+RIGHT('00'+ CONVERT(NVARCHAR(2),((@Seconds % (24.0 * 60.0 * 60.0)) % (60.0 * 60.0)) % 60.0),2);
+
+
+
+RETURN @resultado;
+END
