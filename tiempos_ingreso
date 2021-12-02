@@ -1,0 +1,53 @@
+/****** Object: UserDefinedFunction [dbo].[ConvertSecondsFFormatoFecha] Script Date: 30/03/2020 01:17:06 a.m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author: <Author,,Name>
+-- Create date: <Create Date, ,>
+-- Description: <Description, ,>
+-- =============================================
+ALTER FUNCTION [dbo].[ConvertSecondsFormatoFecha]
+(
+@Seconds BIGINT
+)
+RETURNS NVARCHAR(20)
+AS
+BEGIN
+
+DECLARE @resultado NVARCHAR(20)
+-- Declare the return variable here
+SELECT @resultado = RIGHT('00'+ CONVERT(NVARCHAR(2),@Seconds / (24 * 60 * 60)),2) + ' ' +
+RIGHT('00'+ CONVERT(NVARCHAR(2),(@Seconds % (24.0 * 60.0 * 60.0)) / (60.0 * 60.0)),2) + ':' +
+RIGHT('00'+ CONVERT(NVARCHAR(2),((@Seconds % (24.0 * 60.0 * 60.0)) % (60.0 * 60.0)) / 60.0),2) + ':' +
+RIGHT('00'+ CONVERT(NVARCHAR(2),((@Seconds % (24.0 * 60.0 * 60.0)) % (60.0 * 60.0)) % 60.0),2);
+
+RETURN @resultado;
+END
+
+
+---Consultas
+select ocre.IdRecepcionOc, re.IdRecepcionEnc, oc.IdOrdenCompraEnc, 
+oc.Fec_Agr AS OC_Hora_Creacion,
+re.Fec_Agr as RE_Hora_Creacion_Recepcion,
+oc.Fecha_Recepcion as OC_Fecha_Recepcion,
+ocre.hora_fin_hh AS REOC_HORA_FIN,
+dbo.ConvertSecondsFormatoFecha(ABS(DATEDIFF(SECOND, oc.Fec_Agr, re.Fec_Agr))) AS DIF1,
+dbo.ConvertSecondsFormatoFecha(ABS(DATEDIFF(SECOND, re.Fec_Agr, oc.Fecha_Recepcion))) AS DIF2,
+dbo.ConvertSecondsFormatoFecha(ABS(DATEDIFF(SECOND,oc.Fecha_Recepcion, ocre.hora_fin_hh))) AS DIF3,
+dbo.ConvertSecondsFormatoFecha(ABS(DATEDIFF(SECOND, re.Fec_Agr, ocre.hora_fin_hh))) AS DIF4
+from trans_re_oc ocre inner join trans_re_enc re on ocre.IdRecepcionEnc = re.IdRecepcionEnc
+inner join trans_oc_enc oc on ocre.IdOrdenCompraEnc = oc.IdOrdenCompraEnc
+where re.IdTipoTransaccion = 'HCOC00' and oc.Fecha_Creacion>'20190201'
+
+select * from trans_oc_enc where Fecha_Recepcion<Fec_Agr
+
+--Promedio de atencion
+select dbo.ConvertSecondsFormatoFecha(AVG(DATEDIFF(SECOND, re.Fec_Agr, ocre.hora_fin_hh))) AS PROMEDIO
+from trans_re_oc ocre inner join trans_re_enc re on ocre.IdRecepcionEnc = re.IdRecepcionEnc
+inner join trans_oc_enc oc on ocre.IdOrdenCompraEnc = oc.IdOrdenCompraEnc
+where re.IdTipoTransaccion = 'HCOC00' and oc.Fecha_Creacion>'20190301'
+
+UPDATE trans_oc_enc set Fecha_Recepcion = DATEADD(hour, 1, Fec_Agr)
+where Fecha_Recepcion<Fec_Agr
