@@ -4,7 +4,7 @@ select top(10) producto.codigo +  ' - ' + producto.nombre AS Producto, SUM(stock
 CASE WHEN producto_presentacion.nombre IS  NULL THEN unidad_medida.Nombre ELSE producto_presentacion.nombre END AS Unidad_Medida
 from stock inner join 
      producto_bodega on stock.IdProductoBodega = producto_bodega.IdProductoBodega inner join 
-	 producto on producto.IdProducto = producto_bodega.IdBodega inner join
+	 producto on producto.IdProducto = producto_bodega.IdProducto inner join
 	 unidad_medida on unidad_medida.IdUnidadMedida = stock.IdUnidadMedida left outer join 
 	 producto_presentacion on stock.IdPresentacion = producto_presentacion.IdPresentacion
 where stock.IdBodega = 10
