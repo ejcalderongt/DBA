@@ -1,0 +1,11 @@
+CREATE VIEW VW_Cantidad_Ingresos_Proveedor
+AS
+SELECT   p.nombre,
+		COUNT(oc.IdOrdenCompraEnc) AS Ingresos,
+		oc.IdBodega
+FROM trans_oc_enc oc INNER JOIN
+     proveedor_bodega pb ON pb.IdAsignacion = oc.IdProveedorBodega INNER JOIN
+     proveedor p ON p.IdProveedor = pb.IdProveedor
+WHERE oc.IdEstadoOC <> 5
+GROUP BY p.nombre, oc.IdBodega
+GO
