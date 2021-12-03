@@ -7,6 +7,18 @@ GO
 
 ALTER VIEW [dbo].[VW_Tiempos_ingreso]
 AS
+USE [IMS4MB_IDEALSA_PRD]
+GO
+
+/****** Object:  View [dbo].[VW_Tiempos_ingreso]    Script Date: 2/12/2021 22:44:39 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE VIEW [dbo].[VW_Tiempos_ingreso]
+AS
 SELECT ocre.IdRecepcionOc, re.IdRecepcionEnc, oc.IdOrdenCompraEnc, dbo.bodega.codigo AS Codigo_Bodega, dbo.propietarios.nombre_comercial AS Propietario, dbo.trans_oc_ti.Nombre AS TipoDocumento, 
 oc.Fec_Agr AS DI_Hora_Creacion,
 re.Fec_Agr as RE_Hora_Creacion_Recepcion,
@@ -25,7 +37,11 @@ FROM     dbo.trans_re_oc AS ocre INNER JOIN
                   dbo.propietario_bodega ON oc.IdPropietarioBodega = dbo.propietario_bodega.IdPropietarioBodega INNER JOIN
                   dbo.propietarios ON dbo.propietario_bodega.IdPropietario = dbo.propietarios.IdPropietario INNER JOIN
                   dbo.bodega ON dbo.proveedor_bodega.IdBodega = dbo.bodega.IdBodega AND dbo.propietario_bodega.IdBodega = dbo.bodega.IdBodega
-WHERE  (re.IdTipoTransaccion = 'HCOC00') AND (oc.Fecha_Creacion > '20190201')
+WHERE  (re.IdTipoTransaccion = 'HCOC00') AND (oc.Fecha_Creacion > '20190201') AND oc.IdEstadoOC <> 5
 GO
+
+
+
+
 
 
