@@ -12,49 +12,6 @@ select * from stock_rec  where IdRecepcionEnc = 2986
 
 commit transaction
 
-/**Segundo paso Actualizar funcion **/
-/****** Object:  UserDefinedFunction [dbo].[ConvertSecondsFormatoFecha]    Script Date: 2/12/2021 17:16:13 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
--- =============================================
--- Author: <Author,,Name>
--- Create date: <Create Date, ,>
--- Description: <Description, ,>
--- =============================================
-ALTER FUNCTION [dbo].[ConvertSecondsFormatoFecha]
-(
-@Seconds DECIMAL
-)
-RETURNS NVARCHAR(50)
-AS
-BEGIN
-
-DECLARE @resultado NVARCHAR(50)
-DECLARE @dias DECIMAL
-DECLARE @segundos_sobrantes DECIMAL
-DECLARE @horas AS DECIMAL
-DECLARE @minutos AS DECIMAL
-DECLARE @segundos AS DECIMAL
-
-SELECT @dias = @Seconds / (24 * 60 * 60)
-SELECT @segundos_sobrantes =ABS(@Seconds -(@dias* (24 * 60 * 60)))
-SELECT @horas = (@segundos_sobrantes % (24.0 * 60.0 * 60.0)) / (60.0 * 60.0)
-SELECT @minutos = (((@segundos_sobrantes % (24.0 * 60.0 * 60.0)) % (60.0 * 60.0)) / 60.0)
-SELECT @segundos = (((@segundos_sobrantes % (24.0 * 60.0 * 60.0)) % (60.0 * 60.0)) % 60.0)
-
--- Declare the return variable here
-SELECT @resultado = CONVERT(NVARCHAR(50),@dias) + ' ' + 
-RIGHT('00'+ CONVERT(NVARCHAR(2),@horas),2) + ':' +
-RIGHT('00'+ CONVERT(NVARCHAR(2),@minutos),2) + ':' +
-RIGHT('00'+ CONVERT(NVARCHAR(2),@segundos),2);
-
-RETURN @resultado;
-
-END ;
-
-
 ---Consultas
 select ocre.IdRecepcionOc, re.IdRecepcionEnc, oc.IdOrdenCompraEnc, 
 oc.Fec_Agr AS OC_Hora_Creacion,
