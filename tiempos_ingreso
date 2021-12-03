@@ -2,6 +2,16 @@
 UPDATE trans_oc_enc set Fecha_Recepcion = DATEADD(hour, 1, Fec_Agr)
 where Fecha_Recepcion<Fec_Agr
 
+begin transaction
+
+update trans_re_det set fecha_ingreso = (select sr.fecha_ingreso from stock_rec sr where sr.IdRecepcionEnc = trans_re_det.IdRecepcionEnc 
+and sr.IdRecepcionDet = trans_re_det.IdRecepcionDet  ) 
+
+select * from trans_re_det where IdRecepcionEnc = 2986
+select * from stock_rec  where IdRecepcionEnc = 2986
+
+commit transaction
+
 /**Segundo paso Actualizar funcion **/
 /****** Object:  UserDefinedFunction [dbo].[ConvertSecondsFormatoFecha]    Script Date: 2/12/2021 17:16:13 ******/
 SET ANSI_NULLS ON
