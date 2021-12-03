@@ -1,0 +1,12 @@
+CREATE VIEW VW_Top_Ten_Productos_Mayor_Movimiento_Cant
+AS
+select top(10) producto.codigo +  ' - ' + producto.nombre AS Producto, SUM(trans_movimientos.cantidad) as Cantidad, 
+CASE WHEN producto_presentacion.nombre IS  NULL THEN unidad_medida.Nombre ELSE producto_presentacion.nombre END AS Unidad_Medida
+from trans_movimientos inner join 
+     producto_bodega on trans_movimientos.IdProductoBodega = producto_bodega.IdProductoBodega inner join 
+	 producto on producto.IdProducto = producto_bodega.IdProducto inner join
+	 unidad_medida on unidad_medida.IdUnidadMedida = trans_movimientos.IdUnidadMedida left outer join 
+	 producto_presentacion on trans_movimientos.IdPresentacion = producto_presentacion.IdPresentacion
+where trans_movimientos.IdBodegaDestino = 10
+Group by trans_movimientos.IdProductoBodega, producto.codigo, producto.nombre, unidad_medida.Nombre, producto_presentacion.nombre
+order by cantidad desc
