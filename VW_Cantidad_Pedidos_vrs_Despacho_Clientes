@@ -1,0 +1,12 @@
+CREATE VIEW VW_Cantidad_Pedidos_vrs_Despacho_Clientes
+AS
+SELECT   c.nombre_comercial,
+		COUNT(pe.IdPedidoEnc) AS Pedidos, 
+		SUM(CASE WHEN pe.estado = 'Despachado' THEN 1 ELSE 0 END) AS Despachados,
+		SUM(CASE WHEN pe.estado <> 'Despachado' THEN 1 ELSE 0 END) AS Diferencia,
+		pe.IdBodega
+FROM trans_pe_enc pe INNER JOIN
+     cliente c ON pe.IdCliente = c.IdCliente
+WHERE pe.anulado = 0
+GROUP BY c.nombre_comercial, pe.IdBodega
+GO
