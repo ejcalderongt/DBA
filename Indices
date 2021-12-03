@@ -112,3 +112,8 @@ GO
 CREATE NONCLUSTERED INDEX NCLI_trans_picking_det_EJC
 ON [dbo].[trans_picking_det] ([IdPickingEnc])
 INCLUDE ([IdPedidoDet])
+
+CREATE NONCLUSTERED INDEX IX_trans_pe_det
+ON [dbo].[trans_pe_det] ([IdPedidoEnc])
+INCLUDE ([IdProductoBodega],[IdEstado],[IdPresentacion],[IdUnidadMedidaBasica],[Cantidad],[Peso],[Precio],[no_recepcion],[ndias],[cant_despachada],[codigo_producto],[nombre_producto],[nom_presentacion],[nom_unid_med],[nom_estado],[user_agr],[fec_agr],[fecha_especifica],[RoadDes],[RoadDesMon],[RoadTotal],[RoadPrecioDoc],[RoadVAL1],[RoadVAL2],[RoadCantProc],[peso_despachado],[no_linea],[atributo_variante_1],[IdStockEspecifico],[EsPadre],[IdPedidoDetPadre],[Peso_Bruto],[Peso_Neto],[Costo],[valor_aduana],[valor_fob],[valor_iva],[valor_dai],[valor_seguro],[valor_flete],[Total_linea])
+GO
