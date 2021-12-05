@@ -1,4 +1,11 @@
-CREATE VIEW VW_Tiempos_Picking_Operador
+/****** Object:  View [dbo].[VW_Tiempos_Picking_Operador]    Script Date: 5/12/2021 17:22:15 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER VIEW [dbo].[VW_Tiempos_Picking_Operador]
 AS
 SELECT  pe.IdPedidoEnc, 
 		pu.IdPickingEnc, 
@@ -58,3 +65,5 @@ GROUP BY pe.IdPedidoEnc,
 		pd.nom_unid_med,
 		dbo.trans_pe_tipo.Nombre
 GO
+
+
