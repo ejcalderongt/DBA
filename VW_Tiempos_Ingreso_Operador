@@ -1,9 +1,4 @@
-/****** Object:  View [dbo].[VW_Tiempos_Ingreso_Operador]    Script Date: 2/12/2021 22:47:57 ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
+/****** Object:  View [dbo].[VW_Tiempos_Ingreso_Operador]    Script Date: 5/12/2021 17:20:36 ******/
 
 CREATE VIEW [dbo].[VW_Tiempos_Ingreso_Operador]
 AS
@@ -21,7 +16,8 @@ SELECT  ocre.IdRecepcionOc,
 		o.nombres + ' ' + o.apellidos AS Operador,
 		MIN(rd.fec_agr) AS Ini_Ingreso,
 		MAX(rd.fec_agr) AS Fin_Ingreso, 
-		dbo.ConvertSecondsFormatoFecha(DateDiff(SECOND,MIN(rd.fecha_ingreso),MAX(rd.fecha_ingreso))) AS Dif_Ingreso
+		dbo.ConvertSecondsFormatoFecha(DateDiff(SECOND,MIN(rd.fecha_ingreso),MAX(rd.fecha_ingreso))) AS Dif_Ingreso,
+		(DateDiff(MINUTE,MIN(rd.fecha_ingreso),MAX(rd.fecha_ingreso))) AS Dif_Ingreso_Minutos
 FROM     dbo.trans_re_oc AS ocre INNER JOIN
                   dbo.trans_re_enc AS re ON ocre.IdRecepcionEnc = re.IdRecepcionEnc INNER JOIN
 				  dbo.trans_re_det AS rd ON re.IdRecepcionEnc = rd.IdRecepcionEnc AND ocre.IdRecepcionEnc = rd.IdRecepcionEnc INNER JOIN
@@ -38,6 +34,8 @@ WHERE  (re.IdTipoTransaccion = 'HCOC00') AND (oc.Fecha_Creacion > '20190201') AN
 GROUP BY ocre.IdRecepcionOc, re.IdRecepcionEnc, oc.IdOrdenCompraEnc, dbo.bodega.codigo, 
 dbo.propietarios.nombre_comercial, dbo.trans_oc_ti.Nombre, rd.IdOperadorBodega, o.nombres, o.apellidos
 GO
+
+
 
 
 
