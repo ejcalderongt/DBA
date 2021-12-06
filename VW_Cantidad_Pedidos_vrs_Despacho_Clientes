@@ -1,12 +1,19 @@
-CREATE VIEW VW_Cantidad_Pedidos_vrs_Despacho_Clientes
-AS
-SELECT   c.nombre_comercial,
-		COUNT(pe.IdPedidoEnc) AS Pedidos, 
-		SUM(CASE WHEN pe.estado = 'Despachado' THEN 1 ELSE 0 END) AS Despachados,
-		SUM(CASE WHEN pe.estado <> 'Despachado' THEN 1 ELSE 0 END) AS Diferencia,
-		pe.IdBodega
-FROM trans_pe_enc pe INNER JOIN
-     cliente c ON pe.IdCliente = c.IdCliente
-WHERE pe.anulado = 0
-GROUP BY c.nombre_comercial, pe.IdBodega
+/****** Object:  View [dbo].[VW_Cantidad_Pedidos_vrs_Despacho_Clientes]    Script Date: 5/12/2021 18:19:13 ******/
+SET ANSI_NULLS ON
 GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER VIEW [dbo].[VW_Cantidad_Pedidos_vrs_Despacho_Clientes]
+AS
+SELECT        dbo.bodega.codigo AS Codigo_Bodega, pe.Fecha_Pedido, c.nombre_comercial AS Cliente, COUNT(pe.IdPedidoEnc) AS Pedidos, SUM(CASE WHEN pe.estado = 'Despachado' THEN 1 ELSE 0 END) AS Despachados, 
+                         SUM(CASE WHEN pe.estado <> 'Despachado' THEN 1 ELSE 0 END) AS Diferencia, pe.IdBodega
+FROM            dbo.trans_pe_enc AS pe INNER JOIN
+                         dbo.cliente AS c ON pe.IdCliente = c.IdCliente INNER JOIN
+                         dbo.bodega ON pe.IdBodega = dbo.bodega.IdBodega
+WHERE        (pe.anulado = 0)
+GROUP BY c.nombre_comercial, pe.IdBodega, dbo.bodega.codigo, pe.Fecha_Pedido
+GO
+
+
