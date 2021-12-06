@@ -5,3 +5,7 @@ ALTER TABLE producto ADD IdTipoEtiqueta INT NULL;
 
 --Esto solo para CEALSA
 UPDATE producto SET IdTipoEtiqueta = 2;
+
+
+--#EJC20211206: Para cálculo de índice de rotación.
+alter table producto add dias_inventario_promedio int null default 90
