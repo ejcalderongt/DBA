@@ -11,7 +11,7 @@ AS
 SELECT  dbo.propietarios.nombre_comercial AS Propietario, dbo.producto.codigo, dbo.producto.codigo_barra AS Barra, dbo.producto.nombre, dbo.unidad_medida.Nombre AS UnidadMedida, 
         dbo.producto_presentacion.nombre AS Presentacion, dbo.stock.lote, dbo.stock.lic_plate, dbo.stock.fecha_ingreso, 
 		dbo.stock.fecha_vence, DATEADD(day, 0, GETDATE()) AS FechaProyectada, 
-        DATEDIFF(DAY,GETDATE(), dbo.stock.fecha_ingreso) as Tolerancia_Dias, dbo.stock.cantidad AS CantidadSF, dbo.producto_estado.nombre AS NomEstado, 
+        DATEDIFF(DAY,dbo.stock.fecha_ingreso,GETDATE()) as Tolerancia_Dias, dbo.stock.cantidad AS CantidadSF, dbo.producto_estado.nombre AS NomEstado, 
         dbo.stock.IdUbicacion, ROUND(dbo.stock.cantidad / dbo.producto_presentacion.factor, 2) AS Cantidad, dbo.producto.IdProducto, dbo.propietario_bodega.IdPropietarioBodega, dbo.propietario_bodega.IdBodega, 
         CASE WHEN bodega_tramo.es_rack = 1 THEN 'R' + RIGHT('00' + SUBSTRING(bodega_tramo.descripcion, 2, iif(CHARINDEX('-', bodega_tramo.descripcion, 0) < 0, 1, CHARINDEX('-', bodega_tramo.descripcion, 0) - 2)), 2) 
         + ' - ' + 'C' + RIGHT('00' + CONVERT(NVARCHAR(10), bodega_ubicacion.indice_x), 2) + ' - ' + 'T' + SUBSTRING(bodega_tramo.descripcion, iif(CHARINDEX('-', bodega_tramo.descripcion, 0) < 0, 0, CHARINDEX('-', 
