@@ -1,0 +1,12 @@
+CREATE VIEW VW_Ingresos_Promedio_Propietario
+AS
+SELECT T.Bodega, T.Propietario, AVG(T.Cant_Rec) As Promedio_Ingresos, DATEPART(YEAR,T.Fecha) As Año, DATEPART(MONTH,T.Fecha) AS Mes
+FROM (select b.Codigo AS Bodega, p.nombre_comercial as Propietario,COUNT(re.IdRecepcionEnc) AS Cant_Rec,
+      fecha_recepcion As Fecha
+from trans_re_enc re INNER JOIN bodega b ON re.IdBodega = b.IdBodega INNER JOIN 
+     propietario_bodega pb ON re.IdPropietarioBodega = pb.IdPropietarioBodega INNER JOIN 
+	 propietarios p ON p.IdPropietario = pb.IdPropietario 
+where re.estado <> 'Anulado' 
+GROUP BY b.Codigo, p.nombre_comercial,fecha_recepcion) AS T
+GROUP BY T.Bodega, T.Propietario,  DATEPART(YEAR,T.Fecha), DATEPART(MONTH,T.Fecha)
+GO
