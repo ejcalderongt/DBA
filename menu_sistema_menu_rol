@@ -199,5 +199,7 @@ insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol), '6.1.1.22'
 insert into menu_sistema values ('2.5.1.7','Valorizacion por mercaderia', 'cmdResValorizacionMerca',4,'2.5.1',0)
 insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol), '2.5.1.7',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
 
-
+/**#CKFK 20211205 Agregué reporte de Estacionalidad de producto **/
+insert into menu_sistema values ('6.1.2.8','Estacionalidad Producto', 'cmdEstacionalidadProducto',4,'6.1.2',0)
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol), '6.1.2.8',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
 
