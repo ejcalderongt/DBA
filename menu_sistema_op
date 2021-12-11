@@ -1,0 +1,5 @@
+/**********GT 10122021 Opciones para permisos en HH *******/
+
+insert into menu_sistema_op values('1.11',13,'Empaque',2,'1',13)
+insert into menu_sistema_op values('1.12',14,'Implosión',2,'1',14)
+insert into menu_sistema_op values('1.13',15,'Recepción',2,'1',15)
