@@ -1,0 +1,4 @@
+SELECT IdStock, 
+cantidad 
+from stock 
+WHERE cantidad!= FLOOR(cantidad)
