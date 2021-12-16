@@ -34,6 +34,9 @@ add equiparar_cliente_con_propietario_en_doc_salida BIT NOT NULL DEFAULT 0
 update i_nav_config_enc
 SET equiparar_cliente_con_propietario_en_doc_salida = 1 where idbodega=11
 
+--#EJC20211216: Abastecer desde unidades de picking MERCOPAN.
+alter table i_nav_config_enc add reservar_umbas_primero bit not null default 0
+
 --#EJC20210816 para interface de BYB: Permite hacer un push a NAV, antes de registrar el ingreso en WMS.
 alter table i_nav_config_enc add push_ingreso_nav_desde_hh bit null default 0
 
