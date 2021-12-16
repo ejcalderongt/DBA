@@ -39,6 +39,8 @@ alter table i_nav_config_enc add reservar_umbas_primero bit not null default 0
 
 --#EJC20210816 para interface de BYB: Permite hacer un push a NAV, antes de registrar el ingreso en WMS.
 alter table i_nav_config_enc add push_ingreso_nav_desde_hh bit null default 0
+alter table i_nav_config_enc add implosion_automatica bit not null default 0
+alter table i_nav_config_enc add explosion_automatica bit not null default 0
 
 
 
