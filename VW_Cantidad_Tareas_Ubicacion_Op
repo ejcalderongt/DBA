@@ -1,0 +1,18 @@
+/********GT20122021 vista para conteo de tareas ubicacion dirigida ***********************/
+
+CREATE VIEW [dbo].[VW_Cantidad_Tareas_Ubicacion_Op]
+AS
+SELECT DISTINCT dbo.trans_ubic_hh_enc.IdTareaUbicacionEnc,
+		 dbo.trans_ubic_hh_det.IdBodega, dbo.trans_ubic_hh_op.IdOperadorBodega, dbo.trans_ubic_hh_det.IdOperadorBodega AS IdOperadorBodegaDet
+FROM     dbo.trans_ubic_hh_enc INNER JOIN
+                  dbo.motivo_ubicacion ON dbo.trans_ubic_hh_enc.IdMotivoUbicacion = dbo.motivo_ubicacion.IdMotivoUbicacion INNER JOIN
+                  dbo.trans_ubic_hh_det ON dbo.trans_ubic_hh_enc.IdTareaUbicacionEnc = dbo.trans_ubic_hh_det.IdTareaUbicacionEnc INNER JOIN
+                  dbo.trans_ubic_hh_op ON dbo.trans_ubic_hh_enc.IdTareaUbicacionEnc = dbo.trans_ubic_hh_op.IdTareaUbicacionEnc
+WHERE  (dbo.trans_ubic_hh_enc.activo = 1) 
+	    AND (dbo.trans_ubic_hh_enc.estado = 'NUEVO' OR dbo.trans_ubic_hh_enc.estado = 'PENDIENTE') 
+		AND (dbo.trans_ubic_hh_enc.cambio_estado = 0) OR (dbo.trans_ubic_hh_enc.activo = 1) 
+		AND (dbo.trans_ubic_hh_enc.estado = 'NUEVO' OR dbo.trans_ubic_hh_enc.estado = 'PENDIENTE') 
+		AND (dbo.trans_ubic_hh_enc.cambio_estado = 0)
+		AND (dbo.trans_ubic_hh_det.Realizado =0)
+
+GO
