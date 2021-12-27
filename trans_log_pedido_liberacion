@@ -1,0 +1,27 @@
+/****** Object:  Table [dbo].[trans_log_pedido_liberacion]    Script Date: 27/12/2021 10:30:15 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[trans_log_pedido_liberacion](
+	[IdLogLiberacionStock] [int] NOT NULL,
+	[IdBodega] [int] NULL,
+	[IdPedidoEnc] [int] NULL,
+	[IdUsuario] [int] NULL,
+	[Fecha] [datetime] NULL,
+	[Codigo_Producto] [nvarchar](50) NULL,
+	[Lote] [nvarchar](50) NULL,
+	[Lic_Plate] [nvarchar](50) NULL,
+	[Cantidad] [float] NULL,
+	[Peso] [float] NULL,
+	[Referencia] [nvarchar](50) NULL,
+	[Observacion] [nvarchar](250) NULL,
+ CONSTRAINT [PK_trans_log_pedido_liberacion] PRIMARY KEY CLUSTERED 
+(
+	[IdLogLiberacionStock] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
