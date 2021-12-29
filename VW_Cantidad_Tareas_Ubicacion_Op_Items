@@ -1,0 +1,18 @@
+/*********************** GT2912021  Vista que muestra las tareas por operador cuando existe mas de uno asignado *********************************/
+
+/****** Object:  View [dbo].[VW_Cantidad_Tareas_Ubicacion_Op_Items]    Script Date: 29/12/2021 11:10:10 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE view [dbo].[VW_Cantidad_Tareas_Ubicacion_Op_Items] as
+select hh_enc.IdTareaUbicacionEnc,hh_enc.cambio_estado,hh_det.IdBodega,hh_det.IdOperadorBodega,hh_op.IdOperadorBodega as IdOperadorBodegaOp
+from trans_ubic_hh_enc hh_enc
+INNER JOIN trans_ubic_hh_det hh_det on hh_enc.IdTareaUbicacionEnc=hh_det.IdTareaUbicacionEnc
+LEFT JOIN trans_ubic_hh_op hh_op on hh_enc.IdTareaUbicacionEnc = hh_op.IdTareaUbicacionEnc
+where (hh_enc.estado='NUEVO' or hh_enc.estado='PENDIENTE') AND hh_enc.activo=1 and hh_det.Realizado=0
+GO
+
+
