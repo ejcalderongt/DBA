@@ -16,3 +16,15 @@ WHERE  (dbo.trans_ubic_hh_enc.activo = 1)
 		AND (dbo.trans_ubic_hh_det.Realizado =0)
 
 GO
+
+/************** GT29122021 se filtran tareas por cada operador asignado  ************************/
+
+Alter view VW_Cantidad_Tareas_Ubicacion_Op as
+
+SELECT hh_enc.IdTareaUbicacionEnc, hh_det.IdBodega, hh_det.IdOperadorBodega, hh_op.IdOperadorBodega AS IdOperadorBodegaOp, hh_enc.cambio_estado
+FROM     dbo.trans_ubic_hh_enc AS hh_enc INNER JOIN
+                  dbo.trans_ubic_hh_det AS hh_det ON hh_enc.IdTareaUbicacionEnc = hh_det.IdTareaUbicacionEnc LEFT OUTER JOIN
+                  dbo.trans_ubic_hh_op AS hh_op ON hh_enc.IdTareaUbicacionEnc = hh_op.IdTareaUbicacionEnc
+WHERE  (hh_enc.estado = 'NUEVO' OR
+                  hh_enc.estado = 'PENDIENTE') AND (hh_enc.activo = 1) AND (hh_det.Realizado = 0)
+
