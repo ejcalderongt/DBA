@@ -42,4 +42,7 @@ update bodega set codigo_barra='4' where IdBodega=12
 /*************** EJC20211104 Tamaño de etiqueta por defecto para impresión CEALSA.  ******************/
 alter table bodega add IdTamañoEtiquetaUbicacionDefecto int null default 0
 
+--#CKFK20220106: Agregar campo para priorizar ubicacion recepcion
+ALTER TABLE bodega ADD priorizar_ubicrec_sobre_ubicest bit  NOT NULL DEFAULT 0
+
 
