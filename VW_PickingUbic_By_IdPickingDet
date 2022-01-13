@@ -1,3 +1,10 @@
+/****** Object:  View [dbo].[VW_PickingUbic_By_IdPickingDet]    Script Date: 13/01/2022 00:45:12 EJC ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
 ALTER VIEW [dbo].[VW_PickingUbic_By_IdPickingDet]
 AS
 SELECT        bu.descripcion AS Ubicacion, u.IdPickingUbic, u.IdPickingDet, u.IdUbicacion, u.IdStock, u.IdPropietarioBodega, u.IdProductoBodega, u.IdProductoEstado, u.IdPresentacion, u.IdUnidadMedida, u.IdUbicacionAnterior, 
