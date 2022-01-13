@@ -3,3 +3,7 @@ ALTER TABLE stock_res ADD pallet_no_estandar BIT NULL
 
 --#EJC20210707
 ALTER TABLE stock_res ADD idbodega INT NOT NULL
+
+--#EJC 20220109
+ALTER TABLE dbo.stock_res
+ALTER COLUMN Lote nvarchar(50) COLLATE Modern_Spanish_CI_AS NULL
