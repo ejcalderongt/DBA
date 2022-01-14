@@ -4,3 +4,6 @@ alter table trans_picking_ubic add no_bulto_packing nvarchar(50) null default ''
 alter table trans_picking_ubic add no_linea_packing int null default 0
 alter table trans_picking_ubic add cant_camas_packing int null default 0
 alter table trans_picking_ubic add fecha_packing datetime null default getdate()
+
+ALTER TABLE TRANS_PICKING_UBIC ADD IDPEDIDOENC INT NULL
+GO
