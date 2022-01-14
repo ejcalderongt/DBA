@@ -27,3 +27,15 @@ CREATE TABLE [dbo].[trans_log_pedido_liberacion](
 ) ON [PRIMARY]
 GO
 
+
+alter table trans_log_pedido_liberacion add IdStock int,
+IdProductoBodega int,
+IdProductoEstado int,
+IdPropietarioBodega int,
+IdUnidadMedida int,
+IdUbicacion int
+
+alter table trans_log_pedido_liberacion add IdPickingUbic int, IdPickingDet int, IdPresentacion int
+
+
+
