@@ -1,0 +1,52 @@
+/****** Object:  Table [dbo].[i_nav_transacciones_push]    Script Date: 01/17/2022 1:54:17 p. m. ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[i_nav_transacciones_push](
+	[IdTransaccionPush] [int] NOT NULL,
+	[IdEmpresa] [int] NULL,
+	[IdBodega] [int] NOT NULL,
+	[IdPropietariobodega] [int] NULL,
+	[IdOrdenCompra] [int] NULL,
+	[IdRecepcionEnc] [int] NULL,
+	[IdRecepcionDet] [int] NULL,
+	[Idproductobodega] [int] NOT NULL,
+	[Idproducto] [int] NULL,
+	[Idunidadmedida] [int] NULL,
+	[Idpresentacion] [int] NULL,
+	[Idproductoestado] [int] NULL,
+	[cantidad] [float] NOT NULL,
+	[peso] [float] NULL,
+	[lote] [nvarchar](50) NULL,
+	[fecha_vence] [date] NULL,
+	[no_linea] [nvarchar](50) NULL,
+	[codigo_variante] [nvarchar](50) NULL,
+	[nom_unidad_medida] [nvarchar](50) NULL,
+	[tipo_transaccion] [nvarchar](50) NULL,
+	[IdTipoDocumento] [int] NULL,
+	[tipo_push] [nvarchar](50) NULL,
+	[no_recepcion_almacen] [nvarchar](50) NULL,
+	[documento_ubicacion] [nvarchar](50) NULL,
+	[documento_ingreso] [nvarchar](50) NULL,
+	[documento_recepcion] [nvarchar](50) NULL,
+	[location_code] [nvarchar](50) NULL,
+  [zone_code] [nvarchar](50) NULL,
+  [bin_code] [nvarchar](50) NULL,
+  [assigne_user_id] [nvarchar](50) NULL,
+  [item_no] [nvarchar](50) NULL,
+  [no_orden_prod] [nvarchar](50) NULL,
+	[respuesta_push] [nvarchar](500) NULL,
+	[Enviado_A_ERP] [bit] NULL,
+	[fec_agr] [datetime] NULL,
+	[user_agr] [nvarchar](50) NULL,
+	[fec_mod] [datetime] NULL,
+	[user_mod] [nvarchar](50) NULL,
+ CONSTRAINT [PK_i_nav_transacciones_push] PRIMARY KEY CLUSTERED 
+(
+	[IdTransaccionPush] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
