@@ -151,7 +151,7 @@ dbo.trans_ubic_hh_op.IdOperadorBodega
 
 
 
-/****** Object:  View [dbo].[VW_TransUbicHhDet]    Script Date: 19/01/2022 08:12:31 ******/
+/****** Object:  View [dbo].[VW_TransUbicHhDet]    Script Date: 19/01/2022 08:23:10 ******/
 SET ANSI_NULLS ON
 GO
 
@@ -167,7 +167,9 @@ SELECT        dbo.trans_ubic_hh_det.IdTareaUbicacionEnc, dbo.trans_ubic_hh_det.I
                          dbo.producto_estado.IdEstado, dbo.producto_estado.nombre AS NomEstado, dbo.trans_ubic_hh_stock.añada, CONVERT(char(10), dbo.trans_ubic_hh_stock.fecha_ingreso, 120) AS fecha_ingreso, 
                          dbo.producto_presentacion.nombre AS Presentacion, dbo.unidad_medida.Nombre AS UnidadMedida, dbo.trans_ubic_hh_stock.serial, dbo.producto.IdPropietario, dbo.propietarios.nombre_comercial, 
                          dbo.trans_ubic_hh_det.recibido, dbo.producto.IdProducto, dbo.producto_bodega.IdProductoBodega, dbo.producto.IdUnidadMedidaBasica, dbo.trans_ubic_hh_det.estado, dbo.trans_ubic_hh_det.IdUbicacionOrigen, 
-                         dbo.producto_presentacion.IdPresentacion, bodega_ubicacion_1.nivel, bodega_ubicacion_1.indice_x, dbo.trans_ubic_hh_det.IdBodega, dbo.bodega_tramo.descripcion AS Tramo
+                         dbo.producto_presentacion.IdPresentacion, bodega_ubicacion_1.nivel, bodega_ubicacion_1.indice_x, dbo.trans_ubic_hh_det.IdBodega, dbo.bodega_tramo.descripcion AS Tramo, 
+                         dbo.Nombre_Completo_Ubicacion(dbo.trans_ubic_hh_det.IdUbicacionOrigen, dbo.trans_ubic_hh_det.IdBodega) AS NombreCompletoUbicaiconOrigen, 
+                         dbo.Nombre_Completo_Ubicacion(dbo.trans_ubic_hh_det.IdUbicacionDestino, dbo.trans_ubic_hh_det.IdBodega) AS NombreCompletoUbicaiconDestino
 FROM            dbo.bodega_tramo INNER JOIN
                          dbo.bodega_ubicacion AS bodega_ubicacion_1 INNER JOIN
                          dbo.trans_ubic_hh_det ON bodega_ubicacion_1.IdUbicacion = dbo.trans_ubic_hh_det.IdUbicacionDestino AND bodega_ubicacion_1.IdBodega = dbo.trans_ubic_hh_det.IdBodega LEFT OUTER JOIN
@@ -192,3 +194,4 @@ GROUP BY dbo.trans_ubic_hh_det.IdTareaUbicacionEnc, dbo.trans_ubic_hh_det.IdTare
                          dbo.propietarios.nombre_comercial, dbo.trans_ubic_hh_det.recibido, dbo.producto.IdProducto, dbo.producto_bodega.IdProductoBodega, dbo.producto.IdUnidadMedidaBasica, dbo.trans_ubic_hh_det.estado, 
                          dbo.trans_ubic_hh_det.IdUbicacionOrigen, dbo.producto_presentacion.IdPresentacion, bodega_ubicacion_1.nivel, bodega_ubicacion_1.indice_x, dbo.trans_ubic_hh_det.Realizado, dbo.trans_ubic_hh_det.activo, 
                          dbo.producto.serializado, dbo.trans_ubic_hh_stock.lic_plate, dbo.trans_ubic_hh_stock.fecha_vence, dbo.trans_ubic_hh_op.IdOperadorBodega, dbo.trans_ubic_hh_det.IdBodega, dbo.bodega_tramo.descripcion
+GO
