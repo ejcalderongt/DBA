@@ -7,3 +7,6 @@ alter table trans_picking_ubic add fecha_packing datetime null default getdate()
 
 ALTER TABLE TRANS_PICKING_UBIC ADD IDPEDIDOENC INT NULL
 GO
+
+-- AT 20220119 Se agregó el campo no encontrado
+alter table trans_picking_ubic add no_encontrado bit not null default 0
