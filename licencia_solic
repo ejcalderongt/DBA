@@ -1,0 +1,1 @@
+alter table licencia_solic add fecha_solicitud datetime default getdate()
