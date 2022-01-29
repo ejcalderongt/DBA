@@ -46,3 +46,7 @@ alter table bodega add IdTamañoEtiquetaUbicacionDefecto int null default 0
 ALTER TABLE bodega ADD priorizar_ubicrec_sobre_ubicest bit  NOT NULL DEFAULT 0
 
 
+--#EJC20220129: Si true, entonces en el proceso de ubicación se valida que la ubicación destino no tenga el equivalente a un pallet, en base 
+a las tarimas y cajas por cama de la presentación.
+alter table bodega add validar_disponibilidad_ubicaicon_destino bit null default 0
+
