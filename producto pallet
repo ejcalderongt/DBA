@@ -1,0 +1,1 @@
+alter table producto_pallet alter column idpresentacion int null
