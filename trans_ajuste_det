@@ -1,0 +1,1 @@
+ALTER TABLE trans_ajuste_det ADD lic_plate NVARCHAR(50) NULL
