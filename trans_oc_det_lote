@@ -2,3 +2,12 @@ alter table trans_oc_det_lote add lic_plate nvarchar(50)
 
 --#EJC20210324: Para que NAV (BYB) Manden la ubicación en donde se debe registrar en el ERP.
 ALTER TABLE TRANS_OC_DET_LOTE ADD Ubicacion nvarchar(50) 
+
+--#CKFK20220210 Se agregaron estos campos nuevos por funcionalidades en B&B
+ALTER TABLE trans_oc_det_lote
+ADD [IdPresentacion] [int] NULL,
+	[IdUnidadMedidaBasica] [int] NULL,
+	[user_agr] [nvarchar](50) NOT NULL DEFAULT 1,
+	[fec_agr] [datetime] NOT NULL DEFAULT GETDATE(),
+	[user_mod] [nvarchar](50) NOT NULL DEFAULT 1,
+	[fec_mod] [datetime] NOT NULL DEFAULT GETDATE()
