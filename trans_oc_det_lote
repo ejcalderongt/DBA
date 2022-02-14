@@ -11,3 +11,6 @@ ADD [IdPresentacion] [int] NULL,
 	[fec_agr] [datetime] NOT NULL DEFAULT GETDATE(),
 	[user_mod] [nvarchar](50) NOT NULL DEFAULT 1,
 	[fec_mod] [datetime] NOT NULL DEFAULT GETDATE()
+
+ALTER TABLE trans_oc_det_lote
+ADD reclasificar bit NOT NULL DEFAULT 0
