@@ -1,1 +1,7 @@
 ALTER TABLE trans_ajuste_det ADD lic_plate NVARCHAR(50) NULL
+
+ALTER TABLE trans_ajuste_det
+ADD referencia_ajuste_erp      nvarchar(50) NOT NULL DEFAULT '',
+    estado_ajuste_erp bit NOT NULL DEFAULT 0
+
+
