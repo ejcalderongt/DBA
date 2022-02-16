@@ -1,1 +1,2 @@
 INSERT INTO sis_tipo_tarea VALUES(20,'EXPLOSION',1)
+INSERT INTO sis_tipo_tarea VALUES(21,'UBIC PICKING',1)
