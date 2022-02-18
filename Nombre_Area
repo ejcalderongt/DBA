@@ -1,0 +1,30 @@
+
+/****** Object:  UserDefinedFunction [dbo].[Nombre_Area]    Script Date: 02/17/2022 9:51:45 p. m. ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+CREATE FUNCTION [dbo].[Nombre_Area] 
+(
+	@IdArea INT,
+	@IdBodega INT
+)
+RETURNS NVARCHAR(200)
+AS
+BEGIN
+	
+	DECLARE @resultado NVARCHAR(200)
+	-- Declare the return variable here
+	
+	SELECT @resultado = a.Descripcion
+	FROM bodega_area a
+	WHERE (a.IdArea=@IdArea) 
+	And a.idbodega = @IdBodega
+
+	RETURN @resultado;
+
+END
+GO
