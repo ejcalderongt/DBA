@@ -52,3 +52,8 @@ alter table bodega add validar_disponibilidad_ubicaicon_destino bit null default
 
 --#EJC20220201: Idealsa, si true en reabasto se valida que la cantidad definida en cajas por cama y camas por tarima sea completa.
 alter table bodega add ubicar_tarimas_completas_reabasto bit default 0
+
+
+--#EJC20220223: Cealsa, definir tipo de documento por defecto para salidas.
+alter table bodega add IdTipoTransaccionSalida int null
+
