@@ -123,3 +123,33 @@ GROUP BY res.IdProducto, res.codigo, res.IdPropietario, res.IdPresentacion, res.
                          prop.nombre_comercial, res.nombre, res.IdStock, POL.numero_orden, POL.IdRegimen, POL.codigo_poliza, OC.IdOrdenCompraEnc, OC.Fecha_Creacion, OC.Fecha_Recepcion, RF.codigo_regimen, UM.Nombre, 
                          RF.dias_vencimiento, PP.peso, PP.nombre
 
+
+
+
+/*********************************************** Se agrega LEFT OUTER JOIN para PRODUCTO_PRESENTACION ****************************************************************************/
+alter view VW_Fiscal_Merca_Vencida as
+
+SELECT 
+OC.IdOrdenCompraEnc, CAST(OC.Fecha_Creacion AS DATE) AS Fecha_Creacion, CAST(OC.Fecha_Recepcion AS DATE) AS Fecha_Recepcion, 
+res.IdStock, res.IdProducto, res.codigo, res.nombre AS material, res.IdPropietario, 
+                  prop.nombre_comercial AS nombre_cliente, res.IdProductoBodega, res.IdUnidadMedida, UM.Nombre, ISNULL(POL.numero_orden, 'NA') AS numero_orden, ISNULL(POL.IdRegimen, 0) AS Regimen, ISNULL(RF.codigo_regimen, 'NA') 
+                  AS codigo_regimen, ISNULL(RF.dias_vencimiento, 0) AS dias_regimen, CASE WHEN RF.dias_vencimiento > 0 THEN DATEADD(DAY, RF.dias_vencimiento, CAST(OC.Fecha_Creacion AS DATE)) 
+                  ELSE Fecha_Creacion END AS fecha_vencimiento, ISNULL(POL.codigo_poliza, 'NA') AS Poliza, ISNULL(res.IdPresentacion, '0') AS IdPresentacion, ISNULL(res.Presentacion, 'ND') AS Presentacion, res.codigo_barra, ISNULL(res.Cantidad, 
+                  0) AS cantidad_presentacion, ISNULL(res.CantidadSF, 0) AS cantidad_umbas, ISNULL(res.CantidadReservada, 0) AS cantidad_reservada, ISNULL(res.CantidadSF, 0) - ISNULL(res.CantidadReservada, 0) AS Disponible, PP.peso, 
+                  PP.nombre AS unidad_peso, DATEDIFF(DAY, GETDATE(), DATEADD(DAY, RF.dias_vencimiento, CAST(OC.Fecha_Creacion AS DATE))) AS dias_vida
+FROM     dbo.VW_Stock_Res AS res INNER JOIN
+                  dbo.propietarios AS prop ON res.IdPropietario = prop.IdPropietario INNER JOIN
+                  dbo.stock AS ST ON res.IdStock = ST.IdStock INNER JOIN
+                  dbo.trans_re_oc AS re ON ST.IdRecepcionEnc = re.IdRecepcionEnc INNER JOIN
+                  dbo.trans_oc_enc AS OC ON re.IdOrdenCompraEnc = OC.IdOrdenCompraEnc INNER JOIN
+                  dbo.unidad_medida AS UM ON res.IdUnidadMedida = UM.IdUnidadMedida LEFT OUTER JOIN
+                  dbo.trans_oc_pol AS POL ON OC.IdOrdenCompraEnc = POL.IdOrdenCompraEnc LEFT OUTER JOIN
+                  dbo.regimen_fiscal AS RF ON POL.IdRegimen = RF.IdRegimen INNER JOIN
+                  dbo.producto AS PR ON res.codigo = PR.codigo LEFT OUTER JOIN
+                  dbo.producto_presentacion AS PP ON PR.IdProducto = PP.IdProducto
+GROUP BY res.IdProducto, res.codigo, res.IdPropietario, res.IdPresentacion, res.Presentacion, res.codigo_barra, res.Cantidad, res.CantidadSF, res.CantidadReservada, res.IdProductoBodega, res.IdUnidadMedida, prop.IdPropietario, 
+                  prop.nombre_comercial, res.nombre, res.IdStock, POL.numero_orden, POL.IdRegimen, POL.codigo_poliza, OC.IdOrdenCompraEnc, OC.Fecha_Creacion, OC.Fecha_Recepcion, RF.codigo_regimen, UM.Nombre, RF.dias_vencimiento, 
+                  PP.peso, PP.nombre
+
+
+
