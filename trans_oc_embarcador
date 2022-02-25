@@ -1,0 +1,17 @@
+/****** Object:  Table [dbo].[trans_oc_embarcador]    Script Date: 24/02/2022 19:18:28 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[trans_oc_embarcador](
+	[IdEmbarcador] [int] NOT NULL,
+	[Codigo] [nvarchar](50) NULL,
+	[Nombre] [nvarchar](150) NULL,
+ CONSTRAINT [PK_trans_oc_embarcador] PRIMARY KEY CLUSTERED 
+(
+	[IdEmbarcador] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
