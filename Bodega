@@ -26,13 +26,15 @@ ALTER TABLE bodega ADD captura_estiba_ingreso BIT NOT NULL DEFAULT 0,
 captura_pallet_no_estandar BIT NOT NULL DEFAULT 0;
 
 --#EJC20210607: Valor iva.
-alter table bodega add valor_porcentaje_iva float null default 12
+alter table bodega add valor_porcentaje_iva float not null default 12
 
 --#EJC20210728: Verificación consolidada
-alter table bodega add Permitir_Verificacion_Consolidada bit default 1
+alter table bodega add Permitir_Verificacion_Consolidada bit not null default 1
 
 --#EJC20210909: control_banderas_cliente (Determina como se listan los clientes en base a parámetros, CEALSA/IDEALSA)
 alter table bodega add control_banderas_cliente bit null default 0
+
+alter table bodega add confirmar_codigo_en_picking bit not null default 0
 
 
 /*************** GT 07102021 se usa codigo_barra para pivote de reporte SAT Cealsa  ******************/
