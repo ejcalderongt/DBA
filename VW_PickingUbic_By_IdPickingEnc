@@ -117,3 +117,45 @@ FROM dbo.bodega_sector INNER JOIN
 
 GO
 
+#AT 20220228 Se agregó el campo clasificación 
+/****** Object:  View [dbo].[VW_PickingUbic_By_IdPickingEnc]    Script Date: 28/02/2022 17:17:14 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER VIEW [dbo].[VW_PickingUbic_By_IdPickingEnc]
+AS
+
+SELECT pu.IdPickingEnc, pu.IdPickingUbic, pu.IdPickingDet, pu.IdUbicacion, pu.IdStock, pu.IdPropietarioBodega, pu.IdProductoBodega, pu.IdProductoEstado, pu.IdPresentacion, pu.IdUnidadMedida, pu.IdUbicacionAnterior,
+		pu.IdRecepcion, pu.lote, pu.fecha_vence, pu.fecha_minima, pu.serial, pu.lic_plate, pu.acepto, pu.peso_solicitado, pu.peso_recibido, pu.peso_verificado, pu.peso_despachado, pu.cantidad_solicitada, pu.cantidad_recibida,
+		pu.cantidad_verificada, pu.encontrado, pu.dañado_verificacion, pu.fecha_real_vence, pu.no_packing, pu.fecha_picking, pu.fecha_verificado, pu.fecha_packing, pu.fecha_despachado, pu.cantidad_despachada, pu.user_agr,
+		pu.fec_agr, pu.user_mod, pu.fec_mod, pu.activo, pu.IdPedidoDet, pu.dañado_picking, pu.IdStockRes, pu.lic_plate_reemplazo, pu.IdUbicacion_reemplazo, pu.IdStock_reemplazo, pdet.IdPedidoEnc, pdet.IdPedidoDet AS Expr1,
+		pdet.IdPresentacion AS Expr2, pdet.IdUnidadMedidaBasica, pdet.IdProductoBodega AS Expr3, pdet.codigo_producto, pdet.nombre_producto, pdet.nom_presentacion, pdet.nom_unid_med, pdet.nom_estado, pdet.IdEstado,
+		pdet.Peso, pdet.Precio, sr.IdStockRes AS Sr_IdStockRes, sr.IdStock AS Sr_IdStock, pu.IdBodega, pu.IdOperadorBodega_Pickeo, pu.IdOperadorBodega_Verifico,
+		dbo.Nombre_Completo_Ubicacion(dbo.bodega_ubicacion.IdUbicacion,dbo.bodega_ubicacion.IdBodega) AS NombreUbicacion, pkdet.IdOperadorBodega, 
+		CASE WHEN (CASE WHEN (pdet.IdPresentacion IS NOT NULL AND pdet.IdPresentacion <> 0 AND
+		ISNULL(pp.CajasPorCama, 0) > 0 AND ISNULL(pp.CamasPorTarima, 0) > 0)
+		THEN ROUND(pu.cantidad_solicitada / (ISNULL(pp.CajasPorCama, 0) * ISNULL(pp.CamasPorTarima, 0)), 2) ELSE 0 END)>=1 THEN 
+		CASE WHEN (pdet.IdPresentacion IS NOT NULL AND pdet.IdPresentacion <> 0 AND
+		ISNULL(pp.CajasPorCama, 0) > 0 AND ISNULL(pp.CamasPorTarima, 0) > 0)
+		THEN ROUND(pu.cantidad_solicitada / (ISNULL(pp.CajasPorCama, 0) * ISNULL(pp.CamasPorTarima, 0)), 2) ELSE 0 END ELSE 0 END AS Tarima,
+		pu.no_encontrado, dbo.Nombre_Area(bodega_area.IdArea,pu.IdBodega) as NombreArea, pc.nombre as NombreClasificacion
+FROM dbo.bodega_sector INNER JOIN
+		dbo.bodega_area ON dbo.bodega_sector.IdArea = dbo.bodega_area.IdArea AND dbo.bodega_sector.IdBodega = dbo.bodega_area.IdBodega INNER JOIN
+		dbo.bodega_tramo ON dbo.bodega_sector.IdSector = dbo.bodega_tramo.IdSector AND dbo.bodega_sector.IdBodega = dbo.bodega_tramo.IdBodega INNER JOIN
+		dbo.bodega_ubicacion ON dbo.bodega_tramo.IdTramo = dbo.bodega_ubicacion.IdTramo AND dbo.bodega_tramo.IdBodega = dbo.bodega_ubicacion.IdBodega INNER JOIN
+		dbo.trans_picking_ubic AS pu ON pu.IdUbicacion = dbo.bodega_ubicacion.IdUbicacion AND pu.IdBodega = dbo.bodega_ubicacion.IdBodega INNER JOIN
+		dbo.trans_picking_det AS pkdet ON pkdet.IdPickingDet = pu.IdPickingDet AND pkdet.IdPickingEnc = pu.IdPickingEnc INNER JOIN
+		dbo.trans_pe_det AS pdet ON pdet.IdPedidoDet = pkdet.IdPedidoDet INNER JOIN
+		dbo.stock_res AS sr ON pu.IdUbicacion = sr.IdUbicacion AND pu.IdStockRes = sr.IdStockRes AND pu.IdPropietarioBodega = sr.IdPropietarioBodega AND pu.IdProductoBodega = sr.IdProductoBodega AND
+		pu.IdPedidoDet = sr.IdPedidoDet INNER JOIN
+		dbo.bodega ON dbo.bodega_area.IdBodega = dbo.bodega.IdBodega INNER JOIN
+		dbo.trans_picking_enc ON pkdet.IdPickingEnc = dbo.trans_picking_enc.IdPickingEnc LEFT OUTER JOIN
+		dbo.producto_presentacion AS pp ON pp.IdPresentacion = pdet.IdPresentacion
+		INNER JOIN producto prod on prod.IdProducto = pp.IdProducto
+		INNER JOIN producto_clasificacion  pc on pc.IdClasificacion = prod.IdClasificacion
+GO
+
+
