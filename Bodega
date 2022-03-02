@@ -59,3 +59,5 @@ alter table bodega add ubicar_tarimas_completas_reabasto bit default 0
 --#EJC20220223: Cealsa, definir tipo de documento por defecto para salidas.
 alter table bodega add IdTipoTransaccionSalida int null
 
+--#EJC20220301: El primer paso al futuro de la gestión automática de operadores.
+alter table bodega add control_operador_ubicacion bit default 0
