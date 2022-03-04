@@ -39,3 +39,37 @@ WHERE        (pubic.dañado_verificacion = 0) AND (pubic.dañado_picking = 0) AN
 GROUP BY ped.IdPedidoEnc, ped.IdPedidoDet, ped.IdProductoBodega, pubic.lote, pubic.fecha_vence, ped.nom_unid_med, ped.nombre_producto, ped.nom_estado, ped.IdPresentacion, ped.IdUnidadMedidaBasica, P.codigo, ped.ndias, 
                          pubic.dañado_verificacion, pubic.lic_plate, pubic.IdPresentacion, dbo.producto_presentacion.nombre, pubic.IdProductoBodega, pubic.IdProductoEstado
 GO
+
+--#AT 20220303 Se agregaron los campos área y clasificación
+/****** Object:  View [dbo].[VW_Verificacion]    Script Date: 3/03/2022 20:04:58 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+ALTER VIEW [dbo].[VW_Verificacion]
+AS
+SELECT        ped.IdPedidoEnc, ped.IdPedidoDet, pubic.IdProductoBodega, pubic.lote, pubic.fecha_vence, pubic.lic_plate, ped.nom_unid_med, ped.nombre_producto, ped.nom_estado, SUM(pubic.cantidad_solicitada) AS cantidad_solicitada, 
+                         SUM(pubic.cantidad_recibida) AS cantidad_recibida, SUM(pubic.cantidad_verificada) AS cantidad_verificada, ped.IdPresentacion, ped.IdUnidadMedidaBasica, P.codigo, ped.ndias, SUM(pubic.cantidad_recibida) 
+                         - SUM(pubic.cantidad_verificada) AS diferencia, pubic.IdPresentacion AS IdPresentacionPicking, dbo.producto_presentacion.nombre AS nom_presentacion, pubic.IdProductoEstado,
+						 dbo.Nombre_Area(bu.IdArea, pubic.IdBodega) as NombreArea,
+						 pc.nombre as NombreClasificacion
+FROM            dbo.producto AS P INNER JOIN
+                         dbo.producto_bodega AS pb ON P.IdProducto = pb.IdProducto RIGHT OUTER JOIN 
+						 dbo.trans_pe_det AS ped INNER JOIN
+                         dbo.trans_picking_det AS pkdet ON ped.IdPedidoDet = pkdet.IdPedidoDet INNER JOIN
+                         dbo.trans_picking_ubic AS pubic ON pkdet.IdPickingDet = pubic.IdPickingDet ON pb.IdProductoBodega = pubic.IdProductoBodega LEFT OUTER JOIN
+                         dbo.producto_presentacion ON ped.IdPresentacion = dbo.producto_presentacion.IdPresentacion AND P.IdProducto = dbo.producto_presentacion.IdProducto AND 
+                         pubic.IdPresentacion = dbo.producto_presentacion.IdPresentacion
+						 INNER JOIN producto_clasificacion pc on pc.IdClasificacion = p.IdClasificacion
+						 INNER JOIN bodega_ubicacion bu ON bu.IdUbicacion = pubic.IdUbicacion
+WHERE        (pubic.dañado_verificacion = 0) AND (pubic.dañado_picking = 0) AND (pkdet.IdPickingEnc NOT IN
+                             (SELECT        IdPickingEnc
+                               FROM            dbo.trans_picking_enc AS trans_picking_enc_1
+                               WHERE        (estado = 'Anulado')))
+GROUP BY ped.IdPedidoEnc, ped.IdPedidoDet, ped.IdProductoBodega, pubic.lote, pubic.fecha_vence, ped.nom_unid_med, ped.nombre_producto, ped.nom_estado, ped.IdPresentacion, ped.IdUnidadMedidaBasica, P.codigo, ped.ndias, 
+                         pubic.dañado_verificacion, pubic.lic_plate, pubic.IdPresentacion, dbo.producto_presentacion.nombre, pubic.IdProductoBodega, pubic.IdProductoEstado, bu.IdArea, pubic.IdBodega, pc.nombre
+GO
+
