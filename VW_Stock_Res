@@ -457,3 +457,63 @@ GROUP BY dbo.propietarios.nombre_comercial, dbo.propietarios.IdPropietario, dbo.
 				  pr_clas.nombre
 				  
 
+
+
+/******************************************************#GT Se agrega shipper 07032022  ***************************************************************************************/
+
+ALTER VIEW [dbo].[VW_Stock_Res]
+AS
+SELECT   dbo.producto_bodega.IdBodega, dbo.bodega.codigo AS Bodega, dbo.propietarios.IdPropietario, dbo.propietario_bodega.IdPropietarioBodega, dbo.producto.IdProducto, dbo.producto_bodega.IdProductoBodega, dbo.stock.IdStock, 
+                  dbo.stock.pallet_no_estandar, ISNULL(dbo.stock_det.posiciones, 1) AS Posiciones, dbo.stock.IdUbicacion_anterior, dbo.unidad_medida.IdUnidadMedida, dbo.stock.IdProductoEstado, dbo.stock.IdPresentacion, dbo.stock.IdRecepcionEnc, 
+                  dbo.propietarios.nombre_comercial AS Propietario, dbo.producto.codigo, dbo.producto.nombre, dbo.unidad_medida.Nombre AS UnidadMedida, dbo.producto_presentacion.nombre AS Presentacion, dbo.stock.lote, 
+                  dbo.stock.fecha_ingreso, dbo.stock.fecha_vence, ISNULL(dbo.stock.cantidad, 0) AS CantidadSF, dbo.stock.peso, ISNULL(dbo.stock.cantidad / dbo.producto_presentacion.factor, 0) AS Cantidad, 
+                  pr_est.nombre AS NomEstado, pr_est.dañado, ISNULL(dbo.producto_presentacion.factor, 0) AS Factor, pr_est.utilizable AS EstadoUtilizable, dbo.stock.IdUbicacion, dbo.stock.lic_plate, 
+                  dbo.stock.serial, dbo.stock.añada, dbo.producto.IdIndiceRotacion, dbo.producto_presentacion.alto, dbo.producto_presentacion.largo, dbo.producto_presentacion.ancho, SUM(dbo.stock_res.cantidad) AS CantidadReservada, 
+                  dbo.bodega_ubicacion.IdTramo, dbo.bodega_ubicacion.ancho AS ancho_ubicacion, dbo.bodega_ubicacion.largo AS largo_ubicacion, dbo.bodega_ubicacion.alto AS alto_ubicacion, dbo.indice_rotacion.Descripcion AS IndiceRotacion, 
+                  dbo.producto.existencia_min AS existencia_min_umbas, dbo.producto.existencia_max AS existencia_max_umbas, dbo.producto.codigo_barra, dbo.producto.costo, dbo.producto_presentacion.MinimoExistencia AS existencia_min_pres, 
+                  dbo.producto_presentacion.MaximoExistencia AS existencia_max_pres, dbo.stock.atributo_variante_1, dbo.bodega_ubicacion.IdUbicacion AS IdUbicacionActual, dbo.bodega_ubicacion.nivel AS Ubicacion_Nivel, 
+                  dbo.bodega_ubicacion.indice_x AS Ubicacion_Indice_X, dbo.bodega_ubicacion.descripcion AS Ubicacion_Nombre, dbo.bodega_tramo.descripcion AS Ubicacion_Tramo, dbo.Nombre_Completo_Ubicacion(dbo.stock.IdUbicacion, 
+                  dbo.stock.IdBodega) AS Nombre_Completo, dbo.bodega.IdEmpresa, dbo.producto.IdTipoEtiqueta, ISNULL(oc_pol.numero_orden, 'ND') AS numero_orden, ISNULL(oc_pol.codigo_poliza, 'ND') AS codigo_poliza, 
+                  ISNULL(re_oc.IdOrdenCompraEnc, 0) AS Documento_Ingreso, dbo.bodega_ubicacion.ubicacion_picking, dbo.producto_presentacion.CamasPorTarima, dbo.producto_presentacion.CajasPorCama, dbo.bodega_tramo.es_rack, 
+                  dbo.Nombre_Area(dbo.bodega_ubicacion.IdArea, dbo.bodega_ubicacion.IdBodega) AS Area, oc_pol.NoPoliza AS NoTO, isnull(pr_clas.nombre,'ND') as clasificacion
+				 ,oc_det.IdEmbarcador, oc_ship.Nombre as Embarcador
+FROM              dbo.stock INNER JOIN
+                  dbo.propietario_bodega ON dbo.stock.IdPropietarioBodega = dbo.propietario_bodega.IdPropietarioBodega
+				  INNER JOIN
+                  dbo.propietarios on dbo.propietario_bodega.IdPropietario = dbo.propietarios.IdPropietario
+inner join  dbo.unidad_medida on
+                  dbo.unidad_medida.IdUnidadMedida = dbo.stock.IdUnidadMedida 
+				  LEFT OUTER join dbo.producto_estado pr_est on dbo.stock.IdProductoEstado = pr_est.IdEstado
+				   LEFT OUTER JOIN
+                  dbo.bodega_tramo INNER JOIN
+                  dbo.bodega_ubicacion ON dbo.bodega_tramo.IdTramo = dbo.bodega_ubicacion.IdTramo AND dbo.bodega_tramo.IdBodega = dbo.bodega_ubicacion.IdBodega AND dbo.bodega_tramo.IdSector = dbo.bodega_ubicacion.IdSector ON 
+                  dbo.stock.IdBodega = dbo.bodega_ubicacion.IdBodega AND dbo.stock.IdUbicacion = dbo.bodega_ubicacion.IdUbicacion LEFT OUTER JOIN
+                  dbo.producto_bodega INNER JOIN
+                  dbo.producto ON dbo.producto_bodega.IdProducto = dbo.producto.IdProducto INNER JOIN
+                  dbo.bodega ON dbo.producto_bodega.IdBodega = dbo.bodega.IdBodega LEFT OUTER JOIN
+                  dbo.indice_rotacion ON dbo.producto.IdIndiceRotacion = dbo.indice_rotacion.IdIndiceRotacion ON dbo.stock.IdProductoBodega = dbo.producto_bodega.IdProductoBodega LEFT OUTER JOIN
+                  dbo.stock_res ON dbo.stock.IdStock = dbo.stock_res.IdStock AND dbo.stock.IdPropietarioBodega = dbo.stock_res.IdPropietarioBodega AND dbo.stock.IdProductoBodega = dbo.stock_res.IdProductoBodega AND 
+                  dbo.stock.IdUbicacion = dbo.stock_res.IdUbicacion LEFT OUTER JOIN
+                  dbo.producto_presentacion ON dbo.stock.IdPresentacion = dbo.producto_presentacion.IdPresentacion LEFT OUTER JOIN
+                  dbo.stock_det ON dbo.stock.IdStock = dbo.stock_det.IdStock LEFT OUTER JOIN
+                  dbo.trans_re_enc AS re_enc ON re_enc.IdRecepcionEnc = dbo.stock.IdRecepcionEnc LEFT OUTER JOIN
+                  dbo.trans_re_oc AS re_oc ON re_oc.IdRecepcionEnc = re_enc.IdRecepcionEnc LEFT OUTER JOIN
+                  dbo.trans_oc_pol AS oc_pol ON oc_pol.IdOrdenCompraEnc = re_oc.IdOrdenCompraEnc LEFT OUTER JOIN
+				  dbo.producto_clasificacion pr_clas on dbo.producto.IdClasificacion = pr_clas.IdClasificacion 
+				  INNER JOIN dbo.trans_oc_det oc_det on oc_det.IdOrdenCompraEnc = re_oc.IdOrdenCompraEnc 
+				  and oc_det.IdUnidadMedidaBasica = producto.IdUnidadMedidaBasica and oc_det.IdProductoBodega = dbo.stock.IdProductoBodega
+				  LEFT OUTER JOIN trans_oc_embarcador oc_ship on oc_det.IdEmbarcador = oc_ship.IdEmbarcador  
+		  GROUP BY dbo.propietarios.nombre_comercial, dbo.propietarios.IdPropietario, dbo.stock.IdStock, dbo.bodega_ubicacion.IdUbicacion, dbo.stock.IdUbicacion_anterior, dbo.propietario_bodega.IdPropietarioBodega, 
+                  dbo.producto_bodega.IdProductoBodega, dbo.unidad_medida.IdUnidadMedida, dbo.unidad_medida.Nombre, dbo.producto_presentacion.nombre, dbo.producto.IdProducto, dbo.producto.codigo, dbo.producto.nombre, dbo.stock.lote, 
+                  dbo.stock.fecha_ingreso, dbo.stock.serial, dbo.stock.añada, dbo.producto_bodega.IdBodega, dbo.stock.fecha_vence, dbo.stock.IdProductoEstado, 
+				  pr_est.nombre, pr_est.utilizable, 
+                  pr_est.dañado, dbo.stock.IdUbicacion, dbo.stock.IdPresentacion, dbo.stock.IdRecepcionEnc, dbo.stock.lic_plate, dbo.stock.peso, dbo.producto.IdIndiceRotacion, dbo.producto_presentacion.alto, 
+                  dbo.producto_presentacion.largo, dbo.producto_presentacion.ancho, dbo.producto_presentacion.factor, dbo.bodega_ubicacion.IdTramo, dbo.bodega_ubicacion.ancho, dbo.bodega_ubicacion.largo, dbo.bodega_ubicacion.alto, 
+                  dbo.indice_rotacion.Descripcion, dbo.producto.existencia_min, dbo.producto.existencia_max, dbo.producto.codigo_barra, dbo.producto.costo, dbo.producto_presentacion.MinimoExistencia, dbo.producto_presentacion.MaximoExistencia, 
+                  dbo.stock.cantidad, dbo.stock.cantidad / dbo.producto_presentacion.factor, dbo.stock.atributo_variante_1, dbo.bodega_ubicacion.nivel, dbo.bodega_ubicacion.indice_x, dbo.bodega_ubicacion.descripcion, dbo.bodega_tramo.descripcion, 
+                  dbo.bodega_tramo.descripcion, dbo.bodega_ubicacion.orientacion_pos, dbo.bodega_tramo.es_rack, dbo.bodega_tramo.descripcion, dbo.bodega_tramo.IdBodega, dbo.bodega_tramo.IdTramo, dbo.stock.IdBodega, dbo.bodega.codigo, 
+                  dbo.bodega.IdEmpresa, dbo.stock_det.posiciones, dbo.stock.pallet_no_estandar, dbo.producto.IdTipoEtiqueta, oc_pol.numero_orden, oc_pol.codigo_poliza, re_oc.IdOrdenCompraEnc, dbo.bodega_ubicacion.ubicacion_picking, 
+                  dbo.producto_presentacion.CamasPorTarima, dbo.producto_presentacion.CajasPorCama, dbo.bodega_ubicacion.IdArea, dbo.bodega_ubicacion.IdBodega, oc_pol.NoPoliza,
+	          pr_clas.nombre, oc_det.IdEmbarcador, oc_ship.Nombre
+
+
