@@ -61,3 +61,6 @@ alter table bodega add IdTipoTransaccionSalida int null
 
 --#EJC20220301: El primer paso al futuro de la gestión automática de operadores.
 alter table bodega add control_operador_ubicacion bit default 0
+
+--#EJC20220314: CEALSA, si true, entonces en el cambio de ubicación, al escanear únicamente licencia, se coloca automáticamente la ubicación de origen.
+alter table bodega add  inferir_origen_en_cambio_ubic bit default 0
