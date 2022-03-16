@@ -219,4 +219,9 @@ insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol), '3.10',1,'E
 insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol), '3.10.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
 
 
+/*********************************************GT 16032022 inventario en linea cealsa *******************************/
 
+insert into menu_sistema values
+('6.1.1.21','Inventario en Linea','cmdStockEnLinea',4,'6.1.1',0)
+
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol), '6.1.1.21',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
