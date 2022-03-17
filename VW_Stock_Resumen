@@ -396,3 +396,63 @@ GROUP BY dbo.propietarios.nombre_comercial, dbo.propietarios.IdPropietario, dbo.
 GO
 
 
+
+/*********************** GT 17032022 se agrega shipper, calculo valorización de la merca para inv en linea cealsa ***************************/
+
+
+ALTER VIEW VW_Stock_Resumen AS
+select
+bd.IdBodega, pr.IdPropietario, pr_bod.IdPropietarioBodega, prod.IdProducto, prod_bod.IdProductoBodega, st.IdStock,st.IdUbicacion_anterior, 
+um.IdUnidadMedida, st.IdProductoEstado, st.IdPresentacion, st.IdRecepcionEnc, pr.nombre_comercial AS Propietario, prod.codigo, prod.codigo_barra AS Barra, 
+prod.nombre, um.Nombre AS UnidadMedida, pr_pres.nombre AS Presentacion, st.lote, st.fecha_ingreso AS Ingreso, st.fecha_vence AS Vence, 
+st.cantidad AS Cantidad_UMBas, SUM(ISNULL(st_res.cantidad, 0)) AS CantidadReservadaUmBas, st.cantidad - ISNULL(SUM(st_res.cantidad), 0) AS Disponible_UMBas, 
+ROUND(oc_det.costo/oc_det.cantidad_recibida, 2) valor_unitario, st.cantidad * ROUND(oc_det.costo/oc_det.cantidad_recibida, 2) as valor_total,
+st.peso, 
+ISNULL(st.cantidad / pr_pres.factor, 0) AS Cantidad_Presentacion, pr_es.nombre AS NomEstado, dbo.Nombre_Completo_Ubicacion(bd_ubic.IdUbicacion, 
+bd_ubic.IdBodega) AS UbicacionCompleta, pr_es.dañado, pr_pres.factor, pr_es.utilizable AS EstadoUtilizable, st.IdUbicacion, st.lic_plate, st.serial, 
+st.añada, prod.IdIndiceRotacion, pr_pres.alto, pr_pres.largo, pr_pres.ancho, bd_ubic.IdTramo, bd_ubic.ancho AS Ancho_ubicacion, 
+bd_ubic.largo AS Largo_ubicacion, bd_ubic.alto AS Alto_ubicacion, i_rot.Descripcion AS IndiceRotacion, prod.existencia_min AS Existencia_min_umbas, 
+prod.existencia_max AS Existencia_max_umbas, prod.costo, pr_pres.MinimoExistencia AS Existencia_min_pres, pr_pres.MaximoExistencia AS Existencia_max_pres, 
+st.atributo_variante_1, bd_ubic.IdUbicacion AS IdUbicacionActual, bd_ubic.nivel AS Ubicacion_Nivel, bd_ubic.indice_x AS Ubicacion_Indice_X, 
+bd_ubic.descripcion AS Ubicacion_Nombre, bd_tram.descripcion AS Ubicacion_Tramo, 
+ISNULL(m_dev.Nombre, 'N/D') AS MotivoDevolucion, 
+ISNULL(oc_pol.codigo_poliza, 'N/D') AS Codigo_Poliza, ISNULL(oc_pol.numero_orden, 'N/D') AS Numero_poliza, 
+pr_fam.nombre AS Familia, 
+ISNULL(oc_pol.NoPoliza, 'N/D') AS NoTO, 
+dbo.Nombre_Area(bd_ubic.IdArea, bd_ubic.IdBodega) AS Area, ISNULL(pr_clas.nombre, 'N/D') AS Clasificacion, bd.nombre AS Regimen
+,oc_det.IdEmbarcador, ISNULL(oc_emb.Nombre,'N/D') as Shipper
+,oc_enc.Referencia, oc_enc.IdOrdenCompraEnc doc_ingreso
+from dbo.stock st LEFT OUTER JOIN dbo.stock_res st_res ON st.IdStock = st_res.IdStock INNER JOIN
+dbo.propietario_bodega pr_bod ON st.IdPropietarioBodega = pr_bod.IdPropietarioBodega and st.IdBodega=pr_bod.IdBodega INNER JOIN
+dbo.producto_bodega prod_bod on st.IdProductoBodega = prod_bod.IdProductoBodega and st.IdBodega = prod_bod.IdBodega INNER JOIN
+dbo.producto_estado pr_es ON st.IdProductoEstado = pr_es.IdEstado and pr_bod.IdPropietario=pr_es.IdPropietario LEFT OUTER JOIN
+dbo.producto_presentacion pr_pres ON st.IdPresentacion = pr_pres.IdPresentacion and prod_bod.IdProducto=pr_pres.IdProducto INNER JOIN
+dbo.bodega bd on st.IdBodega = bd.IdBodega INNER JOIN
+dbo.bodega_ubicacion bd_ubic  on  st.IdUbicacion=bd_ubic.IdUbicacion and st.IdBodega = bd_ubic.IdBodega INNER JOIN
+dbo.propietarios pr on pr_bod.IdPropietario = pr.IdPropietario and  pr_bod.IdBodega = st.IdBodega INNER JOIN
+dbo.producto prod on prod_bod.IdProducto = prod.IdProducto and prod_bod.IdBodega = st.IdBodega and prod_bod.IdProductoBodega = st.IdProductoBodega INNER JOIN
+dbo.unidad_medida um on st.IdUnidadMedida =  um.IdUnidadMedida and pr_bod.IdPropietario=um.IdPropietario and pr_bod.IdBodega = st.IdBodega INNER JOIN
+dbo.bodega_tramo bd_tram on st.IdBodega = bd_tram.IdBodega AND bd_tram.IdSector = bd_ubic.IdSector and bd_tram.IdTramo = bd_ubic.IdTramo LEFT OUTER JOIN
+dbo.producto_familia pr_fam on prod.IdFamilia = pr_fam.IdFamilia and pr_bod.IdPropietario = pr_fam.IdPropietario LEFT OUTER JOIN
+dbo.producto_clasificacion pr_clas ON prod.IdClasificacion = pr_clas.IdClasificacion and prod.IdPropietario= pr_clas.IdPropietario LEFT OUTER JOIN
+dbo.indice_rotacion i_rot ON prod.IdIndiceRotacion = i_rot.IdIndiceRotacion INNER JOIN
+dbo.trans_re_oc re_oc ON re_oc.IdRecepcionEnc = st.IdRecepcionEnc  INNER JOIN
+dbo.trans_oc_enc oc_enc on re_oc.IdOrdenCompraEnc = oc_enc.IdOrdenCompraEnc INNER JOIN
+dbo.trans_oc_det oc_det on oc_enc.IdOrdenCompraEnc = oc_det.IdOrdenCompraEnc and oc_det.IdProductoBodega = st.IdProductoBodega 
+and st.IdPropietarioBodega = oc_det.IdPropietarioBodega LEFT OUTER JOIN
+dbo.trans_oc_pol oc_pol on oc_enc.IdOrdenCompraEnc = oc_pol.IdOrdenCompraEnc  LEFT OUTER JOIN
+dbo.motivo_devolucion m_dev ON oc_enc.IdMotivoDevolucion = m_dev.IdMotivoDevolucion LEFT OUTER JOIN
+dbo.trans_oc_embarcador oc_emb on oc_det.IdEmbarcador = oc_emb.IdEmbarcador
+GROUP BY pr.nombre_comercial, pr.IdPropietario, st.IdStock, bd_ubic.IdUbicacion, st.IdUbicacion_anterior, pr_bod.IdPropietarioBodega, 
+prod_bod.IdProductoBodega, um.IdUnidadMedida, um.Nombre, pr_pres.nombre, prod.IdProducto, prod.codigo, prod.nombre, st.lote, 
+st.fecha_ingreso, st.serial, st.añada, pr_bod.IdBodega, st.fecha_vence, st.IdProductoEstado, pr_es.nombre, pr_es.utilizable, 
+pr_es.dañado, st.IdUbicacion, st.IdPresentacion, st.IdRecepcionEnc, st.lic_plate, st.peso, prod.IdIndiceRotacion, 
+pr_pres.alto, pr_pres.largo, pr_pres.ancho, pr_pres.factor, bd_ubic.IdTramo, bd_ubic.ancho, 
+bd_ubic.largo, bd_ubic.alto,i_rot.Descripcion, prod.existencia_min, prod.existencia_max, prod.codigo_barra, prod.costo, 
+pr_pres.MinimoExistencia, pr_pres.MaximoExistencia, st.cantidad, st.cantidad / pr_pres.factor, st.atributo_variante_1, 
+bd_ubic.nivel, bd_ubic.indice_x, bd_ubic.descripcion, bd_tram.descripcion, bd_ubic.orientacion_pos,m_dev.Nombre, 
+oc_pol.codigo_poliza,bd_ubic.IdBodega,oc_pol.numero_orden,pr_fam.nombre,oc_pol.NoPoliza,bd_ubic.IdArea, pr_clas.nombre, bd.nombre,
+oc_det.IdEmbarcador,bd.IdBodega,oc_enc.Referencia,oc_enc.IdOrdenCompraEnc,oc_emb.Nombre,oc_det.costo,
+oc_det.cantidad_recibida
+	
+
