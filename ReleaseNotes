@@ -1,1 +1,15 @@
+Versión: 4.6.0.10 - 20220321
+
+-En pantalla de despacho el piloto se selecciona desde un lookupedit, permitiendo ingresar texto y creación de nuevo desde el componente. (Erik)
+-En pantalla de despacho el vehíucolo se selecciona desde un lookupedit.(Erik)
+-En pantalla de despacho la ruta se selecciona desde un lookupedit.(Erik)
+-Se agregó parámetro en bodega mostrar_area_hh: si true, en la HH al realizar un cambio de ubicación no pregunta si es dirigido o no. (Anderly)
+-Mostrar_area_hh: si true en pantalla de cambio de ubicación la ubicación origen se coloca automáticamente. (Abnderly)
+-Mostrar_area_hh: si true en pantalla de picking se exige escanear licencia + código de producto (Anderly)
+-Reporte de inventario en línea agregado (Efren).
+-Interface NAVSYN proceso de importación de envíos estable parte I (Erik).
+
+
+
+
 
