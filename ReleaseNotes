@@ -9,6 +9,13 @@ Versión: 4.6.0.10 - 20220321
 -Reporte de inventario en línea agregado (Efren).
 -Interface NAVSYN proceso de importación de envíos estable parte I (Erik).
 
+Versión: 4.6.0.11 - 20220322
+
+-En reportes de movimientos se agrega el formato de fecha/hora del movimiento. (Erik)
+-En reportes de movimientos se cambia la etiqueta Lic_Plate a Licencia. (Erik)
+-Corrección en vista de salidas VW_Despacho_Rep_Det_I (Erik)
+-Optimización por índices.(Erik)
+
 
 
 
