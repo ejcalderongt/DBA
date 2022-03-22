@@ -96,4 +96,52 @@ FROM            dbo.empresa_transporte_vehiculos RIGHT OUTER JOIN
                          dbo.producto_presentacion ON dbo.producto.IdProducto = dbo.producto_presentacion.IdProducto AND dbo.trans_despacho_det.IdPresentacion = dbo.producto_presentacion.IdPresentacion LEFT OUTER JOIN
                          dbo.trans_pe_det AS pe_det ON dbo.trans_pe_enc.IdPedidoEnc = pe_det.IdPedidoEnc and pe_det.IdProductoBodega = dbo.producto_bodega.IdProductoBodega LEFT OUTER JOIN
                          dbo.trans_oc_pol AS oc_pol ON pe_det.IdPedidoEnc = oc_pol.IdOrdenCompraEnc
+	
+
+/****** Object:  View [dbo].[VW_Despacho_Rep_Det_I] #EJC20220322_Fix_Time_Out   Script Date: 22/03/2022 09:32:39 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER VIEW [dbo].[VW_Despacho_Rep_Det_I]
+AS
+SELECT        dbo.trans_despacho_enc.IdBodega, dbo.trans_picking_ubic.IdPickingUbic, dbo.trans_picking_ubic.IdStock, dbo.trans_picking_ubic.IdPedidoDet, dbo.trans_picking_ubic.IdPropietarioBodega, 
+                         dbo.trans_picking_ubic.IdProductoBodega, dbo.trans_picking_ubic.IdProductoEstado, dbo.trans_picking_ubic.IdPresentacion, dbo.trans_picking_ubic.IdUnidadMedida, dbo.trans_picking_ubic.IdRecepcion, 
+                         dbo.trans_despacho_enc.IdDespachoEnc, dbo.trans_despacho_det.IdDespachoDet, dbo.trans_despacho_det.IdPedidoEnc, dbo.producto.IdProducto, dbo.propietarios.nombre_comercial AS Propietario, 
+                         dbo.trans_despacho_det.Codigo AS Codigo_Producto, dbo.producto.nombre AS Nombre_Producto, dbo.unidad_medida.Nombre AS UM, dbo.producto_presentacion.nombre AS Presentacion, dbo.trans_despacho_det.Fecha, 
+                         dbo.trans_despacho_det.NombreEstado, dbo.producto_presentacion.factor, dbo.producto_estado.nombre AS Estado, dbo.trans_picking_ubic.lote, dbo.trans_picking_ubic.fecha_vence AS Vence, 
+                         ISNULL(dbo.trans_picking_ubic.cantidad_recibida, 0) AS cantidad_pickeada, ISNULL(dbo.trans_picking_ubic.cantidad_verificada, 0) AS cantidad_verificada, ISNULL(dbo.trans_picking_ubic.peso_recibido, 0) AS Peso_Pickeado, 
+                         ISNULL(dbo.trans_picking_ubic.peso_verificado, 0) AS Peso_Verificado, dbo.trans_despacho_det.CantidadDespachada, dbo.trans_despacho_det.PesoDespachado, ISNULL(dbo.trans_picking_ubic.encontrado, 0) AS Encontrado, 
+                         ISNULL(dbo.trans_picking_ubic.acepto, 0) AS Acepto, dbo.trans_pe_enc.no_documento AS No_Documento_WMS, dbo.trans_pe_enc.referencia AS No_Referencia, dbo.cliente.codigo AS Codigo_Cliente, 
+                         dbo.cliente.nombre_comercial AS Nombre_Cliente, dbo.cliente.idubicacionvirtual, dbo.trans_despacho_enc.no_pase, dbo.cliente.es_bodega_recepcion, dbo.cliente.es_bodega_traslado, dbo.trans_despacho_enc.numero, 
+                         dbo.trans_despacho_enc.marchamo, dbo.trans_despacho_enc.observacion, dbo.trans_picking_ubic.IdUbicacion AS Ubicacion_Origen, dbo.road_ruta.CODIGO AS Codigo_Ruta, dbo.road_ruta.NOMBRE AS Nombre_Ruta, 
+                         dbo.empresa_transporte_vehiculos.placa AS Placa_Vehiculo, dbo.empresa_transporte_vehiculos.placa_comercial, dbo.empresa_transporte_vehiculos.marca AS Marca_Vehiculo, 
+                         dbo.empresa_transporte_vehiculos.modelo AS Modelo_Vehiculo, dbo.empresa_transporte_pilotos.nombres AS Nombre_Piloto, dbo.empresa_transporte_pilotos.apellidos AS Apellido_Piloto, 
+                         dbo.empresa_transporte_pilotos.no_carnet AS No_Carnet_Piloto, dbo.empresa_transporte_pilotos.no_licencia AS No_Licencia_Piloto, dbo.trans_picking_ubic.lic_plate AS Licencia
+FROM            dbo.empresa_transporte_vehiculos RIGHT OUTER JOIN
+                         dbo.trans_pe_enc INNER JOIN
+                         dbo.cliente ON dbo.trans_pe_enc.IdCliente = dbo.cliente.IdCliente INNER JOIN
+                         dbo.trans_despacho_enc INNER JOIN
+                         dbo.trans_despacho_det ON dbo.trans_despacho_enc.IdDespachoEnc = dbo.trans_despacho_det.IdDespachoEnc INNER JOIN
+                         dbo.producto_bodega ON dbo.trans_despacho_det.IdProductoBodega = dbo.producto_bodega.IdProductoBodega AND dbo.trans_despacho_enc.IdBodega = dbo.producto_bodega.IdBodega INNER JOIN
+                         dbo.producto ON dbo.producto_bodega.IdProducto = dbo.producto.IdProducto INNER JOIN
+                         dbo.propietario_bodega ON dbo.trans_despacho_enc.IdPropietarioBodega = dbo.propietario_bodega.IdPropietarioBodega INNER JOIN
+                         dbo.propietarios ON dbo.propietario_bodega.IdPropietario = dbo.propietarios.IdPropietario ON dbo.trans_pe_enc.IdPedidoEnc = dbo.trans_despacho_det.IdPedidoEnc ON 
+                         dbo.empresa_transporte_vehiculos.IdVehiculo = dbo.trans_despacho_enc.IdVehiculo LEFT OUTER JOIN
+                         dbo.empresa_transporte_pilotos ON dbo.trans_despacho_enc.IdPiloto = dbo.empresa_transporte_pilotos.IdPiloto LEFT OUTER JOIN
+                         dbo.road_ruta ON dbo.trans_despacho_enc.IdRuta = dbo.road_ruta.IdRuta LEFT OUTER JOIN
+                         dbo.producto_estado INNER JOIN
+                         dbo.trans_picking_ubic ON dbo.producto_estado.IdEstado = dbo.trans_picking_ubic.IdProductoEstado INNER JOIN
+                         dbo.bodega_ubicacion ON dbo.trans_picking_ubic.IdUbicacion = dbo.bodega_ubicacion.IdUbicacion AND dbo.trans_picking_ubic.IdBodega = dbo.bodega_ubicacion.IdBodega ON 
+                         dbo.trans_despacho_det.IdUnidadMedidaBasica = dbo.trans_picking_ubic.IdUnidadMedida AND dbo.trans_despacho_det.IdPickingUbic = dbo.trans_picking_ubic.IdPickingUbic AND 
+                         dbo.producto_bodega.IdProductoBodega = dbo.trans_picking_ubic.IdProductoBodega AND dbo.trans_despacho_enc.IdPropietarioBodega = dbo.trans_picking_ubic.IdPropietarioBodega AND 
+                         dbo.trans_despacho_det.IdPresentacion = dbo.trans_picking_ubic.IdPresentacion LEFT OUTER JOIN
+                         dbo.unidad_medida ON dbo.trans_despacho_det.IdUnidadMedidaBasica = dbo.unidad_medida.IdUnidadMedida LEFT OUTER JOIN
+                         dbo.producto_presentacion ON dbo.trans_despacho_det.IdPresentacion = dbo.producto_presentacion.IdPresentacion
+GO
+
+
+
 
