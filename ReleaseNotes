@@ -18,8 +18,9 @@ Versión: 4.6.0.11 - 20220322
 
 Versión: 4.6.0.12 - 20220323
 
-#EJC20220323: Nuevo tipo de documento Requisición agregado a la interface.
-#EJC20220323: Nuevo parámetro marcar_registros_enviados_mi3 en trans_pe_tipo.
+#EJC20220323A: Nuevo tipo de documento Requisición agregado a la interface.
+#EJC20220323B: Nuevo parámetro marcar_registros_enviados_mi3 en trans_pe_tipo.
+#EJC20220323C: Visualizador de errores MI3 en Pedido (Si existe flujo de control en interface).
 
 
 
