@@ -16,6 +16,10 @@ Versión: 4.6.0.11 - 20220322
 -Corrección en vista de salidas VW_Despacho_Rep_Det_I (Erik)
 -Optimización por índices.(Erik)
 
+Versión: 4.6.0.12 - 20220323
+
+#EJC20220323: Nuevo tipo de documento Requisición agregado a la interface.
+#EJC20220323: Nuevo parámetro marcar_registros_enviados_mi3 en trans_pe_tipo.
 
 
 
