@@ -1,0 +1,5 @@
+El archivo de Excel para la importación del inventario inicial sin multipropietarios debe tener las siguientes columnas
+
+Codigo	Presentacion	Cantidad	Peso	UM	Lote	Vence	Ubicación	Cod_Variante	LicencePlate
+
+La cantidad se debe ingresar en la  unidad de medida correspondiente, si es en presentación en presentación sino en UMBas ya que la aplicación se encarga de convertir a UMBas.
