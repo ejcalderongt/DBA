@@ -1,3 +1,23 @@
+Versión: 4.6.0.12 - 20220325
+Mejora en márgenes formato de despacho.
+El flag activo y usa HH se movieron a la parte superior del mantenimiento de operadores para evitar sobreposición por resolución.
+El mantenimiento de productos, guarda configuración de grid.
+
+Versión: 4.6.0.12 - 20220323
+
+#EJC20220323A: Nuevo tipo de documento Requisición agregado a la interface.
+#EJC20220323B: Nuevo parámetro marcar_registros_enviados_mi3 en trans_pe_tipo.
+#EJC20220323C: Visualizador de errores MI3 en Pedido (Si existe flujo de control en interface).
+#EJC20220323D: Considerar el tipo de documento en despacho, al insertar registros de interface, bandera enviado.
+
+Versión: 4.6.0.11 - 20220322
+
+-En reportes de movimientos se agrega el formato de fecha/hora del movimiento. (Erik)
+-En reportes de movimientos se cambia la etiqueta Lic_Plate a Licencia. (Erik)
+-Corrección en vista de salidas VW_Despacho_Rep_Det_I (Erik)
+-Optimización por índices.(Erik)
+
+
 Versión: 4.6.0.10 - 20220321
 
 -En pantalla de despacho el piloto se selecciona desde un lookupedit, permitiendo ingresar texto y creación de nuevo desde el componente. (Erik)
@@ -9,19 +29,8 @@ Versión: 4.6.0.10 - 20220321
 -Reporte de inventario en línea agregado (Efren).
 -Interface NAVSYN proceso de importación de envíos estable parte I (Erik).
 
-Versión: 4.6.0.11 - 20220322
 
--En reportes de movimientos se agrega el formato de fecha/hora del movimiento. (Erik)
--En reportes de movimientos se cambia la etiqueta Lic_Plate a Licencia. (Erik)
--Corrección en vista de salidas VW_Despacho_Rep_Det_I (Erik)
--Optimización por índices.(Erik)
 
-Versión: 4.6.0.12 - 20220323
-
-#EJC20220323A: Nuevo tipo de documento Requisición agregado a la interface.
-#EJC20220323B: Nuevo parámetro marcar_registros_enviados_mi3 en trans_pe_tipo.
-#EJC20220323C: Visualizador de errores MI3 en Pedido (Si existe flujo de control en interface).
-#EJC20220323D: Considerar el tipo de documento en despacho, al insertar registros de interface, bandera enviado.
 
 
 
