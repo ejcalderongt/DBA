@@ -4,6 +4,10 @@ El flag activo y usa HH se movieron a la parte superior del mantenimiento de ope
 El mantenimiento de productos, guarda configuración de grid.
 El diseño de grid se guarda en stock específico.
 WMS se cierra y el proceso se finaliza (evitar que se quede en moemoria).
+En la HH los botónes de capturar foto y galería se muestran solo si tomar_foto en rec = true.
+En la HH se agregó botón refresh en menú principal.
+En la HH el botón de impresión en activity frm_recepción_datos se oculta si mostrar_area=true.
+
 
 Versión: 4.6.0.12 - 20220323
 
