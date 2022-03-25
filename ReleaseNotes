@@ -2,6 +2,8 @@ Versión: 4.6.0.12 - 20220325
 Mejora en márgenes formato de despacho.
 El flag activo y usa HH se movieron a la parte superior del mantenimiento de operadores para evitar sobreposición por resolución.
 El mantenimiento de productos, guarda configuración de grid.
+El diseño de grid se guarda en stock específico.
+WMS se cierra y el proceso se finaliza (evitar que se quede en moemoria).
 
 Versión: 4.6.0.12 - 20220323
 
