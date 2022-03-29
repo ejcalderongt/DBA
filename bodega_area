@@ -9,3 +9,7 @@ update  bodega_area set Grupo='Sector 3' where IdArea in (8,9)
 update  bodega_area set Grupo='Sector 5' where IdArea in (10)
 update  bodega_area set Grupo='Sector 6' where IdArea in (11,12)
 update  bodega_area set Grupo='Sector 7' where IdArea in (13)
+
+
+--#EJC20220329: Guardar el IdUbicacion para rececpión CEALSA.
+alter table bodega_area add IdUbicacionRef int null 
