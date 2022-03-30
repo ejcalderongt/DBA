@@ -48,3 +48,8 @@ ALTER TABLE TRANS_OC_TI ADD requerir_proveedor_es_bodega_wms bit default 0
 --#EJC20210908: requerir_proveedor_es_bodega_wms
 alter table trans_oc_ti add requerir_documento_ref_wms bit null default 0
 
+--#EJC20220330_CEALSA: Si true, se traslada el parámetro a la tarea de recepción en el BOF
+--Para marcar el check, Escanear ubicación en recepción.
+--Si Escanear ubicación en recepción True en Rec.
+--HH exige una ubicación de recepción válida antes de continuar con el proceso.
+alter table trans_oc_ti add requerir_ubic_rec_ingreso bit default 0
