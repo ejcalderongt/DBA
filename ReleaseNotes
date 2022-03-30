@@ -1,3 +1,29 @@
+Versión: 4.6.0.13 - 20220330
+En el mantenimiento de bodega ubicación, se sugiere el código de barra pero se permite el input del usuario. (EJC)
+Se corrigió problema al guardar el propietario con NIT (EG).
+Se agregó funcionalidad para que se exija el escanea de la ubicación de recepción (AT, EJC).
+Se agregó funcionalidad para que el parámetro de escanear ubicación de recepción se modele por tipo de documento. (EJC).
+Se agregó mantenimiento de centros de costo.
+En interface R&B se agregó funcionalidad para importar parciales.
+Se permite la implosión de unidades a cajas en HH - PDT Tropicalización aceites ESA (AT Y EJC).
+En liquidación de ruta, se permite recibir en presentación y UMBAS - PDT Tropicalización aceites ESA (AT Y EJC).
+En la recepción se pueden capturar múltiples fotos del producto (AT y EJC).
+En la recepción se pueden visualizar múltiples fotos del producto (AT Y EJC).
+En la pantalla de picking se cambiaron los botones NE y Reemplazo por imágenes.
+En la pantalla de picking se adicionó botón para visualizar imágenes del producto.
+En BOF se agregó reporte de inventario en línea (EG). 
+Se BOF se agregó reporte de movimientos por poliza (EG). 
+Correcciones en guarda y carga de formatos de grid en reportes. (EJC)
+En pantalla de selección de pedidos para despacho, se puede visualizar la licencia si está configurado. (EJC)
+En pedido de cliente se cambió textbox de cliente por GridLookupEdit. (EJC)
+El cliente tiene un número parámetro Control_Calidad. (EJC)
+El cliente tiene un número parámetro IdUbicacionAbastecerCon - permite surtir pedidos desde una ubicación específica para un cliente. (EJC)
+Si el documento de salida se elimina, se elimina también del lado del ERP en interface R&B (CF).
+En el documento de ingreso, se agregó botón para registrar documento en ERP en interface R&B (CF).
+Se agregó parámetro a trans_pe_tipo Marcar_Registros_Enviados_MI3, si se configura desde el documento, 
+los registros de interface se marcan automáticamente al despachar así como el documento. (EJC) PDT Tropicalización aceites PTY.
+
+
 Versión: 4.6.0.12 - 20220325
 Mejora en márgenes formato de despacho.
 El flag activo y usa HH se movieron a la parte superior del mantenimiento de operadores para evitar sobreposición por resolución.
