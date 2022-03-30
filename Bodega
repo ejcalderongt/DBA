@@ -68,5 +68,9 @@ alter table bodega add  inferir_origen_en_cambio_ubic bit default 0
 --#CKFK20220318 B&B si valor está en true y si el campo permitir_eliminar_documento_salida es true, el documento no solo se cambia a estado anulado, sino que se elimina
 ALTER TABLE bodega ADD eliminar_documento_salida bit NOT NULL Default 0
 
---Para B&B
+--#EJC20220330_B&B: si true, permite eliminar pedidos de cliente y elimina el envío del ERP (NAV).
 UPDATE bodega set eliminar_documento_salida = 1 
+
+--#EJC20220330_CEALSA: Si true, se envía en la HH el IdOperadorBodega para filtrar las tareas de verificación
+--Para exigir que el operador que pickeo sea quien realice la verificación.
+alter table bodega add operador_picking_realiza_verificacion bit default 0
