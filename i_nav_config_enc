@@ -46,5 +46,7 @@ alter table i_nav_config_enc add explosion_automatica bit not null default 0
 --#EJC20220307: En CEALSA, no llamar a interface después de cada despacho porque no aplica de momento.
 alter table i_nav_config_enc add ejecutar_en_despacho_automaticamente bit default 1
 
+--#EJC20220330: Rotación por defecto del producto en interface.
+alter table i_nav_config_enc add IdTipoRotacion int default 1
 
 
