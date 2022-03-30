@@ -4,3 +4,6 @@ GO
 
 --#EJC20220314: BYB, indicar si el cliente requiere certificado de calidad o no.
 alter table cliente add control_calidad bit default 0
+
+--#EJC20220329: Guardar el IdUbicacion para para abastecer pedidos de transferencia BYB.
+ALTER TABLE cliente add IdUbicacionAbastecerCon int null
