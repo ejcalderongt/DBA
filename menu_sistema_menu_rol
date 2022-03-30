@@ -234,3 +234,8 @@ insert into menu_sistema values
 insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol), '6.1.5.6',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
 
 
+/***********************GT 30032022  Centro de Costos ********************************************************/
+insert into menu_sistema values('1.1.1.6','Centro de Costos','mnuMantCentroCostos',4,'1.1.1',0)
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol), '1.1.1.6',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+
+
