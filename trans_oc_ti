@@ -34,6 +34,14 @@ INSERT INTO TRANS_OC_TI VALUES(12,'Devolución venta'  ,0,1,GETDATE(),1,GETDATE(
 
 alter table trans_oc_ti add genera_tarea_ingreso bit default 0
 
+--#EJC20220330_CEALSA: Si true, se traslada el parámetro a la tarea de recepción en el BOF
+--Para marcar el check, Escanear ubicación en recepción.
+--Si Escanear ubicación en recepción True en Rec.
+--HH exige una ubicación de recepción válida antes de continuar con el proceso.
+alter table trans_oc_ti add requerir_ubic_rec_ingreso bit default 0
+
+
+
 --#EJC20210906: requerir_proveedor_es_bodega_wms
 ALTER TABLE TRANS_OC_TI ADD requerir_proveedor_es_bodega_wms bit default 0
 
