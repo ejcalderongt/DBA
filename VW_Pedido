@@ -52,9 +52,6 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-
-
-
 ALTER VIEW [dbo].[VW_Pedido]
 AS
 SELECT enc.IdPedidoEnc AS Pedido, enc.referencia, det.IdPedidoDet, p.codigo AS Código, p.nombre AS Producto, pp.nombre AS Presentacion, u.Nombre AS UnidadMedida, e.nombre AS Estado, det.Cantidad, enc.Fecha_Pedido AS Fecha,
@@ -72,5 +69,5 @@ dbo.trans_picking_det ON dbo.trans_picking_ubic.IdPickingDet = dbo.trans_picking
 dbo.trans_picking_enc ON dbo.trans_picking_det.IdPickingEnc = dbo.trans_picking_enc.IdPickingEnc AND enc.IdPickingEnc = dbo.trans_picking_enc.IdPickingEnc LEFT OUTER JOIN
 dbo.producto_presentacion AS pp ON det.IdPresentacion = pp.IdPresentacion
 GROUP BY enc.IdPedidoEnc, enc.referencia, det.IdPedidoDet, p.codigo, p.nombre, pp.nombre, u.Nombre, e.nombre, det.Cantidad, enc.Fecha_Pedido, p.IdProducto, enc.IdPickingEnc, enc.estado, enc.IdBodega, enc.IdPropietarioBodega,
-dbo.producto_clasificacion.nombre
+dbo.producto_clasificacion.nombre, no_documento_externo
 GO
