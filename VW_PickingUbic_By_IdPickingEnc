@@ -305,13 +305,9 @@ GO
 
 
 
-/****** Object:  View [dbo].[VW_PickingUbic_By_IdPickingEnc] Left Join Clasificacion   Script Date: 31/03/2022 08:59:27 ******/
-SET ANSI_NULLS ON
-GO
-
+/****** Object:  View [dbo].[VW_PickingUbic_By_IdPickingEnc] Left Join Clasificacion - NombreArea   Script Date: 31/03/2022 08:59:27 ******/
 SET QUOTED_IDENTIFIER ON
 GO
-
 ALTER VIEW [dbo].[VW_PickingUbic_By_IdPickingEnc]
 AS
 SELECT pu.IdPickingEnc, pu.IdPickingUbic, pu.IdPickingDet, pu.IdUbicacion, pu.IdStock, pu.IdPropietarioBodega, pu.IdProductoBodega, pu.IdProductoEstado, pu.IdPresentacion, pu.IdUnidadMedida, pu.IdUbicacionAnterior, pu.IdRecepcion, pu.lote, 
@@ -323,7 +319,8 @@ SELECT pu.IdPickingEnc, pu.IdPickingUbic, pu.IdPickingDet, pu.IdUbicacion, pu.Id
                   CASE WHEN (CASE WHEN (pdet.IdPresentacion IS NOT NULL AND pdet.IdPresentacion <> 0 AND ISNULL(pp.CajasPorCama, 0) > 0 AND ISNULL(pp.CamasPorTarima, 0) > 0) 
                   THEN ROUND(pu.cantidad_solicitada / (ISNULL(pp.CajasPorCama, 0) * ISNULL(pp.CamasPorTarima, 0)), 2) ELSE 0 END) >= 1 THEN CASE WHEN (pdet.IdPresentacion IS NOT NULL AND pdet.IdPresentacion <> 0 AND 
                   ISNULL(pp.CajasPorCama, 0) > 0 AND ISNULL(pp.CamasPorTarima, 0) > 0) THEN ROUND(pu.cantidad_solicitada / (ISNULL(pp.CajasPorCama, 0) * ISNULL(pp.CamasPorTarima, 0)), 2) ELSE 0 END ELSE 0 END AS Tarima, pu.no_encontrado, 
-                  dbo.producto_clasificacion.nombre AS Clasificacion, dbo.producto.IdClasificacion, pu.IdUbicacionTemporal, dbo.Nombre_Completo_Ubicacion(pu.IdUbicacionTemporal, pu.IdBodega) AS NombreUbicacionTemporal
+                  dbo.producto_clasificacion.nombre AS Clasificacion, dbo.producto.IdClasificacion, pu.IdUbicacionTemporal, dbo.Nombre_Completo_Ubicacion(pu.IdUbicacionTemporal, pu.IdBodega) AS NombreUbicacionTemporal,
+				  dbo.Nombre_Area(bodega_ubicacion.IdArea,pu.IdBodega) as NombreArea
 FROM     dbo.trans_picking_enc INNER JOIN
                   dbo.trans_picking_ubic AS pu INNER JOIN
                   dbo.bodega_ubicacion ON pu.IdUbicacion = dbo.bodega_ubicacion.IdUbicacion AND pu.IdBodega = dbo.bodega_ubicacion.IdBodega INNER JOIN
