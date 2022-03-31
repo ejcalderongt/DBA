@@ -1,0 +1,2 @@
+--#EJC20220331: Guardar el IdCentroCosto
+ALTER TABLE trans_ajuste_enc add IdCentroCosto int null
