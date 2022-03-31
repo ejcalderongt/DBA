@@ -238,4 +238,14 @@ insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol), '6.1.5.6',1
 insert into menu_sistema values('1.1.1.6','Centro de Costos','mnuMantCentroCostos',4,'1.1.1',0)
 insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol), '1.1.1.6',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
 
+/********************* GT31032022 Se reacomoda centro costos como hijo de Empresa **********************************************/
+
+delete from menu_rol where IdMenu='1.1.1.6'
+delete from menu_sistema where IdMenu='1.1.1.6'
+
+insert into menu_sistema values('1.1.1.1.1','Centro de Costos','mnuMantCentroCostos',4,'1.1.1.1',0)
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol), '1.1.1.1.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+
+
+
 
