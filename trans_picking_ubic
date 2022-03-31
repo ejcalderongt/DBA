@@ -10,3 +10,7 @@ GO
 
 -- AT 20220119 Se agregó el campo no encontrado
 alter table trans_picking_ubic add no_encontrado bit not null default 0
+
+--#EJC20220330_CEALSA: Permitir ubicar producto reservado a una ubicación de staging (tránsito o buffer) antes de que se despache
+--Solo en picking sin afectar la ubicación real de reserva.
+alter table trans_picking_ubic add  IdUbicacionTemporal int null
