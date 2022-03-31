@@ -74,3 +74,7 @@ UPDATE bodega set eliminar_documento_salida = 1
 --#EJC20220330_CEALSA: Si true, se envía en la HH el IdOperadorBodega para filtrar las tareas de verificación
 --Para exigir que el operador que pickeo sea quien realice la verificación.
 alter table bodega add operador_picking_realiza_verificacion bit default 0
+
+--#EJC20220330_CEALSA: Si true, se permite realizar el cambio de ubicación de producto que está reservado en picking pero se actualiza el IdUbicacionTemporal.
+alter table bodega add permitir_cambio_ubic_producto_picking bit default 0
+
