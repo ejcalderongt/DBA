@@ -16,3 +16,32 @@ FROM            dbo.stock_res AS res INNER JOIN
                          dbo.trans_pe_enc ON res.IdPedido = dbo.trans_pe_enc.IdPedidoEnc LEFT OUTER JOIN
                          dbo.producto_presentacion AS pp ON res.IdPresentacion = pp.IdPresentacion
 GO
+
+
+/****** Object:  View [dbo].[VW_Stock_Res_Pedido]    Script Date: 1/04/2022 12:12:37 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER VIEW [dbo].[VW_Stock_Res_Pedido]
+AS
+SELECT        p.codigo, p.nombre, pp.nombre AS presentacion, pe.nombre AS NomEstado, um.Nombre AS unidadmedida, pr.nombre_comercial AS propietario, bu.descripcion AS bodegaubicacion, s.cantidad AS cantidadfisica, pp.factor, 
+                         res.IdStockRes, res.IdTransaccion, res.Indicador, res.IdPedidoDet, res.IdStock, res.IdPropietarioBodega, res.IdProductoBodega, res.IdUbicacion, res.estado, res.IdPresentacion, res.IdUnidadMedida, res.lote, res.lic_plate, 
+                         res.serial, res.cantidad, res.peso, res.fecha_ingreso, res.fecha_vence, res.uds_lic_plate, res.ubicacion_ant, res.no_bulto, res.IdRecepcion, res.IdPicking, res.IdPedido, res.IdDespacho, res.user_agr, res.fec_agr, res.user_mod, 
+                         res.fec_mod, res.host, res.añada, res.fecha_manufactura, dbo.trans_pe_enc.referencia, dbo.propietario_bodega.IdBodega, bu.IdArea
+FROM            dbo.stock_res AS res INNER JOIN
+                         dbo.producto_bodega AS pb ON pb.IdProductoBodega = res.IdProductoBodega INNER JOIN
+                         dbo.producto AS p ON pb.IdProducto = p.IdProducto INNER JOIN
+                         dbo.stock AS s ON res.IdStock = s.IdStock INNER JOIN
+                         dbo.propietario_bodega ON s.IdPropietarioBodega = dbo.propietario_bodega.IdPropietarioBodega AND s.IdPropietarioBodega = dbo.propietario_bodega.IdPropietarioBodega INNER JOIN
+                         dbo.propietarios AS pr ON dbo.propietario_bodega.IdPropietario = pr.IdPropietario LEFT OUTER JOIN
+                         dbo.trans_pe_enc ON res.IdPedido = dbo.trans_pe_enc.IdPedidoEnc LEFT OUTER JOIN
+                         dbo.unidad_medida AS um ON res.IdUnidadMedida = um.IdUnidadMedida LEFT OUTER JOIN
+                         dbo.producto_estado AS pe ON res.IdProductoEstado = pe.IdEstado LEFT OUTER JOIN
+                         dbo.bodega_ubicacion AS bu ON res.IdUbicacion = bu.IdUbicacion AND res.IdBodega = bu.IdBodega LEFT OUTER JOIN
+                         dbo.producto_presentacion AS pp ON res.IdPresentacion = pp.IdPresentacion
+GO
+
+
