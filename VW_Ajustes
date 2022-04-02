@@ -57,7 +57,7 @@ SELECT        dbo.trans_ajuste_enc.idajusteenc, dbo.trans_ajuste_det.idajustedet
                          dbo.trans_ajuste_det.cantidad_original, dbo.trans_ajuste_det.cantidad_nueva, dbo.trans_ajuste_det.peso_nuevo, dbo.trans_ajuste_det.peso_original, dbo.trans_ajuste_det.fecha_vence_nueva, 
                          dbo.trans_ajuste_det.fecha_vence_original, dbo.trans_ajuste_det.lote_original, dbo.trans_ajuste_det.lote_nuevo, dbo.ajuste_tipo.nombre AS Tipo_Ajuste, dbo.ajuste_tipo.modifica_cantidad, dbo.trans_ajuste_det.enviado, 
                          dbo.ajuste_motivo.nombre AS Motivo_Ajuste, dbo.trans_ajuste_det.observacion, dbo.trans_ajuste_det.codigo_ajuste, 
-						 dbo.trans_ajuste_enc.IdProductoFamilia, dbo.producto_presentacion.nombre AS Nombre_Presentacion, dbo.producto_presentacion.factor
+			dbo.trans_ajuste_enc.IdProductoFamilia, dbo.producto_presentacion.nombre AS Nombre_Presentacion, ISNULL(dbo.producto_presentacion.factor,0) as Factor
 FROM            dbo.trans_ajuste_enc INNER JOIN
                          dbo.trans_ajuste_det ON dbo.trans_ajuste_enc.idajusteenc = dbo.trans_ajuste_det.idajusteenc INNER JOIN
                          dbo.unidad_medida ON dbo.trans_ajuste_det.IdUnidadMedida = dbo.unidad_medida.IdUnidadMedida INNER JOIN
