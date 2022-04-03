@@ -1,0 +1,64 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Carolina Fuentes
+-- Create date: 03-04-2022
+-- Description:	Procedimiento almacenada para los tiempos de aceptacion por cliente por familias 
+-- =============================================
+CREATE PROCEDURE SP_TIEMPOS_CLIENTES
+	@todos_clientes as bit,
+	@IdCliente as int
+AS
+BEGIN
+
+    IF (@todos_clientes =1 )
+	  BEGIN
+	    
+		DECLARE c_clientes CURSOR READ_ONLY FOR SELECT IdCliente FROM cliente
+
+		OPEN c_clientes 
+
+		FETCH NEXT FROM c_clientes INTO @IdCliente
+		WHILE @@fetch_status = 0
+			BEGIN
+
+			    PRINT 'FIN ' + CONVERT(NVARCHAR(50),@IdCliente)
+
+				INSERT INTO cliente_tiempos
+				SELECT DISTINCT ROW_NUMBER() OVER(ORDER BY IdProducto ASC) + (SELECT MAX(IdTiempoCliente) FROM cliente_tiempos) IdTiempoCliente,
+				       @IdCliente,IdFamilia, IdClasificacion, 30, 30, 1, GETDATE(), 1, GETDATE(),1
+				FROM producto
+				WHERE NOT EXISTS (SELECT * 
+								  FROM cliente_tiempos ct 
+								  WHERE ct.IdCliente = @IdCliente AND
+										ct.IdFamilia = producto.IdFamilia AND
+										ct.IdClasificacion = producto.IdClasificacion) AND
+					producto.IdFamilia IS NOT NULL AND producto.IdClasificacion IS NOT NULL
+
+				PRINT 'FIN ' + CONVERT(NVARCHAR(50),@IdCliente)
+
+				FETCH NEXT FROM c_clientes INTO @IdCliente
+			END
+
+		CLOSE c_clientes
+		DEALLOCATE c_clientes
+
+	  END
+	ELSE
+	  BEGIN
+		INSERT INTO cliente_tiempos
+		SELECT DISTINCT ROW_NUMBER() OVER(ORDER BY IdProducto ASC) + (SELECT MAX(IdTiempoCliente) FROM cliente_tiempos) IdTiempoCliente,
+				       @IdCliente,IdFamilia, IdClasificacion, 30, 30, 1, GETDATE(), 1, GETDATE(),1
+		FROM producto
+		WHERE NOT EXISTS (SELECT * 
+		                  FROM cliente_tiempos ct 
+		                  WHERE ct.IdCliente = @IdCliente AND
+						        ct.IdFamilia = producto.IdFamilia AND
+								ct.IdClasificacion = producto.IdClasificacion) AND
+			  producto.IdFamilia IS NOT NULL AND producto.IdClasificacion IS NOT NULL
+	  END
+END
+GO
+
