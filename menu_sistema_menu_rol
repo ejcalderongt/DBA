@@ -247,5 +247,7 @@ insert into menu_sistema values('1.1.1.1.1','Centro de Costos','mnuMantCentroCos
 insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol), '1.1.1.1.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
 
 
+--#EJC20220403: Inv. Inicial (Cealsa) importación.
+insert into menu_sistema values('4.1.2','Importar Inv Inicial',	'btInvInicial',3,'4.1',0)
 
 
