@@ -1,2 +1,6 @@
 --#EJC202111174: Alamacenar el no de picking de NAV.
 alter table trans_pe_enc add No_Picking_ERP nvarchar(50)
+
+
+--#EJC20220404: Permite indicar si el pedido requiere tarimas para su preparación.
+alter table trans_pe_enc add requiere_tarimas bit default 0
