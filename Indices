@@ -122,3 +122,12 @@ CREATE NONCLUSTERED INDEX [IX_trans_movimientos]
 ON [dbo].[trans_movimientos] ([IdPropietarioBodega])
 INCLUDE ([IdProductoBodega],[IdUbicacionOrigen],[IdUbicacionDestino],[IdPresentacion],[IdEstadoOrigen],[IdEstadoDestino],[IdUnidadMedida],[IdTipoTarea],[IdBodegaDestino],[IdRecepcion],[cantidad],[peso],[lote],[fecha_vence],[fecha],[barra_pallet])
 GO
+
+CREATE NONCLUSTERED INDEX NCLI_Trans_Picking_Ubic_EJC_20220403
+ON [dbo].[trans_picking_ubic] ([IdUbicacion],[IdStockRes])
+INCLUDE ([IdPickingEnc],[IdPickingDet],[IdPropietarioBodega],[IdProductoBodega],[IdProductoEstado],[IdPresentacion],[IdUnidadMedida],[IdRecepcion],[lote],[fecha_vence],[fecha_minima],[lic_plate],[peso_solicitado],[peso_recibido],[peso_verificado],[peso_despachado],[cantidad_solicitada],[cantidad_recibida],[cantidad_verificada],[encontrado],[dañado_verificacion],[fecha_real_vence],[no_packing],[fecha_picking],[fecha_verificado],[fecha_packing],[fecha_despachado],[cantidad_despachada],[user_agr],[fec_agr],[user_mod],[fec_mod],[activo],[dañado_picking],[lic_plate_reemplazo],[IdUbicacion_reemplazo],[IdStock_reemplazo],[IdBodega],[IdOperadorBodega_Pickeo],[no_encontrado],[IdUbicacionTemporal])
+GO
+
+CREATE NONCLUSTERED INDEX NCLI_Trans_Picking_Det_EJC_20220403
+ON [dbo].[trans_picking_det] ([IdPedidoDet])
+GO
