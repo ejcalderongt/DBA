@@ -1,2 +1,6 @@
 ALTER TABLE trans_re_det ADD IdOperadorBodega int NULL
 ALTER TABLE trans_re_det ADD IdOrdenCompraDet int null
+
+--#EJC20220407: El principio el fin.
+alter table trans_re_det add IdOrdenCompraEnc int null
+alter table trans_re_det add IdOrdenCompraDet int null
