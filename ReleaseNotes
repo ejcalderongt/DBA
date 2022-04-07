@@ -1,3 +1,37 @@
+Versión: 4.6.0.14 - 20220407
+
+1.	Se adicionó botón para ordenamiento en pantalla de verificación.
+2.	Se corrigió error al verificar producto cuando se accede a la lista no por selección si no por escaneo.
+3.	El botón de finalizar en picking se cambió a botón circular flotante para evitar que el operador finalice la tarea al presionar regresar.
+4.	El botón de finalizar en verificación se cambió a botón circular flotante para evitar que el operador finalice la tarea al presionar regresar.
+5.	El label de registros se quitó y se colocó donde estaba el botón de finalizar en pantalla de verificación para ganar una fila mas de registros en el grid.
+6.	El label de registros se quitó y se colocó dónde estaba el botón de finalizar en pantalla de picking para ganar una fila más de registros en el grid.
+7.	Se agregó funcionalidad para mantener el ordenamiento previamente seleccionado en pantalla de verificación.
+8.	Se agregó desglose de presentación y unidad de medida básica en proceso de picking.
+9.	Se agregó desglose de presentación y unidad de medida básica en proceso de verificación.
+10.	Se agregó botón de activación de filtros en pantalla de picking para ganar espacio en el listado de tareas.
+11.	El número de picking se traslado a la cabecera de la pantalla.
+12.	En pantalla de verificación se muestra bodega y operador activo.
+13.	En pantalla de picking se muestra bodega y operador activo.
+14.	Se mejoró el foco en proceso de ubicación.
+15.	Interface de NAV permite importación de centros de costos.
+16.	El centro de costo fue adicionado a procesos de ajuste.
+17.	En el pedido se permite registrar la cantidad solicitada diferente a cantidad reservada para conocer eventualmente la demanda insatisfecha.
+18.	En pantalla de pedido se agregó pestaña de hoja de verificación cuando se tiene documento de ERP.
+19.	En el pedido se permite imprimir la  hoja de verificación consolidada sin lotes.
+20.	En el proceso de verificación, se consolida la información por producto, código, lote y vencimiento.
+21.	En el proceso de picking, se consolida la información por producto, código, lote y vencimiento.
+22.	Se permite en proceso de picking la confirmación de producto consolidado.
+23.	Se permite en proceso de verificación la confirmación de producto consolidado.
+24.	Se desactivó la actualización automática del monitor de tareas ya que afecta rendimiento en alta transaccionalidad y no permitía aplicar filtros.
+25.	En stock reservado de pedido, no se agrupa por código.
+26.	En pedido de cliente, el documento puede tener un cliente a nivel de detalle.
+27.	Se corrigió problema en importación de lotes para documentos de ingreso en interface.
+28.	Se agregó parámetro que indica si se deben marcar o no los registros de interface cuando se despacha un pedido.
+
+
+
+
 Versión: 4.6.0.13 - 20220330
 En el mantenimiento de bodega ubicación, se sugiere el código de barra pero se permite el input del usuario. (EJC)
 Se corrigió problema al guardar el propietario con NIT (EG).
