@@ -1,34 +1,44 @@
-Versión: 4.6.0.14 - 20220407
+Versión: 4.6.0.18 - 20220413
 
-1.	Se adicionó botón para ordenamiento en pantalla de verificación.
-2.	Se corrigió error al verificar producto cuando se accede a la lista no por selección si no por escaneo.
-3.	El botón de finalizar en picking se cambió a botón circular flotante para evitar que el operador finalice la tarea al presionar regresar.
-4.	El botón de finalizar en verificación se cambió a botón circular flotante para evitar que el operador finalice la tarea al presionar regresar.
-5.	El label de registros se quitó y se colocó donde estaba el botón de finalizar en pantalla de verificación para ganar una fila mas de registros en el grid.
-6.	El label de registros se quitó y se colocó dónde estaba el botón de finalizar en pantalla de picking para ganar una fila más de registros en el grid.
-7.	Se agregó funcionalidad para mantener el ordenamiento previamente seleccionado en pantalla de verificación.
-8.	Se agregó desglose de presentación y unidad de medida básica en proceso de picking.
-9.	Se agregó desglose de presentación y unidad de medida básica en proceso de verificación.
-10.	Se agregó botón de activación de filtros en pantalla de picking para ganar espacio en el listado de tareas.
-11.	El número de picking se traslado a la cabecera de la pantalla.
-12.	En pantalla de verificación se muestra bodega y operador activo.
-13.	En pantalla de picking se muestra bodega y operador activo.
-14.	Se mejoró el foco en proceso de ubicación.
-15.	Interface de NAV permite importación de centros de costos.
-16.	El centro de costo fue adicionado a procesos de ajuste.
-17.	En el pedido se permite registrar la cantidad solicitada diferente a cantidad reservada para conocer eventualmente la demanda insatisfecha.
-18.	En pantalla de pedido se agregó pestaña de hoja de verificación cuando se tiene documento de ERP.
-19.	En el pedido se permite imprimir la  hoja de verificación consolidada sin lotes.
-20.	En el proceso de verificación, se consolida la información por producto, código, lote y vencimiento.
-21.	En el proceso de picking, se consolida la información por producto, código, lote y vencimiento.
-22.	Se permite en proceso de picking la confirmación de producto consolidado.
-23.	Se permite en proceso de verificación la confirmación de producto consolidado.
-24.	Se desactivó la actualización automática del monitor de tareas ya que afecta rendimiento en alta transaccionalidad y no permitía aplicar filtros.
-25.	En stock reservado de pedido, no se agrupa por código.
-26.	En pedido de cliente, el documento puede tener un cliente a nivel de detalle.
-27.	Se corrigió problema en importación de lotes para documentos de ingreso en interface.
-28.	Se agregó parámetro que indica si se deben marcar o no los registros de interface cuando se despacha un pedido.
-
+1.	Se corrigió problema en carga de picking, no se mostraban los registros correctamente después de despachar.
+2.	Se corrigió consulta que muestra los pedidos a verificar en la HH.
+3.	Se corrigió problema de generación de licencia en tarea de recepción de handheld.
+4.	Se simplificó la pantalla de recepción, la presentación y unidad de medida son parte de la etiqueta de unidad.
+5.	La cantidad total, recibida y pendiente se centró en la pantalla de recepción.
+6.	Se mejoró la pantalla de listado de recepción, agregando la etiqueta de registros en la parte inferior.
+7.	Se modificó el botón finalizar de la recepción, se convirtió en círculo flotante para evitar que se finalice la recepción por equivocación.
+8.	Se quitó la pregunta de confirmación en el botón de regresar en listado de producto.
+9.	Se quitó la pregunta de confirmación en retorno al menú principal desde pantalla de recepción.
+10.	Se mejoró la pantalla de consulta de existencias, se agregó total.
+11.	Se mejoró la pantalla de consulta de existencias, se agregó botón para mostrar filtros adicionales para poder visualizar más registros.
+12.	Se cambió la ubicación de la etiqueta de registros para la parte de debajo de la pantalla.
+13.	Se cambió el botón de actualizar registros en consulta de existencia por botón flotante de búsqueda.
+14.	Se corrigió problema en implosión con número de licencia impresa es diferente a la que se guarda.
+15.	Se deshabilita el botón pendiente de picking si el picking está despachado.
+16.	Se deshabilita el botón despachado si el picking está despachado.
+17.	Se deshabilita el botón despachado si el pedido está despachado.
+18.	Se deshabilita el botón pendiente de verificación si el pedido está despachado.
+19.	Se agregó botón de procesamiento de línea en picking al seleccionar registro que no se ha procesado en HH.
+20.	Se agregó pregunta de confirmación en eliminación de pedido.
+21.	Se corrigió error en interface de importación de documentos de ingreso para ERP NAV.
+22.	Se agregó método en interface para consulta de documento existente de ingreso.
+23.	Se agregó funcionalidad para sincronización de pedidos de venta en interface ERP NAV.
+24.	Se agregó envío de documentos pedidos de venta interface ERP NAV.
+25.	Se agregó relación IdOrdenCompraEnc e IdOrdenCompraDet en detalle de recepción.
+26.	Se agregó índice para mejora de rendimiento en consulta de pedidos de picking.
+27.	Se agregó búsqueda de documento de ingreso por número de licencia en documentos de producción cuando hay registros de lote.
+28.	Se equiparó versión de BOF 4.6.0.18 con versión de HH 4.6.0.18.
+29.	En importación de documento de ingreso, si el tipo de etiqueta del maestro no coincide con el definido por la interface, se actualiza el tipo de etiqueta.
+30.	Se agregó el tipo de documento de ingreso pedido de venta NAV.
+31.	Se agregó funcionalidad para poder ubicar producto que está reservado a ubicación de stagin (knowed issues and limitations)
+32.	Se agregó filterrow en consulta de stock reservado.
+33.	Se agregó área a lista de stock reservado.
+34.	Se mejoró la pantalla de ubicación en relación a las unidades de medida y presentación.
+35.	Se agregó holder del encabezado de la recepción para evitar que se pierda al hacer scroll cuando hay mas registros de los que caben en la pantalla.
+36.	Se mejoró el proceso de liberar stock no pickeado. (se puede ejecutar aun cuando no se ha despachado el producto, anteriormente solo funcionaba después del despacho)
+37.	Se agregó holder en el encabezado del detalle de productos de la recepción.
+38.	Se agregó opción para ordenamiento en pantalla de recepción.
+39.	En reporte de existencias por lote (reporte 9) se agregó funcionalidad para consultar el inventario de ERP-NAV.
 
 
 
