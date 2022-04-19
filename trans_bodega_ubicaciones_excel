@@ -1,0 +1,49 @@
+/****** Object:  Table [dbo].[trans_bodega_ubicaciones_excel]    Script Date: 22/12/2021 11:46:24 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[trans_bodega_ubicaciones_excel](
+	[IdBodegaExcel] [int] NOT NULL,
+	[registro] [int] NULL,
+	[cod_bodega] [int] NULL,
+	[cod_area] [int] NULL,
+	[cod_sector] [int] NULL,
+	[tipo_ubicacion] [nvarchar](50) NULL,
+	[tipo_rack] [nvarchar](50) NULL,
+	[numero] [int] NULL,
+	[ingreso_por] [nvarchar](50) NULL,
+	[orientacion] [nvarchar](50) NULL,
+	[orden] [nvarchar](50) NULL,
+	[x] [float] NULL,
+	[y] [float] NULL,
+	[nivel] [nvarchar](50) NULL,
+	[col1] [nvarchar](50) NULL,
+	[col2] [nvarchar](50) NULL,
+	[col3] [nvarchar](50) NULL,
+	[col4] [nvarchar](50) NULL,
+	[col5] [nvarchar](50) NULL,
+	[col6] [nvarchar](50) NULL,
+	[col7] [nvarchar](50) NULL,
+	[col8] [nvarchar](50) NULL,
+	[col9] [nvarchar](50) NULL,
+	[col10] [nvarchar](50) NULL,
+	[col11] [nvarchar](50) NULL,
+	[col12] [nvarchar](50) NULL,
+	[col13] [nvarchar](50) NULL,
+	[col14] [nvarchar](50) NULL,
+	[col15] [nvarchar](50) NULL,
+	[col16] [nvarchar](50) NULL,
+	[col17] [nvarchar](50) NULL,
+	[col18] [nvarchar](50) NULL,
+	[col19] [nvarchar](50) NULL,
+	[col20] [nvarchar](50) NULL,
+ CONSTRAINT [PK_trans_bodega_ubicaciones_excel] PRIMARY KEY CLUSTERED 
+(
+	[IdBodegaExcel] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
