@@ -15,3 +15,31 @@ FROM            dbo.producto_estado AS e INNER JOIN
                          dbo.producto_estado_ubic AS pe ON pe.IdEstado = e.IdEstado LEFT OUTER JOIN
                          dbo.bodega_ubicacion AS u ON u.IdUbicacion = e.IdUbicacionDefecto AND pe.IdUbicacionDefecto = u.IdUbicacion
 GO
+
+
+/***************#CKFK20220421 Agregué la validación de que la ubicación por defecto debe ser una ubicación válida****/
+/****** Object:  View [dbo].[VW_Producto_Estado_Ubic_Bodega_HH]    Script Date: 04/18/2022 1:07:45 p. m. ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER VIEW [dbo].[VW_Producto_Estado_Ubic_Bodega_HH]
+AS
+SELECT e.IdEstado, e.IdPropietario, e.nombre, e.IdUbicacionDefecto, e.utilizable, e.activo, e.user_agr, e.fec_agr, e.user_mod, e.fec_mod,
+       e.dañado, e.codigo_bodega_erp, ISNULL(e.sistema,0) Sistema, 
+	   ISNULL(pe.IdUbicacionDefecto, 0) AS IdUbicacionBodegaDefecto, 
+       ISNULL(pe.IdBodega, 0) AS IdBodega, 
+	   CASE WHEN ISNULL(pe.IdUbicacionDefecto, 0) = 0 THEN 'N/D' ELSE dbo.Nombre_Completo_Ubicacion(pe.IdUbicacionDefecto, pe.IdBodega) 
+       END AS NombreUbic
+FROM            dbo.producto_estado AS e INNER JOIN
+                         dbo.propietarios AS p ON e.IdPropietario = p.IdPropietario LEFT OUTER JOIN
+                         (SELECT * 
+						  FROM dbo.producto_estado_ubic 
+						  WHERE EXISTS (SELECT bu.IdUbicacion 
+						                FROM bodega_ubicacion bu 
+										WHERE bu.IdUbicacion = producto_estado_ubic.IdUbicacionDefecto AND
+						                      bu.IdBodega = producto_estado_ubic.IdBodega )) AS pe  ON pe.IdEstado = e.IdEstado 
+
+GO
