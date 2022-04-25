@@ -251,3 +251,8 @@ insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol), '1.1.1.1.1'
 insert into menu_sistema values('4.1.2','Importar Inv Inicial',	'btInvInicial',3,'4.1',0)
 insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol), '4.1.2',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
 
+/**#CKFK 20220425 Agregué reporte Auditoria de Picking **/
+insert into menu_sistema values ('6.1.2.9','Auditoría picking', 'cmdAuditoriaPicking',4,'6.1.2',0)
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol), '6.1.2.9',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+
+
