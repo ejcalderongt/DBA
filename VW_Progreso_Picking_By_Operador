@@ -26,3 +26,36 @@ dbo.trans_pe_tipo INNER JOIN
 dbo.trans_pe_enc ON dbo.trans_pe_tipo.IdTipoPedido = dbo.trans_pe_enc.IdTipoPedido ON dbo.trans_picking_ubic.IdPedidoEnc = dbo.trans_pe_enc.IdPedidoEnc LEFT OUTER JOIN
 dbo.producto_presentacion ON dbo.trans_picking_ubic.IdPresentacion = dbo.producto_presentacion.IdPresentacion
 GO
+
+/****** Object:  EJC20220420 - View [dbo].[VW_Progreso_Picking_By_Operador]    Script Date: 20/04/2022 15:05:57 ******/
+/****** #CKFK20220425 Agregué Bodega, Propietario, Estado Picking, Estado Pedido *******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER VIEW [dbo].[VW_Progreso_Picking_By_Operador]
+AS
+SELECT        trans_pe_enc.IdPedidoEnc, trans_picking_enc.IdPickingEnc, trans_pe_enc.referencia AS Referencia_Pedido, trans_pe_tipo.Descripcion AS Tipo_Documento, producto.codigo AS CodigoProducto, 
+                         producto.nombre AS NombreProducto, operador.nombres + ' ' + operador.apellidos AS Operador_Picking, operador_1.nombres + ' ' + operador_1.apellidos AS Operador_Verifico, trans_picking_ubic.cantidad_solicitada, 
+                         trans_picking_ubic.cantidad_recibida, trans_picking_ubic.cantidad_verificada, trans_picking_ubic.cantidad_despachada, unidad_medida.Nombre AS UMBas, producto_presentacion.nombre AS Presentacion, 
+                         trans_picking_ubic.fec_agr AS Fecha_Agregado, trans_picking_ubic.fecha_picking AS Fecha_Picking, trans_picking_ubic.fecha_verificado AS Fecha_Verificacion, trans_picking_enc.estado AS Estado_Picking, 
+                         trans_pe_enc.estado AS Estado_Pedido, trans_pe_enc.IdBodega, bodega.nombre Bodega, propietarios.IdPropietario, propietarios.nombre_comercial Propietario
+FROM            trans_pe_tipo INNER JOIN
+                         trans_pe_enc ON trans_pe_tipo.IdTipoPedido = trans_pe_enc.IdTipoPedido INNER JOIN
+                         propietario_bodega INNER JOIN
+                         bodega ON propietario_bodega.IdBodega = bodega.IdBodega ON trans_pe_enc.IdPropietarioBodega = propietario_bodega.IdPropietarioBodega AND trans_pe_enc.IdBodega = bodega.IdBodega INNER JOIN
+                         propietarios ON propietario_bodega.IdPropietario = propietarios.IdPropietario RIGHT OUTER JOIN
+                         trans_picking_ubic INNER JOIN
+                         producto_bodega INNER JOIN
+                         producto ON producto_bodega.IdProducto = producto.IdProducto ON trans_picking_ubic.IdProductoBodega = producto_bodega.IdProductoBodega INNER JOIN
+                         trans_picking_enc ON trans_picking_ubic.IdPickingEnc = trans_picking_enc.IdPickingEnc INNER JOIN
+                         unidad_medida ON trans_picking_ubic.IdUnidadMedida = unidad_medida.IdUnidadMedida ON trans_pe_enc.IdPedidoEnc = trans_picking_ubic.IDPEDIDOENC LEFT OUTER JOIN
+                         operador_bodega AS operador_bodega_1 INNER JOIN
+                         operador ON operador_bodega_1.IdOperador = operador.IdOperador ON trans_picking_ubic.IdOperadorBodega_Pickeo = operador_bodega_1.IdOperadorBodega LEFT OUTER JOIN
+                         operador_bodega ON trans_picking_ubic.IdOperadorBodega_Verifico = operador_bodega.IdOperadorBodega LEFT OUTER JOIN
+                         operador AS operador_1 ON operador_bodega.IdOperador = operador_1.IdOperador LEFT OUTER JOIN
+                         producto_presentacion ON trans_picking_ubic.IdPresentacion = producto_presentacion.IdPresentacion
+
+GO
