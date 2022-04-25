@@ -99,5 +99,5 @@ FROM            dbo.producto_clasificacion RIGHT OUTER JOIN
                          dbo.trans_picking_enc ON dbo.trans_picking_det.IdPickingEnc = dbo.trans_picking_enc.IdPickingEnc AND enc.IdPickingEnc = dbo.trans_picking_enc.IdPickingEnc LEFT OUTER JOIN
                          dbo.producto_presentacion AS pp ON det.IdPresentacion = pp.IdPresentacion
 GROUP BY enc.IdPedidoEnc, enc.referencia, det.IdPedidoDet, p.codigo, p.nombre, pp.nombre, u.Nombre, e.nombre, det.Cantidad, enc.Fecha_Pedido, p.IdProducto, enc.IdPickingEnc, enc.estado, enc.IdBodega, enc.IdPropietarioBodega, 
-                         dbo.producto_clasificacion.nombre, dbo.trans_picking_ubic.lic_plate, dbo.trans_picking_ubic.lote, dbo.trans_picking_ubic.fecha_vence
+                         dbo.producto_clasificacion.nombre, dbo.trans_picking_ubic.lic_plate, dbo.trans_picking_ubic.lote, dbo.trans_picking_ubic.fecha_vence, no_documento_externo
 GO
