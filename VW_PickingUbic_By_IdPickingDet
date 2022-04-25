@@ -50,3 +50,30 @@ FROM            dbo.operador_bodega AS operador_bodega_1 INNER JOIN
                          dbo.trans_picking_det ON u.IdPickingDet = dbo.trans_picking_det.IdPickingDet AND dbo.trans_picking_det.IdPickingEnc = u.IdPickingEnc AND dbo.trans_picking_enc.IdPickingEnc = dbo.trans_picking_det.IdPickingEnc ON 
                          dbo.operador_bodega.IdOperadorBodega = u.IdOperadorBodega_Pickeo ON operador_bodega_1.IdOperadorBodega = u.IdOperadorBodega_Verifico
 GO
+
+
+/****** Object:  View [dbo].[VW_PickingUbic_By_IdPickingDet]    Script Date: 04/25/2022 11:53:40 a. m. ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER VIEW [dbo].[VW_PickingUbic_By_IdPickingDet]
+AS
+SELECT bu.descripcion AS Ubicacion, u.IdPickingUbic, u.IdPickingDet, u.IdUbicacion, u.IdStock, u.IdPropietarioBodega, u.IdProductoBodega, u.IdProductoEstado, u.IdPresentacion, u.IdUnidadMedida, u.IdUbicacionAnterior, u.IdRecepcion, u.lote, 
+                  u.fecha_vence, u.fecha_minima, u.serial, u.lic_plate, u.acepto, u.peso_solicitado, u.peso_recibido, u.peso_verificado, u.peso_despachado, u.cantidad_solicitada, u.cantidad_recibida, u.cantidad_verificada, u.encontrado, 
+                  u.dañado_verificacion, u.fecha_real_vence, u.no_packing, u.fecha_picking, u.fecha_verificado, u.fecha_packing, u.fecha_despachado, u.cantidad_despachada, u.user_agr, u.fec_agr, u.user_mod, u.fec_mod, u.activo, u.IdPedidoDet, 
+                  u.dañado_picking, u.IdStockRes, u.lic_plate_reemplazo, u.IdUbicacion_reemplazo, u.IdStock_reemplazo, u.IdBodega, u.IdPickingEnc, u.IdOperadorBodega_Pickeo, u.IdOperadorBodega_Verifico, 
+                  dbo.operador.nombres AS Nombre_Operador_Pickeo, operador_1.nombres AS Nombre_Operador_Verifico, u.IdPedidoEnc, u.no_encontrado, u.IdUbicacionTemporal,
+				  dbo.Nombre_Completo_Ubicacion(u.IdUbicacionTemporal,u.IdBodega) as NombreUbicacionTemporal
+FROM     dbo.operador_bodega AS operador_bodega_1 INNER JOIN
+                  dbo.operador AS operador_1 ON operador_bodega_1.IdOperador = operador_1.IdOperador RIGHT OUTER JOIN
+                  dbo.operador INNER JOIN
+                  dbo.operador_bodega ON dbo.operador.IdOperador = dbo.operador_bodega.IdOperador RIGHT OUTER JOIN
+                  dbo.trans_picking_ubic AS u INNER JOIN
+                  dbo.bodega_ubicacion AS bu ON u.IdUbicacion = bu.IdUbicacion AND u.IdBodega = bu.IdBodega INNER JOIN
+                  dbo.trans_picking_det ON u.IdPickingDet = dbo.trans_picking_det.IdPickingDet AND dbo.trans_picking_det.IdPickingEnc = u.IdPickingEnc INNER JOIN
+                  dbo.trans_picking_enc ON dbo.trans_picking_det.IdPickingEnc = dbo.trans_picking_enc.IdPickingEnc ON dbo.operador_bodega.IdOperadorBodega = u.IdOperadorBodega_Pickeo ON 
+                  operador_bodega_1.IdOperadorBodega = u.IdOperadorBodega_Verifico
+GO
