@@ -1,3 +1,18 @@
+Versión: 4.6.0.21 - 20220426
+
+1. Se agregó descriptor numérico de cantidad de posiciones.
+2. Se corrigió y mejoró guardar ubicación en bodega.
+3. Se corrigió error al guardar sector en bodega.
+4. Se mejoró proceso de selección múltiple para pedido.
+5. Se agregó en ajuste de stock el tipo de ajuste a nivel de cabecera.
+6. Se mejoró pantalla de selección de stock en ajuste (se permite selección múltiple)
+7. El formato del grid de ajustes se guarda.
+8. En HH se mejoró proceso de picking en despliegue de información y focos de flujo.
+8. En HH se mejoró proceso de picking al procesar registro (progress)
+9. En HH se agregó en impresión de licencia (operador/fecha)
+10. Se agregó reporte de auditoría de picking.
+
+
 Versión: 4.6.0.18 - 20220413
 
 1.	Se corrigió problema en carga de picking, no se mostraban los registros correctamente después de despachar.
