@@ -1,3 +1,54 @@
+/****** Object:  View [dbo].[VW_Despacho_Rep_Res]  EJC ADD IdPickingEnc  Script Date: 27/04/2022 09:54:04 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER VIEW [dbo].[VW_Despacho_Rep_Res]
+AS
+SELECT        dbo.trans_picking_ubic.IdPropietarioBodega, dbo.trans_picking_ubic.IdProductoBodega, dbo.trans_picking_ubic.IdProductoEstado, dbo.trans_picking_ubic.IdPresentacion, dbo.trans_picking_ubic.IdUnidadMedida, 
+dbo.trans_despacho_det.IdDespachoEnc, dbo.trans_despacho_det.IdPedidoEnc, pr.nombre_comercial AS Propietario, p.codigo AS Codigo_Producto, p.nombre AS Nombre_Producto, um.Nombre AS UM, 
+pp.nombre AS Presentacion, pp.factor, pe.nombre AS Estado, dbo.trans_picking_ubic.lote, dbo.trans_picking_ubic.fecha_vence AS Vence, SUM(ISNULL(dbo.trans_picking_ubic.cantidad_recibida, 0)) AS cantidad_pickeada, 
+SUM(ISNULL(dbo.trans_picking_ubic.cantidad_verificada, 0)) AS cantidad_verificada, SUM(ISNULL(dbo.trans_picking_ubic.peso_recibido, 0)) AS Peso_Pickeado, SUM(ISNULL(dbo.trans_picking_ubic.peso_verificado, 0)) 
+AS Peso_Verificado, SUM(dbo.trans_despacho_det.CantidadDespachada) AS CantidadDespachada, SUM(dbo.trans_despacho_det.PesoDespachado) AS PesoDespachado, ISNULL(dbo.trans_picking_ubic.encontrado, 0) 
+AS Encontrado, ISNULL(dbo.trans_picking_ubic.acepto, 0) AS Acepto, dbo.trans_pe_enc.no_documento AS No_Documento_WMS, dbo.trans_pe_enc.referencia AS No_Referencia, dbo.cliente.codigo AS Codigo_Cliente, 
+dbo.cliente.nombre_comercial AS Nombre_Cliente, dbo.cliente.idubicacionvirtual, dbo.cliente.es_bodega_recepcion, dbo.cliente.es_bodega_traslado, dbo.trans_despacho_enc.no_pase, dbo.trans_despacho_enc.observacion, 
+dbo.trans_despacho_enc.numero, dbo.trans_despacho_enc.marchamo, dbo.road_ruta.CODIGO AS Codigo_Ruta, dbo.road_ruta.NOMBRE AS Nombre_Ruta, dbo.empresa_transporte_vehiculos.placa AS Placa_Vehiculo, 
+dbo.empresa_transporte_vehiculos.placa_comercial, dbo.empresa_transporte_vehiculos.marca AS Marca_Vehiculo, dbo.empresa_transporte_vehiculos.modelo AS Modelo_Vehiculo, 
+dbo.empresa_transporte_pilotos.nombres AS Nombre_Piloto, dbo.empresa_transporte_pilotos.apellidos AS Apellido_Piloto, dbo.empresa_transporte_pilotos.no_carnet AS No_Carnet_Piloto, 
+dbo.empresa_transporte_pilotos.no_licencia AS No_Licencia_Piloto, dbo.trans_despacho_enc.fecha AS Fecha_Despacho, dbo.producto_clasificacion.nombre AS Clasificacion, dbo.trans_picking_ubic.lic_plate, 
+dbo.trans_picking_ubic.IdOperadorBodega_Pickeo, dbo.trans_picking_ubic.IdOperadorBodega_Verifico, dbo.trans_picking_ubic.IdPickingEnc
+FROM            dbo.trans_pe_enc INNER JOIN
+dbo.producto AS p INNER JOIN
+dbo.producto_bodega AS pb ON p.IdProducto = pb.IdProducto INNER JOIN
+dbo.trans_picking_det INNER JOIN
+dbo.trans_picking_ubic ON dbo.trans_picking_det.IdPickingDet = dbo.trans_picking_ubic.IdPickingDet AND dbo.trans_picking_det.IdPedidoDet = dbo.trans_picking_ubic.IdPedidoDet ON 
+pb.IdProductoBodega = dbo.trans_picking_ubic.IdProductoBodega INNER JOIN
+dbo.producto_estado AS pe ON dbo.trans_picking_ubic.IdProductoEstado = pe.IdEstado INNER JOIN
+dbo.unidad_medida AS um ON dbo.trans_picking_ubic.IdUnidadMedida = um.IdUnidadMedida INNER JOIN
+dbo.trans_despacho_det ON dbo.trans_picking_ubic.IdPickingUbic = dbo.trans_despacho_det.IdPickingUbic AND dbo.trans_picking_ubic.IdProductoBodega = dbo.trans_despacho_det.IdProductoBodega AND 
+dbo.trans_picking_ubic.IdUnidadMedida = dbo.trans_despacho_det.IdUnidadMedidaBasica ON dbo.trans_pe_enc.IdPedidoEnc = dbo.trans_despacho_det.IdPedidoEnc INNER JOIN
+dbo.cliente ON dbo.trans_pe_enc.IdCliente = dbo.cliente.IdCliente INNER JOIN
+dbo.trans_despacho_enc ON dbo.trans_despacho_det.IdDespachoEnc = dbo.trans_despacho_enc.IdDespachoEnc INNER JOIN
+dbo.propietario_bodega ON dbo.trans_pe_enc.IdPropietarioBodega = dbo.propietario_bodega.IdPropietarioBodega AND dbo.trans_despacho_enc.IdPropietarioBodega = dbo.propietario_bodega.IdPropietarioBodega INNER JOIN
+dbo.propietarios AS pr ON dbo.propietario_bodega.IdPropietario = pr.IdPropietario LEFT OUTER JOIN
+dbo.producto_clasificacion ON p.IdClasificacion = dbo.producto_clasificacion.IdClasificacion LEFT OUTER JOIN
+dbo.empresa_transporte_vehiculos ON dbo.trans_despacho_enc.IdVehiculo = dbo.empresa_transporte_vehiculos.IdVehiculo LEFT OUTER JOIN
+dbo.road_ruta ON dbo.trans_despacho_enc.IdRuta = dbo.road_ruta.IdRuta LEFT OUTER JOIN
+dbo.empresa_transporte_pilotos ON dbo.trans_despacho_enc.IdPiloto = dbo.empresa_transporte_pilotos.IdPiloto LEFT OUTER JOIN
+dbo.producto_presentacion AS pp ON dbo.trans_picking_ubic.IdPresentacion = pp.IdPresentacion AND p.IdProducto = pp.IdProducto
+GROUP BY p.codigo, p.nombre, pp.nombre, pe.nombre, um.Nombre, pr.nombre_comercial, pp.factor, dbo.trans_picking_ubic.peso_recibido, dbo.trans_picking_ubic.peso_verificado, dbo.trans_picking_ubic.acepto, 
+dbo.trans_picking_ubic.encontrado, dbo.trans_picking_ubic.IdPropietarioBodega, dbo.trans_picking_ubic.IdProductoBodega, dbo.trans_picking_ubic.IdProductoEstado, dbo.trans_picking_ubic.IdPresentacion, 
+dbo.trans_picking_ubic.IdUnidadMedida, dbo.trans_despacho_det.IdDespachoEnc, dbo.trans_pe_enc.no_documento, dbo.trans_pe_enc.referencia, dbo.cliente.codigo, dbo.cliente.nombre_comercial, 
+dbo.cliente.idubicacionvirtual, dbo.cliente.es_bodega_recepcion, dbo.cliente.es_bodega_traslado, dbo.trans_picking_ubic.lote, dbo.trans_picking_ubic.fecha_vence, dbo.trans_despacho_det.IdPedidoEnc, 
+dbo.trans_despacho_enc.no_pase, dbo.trans_despacho_enc.observacion, dbo.trans_despacho_enc.numero, dbo.trans_despacho_enc.marchamo, dbo.road_ruta.CODIGO, dbo.road_ruta.NOMBRE, 
+dbo.empresa_transporte_vehiculos.placa, dbo.empresa_transporte_vehiculos.marca, dbo.empresa_transporte_vehiculos.modelo, dbo.empresa_transporte_vehiculos.placa_comercial, 
+dbo.empresa_transporte_pilotos.nombres, dbo.empresa_transporte_pilotos.apellidos, dbo.empresa_transporte_pilotos.no_carnet, dbo.empresa_transporte_pilotos.no_licencia, dbo.trans_despacho_enc.fecha, 
+dbo.producto_clasificacion.nombre, dbo.trans_picking_ubic.lic_plate, dbo.trans_picking_ubic.IdOperadorBodega_Pickeo, dbo.trans_picking_ubic.IdOperadorBodega_Verifico, dbo.trans_picking_ubic.IdPickingEnc
+GO
+
+
 /****** Object:  View [dbo].[VW_Despacho_Rep_Res]    Script Date: 24/03/2021 12:42:45 ******/
 SET ANSI_NULLS ON
 GO
