@@ -14,3 +14,8 @@ ADD [IdPresentacion] [int] NULL,
 
 ALTER TABLE trans_oc_det_lote
 ADD reclasificar bit NOT NULL DEFAULT 0
+
+
+/********gt 27042022 *********************/
+alter table Trans_oc_det_lote
+ADD Activo bit NOT NULL DEFAULT 0
