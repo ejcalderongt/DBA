@@ -1,3 +1,29 @@
+/****** Object:  View [dbo].[VW_BodegaUbicacion]  add Columna y Nivel EJC  Script Date: 27/04/2022 16:03:02 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+/****** Object: View [dbo].[VW_BodegaUbicacion] Script Date: 29/03/2022 18:02:40 ******/
+ALTER VIEW [dbo].[VW_BodegaUbicacion]
+AS
+SELECT        dbo.bodega_ubicacion.IdBodega, dbo.bodega_area.IdArea, dbo.bodega_area.Descripcion AS Area, dbo.bodega_sector.IdSector, dbo.bodega_sector.descripcion AS Sector, dbo.bodega_tramo.IdTramo, 
+                         dbo.bodega_tramo.descripcion AS Tramo, dbo.bodega_ubicacion.descripcion, dbo.Nombre_Completo_Ubicacion(dbo.bodega_ubicacion.IdUbicacion, dbo.bodega_ubicacion.IdBodega) AS UbicacionCompleta, 
+                         dbo.bodega_ubicacion.IdUbicacion, dbo.bodega_ubicacion.sistema, dbo.bodega_ubicacion.codigo_barra, dbo.bodega_ubicacion.codigo_barra2, dbo.bodega_ubicacion.dañado, dbo.bodega_ubicacion.activo, 
+                         dbo.bodega_ubicacion.bloqueada, dbo.bodega_ubicacion.acepta_pallet, dbo.bodega_ubicacion.ubicacion_picking, dbo.bodega_ubicacion.ubicacion_recepcion, dbo.bodega_ubicacion.ubicacion_despacho, 
+                         dbo.bodega_ubicacion.ubicacion_merma, dbo.bodega_ubicacion.ubicacion_virtual, dbo.bodega_ubicacion.ubicacion_ne, dbo.bodega_ubicacion.indice_x AS Columna, dbo.bodega_ubicacion.nivel AS Nivel
+FROM            dbo.bodega INNER JOIN
+                         dbo.bodega_area ON dbo.bodega.IdBodega = dbo.bodega_area.IdBodega INNER JOIN
+                         dbo.bodega_sector ON dbo.bodega_area.IdArea = dbo.bodega_sector.IdArea AND dbo.bodega_area.IdBodega = dbo.bodega_sector.IdBodega INNER JOIN
+                         dbo.bodega_tramo ON dbo.bodega_sector.IdSector = dbo.bodega_tramo.IdSector AND dbo.bodega_sector.IdBodega = dbo.bodega_tramo.IdBodega INNER JOIN
+                         dbo.bodega_ubicacion ON dbo.bodega_tramo.IdTramo = dbo.bodega_ubicacion.IdTramo AND dbo.bodega_tramo.IdSector = dbo.bodega_ubicacion.IdSector AND dbo.bodega_tramo.IdArea = dbo.bodega_ubicacion.IdArea AND 
+                         dbo.bodega_tramo.IdBodega = dbo.bodega_ubicacion.IdBodega
+GO
+
+
+
+
 ALTER VIEW [dbo].[VW_BodegaUbicacion]
 AS
 SELECT        dbo.bodega_ubicacion.IdBodega, bodega_area.IdArea, bodega_area.Descripcion as Nom_Area, 
