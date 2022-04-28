@@ -31,3 +31,6 @@ update trans_pe_tipo set Descripcion = 'Pedido_De_Exportacion' where IdTipoPedid
 update trans_pe_tipo set Descripcion = 'Transferencia_Inmediata' where IdTipoPedido =6
 
 alter table  trans_pe_tipo add marcar_registros_enviados_mi3 bit null
+
+alter table trans_pe_tipo add generar_recepcion_auto_bodega_destino bit default 0 not null
+alter table trans_pe_tipo add recibir_producto_auto_bodega_destino bit default 0 not null
