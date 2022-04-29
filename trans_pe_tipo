@@ -34,3 +34,5 @@ alter table  trans_pe_tipo add marcar_registros_enviados_mi3 bit null
 
 alter table trans_pe_tipo add generar_recepcion_auto_bodega_destino bit default 0 not null
 alter table trans_pe_tipo add recibir_producto_auto_bodega_destino bit default 0 not null
+
+INSERT INTO trans_pe_tipo VALUES(9,'PDV_NAV','Pedido de Venta NAV',	0, 0, 1,0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0)
