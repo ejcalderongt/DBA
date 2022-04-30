@@ -49,3 +49,55 @@ LEFT OUTER JOIN  dbo.trans_despacho_det ON dbo.trans_despacho_enc.IdDespachoEnc 
 left outer JOIN dbo.trans_pe_pol ON dbo.trans_pe_pol.IdOrdenPedidoEnc = dbo.trans_despacho_det.IdPedidoEnc 
 LEFT OUTER JOIN dbo.regimen_fiscal as regimen_fiscal2 on dbo.trans_pe_pol.IdRegimen = regimen_fiscal2.IdRegimen
 GO
+
+
+/**********#GT30042022 se agrega NoPoliza como TO para el reporte ******************************************************************/
+
+
+
+ALTER VIEW [dbo].[vw_Movimientos_Poliza]
+AS
+SELECT pr.nombre_comercial AS Propietario, p.nombre AS Producto, enc.codigo_poliza AS Poliza, pp.nombre AS Presentación, pe1.nombre AS EstadoOrigen, pe2.nombre AS EstadoDestino, u.Nombre AS UMBas, m.cantidad, m.peso, m.lote, 
+                  dbo.Nombre_Completo_Ubicacion(u1.IdUbicacion, u1.IdBodega) AS UbicOrigen, dbo.Nombre_Completo_Ubicacion(u2.IdUbicacion, u2.IdBodega) AS UbicDestino, stt.Nombre AS TipoTarea, m.fecha, p.IdProducto, p.codigo, 
+                  p.codigo_barra AS CodigoBarra, stt.IdTipoTarea, stt.Contabilizar, m.fecha_vence, pr.IdTipoActualizacionCosto, m.IdPresentacion, m.IdUnidadMedida, m.IdEstadoOrigen, m.IdProductoBodega, prb.IdPropietarioBodega, prb.IdBodega, 
+                  m.barra_pallet, dbo.producto_clasificacion.nombre AS Clasificacion, dbo.producto_familia.nombre AS Familia, m.IdBodegaOrigen, m.IdBodegaDestino, bodega_1.codigo AS Codigo_Bodega_Destino, 
+                  bodega_1.nombre AS Nombre_Bodega_Destino, m.IdMovimiento, dbo.bodega.codigo AS Codigo_Bodega_Origen, dbo.bodega.nombre AS Nombre_Bodega_Origen, dbo.Nombre_Area(u1.IdArea, m.IdBodegaOrigen) AS NombreArea, 
+                  pp.factor, dbo.regimen_fiscal.codigo_regimen AS regimen_ingreso, enc.ticket AS no_ticket_tms, dbo.tms_ticket.Fecha_Ingreso, dbo.empresa_transporte_vehiculos.placa AS placa_ingreso, 
+                  dbo.empresa_transporte_vehiculos.marca AS marca_ingreso, dbo.empresa_transporte_vehiculos.tipo AS tipo_ingreso, dbo.tipo_contenedor.Nombre AS contenedor_ingreso, m.IdTransaccion, 
+                  dbo.trans_despacho_enc.fec_agr AS Fecha_Salida, transporte_vehiculos2.placa AS placa_salida, transporte_vehiculos2.marca AS marca_salida, transporte_vehiculos2.tipo AS tipo_salida, 
+                  tipo_contenedor2.Nombre AS contenedor_salida, dbo.trans_pe_pol.codigo_poliza AS poliza_salida, regimen_fiscal2.descripcion AS regimen_salida, enc.NoPoliza AS [TO]
+FROM     dbo.trans_movimientos AS m LEFT OUTER JOIN
+                  dbo.propietario_bodega AS prb ON m.IdPropietarioBodega = prb.IdPropietarioBodega INNER JOIN
+                  dbo.propietarios AS pr ON prb.IdPropietario = pr.IdPropietario LEFT OUTER JOIN
+                  dbo.producto_bodega AS pb ON m.IdProductoBodega = pb.IdProductoBodega INNER JOIN
+                  dbo.producto AS p ON pb.IdProducto = p.IdProducto LEFT OUTER JOIN
+                  dbo.producto_clasificacion ON p.IdClasificacion = dbo.producto_clasificacion.IdClasificacion LEFT OUTER JOIN
+                  dbo.producto_familia ON p.IdFamilia = dbo.producto_familia.IdFamilia LEFT OUTER JOIN
+                  dbo.bodega ON m.IdBodegaOrigen = dbo.bodega.IdBodega AND m.IdEmpresa = dbo.bodega.IdEmpresa LEFT OUTER JOIN
+                  dbo.bodega AS bodega_1 ON m.IdEmpresa = bodega_1.IdEmpresa AND m.IdBodegaDestino = bodega_1.IdBodega LEFT OUTER JOIN
+                  dbo.bodega_ubicacion AS u2 ON m.IdUbicacionDestino = u2.IdUbicacion AND u2.IdBodega = m.IdBodegaDestino LEFT OUTER JOIN
+                  dbo.bodega_ubicacion AS u1 ON m.IdUbicacionOrigen = u1.IdUbicacion AND u1.IdBodega = m.IdBodegaOrigen LEFT OUTER JOIN
+                  dbo.producto_presentacion AS pp ON m.IdPresentacion = pp.IdPresentacion LEFT OUTER JOIN
+                  dbo.producto_estado AS pe1 ON m.IdEstadoOrigen = pe1.IdEstado LEFT OUTER JOIN
+                  dbo.producto_estado AS pe2 ON m.IdEstadoDestino = pe2.IdEstado LEFT OUTER JOIN
+                  dbo.unidad_medida AS u ON m.IdUnidadMedida = u.IdUnidadMedida LEFT OUTER JOIN
+                  dbo.sis_tipo_tarea AS stt ON m.IdTipoTarea = stt.IdTipoTarea LEFT OUTER JOIN
+                  dbo.trans_re_oc AS re ON m.IdRecepcion = re.IdRecepcionEnc LEFT OUTER JOIN
+                  dbo.trans_oc_pol AS enc ON re.IdOrdenCompraEnc = enc.IdOrdenCompraEnc LEFT OUTER JOIN
+                  dbo.regimen_fiscal ON dbo.regimen_fiscal.IdRegimen = enc.IdRegimen LEFT OUTER JOIN
+                  dbo.tms_ticket_pol ON dbo.tms_ticket_pol.IdTicket = enc.ticket LEFT OUTER JOIN
+                  dbo.tms_ticket ON dbo.tms_ticket_pol.IdTicket = dbo.tms_ticket.IdTicket LEFT OUTER JOIN
+                  dbo.empresa_transporte_vehiculos ON dbo.tms_ticket.IdVehiculo = dbo.empresa_transporte_vehiculos.IdVehiculo LEFT OUTER JOIN
+                  dbo.tipo_contenedor ON dbo.empresa_transporte_vehiculos.IdTipoContenedor = dbo.tipo_contenedor.IdTipoContenedor LEFT OUTER JOIN
+                  dbo.trans_despacho_enc ON dbo.trans_despacho_enc.IdDespachoEnc = m.IdTransaccion LEFT OUTER JOIN
+                  dbo.empresa_transporte_vehiculos AS transporte_vehiculos2 ON transporte_vehiculos2.IdVehiculo = dbo.trans_despacho_enc.IdVehiculo LEFT OUTER JOIN
+                  dbo.tipo_contenedor AS tipo_contenedor2 ON tipo_contenedor2.IdTipoContenedor = transporte_vehiculos2.IdTipoContenedor LEFT OUTER JOIN
+                  dbo.trans_despacho_det ON dbo.trans_despacho_enc.IdDespachoEnc = dbo.trans_despacho_det.IdDespachoEnc LEFT OUTER JOIN
+                  dbo.trans_pe_pol ON dbo.trans_pe_pol.IdOrdenPedidoEnc = dbo.trans_despacho_det.IdPedidoEnc LEFT OUTER JOIN
+                  dbo.regimen_fiscal AS regimen_fiscal2 ON dbo.trans_pe_pol.IdRegimen = regimen_fiscal2.IdRegimen
+GO
+
+
+
+
+
