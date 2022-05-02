@@ -119,6 +119,8 @@ Versión: 4.6.0.10 - 20220321
 -Mostrar_area_hh: si true en pantalla de picking se exige escanear licencia + código de producto (Anderly)
 -Reporte de inventario en línea agregado (Efren).
 -Interface NAVSYNC proceso de importación de envíos estable parte I (Erik).
+-En Picking HH, se permite leer cualquier LP de una misma úbicación (Efren)
+-Se agrega campo NoTO a reporte Movimimientos por Póliza (Efren)
 
 
 
