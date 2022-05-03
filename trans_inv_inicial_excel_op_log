@@ -75,8 +75,5 @@ add licencia nvarchar(50) null
 EXEC sp_RENAME 'dbo.trans_inv_inicial_excel_op_log.pol_fecha_aceptacion', 'pol_fecha_llegada', 'COLUMN'
 
 
-/********#GT03052022 campo TO ************************/
-alter table Trans_inv_inicial_excel_op_log
-add noto nvarchar(50) null
 
 
