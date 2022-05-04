@@ -53,3 +53,8 @@ alter table trans_oc_ti add requerir_documento_ref_wms bit null default 0
 --Si Escanear ubicación en recepción True en Rec.
 --HH exige una ubicación de recepción válida antes de continuar con el proceso.
 alter table trans_oc_ti add requerir_ubic_rec_ingreso bit default 0
+
+/******************#GT04052022 campo agregado por Erik ************************************/
+
+alter table trans_oc_ti add exigir_campo_referencia bit not null default 0
+
