@@ -78,3 +78,6 @@ alter table bodega add operador_picking_realiza_verificacion bit default 0
 --#EJC20220330_CEALSA: Si true, se permite realizar el cambio de ubicación de producto que está reservado en picking pero se actualiza el IdUbicacionTemporal.
 alter table bodega add permitir_cambio_ubic_producto_picking bit default 0
 
+--#EJC20220510_B&B: Si false, no permite despachar producto vencido.
+alter table bodega add despachar_producto_vencido bit not null default 0
+
