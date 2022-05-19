@@ -74,4 +74,31 @@ GO
 
 
 
+
+[VW_TMS_Tikcet] Script Date: 19/05/2022 11:19:09 ******/
+SET ANSI_NULLS ON
+GO
+
+
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+/************************************************************************************************************************************************************/
+/******************** GT19052022: ajuste de Erik para mostrar la lista de tickets para edición.    **********************************************************/
+
+ALTER VIEW [dbo].[VW_TMS_Tikcet]
+AS
+SELECT dbo.tms_ticket.IdTicket, dbo.tms_ticket.IdEmpresa, dbo.tms_ticket.IdPropietario, dbo.tms_ticket.IdUbicacionDestino, dbo.tms_ticket.IdPiloto, dbo.tms_ticket.IdVehiculo, dbo.tms_ticket.IdEmpresaTransporte,
+dbo.tms_ticket.Tipo_Operacion, dbo.tms_ticket.Fecha_Ingreso, dbo.tms_ticket.Fecha_Salida, dbo.tms_ticket.Estado, dbo.tms_ticket.No_Poliza, dbo.empresa_transporte_pilotos.nombres AS Nombre_Piloto,
+dbo.empresa_transporte_pilotos.apellidos AS Apellidos_Piloto, dbo.empresa_transporte_vehiculos.placa AS Placa_Vehiculo, dbo.empresa_transporte_vehiculos.placa_comercial AS Placa_TC,
+dbo.empresa_transporte.nombre AS Empresa_Transporte
+FROM dbo.tms_ticket LEFT OUTER JOIN
+dbo.empresa_transporte_pilotos ON dbo.tms_ticket.IdPiloto = dbo.empresa_transporte_pilotos.IdPiloto LEFT OUTER JOIN
+dbo.empresa_transporte ON dbo.empresa_transporte_pilotos.IdEmpresaTransporte = dbo.empresa_transporte.IdEmpresaTransporte LEFT OUTER JOIN
+dbo.empresa_transporte_vehiculos ON dbo.tms_ticket.IdVehiculo = dbo.empresa_transporte_vehiculos.IdVehiculo
+GO
+
+
+
 			 
