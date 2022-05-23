@@ -1,0 +1,11 @@
+--EJC23052022 ----------------------
+
+ALTER VIEW [dbo].[VW_ProductoEstadoUbic]
+AS
+SELECT u.IdUbicacion, p.IdEstado, dbo.bodega.IdBodega,
+dbo.Nombre_Completo_Ubicacion(u.idubicacion,u.idbodega) AS NombreUbic
+FROM dbo.producto_estado_ubic AS p INNER JOIN
+dbo.bodega_ubicacion AS u ON p.IdUbicacionDefecto = u.IdUbicacion INNER JOIN
+dbo.bodega_tramo AS t ON t .IdTramo = u.IdTramo INNER JOIN
+dbo.bodega ON p.IdBodega = dbo.bodega.IdBodega AND t .IdBodega = dbo.bodega.IdBodega
+GO
