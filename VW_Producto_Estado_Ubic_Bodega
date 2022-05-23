@@ -35,3 +35,37 @@ FROM            dbo.bodega_ubicacion
 	                                     AND dbo.bodega_ubicacion.IdBodega = dbo.producto_estado_ubic.IdBodega 
 	RIGHT OUTER JOIN dbo.producto_estado ON dbo.producto_estado_ubic.IdEstado = dbo.producto_estado.IdEstado
 GO
+
+
+
+--EJC23052022 -----------------------------
+
+/****** Object: View [dbo].[VW_Producto_Estado_Ubic_Bodega] Script Date: 23/05/2022 15:48:15 ******/
+SET ANSI_NULLS ON
+GO
+
+
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+ALTER VIEW [dbo].[VW_Producto_Estado_Ubic_Bodega]
+AS
+SELECT dbo.producto_estado.IdEstado, dbo.producto_estado.IdPropietario, dbo.producto_estado.nombre, dbo.producto_estado.IdUbicacionDefecto, dbo.producto_estado.utilizable AS Expr1, dbo.producto_estado.activo,
+dbo.producto_estado.user_agr, dbo.producto_estado.fec_agr, dbo.producto_estado.user_mod, dbo.producto_estado.fec_mod, dbo.producto_estado.dañado, dbo.producto_estado.codigo_bodega_erp,
+dbo.producto_estado.sistema, dbo.producto_estado_ubic.IdUbicacionDefecto AS IdUbicacionBodegaDefecto, dbo.bodega.IdBodega, dbo.Nombre_Completo_Ubicacion(dbo.bodega_ubicacion.IdUbicacion,
+dbo.bodega_ubicacion.IdBodega) AS NombreUbic
+FROM dbo.bodega_ubicacion INNER JOIN
+dbo.producto_estado_ubic ON dbo.bodega_ubicacion.IdUbicacion = dbo.producto_estado_ubic.IdUbicacionDefecto AND dbo.bodega_ubicacion.IdBodega = dbo.producto_estado_ubic.IdBodega INNER JOIN
+dbo.bodega_tramo ON dbo.bodega_ubicacion.IdTramo = dbo.bodega_tramo.IdTramo AND dbo.bodega_ubicacion.IdBodega = dbo.bodega_tramo.IdBodega INNER JOIN
+dbo.bodega_sector ON dbo.bodega_tramo.IdSector = dbo.bodega_sector.IdSector AND dbo.bodega_tramo.IdBodega = dbo.bodega_sector.IdBodega INNER JOIN
+dbo.bodega_area ON dbo.bodega_sector.IdArea = dbo.bodega_area.IdArea AND dbo.bodega_sector.IdBodega = dbo.bodega_area.IdBodega INNER JOIN
+dbo.bodega ON dbo.bodega_area.IdBodega = dbo.bodega.IdBodega RIGHT OUTER JOIN
+dbo.producto_estado ON dbo.producto_estado_ubic.IdEstado = dbo.producto_estado.IdEstado
+GROUP BY dbo.producto_estado.IdEstado, dbo.producto_estado.IdPropietario, dbo.producto_estado.nombre, dbo.producto_estado.IdUbicacionDefecto, dbo.producto_estado.user_agr, dbo.producto_estado.fec_agr,
+dbo.producto_estado.user_mod, dbo.producto_estado.fec_mod, dbo.producto_estado.codigo_bodega_erp, dbo.producto_estado_ubic.IdUbicacionDefecto, dbo.bodega.IdBodega,
+dbo.Nombre_Completo_Ubicacion(dbo.bodega_ubicacion.IdUbicacion, dbo.bodega_ubicacion.IdBodega), dbo.producto_estado.utilizable, dbo.producto_estado.activo, dbo.producto_estado.dañado, dbo.producto_estado.sistema
+GO
+
