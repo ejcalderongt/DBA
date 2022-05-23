@@ -52,8 +52,8 @@ alter table i_nav_config_enc add IdTipoRotacion int default 1
 
 --EJC23052022: ----------------
 
-alter table i_nav_config_enc add explosio_automatica_desde_ubicacion_picking bit default 1
-alter table i_nav_config_enc add explosio_automatica_nivel_max int default 1
+alter table i_nav_config_enc add explosion_automatica_desde_ubicacion_picking bit default 1
+alter table i_nav_config_enc add explosion_automatica_nivel_max int default 1
 
 
 
