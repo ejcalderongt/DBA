@@ -253,7 +253,7 @@ insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol), '4.1.2',1,'
 insert into menu_sistema values ('6.1.2.9','Auditoría picking', 'cmdAuditoriaPicking',4,'6.1.2',0)
 insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol), '6.1.2.9',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
 
-/********#GT24052022  permisos para editar regimenes de polizas **************/
+/********#GT24052022  permisos para editar regimenes de polizas ***************/
 insert into menu_sistema values('1.2.1.21','Régimen fiscal','mnuRegimenFiscal',4,'1.1.1',0)
 insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'1.2.1.21',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
 
