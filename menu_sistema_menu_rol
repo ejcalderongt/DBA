@@ -257,5 +257,13 @@ insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol), '6.1.2.9',1
 insert into menu_sistema values('1.2.1.21','Régimen fiscal','mnuRegimenFiscal',4,'1.1.1',0)
 insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'1.2.1.21',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
 
+/********#CKFK20220525 Permisos para crear nuevos documentos ***************/
+insert into menu_sistema values('1.1.1.8','Tipos documento ingreso','mnuTiposDocumentoIngreso',4,'1.1.1',0)
+insert into menu_sistema values('1.1.1.7.1','Nuevo documento salida','mnuNuevo',5,'1.1.1.7',0)
+insert into menu_sistema values('1.1.1.8.1','Nuevo documento ingreso','mnuNuevo',5,'1.1.1.8',0)
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'1.1.1.8',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'1.1.1.7.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'1.1.1.8.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+
 
 
