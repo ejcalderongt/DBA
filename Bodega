@@ -81,3 +81,5 @@ alter table bodega add permitir_cambio_ubic_producto_picking bit default 0
 --#EJC20220510_B&B: Si false, no permite despachar producto vencido.
 alter table bodega add despachar_producto_vencido bit not null default 0
 
+--#EJC20220524_MERCOSAL
+ALTER TABLE BODEGA ADD TIPO_PANTALLA_PICKING INT NOT NULL DEFAULT 1
