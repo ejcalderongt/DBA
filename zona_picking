@@ -1,0 +1,24 @@
+/****** Object:  Table [dbo].[zona_picking]    Script Date: 26/05/2022 10:05:18 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[zona_picking](
+	[IdZonaPicking] [int] NOT NULL,
+	[IdEmpresa] [int] NULL,
+	[nombre] [nvarchar](50) NULL,
+	[descripcion] [nvarchar](50) NULL,
+	[user_agr] [nvarchar](25) NULL,
+	[fec_agr] [datetime] NULL,
+	[user_mod] [nvarchar](25) NULL,
+	[fec_mod] [datetime] NULL,
+	[activo] [bit] NULL,
+ CONSTRAINT [PK_zona_picking] PRIMARY KEY CLUSTERED 
+(
+	[IdZonaPicking] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
