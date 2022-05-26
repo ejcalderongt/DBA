@@ -1,0 +1,32 @@
+/****** Object:  Table [dbo].[zona_picking_tramo]    Script Date: 26/05/2022 10:05:27 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[zona_picking_tramo](
+	[IdZonaPickingTramo] [int] NOT NULL,
+	[IdZonaPicking] [int] NOT NULL,
+	[IdBodega] [int] NULL,
+	[IdArea] [int] NULL,
+	[IdSector] [int] NULL,
+	[IdTramo] [int] NULL,
+	[min_x] [int] NULL,
+	[max_x] [int] NULL,
+	[min_y] [int] NULL,
+	[max_y] [int] NULL,
+	[user_agr] [nvarchar](25) NULL,
+	[fec_agr] [datetime] NULL,
+	[user_mod] [nvarchar](25) NULL,
+	[fec_mod] [datetime] NULL,
+	[activo] [bit] NULL,
+ CONSTRAINT [PK_zona_picking_tramo] PRIMARY KEY CLUSTERED 
+(
+	[IdZonaPickingTramo] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[zona_picking_tramo] ADD  CONSTRAINT [DF_zona_picking_tramo_activo]  DEFAULT ((1)) FOR [activo]
+GO
