@@ -1,0 +1,20 @@
+/****** Object: View [dbo].[VW_BodegaTramo] Script Date: 26/05/2022 14:48:18 ******/
+SET ANSI_NULLS ON
+GO
+
+
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+ALTER VIEW [dbo].[VW_BodegaTramo]
+AS
+SELECT dbo.bodega.IdBodega, dbo.bodega_sector.IdArea, dbo.bodega_sector.IdSector, dbo.bodega_tramo.IdTramo, dbo.bodega_area.Descripcion AS Area, dbo.bodega_sector.descripcion AS Sector,
+dbo.bodega_tramo.descripcion AS Tramo, dbo.bodega_tramo.es_rack AS EsRack
+FROM dbo.bodega_tramo INNER JOIN
+dbo.bodega_sector ON dbo.bodega_tramo.IdSector = dbo.bodega_sector.IdSector AND dbo.bodega_tramo.IdBodega = dbo.bodega_sector.IdBodega LEFT OUTER JOIN
+dbo.bodega INNER JOIN
+dbo.bodega_area ON dbo.bodega.IdBodega = dbo.bodega_area.IdBodega ON dbo.bodega_sector.IdBodega = dbo.bodega_area.IdBodega AND dbo.bodega_sector.IdArea = dbo.bodega_area.IdArea
+GO
