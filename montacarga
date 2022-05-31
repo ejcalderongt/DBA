@@ -25,3 +25,10 @@ ALTER TABLE dbo.montacarga SET (LOCK_ESCALATION = TABLE)
 GO
 COMMIT
 select Has_Perms_By_Name(N'dbo.montacarga', 'Object', 'ALTER') as ALT_Per, Has_Perms_By_Name(N'dbo.montacarga', 'Object', 'VIEW DEFINITION') as View_def_Per, Has_Perms_By_Name(N'dbo.montacarga', 'Object', 'CONTROL') as Contr_Per 
+
+
+/****************** [10:40] Erik Calderon ****************************************************************/
+
+alter table montacarga add nivel_desde int not null default 1, nivel_hasta int not null default 7
+
+
