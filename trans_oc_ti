@@ -60,3 +60,9 @@ alter table trans_oc_ti add requerir_ubic_rec_ingreso bit default 0
 
 alter table trans_oc_ti add exigir_campo_referencia bit not null default 0
 
+
+/******************#GT01062022 campo agregado por Erik ************************************/
+
+alter table trans_oc_ti add preguntar_en_backorder bit not null default 1
+
+
