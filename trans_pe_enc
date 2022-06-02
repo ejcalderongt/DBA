@@ -4,3 +4,6 @@ alter table trans_pe_enc add No_Picking_ERP nvarchar(50)
 
 --#EJC20220404: Permite indicar si el pedido requiere tarimas para su preparación.
 alter table trans_pe_enc add requiere_tarimas bit default 0
+
+--#CKFK20220601: Permite indicar la fecha de preparación del pedido
+ALTER TABLE trans_pe_enc ADD fecha_preparacion DATE NULL
