@@ -107,5 +107,35 @@ FROM            dbo.propietarios INNER JOIN
                          dbo.cliente ON dbo.trans_pe_enc.IdCliente = dbo.cliente.IdCliente
 GO
 
+/****** Object:  View [dbo].[VW_Get_Single_Pedido]    Script Date: 06/01/2022 7:37:54 p. m. ******/
+/***** #CKFK20220601 Agregué el campo fecha_preparacion ****/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+ALTER VIEW [dbo].[VW_Get_Single_Pedido]
+AS
+SELECT        dbo.trans_pe_enc.IdPedidoEnc, dbo.trans_pe_enc.IdBodega, dbo.trans_pe_enc.IdCliente, dbo.trans_pe_enc.IdMuelle, dbo.trans_pe_enc.IdPropietarioBodega, dbo.trans_pe_enc.IdTipoPedido, dbo.trans_pe_enc.IdPickingEnc, 
+                         dbo.trans_pe_enc.Fecha_Pedido, dbo.trans_pe_enc.hora_ini, dbo.trans_pe_enc.hora_fin, dbo.trans_pe_enc.ubicacion, dbo.trans_pe_enc.estado, dbo.trans_pe_enc.no_despacho, dbo.trans_pe_enc.activo, 
+                         dbo.trans_pe_enc.user_agr, dbo.trans_pe_enc.fec_agr, dbo.trans_pe_enc.user_mod, dbo.trans_pe_enc.fec_mod, dbo.trans_pe_enc.no_documento, dbo.trans_pe_enc.local, dbo.trans_pe_enc.pallet_primero, 
+                         dbo.trans_pe_enc.dias_cliente, dbo.trans_pe_enc.anulado, dbo.trans_pe_enc.RoadKilometraje, dbo.trans_pe_enc.RoadFechaEntr, dbo.trans_pe_enc.RoadDirEntrega, dbo.trans_pe_enc.RoadTotal, 
+                         dbo.trans_pe_enc.RoadDesMonto, dbo.trans_pe_enc.RoadImpMonto, dbo.trans_pe_enc.RoadPeso, dbo.trans_pe_enc.RoadBandera, dbo.trans_pe_enc.RoadStatCom, dbo.trans_pe_enc.RoadCalcoBJ, 
+                         dbo.trans_pe_enc.RoadImpres, dbo.trans_pe_enc.RoadADD1, dbo.trans_pe_enc.RoadADD2, dbo.trans_pe_enc.RoadADD3, dbo.trans_pe_enc.RoadStatProc, dbo.trans_pe_enc.RoadRechazado, 
+                         dbo.trans_pe_enc.RoadRazon_Rechazado, dbo.trans_pe_enc.RoadInformado, dbo.trans_pe_enc.RoadSucursal, dbo.trans_pe_enc.RoadIdDespacho, dbo.trans_pe_enc.RoadIdFacturacion, dbo.trans_pe_enc.RoadIdRuta, 
+                         dbo.trans_pe_enc.RoadIdVendedor, dbo.trans_pe_enc.RoadIdRutaDespacho, dbo.trans_pe_enc.RoadIdVendedorDespacho, dbo.trans_pe_enc.Observacion, dbo.trans_pe_enc.PedidoRoad, dbo.trans_pe_enc.HoraEntregaDesde, 
+                         dbo.trans_pe_enc.HoraEntregaHasta, dbo.trans_pe_enc.referencia, dbo.trans_pe_enc.IdMotivoAnulacionBodega, dbo.trans_pe_enc.Enviado_A_ERP, dbo.trans_pe_enc.control_ultimo_lote, dbo.trans_pe_enc.serie, 
+                         dbo.trans_pe_enc.correlativo, dbo.trans_pe_enc.Referencia_Documento_Ingreso_Bodega_Destino, dbo.trans_pe_enc.sync_mi3, dbo.trans_pe_tipo.Nombre AS Nombre_Tipo_Pedido, 
+                         dbo.cliente.nombre_comercial AS Nombre_Cliente, dbo.propietarios.nombre_comercial AS Nombre_Propietario, dbo.propietario_bodega.IdPropietario, dbo.cliente.codigo AS Codigo_Cliente, dbo.cliente.es_bodega_recepcion, 
+                         dbo.cliente.es_bodega_traslado, dbo.cliente.idubicacionvirtual, dbo.cliente.control_ultimo_lote AS control_ultimo_lote_cliente, dbo.trans_pe_enc.No_Picking_ERP,, dbo.trans_pe_enc.fecha_preparacion
+FROM            dbo.trans_pe_enc INNER JOIN
+                         dbo.cliente ON dbo.trans_pe_enc.IdCliente = dbo.cliente.IdCliente INNER JOIN
+                         dbo.propietario_bodega ON dbo.trans_pe_enc.IdPropietarioBodega = dbo.propietario_bodega.IdPropietarioBodega INNER JOIN
+                         dbo.trans_pe_tipo ON dbo.trans_pe_enc.IdTipoPedido = dbo.trans_pe_tipo.IdTipoPedido INNER JOIN
+                         dbo.propietarios ON dbo.propietario_bodega.IdPropietario = dbo.propietarios.IdPropietario
+GO
+
 
 
