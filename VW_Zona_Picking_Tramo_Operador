@@ -1,0 +1,23 @@
+/****** Object: View [dbo].[VW_Zona_Picking_Tramo_Operador] Script Date: 7/06/2022 14:40:35 ******/
+SET ANSI_NULLS ON
+GO
+
+
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+CREATE VIEW [dbo].[VW_Zona_Picking_Tramo_Operador]
+AS
+SELECT dbo.zona_picking.IdEmpresa, dbo.zona_picking_tramo.IdBodega, dbo.operador_zona_picking_tramo.IdZonaPickingTramoOperador, dbo.operador_zona_picking_tramo.IdZonaPickingTramo,
+dbo.operador_zona_picking_tramo.IdZonaPicking, dbo.operador_zona_picking_tramo.IdOperador, dbo.operador_zona_picking_tramo.dia_semana, dbo.operador_zona_picking_tramo.user_agr,
+dbo.operador_zona_picking_tramo.fec_agr, dbo.operador_zona_picking_tramo.user_mod, dbo.operador_zona_picking_tramo.fec_mod, dbo.operador_zona_picking_tramo.activo
+FROM dbo.zona_picking INNER JOIN
+dbo.zona_picking_tramo ON dbo.zona_picking.IdZonaPicking = dbo.zona_picking_tramo.IdZonaPicking INNER JOIN
+dbo.operador_zona_picking_tramo ON dbo.zona_picking.IdZonaPicking = dbo.operador_zona_picking_tramo.IdZonaPicking
+GROUP BY dbo.zona_picking.IdEmpresa, dbo.zona_picking_tramo.IdBodega, dbo.operador_zona_picking_tramo.IdZonaPickingTramoOperador, dbo.operador_zona_picking_tramo.IdZonaPickingTramo,
+dbo.operador_zona_picking_tramo.IdZonaPicking, dbo.operador_zona_picking_tramo.IdOperador, dbo.operador_zona_picking_tramo.dia_semana, dbo.operador_zona_picking_tramo.user_agr,
+dbo.operador_zona_picking_tramo.fec_agr, dbo.operador_zona_picking_tramo.user_mod, dbo.operador_zona_picking_tramo.fec_mod, dbo.operador_zona_picking_tramo.activo
+GO
