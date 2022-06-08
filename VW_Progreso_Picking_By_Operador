@@ -95,7 +95,7 @@ SELECT dbo.trans_pe_enc.IdPedidoEnc, dbo.trans_picking_enc.IdPickingEnc, dbo.tra
                   dbo.producto.nombre AS NombreProducto, dbo.operador.nombres + ' ' + dbo.operador.apellidos AS Operador_Picking, operador_1.nombres + ' ' + operador_1.apellidos AS Operador_Verifico, dbo.trans_picking_ubic.cantidad_solicitada, 
                   dbo.trans_picking_ubic.cantidad_recibida, dbo.trans_picking_ubic.cantidad_verificada, dbo.trans_picking_ubic.cantidad_despachada, dbo.unidad_medida.Nombre AS UMBas, dbo.producto_presentacion.nombre AS Presentacion, 
                   dbo.trans_picking_ubic.fec_agr AS Fecha_Agregado, dbo.trans_picking_ubic.fecha_picking, dbo.trans_picking_ubic.fecha_verificado AS Fecha_Verificacion, dbo.trans_picking_enc.estado AS Estado_Picking, 
-                  dbo.trans_pe_enc.estado AS Estado_Pedido, dbo.trans_pe_enc.IdBodega, dbo.bodega.nombre AS Bodega, dbo.propietarios.IdPropietario, dbo.propietarios.nombre_comercial AS Propietario
+                  dbo.trans_pe_enc.estado AS Estado_Pedido,trans_pe_enc.IdPropietarioBodega, dbo.trans_pe_enc.IdBodega, dbo.bodega.nombre AS Bodega, dbo.propietarios.IdPropietario, dbo.propietarios.nombre_comercial AS Propietario
 				  ,dbo.bodega_ubicacion.IdArea,dbo.bodega_area.Descripcion as area, isnull(dbo.producto_clasificacion.nombre,'') as clasificacion
 FROM     dbo.trans_pe_tipo INNER JOIN
                   dbo.trans_pe_enc ON dbo.trans_pe_tipo.IdTipoPedido = dbo.trans_pe_enc.IdTipoPedido INNER JOIN
