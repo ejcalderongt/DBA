@@ -83,3 +83,6 @@ alter table bodega add despachar_producto_vencido bit not null default 0
 
 --#EJC20220524_MERCOSAL
 ALTER TABLE BODEGA ADD TIPO_PANTALLA_PICKING INT NOT NULL DEFAULT 1
+
+--#CKFK20220610
+ALTER TABLE bodega ADD verificacion_consolidada BIT  NOT NULL DEFAULT 0
