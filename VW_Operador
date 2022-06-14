@@ -1,3 +1,18 @@
+/****** Object:  View [dbo].[VW_Operador]    Script Date: 13/06/2022 22:54:56 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER VIEW [dbo].[VW_Operador]
+AS
+SELECT        o.IdOperador AS Código, e.nombre AS Empresa, o.nombres, o.apellidos, o.direccion AS Dirección, o.telefono AS Teléfono, o.activo, o.recibe, o.ubica, o.transporta, o.pickea, o.verifica, o.montacarga
+FROM            dbo.operador AS o INNER JOIN
+                         dbo.empresa AS e ON o.IdEmpresa = e.IdEmpresa
+GO
+
+
 -- 202004002_18:12
 ALTER VIEW [dbo].[VW_Operador]
 AS
