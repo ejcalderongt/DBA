@@ -1,0 +1,1 @@
+alter table operador add montacarga bit not null default 0
