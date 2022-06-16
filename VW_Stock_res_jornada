@@ -28,3 +28,6 @@ FROM            dbo.stock_jornada AS sj INNER JOIN
 
 
 
+
+/********************* GT16062022 se renombra a VW_Fiscal_Valorizacion ********************************/
+se utiliza para cargar el reporte de pago seguro y superintendencia
