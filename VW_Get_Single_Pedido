@@ -107,14 +107,13 @@ FROM            dbo.propietarios INNER JOIN
                          dbo.cliente ON dbo.trans_pe_enc.IdCliente = dbo.cliente.IdCliente
 GO
 
-/****** Object:  View [dbo].[VW_Get_Single_Pedido]    Script Date: 06/01/2022 7:37:54 p. m. ******/
 /***** #CKFK20220601 Agregué el campo fecha_preparacion ****/
+/****** Object:  View [dbo].[VW_Get_Single_Pedido]  EJC-LEFTJOIN CEALSA  Script Date: 4/03/2022 11:44:32 ******/
 SET ANSI_NULLS ON
 GO
 
 SET QUOTED_IDENTIFIER ON
 GO
-
 
 ALTER VIEW [dbo].[VW_Get_Single_Pedido]
 AS
@@ -130,12 +129,13 @@ SELECT        dbo.trans_pe_enc.IdPedidoEnc, dbo.trans_pe_enc.IdBodega, dbo.trans
                          dbo.trans_pe_enc.correlativo, dbo.trans_pe_enc.Referencia_Documento_Ingreso_Bodega_Destino, dbo.trans_pe_enc.sync_mi3, dbo.trans_pe_tipo.Nombre AS Nombre_Tipo_Pedido, 
                          dbo.cliente.nombre_comercial AS Nombre_Cliente, dbo.propietarios.nombre_comercial AS Nombre_Propietario, dbo.propietario_bodega.IdPropietario, dbo.cliente.codigo AS Codigo_Cliente, dbo.cliente.es_bodega_recepcion, 
                          dbo.cliente.es_bodega_traslado, dbo.cliente.idubicacionvirtual, dbo.cliente.control_ultimo_lote AS control_ultimo_lote_cliente, dbo.trans_pe_enc.No_Picking_ERP,dbo.trans_pe_enc.fecha_preparacion
-FROM            dbo.trans_pe_enc INNER JOIN
-                         dbo.cliente ON dbo.trans_pe_enc.IdCliente = dbo.cliente.IdCliente INNER JOIN
-                         dbo.propietario_bodega ON dbo.trans_pe_enc.IdPropietarioBodega = dbo.propietario_bodega.IdPropietarioBodega INNER JOIN
-                         dbo.trans_pe_tipo ON dbo.trans_pe_enc.IdTipoPedido = dbo.trans_pe_tipo.IdTipoPedido INNER JOIN
-                         dbo.propietarios ON dbo.propietario_bodega.IdPropietario = dbo.propietarios.IdPropietario
+FROM            dbo.propietarios INNER JOIN
+                         dbo.propietario_bodega ON dbo.propietarios.IdPropietario = dbo.propietario_bodega.IdPropietario RIGHT OUTER JOIN
+                         dbo.trans_pe_enc ON dbo.propietario_bodega.IdPropietarioBodega = dbo.trans_pe_enc.IdPropietarioBodega LEFT OUTER JOIN
+                         dbo.trans_pe_tipo ON dbo.trans_pe_enc.IdTipoPedido = dbo.trans_pe_tipo.IdTipoPedido LEFT OUTER JOIN
+                         dbo.cliente ON dbo.trans_pe_enc.IdCliente = dbo.cliente.IdCliente
 GO
+
 
 
 
