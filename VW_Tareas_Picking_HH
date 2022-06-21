@@ -61,3 +61,28 @@ FROM     dbo.trans_picking_enc AS p INNER JOIN
 WHERE o.IdOperadorBodega IS NOT NULL
 				  
 GO
+
+/******************#CKFK Modificamos la relación con la tabla de operadores del picking**********/
+/****** Object:  View [dbo].[VW_Tareas_Picking_HH]    Script Date: 06/21/2022 11:50:40 a. m. ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER view [dbo].[VW_Tareas_Picking_HH] as
+SELECT p.IdPickingEnc, p.IdBodega, p.IdPropietarioBodega, p.IdUbicacionPicking, p.fecha_picking, p.hora_ini, p.hora_fin, p.estado, p.user_agr, p.fec_agr, p.user_mod, p.fec_mod, p.detalle_operador, p.activo, b.nombre AS NombreBodega,
+pp.nombre_comercial, CASE WHEN bodega_tramo.es_rack = 1 THEN dbo.Nombre_Completo_Ubicacion(p.IdUbicacionPicking,p.IdBodega)
+ELSE bodega_tramo.descripcion END AS NombreUbicacion, o.IdOperadorBodega,p.referencia
+FROM dbo.trans_picking_enc AS p INNER JOIN
+(select DISTINCT IdPickingEnc, IdOperadorBodega FROM dbo.trans_picking_op) AS o ON p.IdPickingEnc = o.IdPickingEnc INNER JOIN
+dbo.bodega AS b ON p.IdBodega = b.IdBodega INNER JOIN
+dbo.propietario_bodega AS pb ON pb.IdPropietarioBodega = p.IdPropietarioBodega AND b.IdBodega = pb.IdBodega INNER JOIN
+dbo.propietarios AS pp ON pp.IdPropietario = pb.IdPropietario INNER JOIN
+dbo.bodega_area ON b.IdBodega = dbo.bodega_area.IdBodega INNER JOIN
+dbo.bodega_sector ON dbo.bodega_area.IdArea = dbo.bodega_sector.IdArea AND dbo.bodega_area.IdBodega = dbo.bodega_sector.IdBodega INNER JOIN
+dbo.bodega_tramo ON dbo.bodega_sector.IdSector = dbo.bodega_tramo.IdSector INNER JOIN
+dbo.bodega_ubicacion ON p.IdUbicacionPicking = dbo.bodega_ubicacion.IdUbicacion AND dbo.bodega_tramo.IdTramo = dbo.bodega_ubicacion.IdTramo AND dbo.bodega_tramo.IdBodega = dbo.bodega_ubicacion.IdBodega AND
+p.IdBodega = dbo.bodega_ubicacion.IdBodega		  
+GO
+
