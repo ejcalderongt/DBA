@@ -33,11 +33,6 @@ ON [dbo].[bodega_ubicacion] ([activo],[ubicacion_picking])
 INCLUDE ([IdTramo],[descripcion],[nivel],[indice_x],[codigo_barra],[bloqueada],[acepta_pallet],[IdArea],[IdSector])
 
 CREATE NONCLUSTERED INDEX NCLI_Trans_Oc_Det_IdProductoBodega_20210601EJC
-
-CREATE NONCLUSTERED INDEX IX_producto_codigos_barra_20220622
-ON [dbo].[producto_codigos_barra] ([IdProducto])
-INCLUDE ([codigo_barra])
-GO
 ON [dbo].[trans_oc_det] ([IdProductoBodega])
 
 CREATE NONCLUSTERED INDEX NCLI_TRANS_OC_ENC_20210623_EJC
@@ -135,4 +130,14 @@ GO
 
 CREATE NONCLUSTERED INDEX NCLI_Trans_Picking_Det_EJC_20220403
 ON [dbo].[trans_picking_det] ([IdPedidoDet])
+GO
+
+CREATE NONCLUSTERED INDEX IX_producto_codigos_barra_20220622
+ON [dbo].[producto_codigos_barra] ([IdProducto])
+INCLUDE ([codigo_barra])
+GO
+
+CREATE NONCLUSTERED INDEX IX_STOCK_RES_20220619
+ON [dbo].[stock_res] ([Indicador],[idbodega],[IdPedido])
+INCLUDE ([IdTransaccion],[IdPedidoDet],[IdStock],[IdPropietarioBodega],[IdProductoBodega],[IdProductoEstado],[IdPresentacion],[IdUnidadMedida],[IdUbicacion],[ubicacion_ant],[IdRecepcion],[lote],[lic_plate],[serial],[cantidad],[peso],[estado],[fecha_ingreso],[fecha_vence],[uds_lic_plate],[no_bulto],[IdPicking],[IdDespacho],[user_agr],[fec_agr],[user_mod],[fec_mod],[host],[añada],[fecha_manufactura],[pallet_no_estandar])
 GO
