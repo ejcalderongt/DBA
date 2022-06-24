@@ -11,3 +11,25 @@ GROUP BY p.nombre, pp.IdPresentacion, pp.IdProducto, pp.codigo_barra, pp.nombre,
                          pp.sistema, pp.imprime_barra, dbo.producto_bodega.IdBodega
 
 GO
+
+/********#CKFK20220624 Agregamos el codigo del producto ******************/
+/****** Object:  View [dbo].[VW_ProductoPresentacion]    Script Date: 06/24/2022 4:26:21 p. m. ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER VIEW [dbo].[VW_ProductoPresentacion]
+AS
+SELECT        p.nombre AS Producto, pp.IdPresentacion, pp.IdProducto, pp.codigo_barra, pp.nombre, pp.imprime_barra, pp.peso, pp.alto, pp.largo, pp.ancho, pp.factor, pp.MinimoExistencia, pp.MaximoExistencia, pp.user_agr, pp.fec_agr, 
+                         pp.user_mod, pp.fec_mod, pp.activo, pp.EsPallet, pp.Precio, pp.MinimoPeso, pp.MaximoPeso, pp.Costo, pp.CamasPorTarima, pp.CajasPorCama, pp.genera_lp_auto, pp.permitir_paletizar, pp.sistema, pp.IdPresentacionPallet, 
+                         dbo.producto_bodega.IdProductoBodega, dbo.producto_bodega.IdBodega, p.codigo
+FROM            dbo.producto_presentacion AS pp INNER JOIN
+                         dbo.producto AS p ON pp.IdProducto = p.IdProducto INNER JOIN
+                         dbo.producto_bodega ON p.IdProducto = dbo.producto_bodega.IdProducto
+GROUP BY p.nombre, pp.IdPresentacion, pp.IdProducto, pp.codigo_barra, pp.nombre, pp.peso, pp.alto, pp.largo, pp.ancho, pp.factor, pp.MinimoExistencia, pp.MaximoExistencia, pp.user_agr, pp.fec_agr, pp.user_mod, pp.fec_mod, 
+                         pp.Precio, pp.MinimoPeso, pp.MaximoPeso, pp.Costo, pp.CamasPorTarima, pp.CajasPorCama, pp.IdPresentacionPallet, dbo.producto_bodega.IdProductoBodega, pp.activo, pp.EsPallet, pp.genera_lp_auto, pp.permitir_paletizar, 
+                         pp.sistema, pp.imprime_barra, dbo.producto_bodega.IdBodega, p.codigo
+
+GO
