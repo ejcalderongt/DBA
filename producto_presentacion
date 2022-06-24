@@ -1,0 +1,1 @@
+ALTER TABLE producto_presentacion ADD codigo NVARCHAR(50) NULL
