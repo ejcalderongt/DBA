@@ -1,0 +1,21 @@
+--#AT20220624 Nueva vista para obtener detalle de pedido
+/****** Object: View [dbo].[VW_Get_Pedido_Det] Script Date: 24/06/2022 12:39:05 ******/
+SET ANSI_NULLS ON
+GO
+
+
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+CREATE VIEW [dbo].[VW_Get_Pedido_Det]
+AS
+SELECT det.IdPedidoDet, det.IdPedidoEnc, det.IdProductoBodega, det.IdEstado, det.IdPresentacion, det.IdUnidadMedidaBasica, det.Cantidad, det.Peso, det.Precio, det.no_recepcion, det.ndias, det.cant_despachada, det.codigo_producto,
+det.nombre_producto, det.nom_presentacion, det.nom_unid_med, det.nom_estado, det.user_agr, det.fec_agr, det.fecha_especifica, det.RoadDes, det.RoadDesMon, det.RoadTotal, det.RoadPrecioDoc, det.RoadVAL1, det.RoadVAL2,
+det.RoadCantProc, det.peso_despachado, det.no_linea, det.atributo_variante_1, det.IdStockEspecifico, det.EsPadre, det.IdPedidoDetPadre, det.Peso_Bruto, det.Peso_Neto, det.Costo, det.valor_aduana, det.valor_fob, det.valor_iva,
+det.valor_dai, det.valor_seguro, det.valor_flete, det.Total_linea, det.IdCliente, pb.IdProducto
+FROM dbo.trans_pe_det AS det INNER JOIN
+dbo.producto_bodega AS pb ON det.IdProductoBodega = pb.IdProductoBodega
+GO
