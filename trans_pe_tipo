@@ -41,3 +41,5 @@ alter table trans_pe_tipo add permitir_despacho_parcial bit not null default 1
 
 --#EJC20220608: Mercosal, por la gestión de devoluciones, solicitado por Tzirin y Marcelo.
 INSERT INTO trans_pe_tipo VALUES(10,'PDV_WM','Pedido de Venta WM',	0, 0, 1,0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0)
+
+alter table trans_pe_tipo add permitir_despacho_multiple bit not null default 1
