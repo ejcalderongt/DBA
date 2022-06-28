@@ -53,7 +53,7 @@ GO
 
 ALTER VIEW [dbo].[VW_Producto_Estado_Ubic_Bodega]
 AS
-SELECT dbo.producto_estado.IdEstado, dbo.producto_estado.IdPropietario, dbo.producto_estado.nombre, dbo.producto_estado.IdUbicacionDefecto, dbo.producto_estado.utilizable AS Expr1, dbo.producto_estado.activo,
+SELECT dbo.producto_estado.IdEstado, dbo.producto_estado.IdPropietario, dbo.producto_estado.nombre, dbo.producto_estado.IdUbicacionDefecto, dbo.producto_estado.utilizable, dbo.producto_estado.activo,
 dbo.producto_estado.user_agr, dbo.producto_estado.fec_agr, dbo.producto_estado.user_mod, dbo.producto_estado.fec_mod, dbo.producto_estado.dañado, dbo.producto_estado.codigo_bodega_erp,
 dbo.producto_estado.sistema, dbo.producto_estado_ubic.IdUbicacionDefecto AS IdUbicacionBodegaDefecto, dbo.bodega.IdBodega, dbo.Nombre_Completo_Ubicacion(dbo.bodega_ubicacion.IdUbicacion,
 dbo.bodega_ubicacion.IdBodega) AS NombreUbic
