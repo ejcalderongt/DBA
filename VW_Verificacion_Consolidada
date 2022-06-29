@@ -117,6 +117,7 @@ GROUP BY ped.IdPedidoEnc, ped.IdProductoBodega, ped.nom_unid_med, ped.nombre_pro
 pubic.dañado_verificacion, pubic.IdPresentacion, dbo.producto_presentacion.nombre, pubic.IdProductoBodega, pubic.IdProductoEstado, pubic.IdBodega, pc.nombre, dbo.bodega_ubicacion.IdArea
 GO
 
+/******#CKFK20220629 Se quitaron los campos NombreArea y NombreClasificacion, solo se muestran vacios***********/
 /****** Object:  View [dbo].[VW_Verificacion_Consolidada]    Script Date: 06/29/2022 2:31:43 p. m. ******/
 SET ANSI_NULLS ON
 GO
@@ -136,7 +137,9 @@ P.codigo, ped.ndias,
 SUM(pubic.cantidad_recibida) - SUM(pubic.cantidad_verificada) AS diferencia,
 pubic.IdPresentacion AS IdPresentacionPicking,
 dbo.producto_presentacion.nombre AS nom_presentacion,
-pubic.IdProductoEstado
+pubic.IdProductoEstado,
+'' as NombreArea,
+'' AS NombreClasificacion
 FROM dbo.trans_pe_det AS ped INNER JOIN
 dbo.trans_picking_det AS pkdet ON ped.IdPedidoDet = pkdet.IdPedidoDet INNER JOIN
 dbo.trans_picking_ubic AS pubic ON pkdet.IdPickingDet = pubic.IdPickingDet  LEFT OUTER JOIN
