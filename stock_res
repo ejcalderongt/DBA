@@ -7,3 +7,11 @@ ALTER TABLE stock_res ADD idbodega INT NOT NULL
 --#EJC 20220109
 ALTER TABLE dbo.stock_res
 ALTER COLUMN Lote nvarchar(50) COLLATE Modern_Spanish_CI_AS NULL
+
+
+
+--#GT 29062022  mejora en indices
+
+CREATE NONCLUSTERED INDEX NCLI_STOCK_RES_20220629
+ON [dbo].[stock_res] ([IdStock])
+INCLUDE ([cantidad])
