@@ -19,7 +19,7 @@ BEGIN TRANSACTION
 GO
 CREATE TABLE dbo.producto_parametro_b
 	(
-	IdParametroProductoB int NOT NULL,
+	IdProductoParametroB int NOT NULL,
 	Codigo nvarchar(50) NULL,
 	Nombre nvarchar(50) NULL,
 	user_agr nvarchar(50) NULL,
@@ -31,7 +31,7 @@ GO
 ALTER TABLE dbo.producto_parametro_b ADD CONSTRAINT
 	PK_producto_parametro_b PRIMARY KEY CLUSTERED 
 	(
-	IdParametroProductoB
+	IdProductoParametroB
 	) WITH( STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 
 GO
