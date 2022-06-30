@@ -1,0 +1,41 @@
+/*
+   jueves, 23 de junio de 202209:07:18
+   User: sa
+   Server: PROGRAX\SQLEXPRESS
+   Database: IMS4MB_MERCOSAL_PRD
+   Application: 
+*/
+/* To prevent any potential data loss issues, you should review this script in detail before running it outside the context of the database designer.*/
+BEGIN TRANSACTION
+SET QUOTED_IDENTIFIER ON
+SET ARITHABORT ON
+SET NUMERIC_ROUNDABORT OFF
+SET CONCAT_NULL_YIELDS_NULL ON
+SET ANSI_NULLS ON
+SET ANSI_PADDING ON
+SET ANSI_WARNINGS ON
+COMMIT
+BEGIN TRANSACTION
+GO
+CREATE TABLE dbo.producto_parametro_b
+	(
+	IdParametroProductoB int NOT NULL,
+	Codigo nvarchar(50) NULL,
+	Nombre nvarchar(50) NULL,
+	user_agr nvarchar(50) NULL,
+	fec_mod datetime NULL,
+	user_mod nvarchar(50) NULL,
+	activo bit NULL
+	)  ON [PRIMARY]
+GO
+ALTER TABLE dbo.producto_parametro_b ADD CONSTRAINT
+	PK_producto_parametro_b PRIMARY KEY CLUSTERED 
+	(
+	IdParametroProductoB
+	) WITH( STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+
+GO
+ALTER TABLE dbo.producto_parametro_b SET (LOCK_ESCALATION = TABLE)
+GO
+COMMIT
+select Has_Perms_By_Name(N'dbo.producto_parametro_b', 'Object', 'ALTER') as ALT_Per, Has_Perms_By_Name(N'dbo.producto_parametro_b', 'Object', 'VIEW DEFINITION') as View_def_Per, Has_Perms_By_Name(N'dbo.producto_parametro_b', 'Object', 'CONTROL') as Contr_Per 
