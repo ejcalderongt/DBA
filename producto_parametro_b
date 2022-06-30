@@ -22,6 +22,7 @@ CREATE TABLE dbo.producto_parametro_b
 	IdProductoParametroB int NOT NULL,
 	Codigo nvarchar(50) NULL,
 	Nombre nvarchar(50) NULL,
+	fec_agr datetime NULL,
 	user_agr nvarchar(50) NULL,
 	fec_mod datetime NULL,
 	user_mod nvarchar(50) NULL,
