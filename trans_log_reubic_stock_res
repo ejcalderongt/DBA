@@ -37,4 +37,6 @@ CREATE TABLE [dbo].[trans_log_reubic_stock_res](
 ) ON [PRIMARY]
 GO
 
+ALTER TABLE trans_log_reubic_stock_res ADD IdUbicacionAnterior int NULL
+
 
