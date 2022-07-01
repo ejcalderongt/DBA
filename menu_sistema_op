@@ -7,3 +7,7 @@ insert into menu_sistema_op values('1.13',15,'Recepción',2,'1',15)
 update  menu_sistema_op set Posicion = 1 where IdMenuSistemaOP = '1.13'
 delete from menu_sistema_op where IdMenuSistemaOP = '1.6'
 delete from menu_rol_op where IdMenuSistemaOP = '1.6'
+
+/**********AT20220701 Opciones para permisos en HH *******/
+insert into menu_sistema_op values('1.14',23,'Reabastecimiento manual',2,'1',15)
+insert into menu_sistema_op values('1.15',24,'Reubicar stock reservado',2,'1',16)
