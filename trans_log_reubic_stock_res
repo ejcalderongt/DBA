@@ -1,0 +1,40 @@
+/****** Object:  Table [dbo].[trans_log_pedido_liberacion]    Script Date: 06/30/2022 5:56:51 p. m. ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[trans_log_reubic_stock_res](
+	[IdLogReubicStockRes] [int] NOT NULL,
+	[IdBodega] [int] NULL,
+	[IdPickingUbic] [int] NULL,
+	[IdPickingDet] [int] NULL,
+	[IdPedidoEnc] [int] NULL,
+	[IdPedidoDet] [int] NULL,
+	[IdStock] [int] NULL,
+	[IdStockRes] [int] NULL,
+	[IdUbicacion] [int] NULL,
+	[IdUsuario] [int] NULL,
+	[Codigo_Producto] [nvarchar](50) NULL,
+	[Lote] [nvarchar](50) NULL,
+	[Lic_Plate] [nvarchar](50) NULL,
+	[Fecha_Vence] [datetime] NULL,
+	[Cantidad] [float] NULL,
+	[Peso] [float] NULL,
+	[Referencia] [nvarchar](50) NULL,
+	[Observacion] [nvarchar](250) NULL,
+	[IdProductoBodega] [int] NULL,
+	[IdProductoEstado] [int] NULL,
+	[IdPropietarioBodega] [int] NULL,
+	[IdUnidadMedida] [int] NULL,	
+	[IdPresentacion] [int] NULL,
+	[Fecha_Sistema] [datetime] NULL,
+ CONSTRAINT [PK_trans_log_reubic_stock_res] PRIMARY KEY CLUSTERED 
+(
+	[IdLogReubicStockRes] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
