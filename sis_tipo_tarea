@@ -1,3 +1,7 @@
 INSERT INTO sis_tipo_tarea VALUES(20,'EXPLOSION',1)
 INSERT INTO sis_tipo_tarea VALUES(21,'UBIC PICKING',1)
 INSERT INTO sis_tipo_tarea values (22,'ANUL_PICK',1)
+
+
+INSERT INTO sis_tipo_tarea values (23,'REABMAN',0)
+INSERT INTO sis_tipo_tarea values (24,'REUBICSTOCKRES',0)
