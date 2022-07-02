@@ -1,0 +1,56 @@
+/****** Object:  Table [dbo].[trans_series_doc]    Script Date: 07/02/2022 3:05:44 p. m. ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[trans_series_doc](
+	[IdTransSerieDoc] [int] NOT NULL,
+	[Serie] [nvarchar](50) NULL,
+	[Tipo_Doc] [nvarchar](50) NULL,
+	[IdTipoTrans] [int] NULL,
+	[Inicial] [int] NULL,
+	[Final] [int] NULL,
+	[Actual] [int] NULL,
+	[Activo] [bit] NULL,
+	[IdBodega] [int] NULL,
+	[UserAgr] [nvarchar](50) NULL,
+	[FecAgr] [datetime] NULL,
+	[UserMod] [nvarchar](50) NULL,
+	[FecMod] [datetime] NULL,
+ CONSTRAINT [PK_trans_series_doc] PRIMARY KEY CLUSTERED 
+(
+	[IdTransSerieDoc] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[trans_series_doc] ADD  DEFAULT ((0)) FOR [IdTransSerieDoc]
+GO
+
+ALTER TABLE [dbo].[trans_series_doc] ADD  DEFAULT ((0)) FOR [IdTipoTrans]
+GO
+
+ALTER TABLE [dbo].[trans_series_doc] ADD  DEFAULT ((0)) FOR [Inicial]
+GO
+
+ALTER TABLE [dbo].[trans_series_doc] ADD  DEFAULT ((0)) FOR [Final]
+GO
+
+ALTER TABLE [dbo].[trans_series_doc] ADD  DEFAULT ((0)) FOR [Actual]
+GO
+
+ALTER TABLE [dbo].[trans_series_doc] ADD  DEFAULT ((0)) FOR [Activo]
+GO
+
+ALTER TABLE [dbo].[trans_series_doc] ADD  DEFAULT ((0)) FOR [IdBodega]
+GO
+
+ALTER TABLE [dbo].[trans_series_doc] ADD  DEFAULT (getdate()) FOR [FecAgr]
+GO
+
+ALTER TABLE [dbo].[trans_series_doc] ADD  DEFAULT (getdate()) FOR [FecMod]
+GO
+
+
