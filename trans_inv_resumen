@@ -1,0 +1,3 @@
+ALTER TABLE trans_inv_resumen ADD 
+idbodega int NOT NULL DEFAULT 0,
+idubicacion int NOT NULL DEFAULT 0
