@@ -1,0 +1,13 @@
+/****** Object:  View [dbo].[VW_Resoluciones_Operador]    Script Date: 07/02/2022 4:06:59 p. m. ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE VIEW [dbo].[VW_Resoluciones_Operador]
+AS
+SELECT   r.idbodega AS Bodega, o.IdOperador AS Operador, o.nombres + ' ' + o.apellidos AS Nombre, r.serie, r.correlativo_inicial AS Inicial, r.correlativo_final AS Final, r.correlativo_actual AS Actual, r.activo
+FROM            dbo.resolucion_lp_operador AS r INNER JOIN
+                         dbo.operador AS o ON o.IdOperador = r.idoperador
+GO
