@@ -1,0 +1,14 @@
+/******#CKFK20220704 Agregué las columnas de la tabla producto estado porque no salia sistema*****/
+/****** Object:  View [dbo].[VW_ProductoEstado]    Script Date: 07/04/2022 7:03:21 p. m. ******/
+SET ANSI_NULLS ON 
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER VIEW [dbo].[VW_ProductoEstado]
+AS
+SELECT     p.nombre_comercial AS Propietario, e.IdEstado, e.IdPropietario, e.nombre, e.IdUbicacionDefecto, e.utilizable, e.activo, e.user_agr, e.fec_agr, e.user_mod, e.fec_mod, e.dañado, e.codigo_bodega_erp, e.sistema
+FROM         dbo.producto_estado AS e INNER JOIN
+                      dbo.propietarios AS p ON e.IdPropietario = p.IdPropietario
+GO
