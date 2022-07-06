@@ -277,3 +277,19 @@ insert into menu_sistema values('1.2.1.23','Zona de picking','mnuZonaPicking',4,
 IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '1.2.1.23')
 insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'1.2.1.23',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
 
+
+--#GT06072022 Parámetros A y B
+
+
+
+insert into menu_sistema values('1.3.1.10','Parámetros','mnuParametros',4,'1.3.1',0)
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'1.3.1.10',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+
+insert into menu_sistema values('1.3.1.10.1','Parámetro A','cmdParametroA',5,'1.3.1.10',0)
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'1.3.1.10.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+
+insert into menu_sistema values('1.3.1.10.2','Parámetro B','cmdParametroB',5,'1.3.1.10',0)
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'1.3.1.10.2',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+
+
+
