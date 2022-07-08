@@ -1019,8 +1019,8 @@ SELECT dbo.producto_bodega.IdBodega, dbo.propietarios.IdPropietario, dbo.propiet
                   > 0 THEN (dbo.stock.cantidad - ISNULL(SUM(dbo.stock_res.cantidad), 0)) * dbo.trans_oc_det.costo ELSE dbo.stock.cantidad * dbo.trans_oc_det.costo END END valor_total,
 
 				  dbo.producto.IDPRODUCTOPARAMETROA, dbo.producto.IDPRODUCTOPARAMETROB, 
-                  dbo.producto_parametro_a.Codigo AS producto_parametro_codigoA, dbo.producto_parametro_a.Nombre AS producto_parametro_nombreA, 
-				  dbo.producto_parametro_b.Codigo AS producto_parametro_codigoB, dbo.producto_parametro_b.Nombre AS producto_parametro_nombreB
+                  dbo.producto_parametro_a.Nombre AS parametro_a, 
+				  dbo.producto_parametro_b.Nombre AS parametro_b
 
 FROM     dbo.trans_oc_pol RIGHT OUTER JOIN
                   dbo.trans_re_oc INNER JOIN
@@ -1070,7 +1070,7 @@ FROM     dbo.trans_oc_pol RIGHT OUTER JOIN
                   dbo.bodega.nombre, dbo.p_parametro.descripcion, dbo.p_parametro.tipo, dbo.stock_parametro.valor_numerico, dbo.stock_parametro.valor_texto, dbo.stock_parametro.valor_fecha, dbo.stock_parametro.valor_logico, 
                   dbo.stock_det.posiciones, dbo.trans_oc_det.costo, dbo.trans_oc_det.cantidad_recibida, dbo.bodega.codigo, dbo.trans_oc_enc.no_ticket_tms, dbo.tms_ticket.Fecha_Ingreso,
 				  dbo.producto.IDPRODUCTOPARAMETROA,dbo.producto.IDPRODUCTOPARAMETROB,
-				  dbo.producto_parametro_a.Codigo, dbo.producto_parametro_a.Nombre,dbo.producto_parametro_b.Codigo, dbo.producto_parametro_b.Nombre
+				  dbo.producto_parametro_a.Nombre,dbo.producto_parametro_b.Nombre
 
 
 
