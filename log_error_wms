@@ -40,3 +40,12 @@ select Has_Perms_By_Name(N'dbo.log_error_wms', 'Object', 'ALTER') as ALT_Per, Ha
 /**** GT 14072021 campo para el log ***/
 
 alter table log_error_wms alter column MensajeError nvarchar (1000)
+
+
+ALTER TABLE log_error_wms 
+ADD IdPedidoEnc int NOT NULL DEFAULT 0,
+IdPickingEnc int NOT NULL DEFAULT 0,
+IdRecepcionEnc int NOT NULL DEFAULT 0,
+IdUsuarioAgr int NOT NULL DEFAULT 0
+GO
+
