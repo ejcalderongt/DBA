@@ -1,4 +1,4 @@
---#GT08072022: se agregan parametros A y B a la lista de productos.
+--#GT08072022: se agregan parametros A y B a la lista de productos --.
 
 Alter view VW_Producto as
 SELECT pd.IdProducto, pd.IdPropietario, pd.IdClasificacion, pd.IdFamilia, pd.IdMarca, pd.IdTipoProducto, pd.IdUnidadMedidaBasica, pp.nombre_comercial AS Propietario, pc.nombre AS Clasificación, pf.nombre AS Familia, pm.nombre AS Marca, 
