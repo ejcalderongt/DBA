@@ -146,3 +146,24 @@ FROM     dbo.stock_jornada AS sj INNER JOIN
 
 
 
+--#GT12072022: se agregan campos: referencia, clasificación y se renombra short_name a producto (descripcion del producto)
+
+Alter view VW_Fiscal_historico as
+	SELECT sj.IdOrdenCompraEnc, sj.IdRecepcionEnc, sj.IdBodega, CASE WHEN bd.es_bodega_fiscal = 1 THEN 'Fiscal' WHEN bd.es_bodega_fiscal = 0 THEN 'General' END AS regimen, sj.no_poliza AS codigo_poliza, 
+                  bd.es_bodega_fiscal, pr.IdPropietario, sj.Fecha, sj.IdPropietarioBodega, sj.Propietario AS cliente, sj.Bodega AS nombre_bodega, sj.fecha_ingreso AS fecha_inventario, sj.Fecha_Recepcion, sj.numero_orden, 
+                  sj.nombre_producto AS producto, sj.lic_plate AS licencia, sj.codigo_barra_producto AS codigo_barra, dbo.Nombre_Completo_Ubicacion(sj.IdUbicacion, sj.IdBodega) AS ubicacion, sj.IdUbicacion, sj.cantidad, sj.valor_aduana AS cif, 
+                  sj.valor_dai AS dai, sj.valor_iva AS iva, ISNULL(sj.valor_aduana, 0) + ISNULL(sj.valor_dai, 0) + ISNULL(sj.valor_iva, 0) AS TOTAL_VALOR, dbo.Nombre_Area(bu.IdArea, sj.IdBodega) AS area,
+				  sj.Clasificacion,oc_enc.Referencia
+FROM     dbo.stock_jornada AS sj INNER JOIN
+                  dbo.jornada_sistema AS js ON sj.Fecha = js.Fecha INNER JOIN
+                  dbo.bodega AS bd ON sj.IdBodega = bd.IdBodega INNER JOIN
+                  dbo.propietario_bodega AS pb ON sj.IdPropietarioBodega = pb.IdPropietarioBodega INNER JOIN
+                  dbo.propietarios AS pr ON pb.IdPropietario = pr.IdPropietario INNER JOIN
+                  dbo.bodega_ubicacion AS bu ON bu.IdBodega = sj.IdBodega AND sj.IdUbicacion = bu.IdUbicacion
+				  INNER JOIN dbo.trans_re_det re_det on sj.IdRecepcionEnc = re_det.IdRecepcionEnc and sj.IdRecepcionDet=re_det.IdRecepcionDet
+				  INNER JOIN dbo.trans_re_oc re_oc on re_det.IdRecepcionEnc = re_oc.IdRecepcionEnc 
+				  INNER JOIN  dbo.trans_oc_enc oc_enc on re_oc.IdOrdenCompraEnc = oc_enc.IdOrdenCompraEnc
+
+
+
+
