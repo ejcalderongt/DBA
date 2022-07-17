@@ -102,5 +102,5 @@ ALTER TABLE BODEGA ADD restringir_vencimiento_en_reemplazo BIT NOT NULL DEFAULT 
 ALTER TABLE BODEGA ADD restringir_lote_en_reemplazo BIT NOT NULL DEFAULT 0
 
 --#CKFK20220717
-ALTER TABLE bodega ADD top_reabastecimiento_manual AS int NOT NULL DEFAULT 20
+ALTER TABLE bodega ADD top_reabastecimiento_manual int NOT NULL DEFAULT 20
 
