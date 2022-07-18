@@ -3,3 +3,4 @@ alter table i_nav_ped_traslado_enc add fec_agr datetime default getdate()
 
 alter table i_nav_ped_traslado_enc add RoadCodigoRuta nvarchar(50) null
 alter table i_nav_ped_traslado_enc add RoadCodigoVendedor nvarchar(50) null
+
