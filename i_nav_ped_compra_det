@@ -1,0 +1,1 @@
+alter table i_nav_ped_compra_det add fec_agr datetime default getdate()
