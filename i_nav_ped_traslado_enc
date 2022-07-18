@@ -1,1 +1,2 @@
 alter table i_nav_ped_traslado_enc add Document_Type int default 0
+alter table i_nav_ped_traslado_enc add fec_agr datetime default getdate()
