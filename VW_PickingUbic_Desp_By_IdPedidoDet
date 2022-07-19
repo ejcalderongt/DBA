@@ -1,0 +1,36 @@
+/****** Object:  View [dbo].[VW_PickingUbic_Despachado_By_IdPedidoDet]    Script Date: 19/07/2022 14:43:24 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE VIEW [dbo].[VW_PickingUbic_Desp_By_IdPedidoDet]
+AS
+SELECT       dbo.trans_pe_det.IdPedidoEnc, dbo.trans_picking_ubic.IdPedidoDet, dbo.trans_picking_ubic.IdPickingEnc, dbo.trans_picking_ubic.IdPickingUbic, dbo.producto.codigo, 
+                         dbo.producto.nombre, dbo.producto_presentacion.nombre AS Presentacion, dbo.producto_estado.nombre AS NomEstado, dbo.unidad_medida.Nombre AS UnidadMedida, dbo.propietarios.nombre_comercial AS Propietario, 
+                         dbo.trans_picking_ubic.cantidad_solicitada, dbo.trans_picking_ubic.IdStock, dbo.trans_picking_ubic.IdProductoBodega, dbo.trans_picking_ubic.IdUbicacion, dbo.trans_picking_ubic.IdProductoEstado, 
+                         dbo.trans_picking_ubic.IdPresentacion, dbo.trans_picking_ubic.IdUnidadMedida, dbo.trans_picking_ubic.lote, dbo.trans_picking_ubic.fecha_vence, dbo.trans_picking_ubic.lic_plate, dbo.trans_picking_ubic.serial, 
+                         dbo.trans_picking_ubic.peso_solicitado, dbo.trans_picking_ubic.cantidad_recibida, dbo.trans_picking_ubic.cantidad_verificada, dbo.trans_picking_ubic.cantidad_despachada, dbo.trans_picking_ubic.peso_recibido, 
+                         dbo.trans_picking_ubic.peso_verificado, dbo.trans_picking_ubic.peso_despachado, dbo.trans_picking_ubic.acepto, dbo.trans_picking_ubic.encontrado, dbo.trans_picking_ubic.dañado_verificacion, 
+                         dbo.trans_picking_ubic.IdPickingDet, dbo.trans_picking_ubic.IdPropietarioBodega, dbo.trans_picking_ubic.IdUbicacionAnterior, dbo.trans_picking_ubic.IdRecepcion, dbo.trans_picking_ubic.fecha_minima, 
+                         dbo.trans_picking_ubic.fecha_real_vence, dbo.trans_picking_ubic.no_packing, dbo.trans_picking_ubic.fecha_picking, dbo.trans_picking_ubic.fecha_verificado, dbo.trans_picking_ubic.fecha_packing, 
+                         dbo.trans_picking_ubic.fecha_despachado, dbo.trans_picking_ubic.user_agr, dbo.trans_picking_ubic.fec_agr, dbo.trans_picking_ubic.user_mod, dbo.trans_picking_ubic.fec_mod, dbo.trans_picking_ubic.activo, 
+                         dbo.trans_picking_ubic.dañado_picking, dbo.Nombre_Completo_Ubicacion(dbo.bodega_ubicacion.IdUbicacion, dbo.bodega_ubicacion.IdBodega) AS Nombre_Ubicacion, dbo.trans_picking_ubic.no_encontrado, 
+                         dbo.trans_picking_ubic.IdUbicacionTemporal
+FROM         dbo.trans_pe_det INNER JOIN
+                         dbo.producto INNER JOIN
+                         dbo.producto_bodega ON dbo.producto.IdProducto = dbo.producto_bodega.IdProducto ON dbo.trans_pe_det.IdProductoBodega = dbo.producto_bodega.IdProductoBodega INNER JOIN
+                         dbo.producto_estado INNER JOIN
+                         dbo.trans_picking_ubic ON dbo.producto_estado.IdEstado = dbo.trans_picking_ubic.IdProductoEstado INNER JOIN
+                         dbo.propietario_bodega ON dbo.trans_picking_ubic.IdPropietarioBodega = dbo.propietario_bodega.IdPropietarioBodega INNER JOIN
+                         dbo.propietarios ON dbo.propietario_bodega.IdPropietario = dbo.propietarios.IdPropietario ON dbo.trans_pe_det.IdPedidoDet = dbo.trans_picking_ubic.IdPedidoDet AND 
+                         dbo.trans_pe_det.IdProductoBodega = dbo.trans_picking_ubic.IdProductoBodega AND dbo.trans_pe_det.IdUnidadMedidaBasica = dbo.trans_picking_ubic.IdUnidadMedida AND 
+                         dbo.trans_pe_det.IdEstado = dbo.trans_picking_ubic.IdProductoEstado INNER JOIN
+                         dbo.unidad_medida ON dbo.trans_pe_det.IdUnidadMedidaBasica = dbo.unidad_medida.IdUnidadMedida INNER JOIN
+                         dbo.bodega_ubicacion ON dbo.trans_picking_ubic.IdUbicacion = dbo.bodega_ubicacion.IdUbicacion AND dbo.trans_picking_ubic.IdBodega = dbo.bodega_ubicacion.IdBodega INNER JOIN
+                         dbo.bodega_tramo ON dbo.bodega_ubicacion.IdTramo = dbo.bodega_tramo.IdTramo AND dbo.bodega_ubicacion.IdBodega = dbo.bodega_tramo.IdBodega INNER JOIN
+                         dbo.bodega_sector ON dbo.bodega_tramo.IdSector = dbo.bodega_sector.IdSector AND dbo.bodega_tramo.IdBodega = dbo.bodega_sector.IdBodega INNER JOIN
+                         dbo.bodega_area ON dbo.bodega_sector.IdArea = dbo.bodega_area.IdArea AND dbo.bodega_sector.IdBodega = dbo.bodega_area.IdBodega LEFT OUTER JOIN
+                         dbo.producto_presentacion ON dbo.trans_pe_det.IdPresentacion = dbo.producto_presentacion.IdPresentacion
+GO
