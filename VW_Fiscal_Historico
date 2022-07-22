@@ -166,4 +166,36 @@ FROM     dbo.stock_jornada AS sj INNER JOIN
 
 
 
+--#GT22072022: se valida recepcion contra detalle de la OC, las cantidades recibidas y calcular sobre ellas, DAI, FOB, IVA y VALOR_TOTAL para cealsa
+
+Alter view VW_Fiscal_Historico as
+SELECT sj.IdOrdenCompraEnc, sj.IdRecepcionEnc, sj.IdBodega, CASE WHEN bd.es_bodega_fiscal = 1 THEN 'Fiscal' WHEN bd.es_bodega_fiscal = 0 THEN 'General' END AS regimen, sj.no_poliza AS codigo_poliza, bd.es_bodega_fiscal, 
+                  pr.IdPropietario, sj.Fecha, sj.IdPropietarioBodega, sj.Propietario AS cliente, sj.Bodega AS nombre_bodega, sj.fecha_ingreso AS fecha_inventario, sj.Fecha_Recepcion, sj.numero_orden, sj.nombre_producto AS producto, 
+                  sj.lic_plate AS licencia, sj.codigo_barra_producto AS codigo_barra, dbo.Nombre_Completo_Ubicacion(sj.IdUbicacion, sj.IdBodega) AS ubicacion, sj.IdUbicacion,
+				  --oc_det.cantidad_recibida as cantidad_recibida,
+				  re_det.costo,sj.cantidad, 
+				  --sj.valor_aduana AS cif, 
+				  (sj.valor_aduana/oc_det.cantidad_recibida )*sj.cantidad as cif, 
+				  --sj.valor_dai AS dai, 
+				  (sj.valor_dai/oc_det.cantidad_recibida)*sj.cantidad as dai, 
+				  --sj.valor_iva AS iva, 
+				  (sj.valor_iva/oc_det.cantidad_recibida)*sj.cantidad as iva,
+                  --ISNULL(sj.valor_aduana, 0) + ISNULL(sj.valor_dai, 0) + ISNULL(sj.valor_iva, 0) AS TOTAL_VALOR,
+
+				   (sj.valor_aduana/oc_det.cantidad_recibida )*sj.cantidad +  (sj.valor_dai/oc_det.cantidad_recibida)*sj.cantidad+  (sj.valor_iva/oc_det.cantidad_recibida)*sj.cantidad as TOTAL_VALOR,
+
+				  dbo.Nombre_Area(bu.IdArea, sj.IdBodega) AS area, sj.Clasificacion, oc_enc.Referencia
+FROM     dbo.stock_jornada AS sj INNER JOIN
+                  dbo.bodega AS bd ON sj.IdBodega = bd.IdBodega INNER JOIN
+                  dbo.propietario_bodega AS pb ON sj.IdPropietarioBodega = pb.IdPropietarioBodega INNER JOIN
+                  dbo.propietarios AS pr ON pb.IdPropietario = pr.IdPropietario INNER JOIN
+                  dbo.bodega_ubicacion AS bu ON bu.IdBodega = sj.IdBodega AND sj.IdUbicacion = bu.IdUbicacion INNER JOIN
+                  dbo.trans_re_det AS re_det ON sj.IdRecepcionEnc = re_det.IdRecepcionEnc AND sj.IdRecepcionDet = re_det.IdRecepcionDet INNER JOIN
+                  dbo.trans_re_oc AS re_oc ON re_det.IdRecepcionEnc = re_oc.IdRecepcionEnc INNER JOIN
+                  dbo.trans_oc_enc AS oc_enc ON re_oc.IdOrdenCompraEnc = oc_enc.IdOrdenCompraEnc
+				  INNER JOIN trans_oc_det oc_det on re_det.IdOrdenCompraEnc = oc_det.IdOrdenCompraEnc and re_det.IdOrdenCompraDet = oc_det.IdOrdenCompraDet
+
+
+
+
 
