@@ -141,3 +141,15 @@ CREATE NONCLUSTERED INDEX IX_STOCK_RES_20220619
 ON [dbo].[stock_res] ([Indicador],[idbodega],[IdPedido])
 INCLUDE ([IdTransaccion],[IdPedidoDet],[IdStock],[IdPropietarioBodega],[IdProductoBodega],[IdProductoEstado],[IdPresentacion],[IdUnidadMedida],[IdUbicacion],[ubicacion_ant],[IdRecepcion],[lote],[lic_plate],[serial],[cantidad],[peso],[estado],[fecha_ingreso],[fecha_vence],[uds_lic_plate],[no_bulto],[IdPicking],[IdDespacho],[user_agr],[fec_agr],[user_mod],[fec_mod],[host],[añada],[fecha_manufactura],[pallet_no_estandar])
 GO
+
+CREATE NONCLUSTERED INDEX NCLI_Trans_Picking_Ubic_EJC202207251716
+ON [dbo].[trans_picking_ubic] ([no_encontrado],[cantidad_verificada])
+INCLUDE ([IdPickingDet],[IdUbicacion],[IdStock],[acepto],[peso_recibido],[peso_verificado],[cantidad_solicitada],[cantidad_recibida],[encontrado],[dañado_verificacion],[cantidad_despachada],[dañado_picking],[IdStockRes],[IdBodega])
+
+CREATE NONCLUSTERED INDEX NCLI_TRANS_PICKING_UBIC_202207151720_EJC
+ON [dbo].[trans_picking_ubic] ([IdStock],[IdStockRes],[IdBodega],[no_encontrado],[cantidad_verificada])
+INCLUDE ([IdPickingDet],[IdUbicacion],[acepto],[peso_recibido],[peso_verificado],[cantidad_solicitada],[cantidad_recibida],[encontrado],[dañado_verificacion],[cantidad_despachada],[dañado_picking])
+GO
+
+CREATE NONCLUSTERED INDEX NCLI_STOCK_RES_EJC202207251717
+ON [dbo].[stock_res] ([IdPedido])
