@@ -122,6 +122,77 @@ Versión: 4.6.0.10 - 20220321
 -En Picking HH, se permite leer cualquier LP de una misma úbicación (Efren)
 -Se agrega campo NoTO a reporte Movimimientos por Póliza (Efren)
 
+Versión 4.6.3.5
+1-.	Creación de opción para  reabastecimiento manual
+2-.	Cambio de ubicación en HH, permitir mover el inventario reservado
+3-.	Mejorar el rendimiento de la carga de un pedido en BOF
+4-.	Mejorar rendimiento en el tiempo de carga del picking en el BOF
+5-.	Se agregó en el cambio de ubicación la opción a poder elegir la presentación del producto, la cual se desea cambiar de ubicación.
+6-.	Se agregó método en la MI3 para poder cambiar la ubicación de un LP de una Orden de producción
+7-.	Se parametrizó la cantidad de registros del stock para reabastecimiento manual, si es 0 se muestra todo
+8-.	Desde el BOF si un cliente tiene la ubicación configurada,  el inventario solo se toma de esa ubicación cuando se hace un pedido manual
+9-.	Se corrigió el reporte Resumen histórico duplicidad registros
+10-.	Se corrigió reporte Cuentas de orden, IVA/DAI deben ser 0 para General
+11-.	Se corrigió reporte Cuentas de orden, el reporte no se refrescaba uando el rango era 1
+12-.	Se corrigió en la HH que al seleccionar un producto se cargaran los datos de ese producto y no del anterior
+13-.	En reporte Resumen histórico se agregó la columna regimen (Fiscal/General)
+14-.	Se modificó el reporte Resumen histórico se cambió el nombre de las columnas material_name por clasificacion y short_name por producto y se agregó la claisificacion al reporte
+15-.	Se agregó al reporte Resumen histórico la fecha de stock_jornada por linea
+16-.	Se modificó el reporte Resumen histórico se agregaron las columna de referencia para General y No Orden para Fiscal
+17-.	Se modificó reporte de Cuentas de orden se agregaron las columnas poliza/referencia y no documento(fiscal/general)
+18-.	Parametrizacion de nuevo tipo de etiqueta para tamaño de 2X2
+19-.	Se agregó opción en listado de producto para impresión de código del producto
+20-.	Se diseñó la etiqueta en ZPL para el tamaño de 2X2
+21-.	En recepción, validar que al cambiar de producto seleccionado, se cargue la data del producto actual y no del anterior.
+22-.	Se agrega limpieza en combo, para que permita cargar todos los propietarios
+23-.	Se modificó el listado para reubicar stock reservado para HH para que sea por licencia y ubicación
+24-.	Crear opción en el BOF para poner una tarea de cambio de ubicación activa
+25-.	Agregar en la tabla bodega, el campo industria_motriz, para que en base a ese parámetro esos campos se muestren en el mantenimiento de producto
+26-.	Se creó tabla para parámetro A (Nuevo/Usado)
+27-.	Se creó tabla para parámetro B (Lado)
+28-.	Se agregó al catálogo de productos los campos Parámetro A y B
+29-.	Se modificó la clase de Bodega en BOF y HH
+30-.	Se modificó la clase de producto en BOF y HH
+31-.	Se modificó mantenimiento de catálogo de Bodega
+32-.	Crear mantenimiento parámetro A
+33-.	Crear mantenimiento parámetro B
+34-.	Modificar mantenimiento de catálogo de productos
+35-.	En la pantalla de stock específico se agregaron los campos parámetro A y parámetro B
+36-.	Ajustes en Get_All_Products_For_Reabastecimiento HH, se quitó el parametro IdUbicacion para obtener el top de productos a reabastecer.
+37-.	Se agrega valor a la variable Atributo_variante_1 en el cambio de ubicación, estaba dando problemas al filtrar lista de stock al mostrar datos del producto.
+38-.	Ajuste al actualizar la lista del detalle de recepción, no se mostraba correctamente la información luego de completar la recepción de un producto.
+39-.	Corregir reporte de movimientos por documento
+40-.	Corrección en despachos parciales porque deja stock reservado
+41-.	Creación de nueva vista para el picking despachado por productos duplicados
+42-.	Modificación de vista vw_stock_res porque no se estaba enviando el pedido
+43-.	Correcciones cuando el cliente tiene ubicación para despacho
+44-.	Correccion al proceso de liberar linea pickeada
+45-.	Correccion al proceso de liberar linea verificada
+46-.	En el cambio de ubicación se debe poder realizar el cambio completo del producto aunque esté reservado
+47-.	Ajustes para en la reubicación del stock reservado, luego de realizar cambios agrupando por LP la lista de stock.
+48-.	Agregar el proceso de explosión en el reabasto de productos.
+49-.	El flujo de la pantalla al completar el reabasto, que pueda regresar a listado de productos.
+50-.	Corrección para que el operador pueda ingresar la ubicación de origen y no se cargue automáticamente.
+51-.	Agregue la cantidad y presentación en el listado de productos a reabastecer
+52-.	Liberar stock múltiple
+53-.	Mostrar los productos vencidos en el reporte de próximos a vencer
+54-.	En el pedido, cuando el cliente tiene ubicación para abastecer sus pedidos, debe mostrar en disponible, lo disponible en su ubicación
+55-.	La lista de productos para reabastecimiento se debe ordenar primero por fecha de vencimiento y luego por lote
+56-.	Cuando se cambie de ubicación un producto en reabasto, se debe dar mensaje de que el proceso se hizo correectamente
+57-.	Error en cambio de ubicacion, al seleccionar unidades lo divide por el factor
+58-.	Si el stock para reemplazo es 0 entonces validar banderas de restringir vencimiento y lote para ver si se muestra todo el inventario o no
+59-.	Validar que cliente en despacho se cargue en el input
+60-.	Ajustar reporte hist. resumen para que total sea x linea no por el doc.
+61-.	Permitir ingresar decimales en txtCantidad en las pantallas de recepción y cambio de ubicación, si el parametro permitir_decimales es verdadero.
+62-.	Validar proceso completo del un inventario ciclico
+63-.	Permitir realizar un cambio de ubicación desde la pantalla de consulta de existencias.
+64-.	Modificar la reserva de inventario en los EA como se hace en Mercosal
+65-.	Pruebas de impresión y correcciones
+66-.	Agregar Parametro A y B en el reporte de Picking
+67-.	Mejorar tiempo de carga del picking en el BOF
+68-.	Crear opción para poner una tarea de cambio de ubicación activa
+69-.	Corrección del error en el cambio de ubicación cuando hay presentación y unidades
+
 
 
 
