@@ -1,5 +1,6 @@
 
 alter table producto add un_nuevo_campo nvarchar(50)
+GO
 
 BEGIN TRANSACTION
 SET QUOTED_IDENTIFIER ON
@@ -33,3 +34,4 @@ ALTER TABLE dbo.producto_parametro_c ADD CONSTRAINT
 GO
 
 ALTER TABLE bodega ADD top_reabastecimiento_manual int NOT NULL DEFAULT 20
+GO
