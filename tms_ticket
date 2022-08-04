@@ -60,3 +60,9 @@ fecha_asignado datetime
 
 alter table tms_ticket add procesado_stock_jornada bit default 0 null
 alter table tms_ticket add fecha_procesado_stock_jornada datetime null
+
+--#gt04082022
+
+alter table tms_ticket add fecha_finalizado datetime null
+
+
