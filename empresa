@@ -6,3 +6,8 @@ ALTER TABLE empresa ADD generar_stock_jornada bit NOT NULL DEFAULT 1
 /********gt 12052022 **************************/
 alter table empresa
 add buscar_actualizacion_hh bit not null default 0
+
+--#GT04082022 se agrega versión bd y token para identificar empresa
+
+alter table empresa add version_bd nvarchar(10) default '0'
+alter table empresa add aws_token nvarchar(50)
