@@ -1,0 +1,75 @@
+update trans_movimientos set IdTipoTarea = 2 where IdTipoTarea is null
+GO
+
+/****** Object:  Index [NCLI_TransMovimientos_20191211_EJC]    Script Date: 8/4/2022 10:49:02 PM ******/
+DROP INDEX [NCLI_TransMovimientos_20191211_EJC] ON [dbo].[trans_movimientos]
+GO
+
+ALTER TABLE [dbo].[trans_movimientos] DROP CONSTRAINT [FK_trans_movimientos_sis_tipo_tarea_hh]
+GO
+
+/****** Object:  Index [IX_trans_movimientos]    Script Date: 8/4/2022 10:51:55 PM ******/
+DROP INDEX [IX_trans_movimientos] ON [dbo].[trans_movimientos]
+GO
+
+
+alter table trans_movimientos 
+alter column IdTipoTarea int not null
+
+
+ALTER TABLE [dbo].[trans_movimientos]  WITH CHECK ADD  CONSTRAINT [FK_trans_movimientos_sis_tipo_tarea_hh] FOREIGN KEY([IdTipoTarea])
+REFERENCES [dbo].[sis_tipo_tarea] ([IdTipoTarea])
+GO
+
+ALTER TABLE [dbo].[trans_movimientos] CHECK CONSTRAINT [FK_trans_movimientos_sis_tipo_tarea_hh]
+GO
+
+/****** Object:  Index [IX_trans_movimientos]    Script Date: 8/4/2022 10:51:42 PM ******/
+CREATE NONCLUSTERED INDEX [IX_trans_movimientos] ON [dbo].[trans_movimientos]
+(
+	[IdPropietarioBodega] ASC
+)
+INCLUDE ( 	[IdProductoBodega],
+	[IdUbicacionOrigen],
+	[IdUbicacionDestino],
+	[IdPresentacion],
+	[IdEstadoOrigen],
+	[IdEstadoDestino],
+	[IdUnidadMedida],
+	[IdTipoTarea],
+	[IdBodegaDestino],
+	[IdRecepcion],
+	[cantidad],
+	[peso],
+	[lote],
+	[fecha_vence],
+	[fecha],
+	[barra_pallet]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+GO
+
+
+
+/****** Object:  Index [NCLI_TransMovimientos_20191211_EJC]    Script Date: 8/4/2022 10:49:58 PM ******/
+CREATE NONCLUSTERED INDEX [NCLI_TransMovimientos_20191211_EJC] ON [dbo].[trans_movimientos]
+(
+	[IdProductoBodega] ASC,
+	[IdBodegaDestino] ASC
+)
+INCLUDE ( 	[IdBodegaOrigen],
+	[IdPropietarioBodega],
+	[IdUbicacionOrigen],
+	[IdUbicacionDestino],
+	[IdPresentacion],
+	[IdEstadoOrigen],
+	[IdEstadoDestino],
+	[IdUnidadMedida],
+	[IdTipoTarea],
+	[cantidad],
+	[peso],
+	[lote],
+	[fecha_vence],
+	[fecha],
+	[barra_pallet]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+GO
+
+
