@@ -36,3 +36,8 @@ add cantidad_presentacion float
 
 alter table i_nav_transacciones_out add no_documento_salida_ref_devol nvarchar(50) null default '', 
 IdPedidoEncDevol int null default 0
+
+--#CKFK20220811 Se agregaron los campos IdDespachoDet y IdRecepcionDet
+ALTER TABLE i_nav_transacciones_out 
+ADD IdDespachoDet int null,
+IdRecepcionDet int null
