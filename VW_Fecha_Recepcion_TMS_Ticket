@@ -1,0 +1,16 @@
+/****** Object:  View [dbo].[VW_Fecha_Recepcion_TMS_Ticket]    Script Date: 17/08/2022 23:54:10 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER VIEW [dbo].[VW_Fecha_Recepcion_TMS_Ticket]
+AS
+SELECT        dbo.tms_ticket.IdTicket, dbo.trans_oc_enc.IdOrdenCompraEnc, dbo.trans_re_oc.IdRecepcionEnc, dbo.tms_ticket.Fecha_Ingreso, dbo.trans_oc_enc.Fecha_Creacion, dbo.trans_re_oc.hora_fin_hh AS Fecha_Recepcion
+FROM            dbo.trans_oc_enc INNER JOIN
+                         dbo.trans_re_oc ON dbo.trans_oc_enc.IdOrdenCompraEnc = dbo.trans_re_oc.IdOrdenCompraEnc INNER JOIN
+                         dbo.tms_ticket ON dbo.trans_oc_enc.no_ticket_tms = dbo.tms_ticket.IdTicket
+GO
+
+
