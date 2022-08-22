@@ -47,3 +47,15 @@ CREATE TABLE [dbo].[trans_bodega_ubicaciones_excel](
 ) ON [PRIMARY]
 GO
 
+alter table trans_bodega_ubicaciones_excel 
+ADD
+	[col21] [nvarchar](50) NULL,
+	[col22] [nvarchar](50) NULL,
+	[col23] [nvarchar](50) NULL,
+	[col24] [nvarchar](50) NULL,
+	[col25] [nvarchar](50) NULL,
+	[col26] [nvarchar](50) NULL,
+	[col27] [nvarchar](50) NULL,
+	[col28] [nvarchar](50) NULL,
+	[col29] [nvarchar](50) NULL,
+	[col30] [nvarchar](50) NULL
