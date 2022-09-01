@@ -1168,12 +1168,20 @@ SELECT dbo.producto_bodega.IdBodega, dbo.propietarios.IdPropietario, dbo.propiet
                   dbo.producto_estado.utilizable AS EstadoUtilizable, dbo.stock.IdUbicacion, dbo.stock.lic_plate, dbo.stock.serial, dbo.stock.añada, dbo.producto.IdIndiceRotacion, dbo.producto_presentacion.alto, dbo.producto_presentacion.largo, 
                   dbo.producto_presentacion.ancho, dbo.bodega_ubicacion.IdTramo, dbo.bodega_ubicacion.ancho AS Ancho_ubicacion, dbo.bodega_ubicacion.largo AS Largo_ubicacion, dbo.bodega_ubicacion.alto AS Alto_ubicacion, 
                   dbo.indice_rotacion.Descripcion AS IndiceRotacion, dbo.producto.existencia_min AS Existencia_min_umbas, dbo.producto.existencia_max AS Existencia_max_umbas, dbo.producto.costo, 
-                  dbo.producto_presentacion.MinimoExistencia AS Existencia_min_pres, dbo.producto_presentacion.MaximoExistencia AS Existencia_max_pres, dbo.stock.atributo_variante_1, dbo.bodega_ubicacion.IdUbicacion AS IdUbicacionActual, 
+                  dbo.producto_presentacion.MinimoExistencia AS Existencia_min_pres, dbo.producto_presentacion.MaximoExistencia AS Existencia_max_pres, 
+				  --dbo.stock.atributo_variante_1,
+				  dbo.p_parametro.descripcion AS parametro_personalizado, 
+				  CASE WHEN p_parametro.tipo = 'Númerico' THEN CONVERT(NVARCHAR(50), dbo.stock_parametro.valor_numerico) 
+				  WHEN p_parametro.tipo = 'Texto' THEN ISNULL(dbo.stock_parametro.valor_texto, '') 
+                  WHEN p_parametro.tipo = 'Fecha' THEN CONVERT(nvarchar(50), isnull(dbo.stock_parametro.valor_fecha, ''), 101) 
+				  WHEN p_parametro.tipo = 'Lógico' THEN CONVERT(NVARCHAR(50), ISNULL(dbo.stock_parametro.valor_logico, '0')) 
+                  END AS atributo_variante_1, 
+				  dbo.bodega_ubicacion.IdUbicacion AS IdUbicacionActual, 
                   dbo.bodega_ubicacion.nivel AS Ubicacion_Nivel, dbo.bodega_ubicacion.indice_x AS Ubicacion_Indice_X, dbo.bodega_ubicacion.descripcion AS Ubicacion_Nombre, dbo.bodega_tramo.descripcion AS Ubicacion_Tramo, 
                   ISNULL(dbo.motivo_devolucion.Nombre, 'N/A') AS MotivoDevolucion, ISNULL(dbo.trans_oc_pol.codigo_poliza, 'N/D') AS Codigo_Poliza, ISNULL(dbo.trans_oc_pol.numero_orden, 'N/D') AS Numero_poliza, 
                   dbo.producto_familia.nombre AS Familia, dbo.trans_oc_pol.numero_orden AS NoTO, dbo.trans_oc_enc.Referencia, dbo.Nombre_Area(dbo.bodega_ubicacion.IdArea, dbo.bodega_ubicacion.IdBodega) AS Area, 
                   dbo.producto_clasificacion.nombre AS Clasificacion, ISNULL(dbo.trans_oc_det.IdEmbarcador, '') IdEmbarcador, ISNULL(oc_emb.Nombre, 'N/D') AS Shipper, ISNULL(dbo.trans_oc_enc.Referencia, '') ReferenciaOCEnc, 
-                  ISNULL(dbo.trans_oc_enc.IdOrdenCompraEnc, '') doc_ingreso, dbo.bodega.codigo + ' - ' + dbo.bodega.nombre AS bodega, dbo.p_parametro.descripcion AS parametro_personalizado, 
+                  ISNULL(dbo.trans_oc_enc.IdOrdenCompraEnc, '') doc_ingreso, dbo.bodega.codigo + ' - ' + dbo.bodega.nombre AS bodega,
 				  dbo.producto.IDPRODUCTOPARAMETROA, dbo.producto.IDPRODUCTOPARAMETROB, 
                   dbo.producto_parametro_a.Nombre AS parametro_a, 
 				  dbo.producto_parametro_b.Nombre AS parametro_b
@@ -1228,6 +1236,7 @@ FROM     dbo.trans_oc_pol RIGHT OUTER JOIN
                   dbo.stock_det.posiciones, dbo.trans_oc_det.costo, dbo.trans_oc_det.cantidad_recibida, dbo.bodega.codigo, dbo.trans_oc_enc.no_ticket_tms, dbo.tms_ticket.Fecha_Ingreso,
 				  dbo.producto.IDPRODUCTOPARAMETROA,dbo.producto.IDPRODUCTOPARAMETROB,
 				  dbo.producto_parametro_a.Nombre,dbo.producto_parametro_b.Nombre
+
 
 
 
