@@ -104,5 +104,76 @@ GROUP BY p.codigo, p.nombre, pp.nombre, pe.nombre, um.Nombre, pr.nombre_comercia
 GO
 
 
+--#GT05092022--se ajusta porque no carga todos los despachos y le falta clasificación para cealsa--
+
+ALTER VIEW [dbo].[VW_Despacho_Rep] AS
+select 
+pick_ubic.IdPickingUbic,pick_ubic.IdStock,pick_ubic.IdPedidoEnc,
+pick_ubic.IdPedidoDet,pick_ubic.IdPropietarioBodega,
+pick_ubic.IdProductoBodega,pick_ubic.IdProductoEstado,
+d_det.IdUnidadMedidaBasica,
+pick_ubic.IdRecepcion,
+d_enc.IdDespachoEnc,d_det.IdDespachoDet,
+prop.nombre_comercial AS Propietario,prod.codigo AS Codigo_Producto, prod.nombre AS Nombre_Producto,prod_estado.nombre AS Estado,
+um.Nombre as UM,
+d_det.IdPresentacion,prod_pres.nombre as Presentacion,prod_pres.factor,
+pick_ubic.lote, pick_ubic.fecha_vence AS Vence,
+b_ubic.descripcion AS Ubicacion_Origen,
+ISNULL(pick_ubic.cantidad_recibida, 0) AS cantidad_pickeada, 
+ISNULL(pick_ubic.cantidad_verificada, 0) AS cantidad_verificada, 
+ISNULL(pick_ubic.peso_recibido, 0) AS Peso_Pickeado, 
+ISNULL(pick_ubic.peso_verificado, 0) AS Peso_Verificado,
+d_det.CantidadDespachada, d_det.PesoDespachado, 
+ISNULL(pick_ubic.encontrado, 0) AS Encontrado, 
+ISNULL(pick_ubic.acepto, 0) AS Acepto, 
+pe_enc.no_documento AS No_Documento_WMS, 
+pe_enc.referencia AS No_Referencia,
+pe_enc.IdCliente,
+cl.codigo AS Codigo_Cliente, cl.nombre_comercial AS Nombre_Cliente,
+cl.idubicacionvirtual,cl.es_bodega_recepcion, cl.es_bodega_traslado,
+d_enc.no_pase,d_enc.observacion,d_enc.numero, d_enc.marchamo,
+r_ruta.CODIGO AS Codigo_Ruta, r_ruta.NOMBRE AS Nombre_Ruta, t_vehiculo.placa AS Placa_Vehiculo, t_vehiculo.placa_comercial, 
+t_vehiculo.marca AS Marca_Vehiculo, t_vehiculo.modelo AS Modelo_Vehiculo, t_piloto.nombres AS Nombre_Piloto, 
+t_piloto.apellidos AS Apellido_Piloto, t_piloto.no_carnet AS No_Carnet_Piloto, t_piloto.no_licencia AS No_Licencia_Piloto, 
+d_enc.fecha AS Fecha_Despacho, pick_ubic.IdOperadorBodega_Pickeo, pick_ubic.lic_plate,
+prod_clas.nombre as Clasificacion
+from 
+trans_despacho_enc d_enc  
+INNER JOIN trans_despacho_det d_det on d_enc.IdDespachoEnc=d_det.IdDespachoEnc
+INNER JOIN trans_picking_ubic pick_ubic on d_det.IdPickingUbic= pick_ubic.IdPickingUbic
+INNER JOIN producto_bodega prod_bod on pick_ubic.IdProductoBodega = prod_bod.IdProductoBodega
+					inner join producto prod on prod_bod.IdProducto = prod.IdProducto
+INNER JOIN propietario_bodega prop_bod on pick_ubic.IdPropietarioBodega = prop_bod.IdPropietarioBodega
+					inner join  propietarios prop on prop_bod.IdPropietario = prop.IdPropietario
+INNER JOIN producto_estado prod_estado on prod_estado.IdPropietario = prop.IdPropietario
+INNER JOIN unidad_medida UM on pick_ubic.IdUnidadMedida = um.IdUnidadMedida --and um.IdPropietario = prop.IdPropietario
+INNER JOIN bodega_ubicacion b_ubic on pick_ubic.IdUbicacion = b_ubic.IdUbicacion and pick_ubic.IdBodega = b_ubic.IdBodega
+INNER JOIN trans_pe_enc pe_enc on pe_enc.IdPedidoEnc= d_det.IdPedidoEnc
+LEFT OUTER JOIN producto_presentacion prod_pres on pick_ubic.IdPresentacion = prod_pres.IdPresentacion 
+				and prod.IdProducto = prod_pres.IdProducto
+INNER JOIN cliente cl on pe_enc.IdCliente= cl.IdCliente and prop.IdPropietario=cl.IdPropietario
+LEFT OUTER JOIN road_ruta r_ruta on d_enc.IdRuta = r_ruta.IdRuta
+LEFT OUTER JOIN dbo.empresa_transporte_pilotos t_piloto on d_enc.IdPiloto = t_piloto.IdPiloto
+LEFT OUTER JOIN dbo.empresa_transporte_vehiculos t_vehiculo ON d_enc.IdVehiculo = t_vehiculo.IdVehiculo
+LEFT OUTER JOIN producto_clasificacion prod_clas on prod.IdClasificacion = prod_clas.IdClasificacion
+GROUP BY prod.codigo, prod.nombre, prod_pres.nombre, prod_estado.nombre, um.Nombre, prop.nombre_comercial, b_ubic.descripcion, prod_pres.factor, 
+pick_ubic.peso_recibido,pick_ubic.peso_verificado, pick_ubic.acepto, 
+pick_ubic.cantidad_recibida, pick_ubic.cantidad_verificada, pick_ubic.encontrado, pick_ubic.IdPickingUbic, 
+pick_ubic.IdStock, pick_ubic.IdPedidoDet, 
+pick_ubic.IdPropietarioBodega, pick_ubic.IdProductoBodega, pick_ubic.IdProductoEstado, 
+pick_ubic.IdPresentacion,pick_ubic.IdUnidadMedida, 
+pick_ubic.IdRecepcion,d_det.IdDespachoEnc, 
+d_det.IdDespachoDet, d_det.CantidadDespachada,d_det.PesoDespachado, 
+pe_enc.no_documento, pe_enc.referencia,cl.codigo, cl.nombre_comercial, cl.idubicacionvirtual, 
+cl.es_bodega_recepcion,cl.es_bodega_traslado, 
+pick_ubic.lote, pick_ubic.fecha_vence, 
+d_det.IdPedidoEnc, d_enc.no_pase, d_enc.observacion,d_enc.numero, 
+d_enc.marchamo, r_ruta.CODIGO, r_ruta.NOMBRE, t_vehiculo.placa, t_vehiculo.marca, t_vehiculo.modelo, 
+t_vehiculo.placa_comercial, t_piloto.nombres, 
+t_piloto.apellidos, t_piloto.no_carnet, t_piloto.no_licencia, 
+d_enc.fecha, pick_ubic.IdOperadorBodega_Pickeo, pick_ubic.lic_plate
+,pick_ubic.IdPedidoEnc,d_det.IdUnidadMedidaBasica,d_enc.IdDespachoEnc,d_det.IdPresentacion,pe_enc.IdCliente,
+prod_clas.nombre
+
 
 
