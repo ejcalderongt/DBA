@@ -93,3 +93,34 @@ FROM     dbo.i_nav_transacciones_out AS nav LEFT OUTER JOIN
 				  dbo.tms_ticket AS tms on oc_enc.no_ticket_tms = tms.IdTicket
 
 
+--#GT05092022-- Otto/cealsa agregan campos a la vista para efectos de control en ingresos y salidas de mercaderia (Expr1,idpedidoenc,lic_plate)
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER view [dbo].[VW_Fiscal_CtasOrden] as
+SELECT nav.IdTipoDocumento, nav.tipo_transaccion, nav.idordencompra, nav.idempresa, nav.idpropietario, ISNULL(pr.nombre_comercial, N'ND') AS nombre_comercial, nav.idpropietariobodega, nav.unidad_medida, nav.cantidad_presentacion, 
+                  nav.Cantidad_Esperada AS cantidad,
+				 tms.Fecha_Ingreso as fecha_ticket,
+				  nav.fecha_recepcion, nav.fecha_despacho, nav.codigo_producto, '' AS codigo_poliza, pd.codigo_barra, ISNULL(nav.valor_dai, 0) AS valor_dai, ISNULL(nav.valor_iva, 0) AS valor_iva, 
+                  ISNULL(nav.valor_aduana, 0) AS valor_aduana, nav.idbodega, BD.es_bodega_fiscal, CASE WHEN BD.es_bodega_fiscal = 1 THEN 'Fiscal' WHEN BD.es_bodega_fiscal = 0 THEN 'General' END AS Bodega, oc_enc.Referencia, 
+                  oc_pol.numero_orden,lic_plate, nav.cantidad as 'Expr1',nav.idpedidoenc
+FROM     dbo.i_nav_transacciones_out AS nav LEFT OUTER JOIN
+                  dbo.propietarios AS pr ON pr.IdPropietario = nav.idpropietario LEFT OUTER JOIN
+                  dbo.producto AS pd ON pd.codigo = nav.codigo_producto INNER JOIN
+                  dbo.bodega AS BD ON nav.idbodega = BD.IdBodega LEFT OUTER JOIN
+                  dbo.trans_oc_enc AS oc_enc ON nav.idordencompra = oc_enc.IdOrdenCompraEnc LEFT OUTER JOIN
+                  dbo.trans_oc_pol AS oc_pol ON oc_enc.IdOrdenCompraEnc = oc_pol.IdOrdenCompraEnc 
+				 LEFT OUTER JOIN
+				  dbo.tms_ticket AS tms on oc_enc.no_ticket_tms = tms.IdTicket
+GO
+
+
+
+
+
+
+
