@@ -1,42 +1,50 @@
+/****** Object:  StoredProcedure [dbo].[SP_STOCK_JORNADA_DESFASE]    Script Date: 7/09/2022 08:04:10 ******/
 SET ANSI_NULLS ON
 GO
+
 SET QUOTED_IDENTIFIER ON
 GO
+
 -- =============================================
 -- Author:        Carolina Fuentes
 -- Create date:   06-09-2022
 -- Description:   Obtener los registros que no existen en Stock Jornada
 -- =============================================
-CREATE PROCEDURE SP_STOCK_JORNADA_DESFASE
-    -- Add the parameters for the stored procedure here
+ALTER PROCEDURE [dbo].[SP_STOCK_JORNADA_DESFASE]
+
+-- Add the parameters for the stored procedure here
 AS
+
+DECLARE @RegistosARevisar AS INT
+
 BEGIN
     -- SET NOCOUNT ON added to prevent extra result sets from
     -- interfering with SELECT statements.
-    SET NOCOUNT ON;
-
-
 
    IF EXISTS (SELECT * FROM sys.objects WHERE name = 'stock_jornada_consecutivo' AND type = 'U') DROP TABLE stock_jornada_consecutivo
-    IF EXISTS (SELECT * FROM sys.objects WHERE name = 'stock_jornada_desface' AND type = 'U') DROP TABLE stock_jornada_desface
+   IF EXISTS (SELECT * FROM sys.objects WHERE name = 'stock_jornada_desface' AND type = 'U') DROP TABLE stock_jornada_desface
 
+  SELECT ROW_NUMBER() OVER(PARTITION BY LIC_PLATE ORDER BY FECHA ASC)  AS CONSECUTIVO, LIC_PLATE, FECHA, IDSTOCK, IDJORNADASISTEMA, IDBODEGA, IDTICKETTMS
+   INTO  STOCK_JORNADA_CONSECUTIVO
+   FROM STOCK_JORNADA ORDER BY LIC_PLATE,FECHA
 
+  SELECT *, DATEADD(DAY, CONSECUTIVO-1,
+   (SELECT MIN(FECHA) FROM STOCK_JORNADA_CONSECUTIVO S WHERE  S.LIC_PLATE = STOCK_JORNADA_CONSECUTIVO.LIC_PLATE)) AS FECHA_CONSECUTIVA,
+   (SELECT MIN(FECHA) FROM STOCK_JORNADA_CONSECUTIVO S WHERE  S.LIC_PLATE = STOCK_JORNADA_CONSECUTIVO.LIC_PLATE) AS MIN_FECHA,
+   (SELECT MAX(FECHA) FROM STOCK_JORNADA_CONSECUTIVO S WHERE  S.LIC_PLATE = STOCK_JORNADA_CONSECUTIVO.LIC_PLATE) AS MAX_FECHA
+    INTO  STOCK_JORNADA_DESFACE
+    FROM STOCK_JORNADA_CONSECUTIVO
+    WHERE DATEDIFF(DAY,DATEADD(DAY, CONSECUTIVO-1, FECHA), FECHA)<>0
+    ORDER BY LIC_PLATE, CONSECUTIVO, FECHA
 
-   select ROW_NUMBER() OVER(PARTITION BY lic_plate ORDER BY fecha ASC)  AS consecutivo, lic_plate, fecha, IdStock, IdJornadaSistema, IdBodega, IdTicketTMS
-    into  stock_jornada_consecutivo
-    from stock_jornada order by lic_plate,Fecha
+   SELECT @RegistosARevisar=(SELECT COUNT(*) FROM STOCK_JORNADA_CONSECUTIVO)
 
+   RETURN @RegistosARevisar
 
+COMMIT
 
-   select *, DATEADD(day, consecutivo-1,
-     (select Min(fecha) from stock_jornada_consecutivo s where  s.lic_plate = stock_jornada_consecutivo.lic_plate)) as fecha_consecutiva,
-     (select Min(fecha) from stock_jornada_consecutivo s where  s.lic_plate = stock_jornada_consecutivo.lic_plate) as min_fecha,
-     (select Max(fecha) from stock_jornada_consecutivo s where  s.lic_plate = stock_jornada_consecutivo.lic_plate) as max_fecha
-    into  stock_jornada_desface
-    from stock_jornada_consecutivo
-    where datediff(day,DATEADD(day, consecutivo-1, fecha), fecha)<>0
-    order by lic_plate, consecutivo, fecha
 END
+
 GO
 
 
