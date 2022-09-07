@@ -52,3 +52,61 @@ select df.* from stock_jornada_desface df
 where not exists (select * from stock_jornada d WHERE d.lic_plate = df.lic_plate and d.fecha = df.fecha_consecutiva)
 and df.max_fecha >=df.fecha_consecutiva
 order by lic_plate, fecha_consecutiva
+
+/****** #CKFK 20220907 Se agregaron los registros faltantes por el consecutivo máximo *****/
+/****** Object:  StoredProcedure [dbo].[SP_STOCK_JORNADA_DESFASE]    Script Date: 7/09/2022 09:46:52 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- =============================================
+-- Author:        Carolina Fuentes
+-- Create date:   06-09-2022
+-- Description:   Obtener los registros que no existen en Stock Jornada
+-- =============================================
+CREATE PROCEDURE [dbo].[SP_STOCK_JORNADA_DESFASE]
+-- Add the parameters for the stored procedure here
+   @RegistrosARevisar  AS INT OUTPUT
+AS
+BEGIN
+    -- SET NOCOUNT ON added to prevent extra result sets from
+    -- interfering with SELECT statements.
+
+   IF EXISTS (SELECT * FROM sys.objects WHERE name = 'stock_jornada_consecutivo' AND type = 'U') DROP TABLE stock_jornada_consecutivo
+   IF EXISTS (SELECT * FROM sys.objects WHERE name = 'stock_jornada_desfase' AND type = 'U') DROP TABLE stock_jornada_desfase
+   IF EXISTS (SELECT * FROM sys.objects WHERE name = 'stock_jornada_fecha_consecutiva' AND type = 'U') DROP TABLE stock_jornada_fecha_consecutiva
+
+   SELECT ROW_NUMBER() OVER(PARTITION BY LIC_PLATE ORDER BY FECHA ASC)  AS CONSECUTIVO, LIC_PLATE, FECHA, IDSTOCK, IDJORNADASISTEMA, IDBODEGA, IDTICKETTMS
+   INTO  STOCK_JORNADA_CONSECUTIVO
+   FROM STOCK_JORNADA ORDER BY LIC_PLATE,FECHA
+
+   SELECT *, DATEADD(DAY, CONSECUTIVO-1,
+	     (SELECT MIN(FECHA) FROM stock_jornada_consecutivo S WHERE  S.LIC_PLATE = stock_jornada_consecutivo.lic_plate)) AS FECHA_CONSECUTIVA,
+	     (SELECT MIN(FECHA) FROM stock_jornada_consecutivo S WHERE  S.LIC_PLATE = stock_jornada_consecutivo.lic_plate) AS MIN_FECHA,
+	     (SELECT MAX(FECHA) FROM stock_jornada_consecutivo S WHERE  S.LIC_PLATE = stock_jornada_consecutivo.lic_plate) AS MAX_FECHA,
+		 (SELECT MAX(CONSECUTIVO) FROM stock_jornada_consecutivo S WHERE  S.LIC_PLATE = stock_jornada_consecutivo.lic_plate) AS MAX_CONSECUTIVO
+    INTO  STOCK_JORNADA_FECHA_CONSECUTIVA
+    FROM STOCK_JORNADA_CONSECUTIVO
+    WHERE DATEDIFF(DAY,DATEADD(DAY, CONSECUTIVO-1, FECHA), FECHA)<>0
+    ORDER BY LIC_PLATE, CONSECUTIVO, FECHA
+
+	INSERT INTO STOCK_JORNADA_FECHA_CONSECUTIVA
+	SELECT consecutivo, lic_plate, fecha, IdStock, IdJornadaSistema, IdBodega, IdTicketTMS, DATEADD(DAY, max_consecutivo,min_fecha) fecha_consecutiva, min_fecha, max_fecha, max_consecutivo
+    FROM STOCK_JORNADA_FECHA_CONSECUTIVA
+    WHERE  CONSECUTIVO = MAX_CONSECUTIVO
+
+    SELECT DF.*
+    INTO stock_jornada_desfase
+    FROM STOCK_JORNADA_FECHA_CONSECUTIVA DF
+    WHERE NOT EXISTS (SELECT * FROM STOCK_JORNADA D WHERE D.LIC_PLATE = DF.LIC_PLATE AND D.FECHA = DF.FECHA_CONSECUTIVA)
+    AND DF.MAX_FECHA >=DF.FECHA_CONSECUTIVA
+    ORDER BY LIC_PLATE, FECHA_CONSECUTIVA
+
+   SELECT @RegistrosARevisar=(SELECT COUNT(*) FROM stock_jornada_desfase)
+
+   RETURN @RegistrosARevisar
+
+COMMIT
+
+END
