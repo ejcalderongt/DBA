@@ -1,0 +1,22 @@
+/****** Object:  Table [dbo].[configuracion_usuario_det]    Script Date: 8/09/2022 08:40:45 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[configuracion_usuario_det](
+	[IdConfiguracionUsuarioDet] [int] NOT NULL,
+	[IdConfiguracionUsuarioEnc] [int] NULL,
+	[Maquina_Host] [nvarchar](50) NULL,
+	[Maquina_IP] [nvarchar](50) NULL,
+	[Nombre_Template] [nvarchar](50) NULL,
+	[String_Template] [nvarchar](50) NULL,
+	[Fecha_Agregado] [datetime] NULL,
+	[Fecha_Modificado] [datetime] NULL,
+ CONSTRAINT [PK_configuracion_det] PRIMARY KEY CLUSTERED 
+(
+	[IdConfiguracionUsuarioDet] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
