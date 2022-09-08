@@ -1,0 +1,15 @@
+/****** Object:  View [dbo].[VW_Configuracion_Usuario_Template]    Script Date: 8/09/2022 08:45:38 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE VIEW [dbo].[VW_Configuracion_Usuario_Template]
+AS
+SELECT        dbo.configuracion_usuario_enc.IdConfiguracionUsuarioEnc, dbo.configuracion_usuario_enc.IdEmpresa, dbo.configuracion_usuario_enc.IdUsuario, dbo.configuracion_usuario_det.IdConfiguracionUsuarioDet, 
+                         dbo.configuracion_usuario_det.IdConfiguracionUsuarioEnc AS Expr1, dbo.configuracion_usuario_det.Maquina_Host, dbo.configuracion_usuario_det.Maquina_IP, dbo.configuracion_usuario_det.Nombre_Template, 
+                         dbo.configuracion_usuario_det.String_Template, dbo.configuracion_usuario_det.Fecha_Agregado, dbo.configuracion_usuario_det.Fecha_Modificado
+FROM            dbo.configuracion_usuario_enc INNER JOIN
+                         dbo.configuracion_usuario_det ON dbo.configuracion_usuario_enc.IdConfiguracionUsuarioEnc = dbo.configuracion_usuario_det.IdConfiguracionUsuarioEnc
+GO
