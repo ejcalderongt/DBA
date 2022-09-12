@@ -11,7 +11,7 @@ CREATE TABLE [dbo].[configuracion_usuario_det](
 	[Maquina_Host] [nvarchar](50) NULL,
 	[Maquina_IP] [nvarchar](50) NULL,
 	[Nombre_Template] [nvarchar](50) NULL,
-	[String_Template] [nvarchar](50) NULL,
+	[String_Template] [XML] NULL,
 	[Fecha_Agregado] [datetime] NULL,
 	[Fecha_Modificado] [datetime] NULL,
  CONSTRAINT [PK_configuracion_det] PRIMARY KEY CLUSTERED 
