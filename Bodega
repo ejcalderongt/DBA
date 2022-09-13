@@ -1,3 +1,6 @@
+--EJC202209121939:
+alter table bodega add permitir_repeticiones_en_ingreso bit default 0
+
 --#EJC202209121737: 
 alter table bodega add dias_maximo_vencimiento_reemplazo int
 
