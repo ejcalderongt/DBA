@@ -914,7 +914,7 @@ SELECT dbo.producto_bodega.IdBodega, dbo.propietarios.IdPropietario, dbo.propiet
 				  dbo.producto_parametro_b.Nombre AS parametro_b,
 				  bodega_tramo.es_rack,
 				  MAX(ISNULL(dbo.stock_res.IdPedido, 0)) AS IdPedido,
-				  dbo.bodega_ubicacion.ubicacion_picking
+				  dbo.bodega_ubicacion.ubicacion_picking, dbo.producto.IdTipoEtiqueta
 FROM     dbo.trans_oc_pol RIGHT OUTER JOIN
                   dbo.trans_re_oc INNER JOIN
                   dbo.trans_oc_enc ON dbo.trans_re_oc.IdOrdenCompraEnc = dbo.trans_oc_enc.IdOrdenCompraEnc INNER JOIN
@@ -968,6 +968,6 @@ FROM     dbo.trans_oc_pol RIGHT OUTER JOIN
                   dbo.stock_det.posiciones, dbo.trans_oc_det.costo, dbo.trans_oc_det.cantidad_recibida, dbo.bodega.codigo, dbo.trans_oc_enc.no_ticket_tms, dbo.tms_ticket.Fecha_Ingreso,
 				  dbo.producto.IDPRODUCTOPARAMETROA,dbo.producto.IDPRODUCTOPARAMETROB,
 				  dbo.producto_parametro_a.Nombre,dbo.producto_parametro_b.Nombre, bodega_tramo.es_rack,
-				  dbo.bodega_ubicacion.ubicacion_picking, dbo.trans_oc_embarcador.Nombre,dbo.stock.pallet_no_estandar
+				  dbo.bodega_ubicacion.ubicacion_picking, dbo.trans_oc_embarcador.Nombre,dbo.stock.pallet_no_estandar,dbo.producto.IdTipoEtiqueta
 
 
