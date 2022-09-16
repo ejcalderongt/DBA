@@ -180,4 +180,116 @@ END
 GO
 
 
+/****** Object:  StoredProcedure [dbo].[SP_STOCK_JORNADA_DESFASE]    Script Date: 16/09/2022 18:07:44 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- =============================================
+-- Author:        Carolina Fuentes
+-- Create date:   06-09-2022
+-- Description:   Obtener los registros que no existen en Stock Jornada
+-- =============================================
+ALTER PROCEDURE [dbo].[SP_STOCK_JORNADA_DESFASE]
+-- Add the parameters for the stored procedure here
+   @RegistrosARevisar  AS INT OUTPUT
+AS
+BEGIN
+    -- SET NOCOUNT ON added to prevent extra result sets from
+    -- interfering with SELECT statements.
+
+	IF EXISTS (SELECT * FROM sys.objects WHERE name = 'stock_jornada_consecutivo' AND type = 'U') DROP TABLE stock_jornada_consecutivo
+	IF EXISTS (SELECT * FROM sys.objects WHERE name = 'stock_jornada_desfase' AND type = 'U') DROP TABLE stock_jornada_desfase
+	IF EXISTS (SELECT * FROM sys.objects WHERE name = 'stock_jornada_fecha_consecutiva' AND type = 'U') DROP TABLE stock_jornada_fecha_consecutiva
+	IF EXISTS (SELECT * FROM sys.objects WHERE name = 'stock_jornada_desface' AND type = 'U') DROP TABLE stock_jornada_desface
+
+	SELECT ROW_NUMBER() OVER(PARTITION BY LIC_PLATE ORDER BY FECHA ASC) AS CONSECUTIVO, 
+			LIC_PLATE, 
+			FECHA, 
+			IDSTOCK, 
+			IDJORNADASISTEMA, 
+			IDBODEGA, 
+			IDTICKETTMS,
+			FECHA_INGRESO_TICKET_TMS
+	INTO  STOCK_JORNADA_CONSECUTIVO
+	FROM STOCK_JORNADA ORDER BY LIC_PLATE,FECHA
+
+	SELECT *, DATEADD(DAY, CONSECUTIVO-1,
+			(SELECT MIN(FECHA) FROM stock_jornada_consecutivo S WHERE  S.LIC_PLATE = stock_jornada_consecutivo.lic_plate)) AS FECHA_CONSECUTIVA,
+			(SELECT MIN(CONVERT(DATE,FECHA_INGRESO_TICKET_TMS)) FROM stock_jornada_consecutivo S WHERE  S.LIC_PLATE = stock_jornada_consecutivo.lic_plate) AS MIN_FECHA,
+			(SELECT MAX(FECHA) FROM stock_jornada_consecutivo S WHERE  S.LIC_PLATE = stock_jornada_consecutivo.lic_plate) AS MAX_FECHA,
+			(SELECT MAX(CONSECUTIVO) FROM stock_jornada_consecutivo S WHERE  S.LIC_PLATE = stock_jornada_consecutivo.lic_plate) AS MAX_CONSECUTIVO
+	INTO  STOCK_JORNADA_FECHA_CONSECUTIVA
+	FROM STOCK_JORNADA_CONSECUTIVO
+	WHERE DATEDIFF(DAY,DATEADD(DAY, CONSECUTIVO-1, FECHA), FECHA)<>0
+	ORDER BY LIC_PLATE, CONSECUTIVO, FECHA
+
+	INSERT INTO STOCK_JORNADA_FECHA_CONSECUTIVA
+	SELECT consecutivo+1, lic_plate, fecha, IdStock, IdJornadaSistema, IdBodega, IdTicketTMS, fecha_ingreso_ticket_tms, DATEADD(DAY, max_consecutivo,min_fecha) fecha_consecutiva, min_fecha, max_fecha, max_consecutivo
+	FROM STOCK_JORNADA_FECHA_CONSECUTIVA
+	WHERE  CONSECUTIVO = MAX_CONSECUTIVO
+
+	DECLARE @licencia NVARCHAR(50),@message NVARCHAR(50), @ticket NVARCHAR(50)
+	DECLARE licencias_cursor CURSOR FOR   
+	SELECT distinct lic_plate, IDTICKETTMS
+	FROM stock_jornada_fecha_consecutiva 
+	WHERE IDTICKETTMS<>'0' AND  MIN_FECHA  NOT IN (SELECT sj.fecha_consecutiva 
+													FROM STOCK_JORNADA_FECHA_CONSECUTIVA sj 
+													WHERE sj.lic_plate = STOCK_JORNADA_FECHA_CONSECUTIVA.LIC_PLATE)
+					AND  MIN_FECHA  NOT IN (SELECT sj.Fecha 
+													FROM stock_jornada sj 
+													WHERE sj.lic_plate = STOCK_JORNADA_FECHA_CONSECUTIVA.LIC_PLATE)
+	ORDER BY lic_plate;  
+  
+	OPEN licencias_cursor  
+  
+	FETCH NEXT FROM licencias_cursor   
+	INTO @licencia, @ticket
+  
+	WHILE @@FETCH_STATUS = 0  
+	BEGIN  
+		PRINT ' '  
+		SELECT @message = '----- Licencia: ' + @licencia  
+  
+		PRINT @message  
+  
+		-- Declare an inner cursor based     
+		-- on vendor_id from the outer cursor.  
+  
+		INSERT INTO STOCK_JORNADA_FECHA_CONSECUTIVA
+		SELECT top(1) 0, lic_plate, fecha, IdStock, IdJornadaSistema, IdBodega, IdTicketTMS, fecha_ingreso_ticket_tms, min_fecha fecha_consecutiva, 
+						min_fecha, max_fecha, max_consecutivo
+		FROM STOCK_JORNADA_FECHA_CONSECUTIVA
+		WHERE IdTicketTMS<>'0' and  
+				lic_plate = @licencia AND 
+				IdTicketTMS = @ticket and  MIN_FECHA  NOT IN (SELECT sj.fecha_consecutiva 
+															FROM STOCK_JORNADA_FECHA_CONSECUTIVA sj 
+															WHERE sj.lic_plate = STOCK_JORNADA_FECHA_CONSECUTIVA.LIC_PLATE)
+	 
+				AND  MIN_FECHA  NOT IN (SELECT sj.Fecha 
+													FROM stock_jornada sj 
+													WHERE sj.lic_plate = STOCK_JORNADA_FECHA_CONSECUTIVA.LIC_PLATE)
+		FETCH NEXT FROM licencias_cursor   
+		INTO @licencia, @ticket 
+	END   
+	CLOSE licencias_cursor;  
+	DEALLOCATE licencias_cursor; 
+
+	SELECT DF.*
+	INTO stock_jornada_desfase
+	FROM STOCK_JORNADA_FECHA_CONSECUTIVA DF
+	WHERE NOT EXISTS (SELECT * FROM STOCK_JORNADA D WHERE D.LIC_PLATE = DF.LIC_PLATE AND D.FECHA = DF.FECHA_CONSECUTIVA)
+	AND DF.MAX_FECHA >=DF.FECHA_CONSECUTIVA
+	ORDER BY LIC_PLATE, FECHA_CONSECUTIVA
+
+	SELECT @RegistrosARevisar  =(SELECT COUNT(*) FROM stock_jornada_desfase)
+
+  RETURN @RegistrosARevisar
+
+COMMIT
+
+END
+GO
 
