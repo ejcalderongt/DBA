@@ -1,17 +1,21 @@
 
 --#GT28092022 --Tabla para manejar alias en las columnas
 
-/****** Object:  Table [dbo].[configuracion_alias_campos]    Script Date: 28/09/2022 08:52:50 ******/
+/****** Object:  Table [dbo].[configuracion_alias_campos]    Script Date: 28/09/2022 09:14:37 ******/
 SET ANSI_NULLS ON
 GO
 
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE TABLE [dbo].[configuracion_alias_campos](    [IdConfiguracionAlias] [int] NOT NULL,    [Nombre_WMS] [nvarchar](50) NULL,    [Alias] [nvarchar](50) NULL,
+
+CREATE TABLE [dbo].[configuracion_alias_campos](
+    [IdConfiguracionAlias] [int] NOT NULL,
+    [Nombre_WMS] [nvarchar](50) NULL,
+    [Alias_WMS] [nvarchar](50) NULL,
 CONSTRAINT [PK_configuracion_alias_campos] PRIMARY KEY CLUSTERED
-(    [IdConfiguracionAlias] ASC
+(
+    [IdConfiguracionAlias] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-
