@@ -1,0 +1,111 @@
+ 1 - WMS-310 Validación proceso completo del un inventario ciclico
+ 2 - WMS-326 Corrección del error en el cambio de ubicación cuando hay presentación y unidades
+ 3 - WMS-329 Validación distribucion peso en cambio ubicacion  
+ 4 - WMS-330 Permitir explosionar varias veces una licencia en el cambio de ubicación
+ 5 - WMS-331 Permitir sumar la cantidad de una licencia cuando tenga mas de un stock en unidades, en el cambio de ubicación
+ 6 - WMS-333 Validación en importación de productos, creación de presentaciones que no debian crearse, generando inconsistencias
+ 7 - WMS-334 Validación Cambio de Estado
+ 8 - WMS-335 Corrección Ajustes de inventario, en ocasiones al poner la cantidad en 0 permite guardar el ajuste y se pierde el Stock
+ 9 - WMS-337 Agregar al reporte de Movimientos la columna de IdOrdenCompraEnc
+10 - WMS-339 Error en el cambio de ubicación cuando la cantidad se modifica y no se limpia el campo
+11 - WMS-340 Correccion en el reemplazo en picking, estaba llegando el IdPedido en 0 al insertar el nuevo picking ubic
+12 - WMS-327 Validación productos con propiedades deshabilitadas
+13 - WMS-341 Modificar vista VW_Fiscal_CtasOrden
+14 - WMS-342 Error con la liberación del stock reservado cuando se hace el Despacho
+15 - WMS-344 Validación simbolos validos removidos en DI
+16 - WMS-348 Ajustes en validación de campos vacíos en el botón procesar en el reabastecimiento manual y reubicación de stock reservado.
+17 - WMS-349 El foco en la reubicación se iba al código a pesar de que el producto tenia licencia y era necesario ingresarla
+18 - WMS-350 Cuando el IdStock no tiene licencia no ocultaba el campo de la licencia y el foco se iba directo a la ubicacion
+19 - WMS-351 En existencias al realizar el cambio de ubicación si no se hacía el cambio de ubicación al salir de existencias e ir por el menú al cambio de ubicación la pantalla aparecia con los datos seleccionados en la existencia
+20 - WMS-352 Poner un progress bar en el reabastecimiento manual
+21 - WMS-353 Poner un progress bar en la reubicación
+22 - WMS-355 Insertar a través de un script las ubicaciones que existen en la Bodega Genaral y que no existen en la Bodega de Fiscal en la misma
+23 - WMS-356 Ajuste de propietario en transacciones out
+24 - WMS-357 Pruebas en el proceso de recepción HH, validando que se guarde correctamente valores en los campos IdPropietario e IdPropietarioBodega en la tabla i_nav_transacciones_out
+25 - WMS-358 Pruebas con recepciones desde el BOF, para Validación que se guarde correctamente valores en los campos IdPropietario e IdPropietarioBodega en la tabla i_nav_transacciones_out
+26 - WMS-359 No cargaba correctamente el diseño de la pantalla en la verificación según el parámetro tipo_pantalla_verificación.
+27 - WMS-360 Cerrar Ticket al finalizar recepción
+28 - WMS-361 Reporte Ingresos Doc con diferencia lanza excepcion
+29 - WMS-362 Corrección de la inicialización del IdTipoTarea
+30 - WMS-363 Se agrego fecha y hora en los campos fecha, fecha_agr en el movimiento cuando se realiza un cambio de ubicación
+31 - WMS-364 Agregar los campos URL_WSHH_QA y URL_WSHH_PRD en el conn.ini del WMS y en la clase clsCadenaConexion
+32 -    Ajuste en despachos parciales, se muestra únicamente el producto despachado y no todo el pedido (b3pl)
+33 -   Ticket TMS se pueden reutilizar y reimprimir (b3pl)
+34 - WMS-374 Permitir descripcion o Id en ciertas columnas de archivo excel para importar productos.
+35 - WMS-372 Cargar top 50 en la reubicación de stock reservado.
+36 - WMS-375 Corrección en los documentos de ingreso de tipo de documento Liquidación de ruta (Rechazo) al actualizar el documento, se perdía el documento de referencia.
+37 - WMS-376 Modificación al proceso de Cerrar documento de Ingreso cuando es BackOrder, ya se marca como cerrada y como enviada a ERP  
+38 - WMS-377 Modificación al proceso de Cerrar documento de Ingreso cuando es BackOrder, se marca como cerrada solamente
+39 - WMS-378 Se agregó validación en el proceso de cambio ubicación para asegurar la Licencia en los registros no quede vacía
+40. WMS-346 Stock jornada tiene saltos en registros al calcular el retroactivo
+41. WMS-380 La reubicación de Stock reservado solo muestra los productos que están en niveles mayores a uno
+42. WMS-381 Error en la cantidad de una licencia en el cambio de ubicación
+43. WMS-382 Bloquear el campo licencia al cargar datos de un picking consolidado.
+44. WMS-383 Mantener el tipo de lista consolidada o detallada al cambiar de pantalla.
+45. WMS-384 Corrección botón de Despacho, no liberaba el stock de los despachos parciales
+46. WMS-386 Corrección reporte de movimientos por Kardex, no salía la presentacion
+47. WMS-387 Agregamos la opción de exportar a Excel en reporte de Kardex por movimientos
+48. WMS-390 Update proveedor para ingresos
+49. WMS-391 Agregar validación en la recepción para cuando la licencia en la trans_re_det vaya vacía
+ 50. WMS-392 Corrección en el reabastecimiento manual, ya que estaba mostrando stock con cantidad 0 por las reservas de inventario
+ 51. WMS-395 Validación Release
+ 52. WMS-397 Ajuste en reporte Despacho
+ 53. WMS-398 Ajuste reporte Movimientos
+ 54. WMS-400 Ajuste en Importacion inv inicial
+ 55. WMS-401 Agregar validación en la implosión para que no se permita hacer el proceso si la cantidad de unidades no es m煤ltiplo del factor de la presentación seleccionada
+ 56. WMS-402 Error en el proceso de recepción de pallet en Idealsa
+57. WMS-403 Revisar porque el proceso de guardar barra pallet es tan lento
+58. WMS-404 Se carga la lista al ingresar en la pantalla de reubicacion de stock reservado HH
+59. WMS-405 Corrección al llenar la licencia en el detalle de movimientos al realizar un cambio de ubicación.
+60. WMS-406 Corrección en la implosión para que no salgan las presentaciones repetidas
+61. WMS-408 El crear un producto se asigna por defecto a las bodegas existentes
+62. WMS-409 Al Guardar el producto, no se guardaba el IdTipoEtiqueta cuando era Nuevo.
+63. WMS-410 Cuando se presionaba nuevo producto no se limpiaban los campos (Familia, Clasificación, Marca, Parámetro A y B) dejando el primer valor seleccionado.
+64. WMS-411 Cuando se crea el producto toma el parámetro de la interface de genera LP para que el operador tenga un por defecto al momento de crearlos.
+65. WMS-412 En la HH si el producto no genera LP no se ocultaba correctamente el campo y se mostraba para ingresar licencia en el proceso de recepción.
+66. WMS-413 En la HH en el proceso de cambio de ubicación, el mensaje de “la ubicación no es válida para el cambio de ubicación” no validaba la tarea si era cambio de estado, se mejoró el mensaje en base a la bandera del tipo de transacción.
+67. WMS-416 En el mantenimiento de productos se corrigió un bug que permitía asociar multiples veces el mismo producto a la misma bodega, como resultado en el listado de productos de recepción se mostraban duplicados.
+68. WMS-415 En el BOF para la configuración de CEALSA, se busca la coincidencia del proveedor/cliente por número de NIT.
+69. WMS-414 En el picking, si el producto no tenía licencia se mostraba el campo licencia pidiendo que se ingresara 0, ahora ya no se muestra el campo licencia y permite hacer el picking con el código del producto.
+70. WMS-408 El crear un producto se asigna por defecto a las bodegas existentes
+71. WMS-409 Al Guardar el producto, no se guardaba el IdTipoEtiqueta cuando era Nuevo.
+72. WMS-410 Cuando se presionaba nuevo producto no se limpiaban los campos (Familia, Clasificación, Marca, Parámetro A y B) dejando el primer valor seleccionado.
+73. WMS-411 Cuando se crea el producto toma el parámetro de la interface de genera LP para que el operador tenga un por defecto al momento de crearlos.
+74. WMS-412 En la HH si el producto no genera LP no se ocultaba correctamente el campo y se mostraba para ingresar licencia en el proceso de recepción.
+75. WMS-413 En la HH en el proceso de cambio de ubicación, el mensaje de “la ubicación no es válida para el cambio de ubicación” no validaba la tarea si era cambio de estado, se mejoró el mensaje en base a la bandera del tipo de transacción.
+76. WMS-414 En el picking, si el producto no tenía licencia se mostraba el campo licencia pidiendo que se ingresara 0, ahora ya no se muestra el campo licencia y permite hacer el picking con el código del producto.
+77. WMS-415 En el BOF para la configuración de CEALSA, se busca la coincidencia del proveedor/cliente por número de NIT.
+78. WMS-416 En el mantenimiento de productos se corrigió un bug que permitía asociar multiples veces el mismo producto a la misma bodega, como resultado en el listado de productos de recepción se mostraban duplicados.
+79. WMS-429 Agregar validación cuando los datos de la licencia y la ubicación no son correctos en el reabastecimiento manual 
+80. WMS-430 Agregar validación cuando los datos de la licencia y la ubicación no son correctos en la reubicacion de stock reservado.
+81. WMS-421 Ajustar reporte Recepción
+82. WMS-426 Corrección en reabastecimiento, se estaba enviando 0 en la cantidad cuando el producto no tenia presentación.	
+83. WMS-424 Validación reportes para DyD	
+84. WMS-428 Asignación LP por excepción	
+85. WMS-429	Agregar validación cuando los datos de la licencia y la ubicación no son correctos en el reabastecimiento manual	
+86. WMS-430	Agregar validación cuando los datos de la licencia y la ubicación no son correctos en la reubicacion de stock reservado.	
+87. WMS-434	Update de recepción con LP en valor 0	
+88. WMS-435	Agregar parámetro en la bodega que permita definir la cantidad de días permitidos para el remplazo	
+89. WMS-436	En base al parámetro anterior modificar el Quey que muestra los productos que se pueden reemplazar	
+90. WMS-440	Se agrega stock para producto no registrado	
+91. WMS-441	Update a Despachos registrados como Transferencia	
+92. WMS-442	Concurrencia  en la HH (recarga de LP por concurrencia de usuario en 2 dispositivos)
+93. WMS-443	Validación Guardar Layout para reportes 	
+94. WMS-444	Variable Dias_Maximo_Vencimiento_Reemplazo en bodega	
+95. WMS-445	Correción en el cambio de ubicación cuando una licencia esta reservada completamente.	
+96.WMS-446	Validación cuando el cambio de ubicacion se hace desde la consulta existencias.	
+97.WMS-447	Poder recibir licencias adicionales en el módulo de recepción	
+98.WMS-454	Campos nuevos en: Resumen de Existencias por LP	
+99.WMS-453	Campos nuevos en: Resumen de Existencias por Tipo Producto	
+100.WMS-452	Campos nuevos en: Resumen de Existencias por Ubicación	
+101.WMS-451	Campos nuevos en: Valorizacion de Inventario	
+102.WMS-456	Inventario en Linea no muestra producto explosionado	
+103.WMS-460	Se agrega tabla Alias para campos nuevos	
+104.WMS-461	Asignacion de Operador a Resolución: Validación existencia de una serie al guardar resolución para un operador de bodega
+105.WMS-462	Validación Bodega al importar ingreso en fiscal/general	
+106.WMS-463	Optimización del proceso Stock Jornada	
+107.WMS-464	Optimización del proceso importar Propietarios desde ERP	
+108.WMS-465	Validación propiedades de producto en cambio de úbicación (control lote, fecha vence, otros)	
+109.WMS-466	Ajuste para reasignar recepción (de uno a varios operadores)	
+110.WMS-467	Ajuste para permitir valor cero en ingreso fiscal (fob,dai,flete,seguro)
+
