@@ -168,3 +168,7 @@ GO
 CREATE NONCLUSTERED INDEX NCLI_Trans_Picking_Ubic_20220908_EJC
 ON [dbo].[trans_picking_ubic] ([IdPedidoDet],[IdPedidoEnc])
 INCLUDE ([IdPickingEnc],[IdPickingDe
+
+CREATE NONCLUSTERED INDEX IX_Stock_Jornada_20221001
+ON [dbo].[stock_jornada] ([Fecha],[lic_plate])
+GO
