@@ -18,3 +18,5 @@ alter table trans_picking_ubic add  IdUbicacionTemporal int null
 
 --#EJC20220303: Almacenar el operador el que le fue asignada la línea de forma auotmática. ---------------------
 alter table trans_picking_ubic add  IdOperadorBodega_Asignado int default 0
+
+ALTER TABLE trans_picking_ubic ALTER COLUMN LOTE NVARCHAR(50) NULL
