@@ -1,9 +1,3 @@
---EJC202209121939:
-alter table bodega add permitir_repeticiones_en_ingreso bit default 0
-
---#EJC202209121737: 
-alter table bodega add dias_maximo_vencimiento_reemplazo int
-
 --#EJC20201121
 ALTER TABLE BODEGA ADD Cuenta_Ingreso_Mercancias nvarchar(50) default 0
 ALTER TABLE BODEGA ADD Cuenta_Egreso_Mercancias nvarchar(50) default 0
@@ -112,3 +106,9 @@ ALTER TABLE bodega ADD top_reabastecimiento_manual int NOT NULL DEFAULT 20
 
 --#CKFK20220721
 ALTER TABLE bodega ADD permitir_decimales bit NOT NULL DEFAULT 0
+
+--EJC202209121939:
+alter table bodega add permitir_repeticiones_en_ingreso bit default 0
+
+--#EJC202209121737: 
+alter table bodega add dias_maximo_vencimiento_reemplazo int
