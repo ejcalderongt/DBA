@@ -293,6 +293,9 @@ COMMIT
 END
 GO
 
+declare @registros int
+EXEC SP_STOCK_JORNADA_DESFASE @Registros
+
 /****** Object:  StoredProcedure [dbo].[SP_STOCK_JORNADA_DESFASE]    Script Date: 5/10/2022 12:16:27 ******/
 SET ANSI_NULLS ON
 GO
@@ -356,16 +359,13 @@ BEGIN
 
 	  SELECT @RegistrosARevisar  =(SELECT COUNT(*) FROM stock_jornada_desfase)
 	  
-	   IF @@TRANCOUNT > 0  
-		COMMIT TRANSACTION;  
+	  COMMIT TRANSACTION;  
 
 	  RETURN @RegistrosARevisar
   END TRY
   BEGIN CATCH
-	 IF @@TRANCOUNT > 0  
-        ROLLBACK TRANSACTION;  
+	 ROLLBACK TRANSACTION;  
    END CATCH;  
   
 END
 GO
-
