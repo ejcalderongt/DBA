@@ -293,9 +293,6 @@ COMMIT
 END
 GO
 
-declare @registros int
-EXEC SP_STOCK_JORNADA_DESFASE @Registros
-
 /****** Object:  StoredProcedure [dbo].[SP_STOCK_JORNADA_DESFASE]    Script Date: 5/10/2022 12:16:27 ******/
 SET ANSI_NULLS ON
 GO
@@ -316,9 +313,9 @@ BEGIN
     -- SET NOCOUNT ON added to prevent extra result sets from
     -- interfering with SELECT statements.
 
-	BEGIN TRANSACTION
-
 	BEGIN TRY
+
+	BEGIN TRANSACTION
 
 	IF EXISTS (SELECT * FROM sys.objects WHERE name = 'stock_jornada_consecutivo' AND type = 'U') DROP TABLE stock_jornada_consecutivo
 	IF EXISTS (SELECT * FROM sys.objects WHERE name = 'stock_jornada_desfase' AND type = 'U') DROP TABLE stock_jornada_desfase
