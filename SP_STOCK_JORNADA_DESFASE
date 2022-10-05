@@ -313,9 +313,9 @@ BEGIN
     -- SET NOCOUNT ON added to prevent extra result sets from
     -- interfering with SELECT statements.
 
-	BEGIN TRY
-
 	BEGIN TRANSACTION
+
+	BEGIN TRY
 
 	IF EXISTS (SELECT * FROM sys.objects WHERE name = 'stock_jornada_consecutivo' AND type = 'U') DROP TABLE stock_jornada_consecutivo
 	IF EXISTS (SELECT * FROM sys.objects WHERE name = 'stock_jornada_desfase' AND type = 'U') DROP TABLE stock_jornada_desfase
@@ -360,9 +360,21 @@ BEGIN
 
 	  RETURN @RegistrosARevisar
   END TRY
-  BEGIN CATCH
-	 ROLLBACK TRANSACTION;  
-   END CATCH;  
+  BEGIN CATCH  
+    SELECT   
+        ERROR_NUMBER() AS ErrorNumber  
+        ,ERROR_SEVERITY() AS ErrorSeverity  
+        ,ERROR_STATE() AS ErrorState  
+        ,ERROR_PROCEDURE() AS ErrorProcedure  
+        ,ERROR_LINE() AS ErrorLine  
+        ,ERROR_MESSAGE() AS ErrorMessage;  
   
+    IF @@TRANCOUNT > 0  
+        ROLLBACK TRANSACTION;  
+  END CATCH;  
+  
+	IF @@TRANCOUNT > 0  
+		COMMIT TRANSACTION;  
 END
 GO
+
