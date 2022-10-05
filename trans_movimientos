@@ -76,7 +76,6 @@ GO
 
 --#GT05102022 --Se agrega OperadorBodega en los movimientos de recepción HH y cambio úbicación Ciega
 
-alter table trans_movimientos
-add IdOperadorBodega int default 0
+alter table trans_movimientos add IdOperadorBodega int default 0
 
 
