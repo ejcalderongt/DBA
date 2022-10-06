@@ -187,16 +187,21 @@ ON [dbo].[trans_pe_enc] ([IdPickingEnc])
 CREATE NONCLUSTERED INDEX NCLI_Trans_Picking_ubic_202210051625_EJC
 ON [dbo].[trans_picking_ubic] ([dañado_verificacion],[dañado_picking],[no_encontrado])
 INCLUDE ([IdPickingDet],[IdUbicacion],[IdStock],[IdPropietarioBodega],[IdProductoBodega],[IdProductoEstado],[IdPresentacion],[IdUnidadMedida],[lote],[fecha_vence],[lic_plate],[cantidad_recibida],[cantidad_verificada],[fecha_picking],[cantidad_despachada],[IdBodega])
-
+GO
 
 CREATE NONCLUSTERED INDEX NCLI_trans_picking_ubic_202210051634
 ON [dbo].[trans_picking_ubic] ([dañado_verificacion],[dañado_picking],[no_encontrado])
 INCLUDE ([IdPickingDet],[IdUbicacion],[cantidad_solicitada],[cantidad_recibida],[cantidad_verificada],[cantidad_despachada],[IdStockRes])
-
+GO
 
 CREATE NONCLUSTERED INDEX NCLI_trans_picking_ubic_202210051635_EJC
 ON [dbo].[trans_picking_ubic] ([IdUbicacion],[dañado_verificacion],[dañado_picking],[IdStockRes],[no_encontrado])
 INCLUDE ([IdPickingDet],[cantidad_solicitada],[cantidad_recibida],[cantidad_verificada],[cantidad_despachada])
+GO
+
+CREATE NONCLUSTERED INDEX NCI_stock_jornada_20221006
+ON [dbo].[stock_jornada] ([IdTicketTMS])
+GO
 
 
 
