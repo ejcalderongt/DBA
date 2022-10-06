@@ -112,3 +112,6 @@ alter table bodega add permitir_repeticiones_en_ingreso bit default 0
 
 --#EJC202209121737: 
 alter table bodega add dias_maximo_vencimiento_reemplazo int
+
+--#EJC20221005: Se agregó este parámetro para permitir o no la creacion de un inventario inicial con stock 
+alter table bodega add validar_existencias_inv_ini bit not null default 0
