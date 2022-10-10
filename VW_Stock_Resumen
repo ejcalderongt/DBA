@@ -1758,7 +1758,7 @@ SELECT     dbo.stock.IdBodega, dbo.propietarios.IdPropietario, dbo.propietario_b
 				  END valor_total,
 				  ISNULL(dbo.trans_oc_det.IdEmbarcador,'') IdEmbarcador, ISNULL(dbo.trans_oc_embarcador.Nombre,'N/D') as Shipper,
 				  dbo.bodega.nombre as Regimen,
-				  ISNULL(dbo.tms_ticket.Fecha_Ingreso,'') as ingreso_ticket
+				  CONVERT(VARCHAR(10), dbo.tms_ticket.Fecha_Ingreso, 103) + ' '  + convert(VARCHAR(8), dbo.tms_ticket.Fecha_Ingreso, 14) as ingreso_ticket
 
 FROM        dbo.p_parametro RIGHT OUTER JOIN
                   dbo.producto_parametro_a RIGHT OUTER JOIN
