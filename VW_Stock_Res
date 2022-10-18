@@ -1138,16 +1138,13 @@ GROUP BY dbo.propietarios.nombre_comercial, dbo.propietarios.IdPropietario, dbo.
                   dbo.stock.pallet_no_estandar, dbo.producto.IdTipoEtiqueta,
 				   dbo.producto_marca.nombre, dbo.producto_tipo.NombreTipoProducto
 GO
-
-USE [IMS4MB_MERCOPAN_PRD]
-GO
-
-/****** Object:  View [dbo].[VW_Stock_Res]    Script Date: 18/10/2022 01:10:45 ******/
+/****** Object:  View [dbo].[VW_Stock_Res]    Script Date: 18/10/2022 15:06:44 ******/
 SET ANSI_NULLS ON
 GO
 
 SET QUOTED_IDENTIFIER ON
 GO
+
 
 
 
@@ -1197,7 +1194,7 @@ SELECT     dbo.stock.IdBodega,
 		   dbo.indice_rotacion.Descripcion AS IndiceRotacion, 
 		   dbo.producto.existencia_min AS Existencia_min_umbas, 
 		   dbo.producto.existencia_max AS Existencia_max_umbas,
-           dbo.producto.costo, 
+           dbo.trans_oc_det.costo, 
 		   dbo.producto_presentacion.MinimoExistencia AS Existencia_min_pres, 
 		   dbo.producto_presentacion.MaximoExistencia AS Existencia_max_pres, 
 		   dbo.bodega_ubicacion.IdUbicacion AS IdUbicacionActual,
