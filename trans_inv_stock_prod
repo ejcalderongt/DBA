@@ -2,3 +2,6 @@
 
 alter table trans_inv_stock_prod
 add idbodega int null, idubicacion int null
+
+alter table trans_inv_stock_prod
+add lic_plate nvarchar(50) null
