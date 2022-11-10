@@ -7,3 +7,6 @@ alter table trans_pe_enc add requiere_tarimas bit default 0
 
 --#CKFK20220601: Permite indicar la fecha de preparación del pedido
 ALTER TABLE trans_pe_enc ADD fecha_preparacion DATE NULL
+
+--#EJC20220329_BYB: Almacener la referencia del código de ubicación con el que se va abastecer un envío.
+alter table trans_pe_enc add no_documento_externo nvarchar(50) null
