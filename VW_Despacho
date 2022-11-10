@@ -1,0 +1,24 @@
+--#GT10112022  Se agrega a la concatenación de Vehiculo, la placa.
+
+
+/****** Object:  View [dbo].[VW_Despacho]    Script Date: 10/11/2022 17:04:14 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER VIEW [dbo].[VW_Despacho]
+AS
+SELECT        enc.IdDespachoEnc AS Código, b.nombre AS Bodega, pr.nombre_comercial AS Propietario, ISNULL(p.nombres, '') + ' ' + ISNULL(p.apellidos, '') AS Piloto, 
+                         ISNULL(v.marca, '') + ' - ' + ISNULL(v.modelo, '') + ' - ' + ISNULL(v.tipo, '') + ' - ' + ISNULL(v.placa, '') AS Vehiculo, r.NOMBRE AS Ruta, enc.activo, enc.fecha, enc.IdBodega
+FROM            dbo.trans_despacho_enc AS enc LEFT OUTER JOIN
+                         dbo.empresa_transporte_pilotos AS p ON enc.IdPiloto = p.IdPiloto LEFT OUTER JOIN
+                         dbo.empresa_transporte_vehiculos AS v ON enc.IdVehiculo = v.IdVehiculo LEFT OUTER JOIN
+                         dbo.road_ruta AS r ON enc.IdRuta = r.IdRuta INNER JOIN
+                         dbo.bodega AS b ON enc.IdBodega = b.IdBodega INNER JOIN
+                         dbo.propietario_bodega AS pb ON enc.IdPropietarioBodega = pb.IdPropietarioBodega INNER JOIN
+                         dbo.propietarios AS pr ON pb.IdPropietario = pr.IdPropietario
+GO
+
+
