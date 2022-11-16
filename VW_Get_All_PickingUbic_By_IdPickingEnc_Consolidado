@@ -165,3 +165,50 @@ pu.IdBodega, pu.IdOperadorBodega_Pickeo, pdet.IdPresentacion, pdet.IdUnidadMedid
 pdet.IdEstado, pdet.Peso, pdet.Precio, dbo.bodega_ubicacion.indice_x, dbo.bodega_ubicacion.nivel, dbo.bodega_ubicacion.orientacion_pos, dbo.bodega_ubicacion.IdUbicacion, pp.CajasPorCama, pp.CamasPorTarima,
 pu.no_encontrado, dbo.bodega_ubicacion.IdArea, pc.nombre, pu.IdUbicacionTemporal, dbo.road_ruta.CODIGO, dbo.road_ruta.NOMBRE, pu.IdOperadorBodega_Asignado
 GO
+
+
+
+/****** #AT20221116 Se agrego IdTramo Object:  View [dbo].[VW_Get_All_PickingUbic_By_IdPickingEnc_Consolidado]    Script Date: 16/11/2022 10:38:27 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+ALTER VIEW [dbo].[VW_Get_All_PickingUbic_By_IdPickingEnc_Consolidado]
+AS
+SELECT 0 AS IdPickingUbic, pu.IdPickingEnc, 0 AS IdPickingDet, pu.IdUbicacion, 0 AS IdStock, pu.IdPropietarioBodega, pu.IdProductoBodega, pu.IdProductoEstado, pu.IdPresentacion, pu.IdUnidadMedida, 0 AS IdUbicacionAnterior,
+pu.IdRecepcion, pu.lote, pu.fecha_vence, pu.fecha_minima, '' AS serial, pu.lic_plate, 0 AS acepto, SUM(pu.peso_solicitado) AS peso_solicitado, SUM(pu.peso_recibido) AS peso_recibido, SUM(pu.peso_verificado)
+AS peso_verificado, SUM(pu.peso_despachado) AS peso_despachado, SUM(pu.cantidad_solicitada) AS cantidad_solicitada, SUM(pu.cantidad_recibida) AS cantidad_recibida, SUM(pu.cantidad_verificada) AS cantidad_verificada,
+pu.encontrado, pu.dañado_verificacion, pu.fecha_real_vence, pu.no_packing, pu.fecha_picking, pu.fecha_verificado, pu.fecha_packing, pu.fecha_despachado, pu.cantidad_despachada, pu.user_agr, CAST(CONVERT(NVARCHAR,
+pu.fec_agr, 112) AS DATETIME) AS fec_agr, pu.user_mod, CAST(CONVERT(NVARCHAR, pu.fec_mod, 112) AS DATETIME) AS fec_mod, pu.activo, 0 AS IdPedidoDet, pu.dañado_picking, 0 AS IdStockRes, pu.lic_plate_reemplazo,
+pu.IdUbicacion_reemplazo, pu.IdStock_reemplazo, pu.IdBodega, pu.IdOperadorBodega_Pickeo, 0 AS IdOperadorBodega_Verifico,
+0 AS IdPedidoEnc, pdet.IdUnidadMedidaBasica, pdet.codigo_producto, pdet.nombre_producto, pp.nombre AS nom_presentacion, pdet.nom_unid_med, pdet.nom_estado, pdet.IdEstado, pdet.Peso, pdet.Precio,
+dbo.Nombre_Completo_Ubicacion(pu.IdUbicacion, pu.IdBodega) AS NombreUbicacion, CASE WHEN (CASE WHEN pdet.IdPresentacion IS NOT NULL AND pdet.IdPresentacion <> 0 AND ISNULL(pp.CajasPorCama, 0) > 0 AND
+ISNULL(pp.CamasPorTarima, 0) > 0 THEN ROUND(SUM(pu.cantidad_solicitada) / (ISNULL(pp.CajasPorCama, 0) * ISNULL(pp.CamasPorTarima, 0)), 2) ELSE 0 END) < 1 THEN 0 ELSE (CASE WHEN pdet.IdPresentacion IS NOT NULL
+AND pdet.IdPresentacion <> 0 AND ISNULL(pp.CajasPorCama, 0) > 0 AND ISNULL(pp.CamasPorTarima, 0) > 0 THEN ROUND(SUM(pu.cantidad_solicitada) / (ISNULL(pp.CajasPorCama, 0) * ISNULL(pp.CamasPorTarima, 0)), 2)
+ELSE 0 END) END AS Tarima, pu.no_encontrado, dbo.Nombre_Area(dbo.bodega_ubicacion.IdArea, pu.IdBodega) AS NombreArea, pc.nombre AS NombreClasificacion, pu.IdUbicacionTemporal,
+dbo.road_ruta.CODIGO + ' ' + dbo.road_ruta.NOMBRE AS RutaDespacho,
+dbo.Nombre_Completo_Ubicacion(pu.IdUbicacionTemporal, pu.IdBodega) NombreUbicacionTemporal, bodega_ubicacion.nivel, pu.IdOperadorBodega_Asignado,bodega_ubicacion.IdTramo
+FROM dbo.bodega_ubicacion INNER JOIN
+dbo.trans_picking_ubic AS pu ON pu.IdUbicacion = dbo.bodega_ubicacion.IdUbicacion AND dbo.bodega_ubicacion.IdBodega = pu.IdBodega INNER JOIN
+dbo.trans_picking_det AS pkdet ON pkdet.IdPickingDet = pu.IdPickingDet INNER JOIN
+dbo.trans_pe_det AS pdet ON pdet.IdPedidoDet = pkdet.IdPedidoDet INNER JOIN
+dbo.stock_res AS sr ON pkdet.IdPedidoDet = sr.IdPedidoDet AND pu.IdUbicacion = sr.IdUbicacion AND pu.IdStockRes = sr.IdStockRes INNER JOIN
+dbo.trans_picking_enc ON pkdet.IdPickingEnc = dbo.trans_picking_enc.IdPickingEnc LEFT OUTER JOIN
+dbo.producto_presentacion AS pp ON pp.IdPresentacion = pdet.IdPresentacion INNER JOIN
+dbo.producto_bodega AS pb ON pb.IdProductoBodega = pu.IdProductoBodega INNER JOIN
+dbo.producto AS p ON p.IdProducto = pb.IdProducto INNER JOIN
+dbo.trans_pe_enc ON pdet.IdPedidoEnc = dbo.trans_pe_enc.IdPedidoEnc LEFT OUTER JOIN
+dbo.road_ruta ON dbo.trans_pe_enc.RoadIdRutaDespacho = dbo.road_ruta.IdRuta LEFT OUTER JOIN
+dbo.producto_clasificacion AS pc ON pc.IdClasificacion = p.IdClasificacion
+GROUP BY pu.IdPickingEnc, pu.IdUbicacion, pu.IdPropietarioBodega, pu.IdProductoBodega, pu.IdProductoEstado, pu.IdPresentacion, pu.IdUnidadMedida, pu.IdRecepcion, pu.lote, pu.fecha_vence, pu.fecha_minima, pu.lic_plate,
+pu.encontrado, pu.dañado_verificacion, pu.fecha_real_vence, pu.no_packing, pu.fecha_picking, pu.fecha_verificado, pu.fecha_packing, pu.fecha_despachado, pu.cantidad_despachada, pu.user_agr, CAST(CONVERT(NVARCHAR,
+pu.fec_agr, 112) AS DATETIME), pu.user_mod, CAST(CONVERT(NVARCHAR, pu.fec_mod, 112) AS DATETIME), pu.activo, pu.dañado_picking, pu.lic_plate_reemplazo, pu.IdUbicacion_reemplazo, pu.IdStock_reemplazo,
+pu.IdBodega, pu.IdOperadorBodega_Pickeo, pdet.IdPresentacion, pdet.IdUnidadMedidaBasica, pdet.IdProductoBodega, pdet.codigo_producto, pdet.nombre_producto, pp.nombre, pdet.nom_unid_med, pdet.nom_estado,
+pdet.IdEstado, pdet.Peso, pdet.Precio, dbo.bodega_ubicacion.indice_x, dbo.bodega_ubicacion.nivel, dbo.bodega_ubicacion.orientacion_pos, dbo.bodega_ubicacion.IdUbicacion, pp.CajasPorCama, pp.CamasPorTarima,
+pu.no_encontrado, dbo.bodega_ubicacion.IdArea, pc.nombre, pu.IdUbicacionTemporal, dbo.road_ruta.CODIGO, dbo.road_ruta.NOMBRE, pu.IdOperadorBodega_Asignado, bodega_ubicacion.IdTramo
+GO
+
+
