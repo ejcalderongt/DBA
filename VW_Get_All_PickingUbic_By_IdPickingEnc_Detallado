@@ -27,7 +27,8 @@ AND ISNULL(pp.CajasPorCama,0)>0 AND ISNULL(pp.CamasPorTarima,0)>0 THEN
 ROUND(pu.cantidad_solicitada / (ISNULL(pp.CajasPorCama,0)*ISNULL(pp.CamasPorTarima,0)),2) ELSE 0 END) END Tarima,
 pu.no_encontrado,
 dbo.Nombre_Area(bodega_ubicacion.IdArea, pu.IdBodega) as NombreArea,
-pc.nombre as NombreClasificacion, pu.IdUbicacionTemporal, bodega_ubicacion.nivel,  pu.IdOperadorBodega_Asignado
+pc.nombre as NombreClasificacion, pu.IdUbicacionTemporal, bodega_ubicacion.nivel,  pu.IdOperadorBodega_Asignado,
+bodega_ubicacion.IdTramo
 FROM           
 bodega INNER JOIN
 bodega_ubicacion INNER JOIN
