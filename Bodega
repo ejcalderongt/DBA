@@ -1,3 +1,6 @@
+--#EJC20221121-1024AM
+alter table bodega add calcular_ubicacion_sugerida_ml bit not null default 0
+
 --#EJC20201121
 ALTER TABLE BODEGA ADD Cuenta_Ingreso_Mercancias nvarchar(50) default 0
 ALTER TABLE BODEGA ADD Cuenta_Egreso_Mercancias nvarchar(50) default 0
