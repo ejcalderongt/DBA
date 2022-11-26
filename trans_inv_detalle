@@ -5,3 +5,12 @@ add lic_plate nvarchar(50) default null,
 cod_variante nvarchar(50) default null
 
 alter table trans_inv_detalle add idbodega int null
+
+
+/**********GT 25112022 campos para DyD ******************************/
+
+
+alter table trans_inv_detalle add costo float  null
+alter table trans_inv_detalle add precio float  null
+alter table trans_inv_detalle add IdProductoParametroA int  null
+alter table trans_inv_detalle add IdProductoParametroB int  null
