@@ -309,6 +309,10 @@ values ('2.5.1.7','Valorizacion Mercaderia','cmdResValorizacionMerca',4,'2.5.1',
 IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '2.5.1.7')
 insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'2.5.1.7',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
 
+insert into menu_sistema values('3.2.1.2','Eliminar Documento','mnuEliminarPedido',4,'2.1.1',0)
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '3.2.1.2')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'3.2.1.2',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+
 
 
 
