@@ -47,3 +47,38 @@ INNER JOIN producto p on p.IdProducto = pb.IdProducto
 LEFT JOIN producto_clasificacion  pc on pc.IdClasificacion = p.IdClasificacion
 WHERE pu.dañado_picking = 0 and pu.no_encontrado = 0
 GO
+
+
+/**************#23122022 Erik agrega tramo  ****/
+
+
+ALTER VIEW [dbo].[VW_Get_All_PickingUbic_By_IdPickingEnc_Detallado]
+AS
+SELECT pu.IdPickingUbic, pu.idpickingenc, pu.IdPickingDet, pu.IdUbicacion, pu.IdPropietarioBodega, pu.IdProductoEstado, pu.IdUnidadMedida, pu.IdUbicacionAnterior, pu.IdRecepcion, pu.lote, pu.fecha_vence, pu.fecha_minima, pu.serial, 
+                  pu.lic_plate, pu.acepto, pu.peso_solicitado, pu.peso_recibido, pu.peso_verificado, pu.peso_despachado, pu.cantidad_solicitada, pu.cantidad_recibida, pu.cantidad_verificada, pu.encontrado, pu.dañado_verificacion, pu.fecha_real_vence, 
+                  pu.no_packing, pu.fecha_picking, pu.fecha_verificado, pu.fecha_packing, pu.fecha_despachado, pu.cantidad_despachada, pu.user_agr, pu.fec_agr, pu.user_mod, pu.fec_mod, pu.activo, pu.dañado_picking, pu.lic_plate_reemplazo, 
+                  pu.IdUbicacion_reemplazo, pu.IdStock_reemplazo, pu.IdBodega, pu.IDOPERADORBODEGA_PICKEO, pu.IDOPERADORBODEGA_VERIFICO, pdet.IdPedidoEnc, pdet.IdPedidoDet, pdet.IdPresentacion, pdet.IdUnidadMedidaBasica, 
+                  pdet.IdProductoBodega, pdet.codigo_producto, pdet.nombre_producto, pp.nombre AS nom_presentacion, pdet.nom_unid_med, pdet.nom_estado, pdet.IdEstado, pdet.Peso, pdet.Precio, sr.IdStockRes, sr.IdStock, 
+                  dbo.Nombre_Completo_Ubicacion(pu.IdUbicacion, pu.IdBodega) AS NombreUbicacion, CASE WHEN (CASE WHEN pdet.IdPresentacion IS NOT NULL AND pdet.IdPresentacion <> 0 AND ISNULL(pp.CajasPorCama, 0) > 0 AND 
+                  ISNULL(pp.CamasPorTarima, 0) > 0 THEN ROUND(pu.cantidad_solicitada / (ISNULL(pp.CajasPorCama, 0) * ISNULL(pp.CamasPorTarima, 0)), 2) ELSE 0 END) < 1 THEN 0 ELSE (CASE WHEN pdet.IdPresentacion IS NOT NULL AND 
+                  pdet.IdPresentacion <> 0 AND ISNULL(pp.CajasPorCama, 0) > 0 AND ISNULL(pp.CamasPorTarima, 0) > 0 THEN ROUND(pu.cantidad_solicitada / (ISNULL(pp.CajasPorCama, 0) * ISNULL(pp.CamasPorTarima, 0)), 2) ELSE 0 END) 
+                  END AS Tarima, pu.no_encontrado, dbo.Nombre_Area(dbo.bodega_ubicacion.IdArea, pu.IdBodega) AS NombreArea, pc.nombre AS NombreClasificacion, pu.IdUbicacionTemporal, dbo.bodega_ubicacion.nivel, 
+                  pu.IdOperadorBodega_Asignado, dbo.bodega_ubicacion.IdTramo, dbo.bodega_tramo.descripcion AS Nombre_Tramo
+FROM     dbo.bodega INNER JOIN
+                  dbo.bodega_ubicacion INNER JOIN
+                  dbo.trans_picking_ubic AS pu ON pu.IdUbicacion = dbo.bodega_ubicacion.IdUbicacion INNER JOIN
+                  dbo.trans_picking_det AS pkdet ON pkdet.IdPickingDet = pu.IdPickingDet INNER JOIN
+                  dbo.trans_pe_det AS pdet ON pdet.IdPedidoDet = pkdet.IdPedidoDet INNER JOIN
+                  dbo.stock_res AS sr ON pkdet.IdPedidoDet = sr.IdPedidoDet AND pu.IdUbicacion = sr.IdUbicacion AND pu.IdStockRes = sr.IdStockRes ON dbo.bodega.IdBodega = dbo.bodega_ubicacion.IdBodega INNER JOIN
+                  dbo.trans_picking_enc ON dbo.bodega.IdBodega = dbo.trans_picking_enc.IdBodega AND pkdet.IdPickingEnc = dbo.trans_picking_enc.IdPickingEnc INNER JOIN
+                  dbo.bodega_tramo ON dbo.bodega.IdBodega = dbo.bodega_tramo.IdBodega AND dbo.bodega_ubicacion.IdTramo = dbo.bodega_tramo.IdTramo LEFT OUTER JOIN
+                  dbo.producto_presentacion AS pp ON pp.IdPresentacion = pu.IdPresentacion INNER JOIN
+                  dbo.producto_bodega AS pb ON pb.IdProductoBodega = pu.IdProductoBodega INNER JOIN
+                  dbo.producto AS p ON p.IdProducto = pb.IdProducto LEFT OUTER JOIN
+                  dbo.producto_clasificacion AS pc ON pc.IdClasificacion = p.IdClasificacion
+WHERE  (pu.dañado_picking = 0) AND (pu.no_encontrado = 0)
+GO
+
+
+
+
