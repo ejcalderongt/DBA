@@ -1,0 +1,29 @@
+Create procedure sp_index_maintenance_daily
+@DatabaseName varchar(50)
+as
+begin
+declare @i int=0
+declare @IndexCount int
+declare @IndexFregQuery nvarchar(max)
+declare @IndexRebuildQuery nvarchar(max)
+declare @IndexName varchar(500)
+declare @TableName varchar(500)
+declare @SchemaName varchar(500)
+create table #Fregmentedindex(Index_name varchar(max),table_name varchar(max),schema_name varchar(max))
+set @IndexFregQuery='SELECT i.[name],o.name,sch.name
+	FROM   [' + @DatabaseName + '].sys.dm_db_index_physical_stats (DB_ID('''+ @DatabaseName +'''), NULL, NULL, NULL, NULL) AS s
+	INNER JOIN [' + @DatabaseName + '].sys.indexes AS i ON s.object_id = i.object_id AND s.index_id = i.index_id
+	INNER JOIN [' + @DatabaseName + '].sys.objects AS o ON i.object_id = o.object_id
+	INNER JOIN [' + @DatabaseName + '].sys.schemas AS sch ON o.schema_id=sch.schema_id
+	WHERE (s.avg_fragmentation_in_percent > 30 ) and i.name is not null'
+insert into #Fregmentedindex(Index_name,table_name,schema_name) exec sp_executesql @IndexFregQuery
+set @IndexCount=(select count(1) from #Fregmentedindex)
+While (@IndexCount>@i)
+begin 
+(select top 1 @TableName=table_name, @IndexName=Index_name,@SchemaName= schema_name from #Fregmentedindex)
+Set @IndexRebuildQuery ='Alter index [' + @IndexName +'] on ['+@DatabaseName +'].['+@SchemaName+'].[' + @TableName +'] rebuild'
+exec sp_executesql @IndexRebuildQuery 
+set @i=@i+1
+delete from #Fregmentedindex where Index_name=@IndexName and table_name=@TableName
+End
+End
