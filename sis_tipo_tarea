@@ -5,3 +5,10 @@ INSERT INTO sis_tipo_tarea values (22,'ANUL_PICK',1)
 
 INSERT INTO sis_tipo_tarea values (23,'REABMAN',0)
 INSERT INTO sis_tipo_tarea values (24,'REUBICSTOCKRES',0)
+
+--#AT20230105 Tipos de tareas para reemplazo
+insert into sis_tipo_tarea values (25,'REEMP_BE_PICK', 0)
+insert into sis_tipo_tarea values (26,'REEMP_ME_PICK', 0)
+insert into sis_tipo_tarea values (27,'REEMP_NE_PICK', 0)
+insert into sis_tipo_tarea values (28,'REEMP_BE_VERI', 0)
+insert into sis_tipo_tarea values (29,'REEMP_ME_VERI', 0)
