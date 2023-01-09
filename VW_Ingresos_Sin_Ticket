@@ -1,0 +1,16 @@
+/*** #GT09012023 vista para considerar ingresos durante el día para añadirse a la jornada.
+
+CREATE view [dbo].[VW_Ingresos_Sin_Ticket] as
+SELECT 
+dbo.stock.IdStock, 
+dbo.trans_re_det.lic_plate as licencia,
+CAST(dbo.trans_re_det.fecha_ingreso AS date) Fecha_Ingreso
+FROM     dbo.stock INNER JOIN dbo.trans_re_det on dbo.stock.lic_plate=dbo.trans_re_det.lic_plate
+												  and dbo.stock.IdRecepcionEnc=dbo.trans_re_det.IdRecepcionEnc
+												  and dbo.stock.IdRecepcionDet= dbo.trans_re_det.IdRecepcionDet
+                  INNER JOIN dbo.trans_oc_enc ON dbo.trans_re_det.IdOrdenCompraEnc = dbo.trans_oc_enc.IdOrdenCompraEnc 
+				  LEFT JOIN dbo.stock_jornada ON dbo.trans_re_det.lic_plate = dbo.stock_jornada.lic_plate 
+												 and  CAST(dbo.trans_re_det.fecha_ingreso AS date) = dbo.stock_jornada.Fecha
+WHERE
+(dbo.trans_oc_enc.no_ticket_tms=0 or dbo.trans_oc_enc.no_ticket_tms='')
+and dbo.stock_jornada.lic_plate is null
