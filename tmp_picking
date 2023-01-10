@@ -1,0 +1,6 @@
+CREATE TABLE [dbo].[tmp_picking](
+	[IdPickingUbic] [int] NOT NULL,
+	[cantidad_solicitada] [float] NULL,
+	[cantidad_recibida] [float] NULL,
+	[fecha_picking] [datetime] NULL
+)	
