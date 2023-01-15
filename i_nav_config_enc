@@ -60,4 +60,9 @@ alter table i_nav_config_enc add explosion_automatica_desde_ubicacion_picking bi
 alter table i_nav_config_enc add explosion_automatica_nivel_max int default 1
 
 
+--GT14012023 campo para generar stock jornada desde la recepcion en la HH -----------
+
+alter table i_nav_config_enc add recepcion_genera_historico bit default null
+
+
 
