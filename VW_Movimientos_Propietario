@@ -1,0 +1,71 @@
+/******#GT17012023 vista para reporte Movimientos por Doc CEALSA Object:  View [dbo].[VW_Movimientos_Propietario]    Script Date: 17/01/2023 21:17:33 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+ALTER VIEW [dbo].[VW_Movimientos_Propietario] as
+select 
+trans_despacho_enc.IdBodega,
+trans_despacho_enc.IdPropietarioBodega,
+trans_despacho_enc.fecha,
+trans_despacho_enc.observacion,
+oc.Referencia,
+oc_pol.codigo_poliza as poliza,
+oc_pol.numero_orden,
+trans_despacho_enc.activo,
+trans_despacho_det.IdDespachoDet,
+trans_despacho_det.Codigo,
+pr.codigo_barra,
+trans_despacho_det.NombreProducto as producto,
+prb.IdProductoBodega,
+trans_despacho_det.CantidadDespachada as cantidad,
+trans_despacho_det.Fecha fecha_salida,
+trans_picking_ubic.lic_plate as licencia
+,re_det.cantidad_recibida saldo_inicial,
+tarea.IdTipoTarea,
+tarea.Nombre as TipoTarea,
+tarea.Contabilizar,
+trans_picking_ubic.IdPresentacion,pres.factor,pres.nombre as presentacion,
+oc_det.valor_aduana,oc_det.valor_dai,oc_det.valor_iva,
+re_det.IdRecepcionDet,
+cast(re_det.fecha_ingreso as date) fecha_ingreso_rec,cast(tms.Fecha_Ingreso as date)fecha_ingreso_ticket,
+case when oc.no_ticket_tms ='' then null
+else oc.no_ticket_tms
+end no_ticket_tms,
+trans_despacho_det.IdPedidoEnc,
+trans_despacho_enc.IdDespachoEnc,
+pe_pol.numero_orden numero_orden_salida,pe_pol.codigo_poliza codigo_poliza_salida,
+trans_picking_ubic.IdStock
+from trans_despacho_enc  inner join  
+     trans_despacho_det on trans_despacho_enc.IdDespachoEnc = trans_despacho_det.IdDespachoEnc inner join 
+     trans_picking_ubic on trans_despacho_det.IdPedidoDet = trans_picking_ubic.IdPedidoDet inner join 
+     producto pr on trans_despacho_det.Codigo = pr.codigo inner join 
+     producto_bodega prb on prb.IdProducto = pr.IdProducto and prb.IdBodega= trans_despacho_enc.IdBodega left outer join 
+     producto_presentacion pres on pr.IdProducto =pres.IdProducto
+                               and trans_picking_ubic.IdPresentacion = pres.IdPresentacion inner join 
+    trans_pe_det pe_det on trans_despacho_det.IdPedidoEnc = pe_det.IdPedidoEnc
+                        and trans_despacho_det.IdPedidoDet = pe_det.IdPedidoDet 
+    /*inner join i_nav_transacciones_out on i_nav_transacciones_out.iddespachoenc = trans_despacho_enc.IdDespachoEnc
+                            and i_nav_transacciones_out.idpedidoenc = trans_despacho_det.IdPedidoEnc*/
+                             inner join trans_re_det re_det on trans_picking_ubic.IdRecepcion= re_det.IdRecepcionEnc
+                                                          and trans_picking_ubic.lic_plate = re_det.lic_plate 
+                           inner join trans_oc_enc oc on re_det.IdOrdenCompraEnc = oc.IdOrdenCompraEnc
+                           inner join trans_oc_det oc_det on re_det.IdOrdenCompraEnc=oc_det.IdOrdenCompraEnc
+                                                           and re_det.IdOrdenCompraDet=oc_det.IdOrdenCompraDet
+                           left outer join trans_oc_pol oc_pol on oc.IdOrdenCompraEnc= oc_pol.IdOrdenCompraEnc
+                           inner join trans_movimientos mov on trans_picking_ubic.lic_plate collate SQL_Latin1_General_CP1_CI_AS = mov.barra_pallet
+                                                            and trans_despacho_enc.IdDespachoEnc = mov.IdTransaccion
+                                                            and mov.IdTipoTarea = 5
+                            inner join sis_tipo_tarea tarea on mov.IdTipoTarea = tarea.IdTipoTarea
+							left outer join tms_ticket tms on oc.no_ticket_tms = tms.IdTicket
+							left outer join trans_pe_pol pe_pol on trans_despacho_det.IdPedidoEnc=pe_pol.IdOrdenPedidoEnc
+							
+------trans_picking_ubic.lic_plate = '445851' and 
+--trans_despacho_enc.IdPropietarioBodega=2082 and 
+--trans_despacho_enc.IdBodega=2 and cast(trans_despacho_enc.Fecha as date) between '20220102' and '20230109' and trans_picking_ubic.lic_plate='EF00487'
+---- and re_det.lic_plate = '445851'
+GO
+
