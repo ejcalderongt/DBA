@@ -208,6 +208,14 @@ ON [dbo].[stock_jornada] ([Fecha])
 INCLUDE ([IdJornadaSistema],[IdBodega],[IdStock],[lic_plate],[IdTicketTMS])
 GO
 
+CREATE NONCLUSTERED INDEX [IX_trans_re_det_20230126]
+ON [dbo].[trans_re_det] ([IdOrdenCompraEnc])
+GO
+
+CREATE NONCLUSTERED INDEX [IX_trans_re_det_20230126_2]
+ON [dbo].[trans_re_det] ([IdOrdenCompraDet])
+INCLUDE ([IdProductoBodega],[IdPresentacion],[IdUnidadMedida],[IdProductoEstado],[IdOperadorBodega],[IdMotivoDevolucion],[No_Linea],[cantidad_recibida],[nombre_producto],[nombre_presentacion],[nombre_unidad_medida],[nombre_producto_estado],[lote],[fecha_vence],[fecha_ingreso],[peso],[peso_estadistico],[peso_minimo],[peso_maximo],[peso_unitario],[user_agr],[fec_agr],[observacion],[añada],[costo],[costo_oc],[costo_estadistico],[atributo_variante_1],[codigo_producto],[lic_plate],[pallet_no_estandar],[IdOrdenCompraEnc])
+GO
 
 
 
