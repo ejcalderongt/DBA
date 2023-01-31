@@ -21,9 +21,13 @@ alter table Trans_oc_det_lote
 ADD Activo bit NOT NULL DEFAULT 0
 
 
-/****** Object:  Index [PK_trans_oc_det_lote]    Script Date: 26/01/2023 12:28:16 ******/
-ALTER TABLE [dbo].[trans_oc_det_lote] ADD  CONSTRAINT [PK_trans_oc_det_lote] PRIMARY KEY CLUSTERED 
+ALTER TABLE [dbo].[trans_oc_det_lote]
+ALTER COLUMN [IdOrdenCompraDetLote] int NOT NULL
+GO
+
+/****** Object:  Index [PK_trans_oc_det_lote]    Script Date: 26/01/2023 12:28:16 ******/
+ALTER TABLE [dbo].[trans_oc_det_lote] ADD  CONSTRAINT [PK_trans_oc_det_lote] PRIMARY KEY CLUSTERED 
 (
-	[IdOrdenCompraDetLote] ASC
+    [IdOrdenCompraDetLote] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
