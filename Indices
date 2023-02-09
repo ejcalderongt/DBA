@@ -217,6 +217,15 @@ ON [dbo].[trans_re_det] ([IdOrdenCompraDet])
 INCLUDE ([IdProductoBodega],[IdPresentacion],[IdUnidadMedida],[IdProductoEstado],[IdOperadorBodega],[IdMotivoDevolucion],[No_Linea],[cantidad_recibida],[nombre_producto],[nombre_presentacion],[nombre_unidad_medida],[nombre_producto_estado],[lote],[fecha_vence],[fecha_ingreso],[peso],[peso_estadistico],[peso_minimo],[peso_maximo],[peso_unitario],[user_agr],[fec_agr],[observacion],[añada],[costo],[costo_oc],[costo_estadistico],[atributo_variante_1],[codigo_producto],[lic_plate],[pallet_no_estandar],[IdOrdenCompraEnc])
 GO
 
+CREATE NONCLUSTERED INDEX NCLI_Stock_202308081128_EJC
+ON [dbo].[stock] ([IdPresentacion])
+INCLUDE ([IdBodega],[IdUbicacion],[lote],[lic_plate],[cantidad])
+GO
+
+CREATE NONCLUSTERED INDEX NCLI_Trans_Picking_Ubic_202308081128_EJC
+ON [dbo].[trans_picking_ubic] ([IdPickingEnc])
+INCLUDE ([IdPickingDet],[IdUbicacion],[IdStock],[IdPropietarioBodega],[IdProductoBodega],[IdProductoEstado],[IdPresentacion],[IdUnidadMedida],[IdUbicacionAnterior],[IdRecepcion],[lote],[fecha_vence],[fecha_minima],[serial],[lic_plate],[acepto],[peso_solicitado],[peso_recibido],[peso_verificado],[peso_despachado],[cantidad_solicitada],[cantidad_recibida],[cantidad_verificada],[encontrado],[dañado_verificacion],[fecha_real_vence],[no_packing],[fecha_picking],[fecha_verificado],[fecha_packing],[fecha_despachado],[cantidad_despachada],[user_agr],[fec_agr],[user_mod],[fec_mod],[activo],[IdPedidoDet],[dañado_picking],[IdStockRes],[lic_plate_reemplazo],[IdUbicacion_reemplazo],[IdStock_reemplazo],[IdBodega],[IdOperadorBodega_Pickeo],[IdOperadorBodega_Verifico],[IdPedidoEnc],[no_encontrado],[IdUbicacionTemporal],[IdOperadorBodega_Asignado])
+GO
 
 
 
