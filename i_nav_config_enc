@@ -71,3 +71,12 @@ ALTER TABLE i_nav_config_enc
 add permitir_reabasto_tarima_unica bit not null default 0
 GO
 
+--Si ya ejecutaron el script  anterior en la tabla  i_nav_config_enc ejecuten esto: 
+exec sp_rename  'i_nav_config_enc.permitir_reabasto_tarima_unica', 'considerar_paletizado_en_reabasto'
+GO
+--En caso contrario ejecuten esto 
+ALTER TABLE i_nav_config_enc 
+add considerar_paletizado_en_reabasto bit not null default 0
+GO
+
+
