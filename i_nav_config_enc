@@ -67,5 +67,7 @@ alter table i_nav_config_enc add recepcion_genera_historico bit default null
 ALTER TABLE i_nav_config_enc
 ADD excluir_ubicaciones_reabasto BIT NOT NULL DEFAULT 0
 
-
+ALTER TABLE i_nav_config_enc 
+add permitir_reabasto_tarima_unica bit not null default 0
+GO
 
