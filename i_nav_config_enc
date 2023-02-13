@@ -79,4 +79,7 @@ ALTER TABLE i_nav_config_enc 
 add considerar_paletizado_en_reabasto bit not null default 0
 GO
 
+--#CKFK20230213 Parametro para validar o no, en el proceso de reabasto si la ubicación está vacía
+ALTER TABLE i_nav_config_enc 
+ADD considerar_disponibilidad_ubicacion_reabasto bit not null default 0
 
