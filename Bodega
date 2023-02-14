@@ -123,3 +123,8 @@ ALTER TABLE bodega
 ADD ordenar_por_nombre_completo bit not null default 0,
 ordenar_picking_descendente bit not null default 0
 GO
+
+--#AT20230214: Se agregaron estos parametros para mostar u ocultar el boton de reemplazo y ne en la HH
+ALTER TABLE bodega ADD permitir_reemplazo_picking bit NOT NULL DEFAULT 0
+ALTER TABLE bodega ADD permitir_no_encontrado_picking bit NOT NULL DEFAULT 0
+ALTER TABLE bodega ADD permitir_reemplazo_verificacion bit NOT NULL DEFAULT 0
