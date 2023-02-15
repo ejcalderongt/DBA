@@ -15,3 +15,28 @@ SELECT        dbo.trans_ubic_hh_enc.IdTareaUbicacionEnc, dbo.trans_ubic_hh_enc.I
 FROM            dbo.trans_ubic_hh_enc INNER JOIN
                          dbo.motivo_ubicacion ON dbo.trans_ubic_hh_enc.IdMotivoUbicacion = dbo.motivo_ubicacion.IdMotivoUbicacion
 GO
+
+
+/****** #CKFK20230215 Se agrego esta funcionalidad para mostrar el operador por tarea de reabastecimiento
+/****** Object:  View [dbo].[VW_TransUbicacionHhEnc]    Script Date: 14/02/2023 23:46:13 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+ALTER VIEW [dbo].[VW_TransUbicacionHhEnc]
+AS
+SELECT    dbo.trans_ubic_hh_enc.IdTareaUbicacionEnc, dbo.trans_ubic_hh_enc.IdPropietarioBodega, dbo.trans_ubic_hh_enc.IdMotivoUbicacion, dbo.motivo_ubicacion.Nombre AS DescripcionMotivo, dbo.trans_ubic_hh_enc.FechaInicio, 
+                         dbo.trans_ubic_hh_enc.HoraInicio, dbo.trans_ubic_hh_enc.FechaFin, dbo.trans_ubic_hh_enc.HoraFin, dbo.trans_ubic_hh_enc.user_agr, dbo.trans_ubic_hh_enc.fec_agr, dbo.trans_ubic_hh_enc.user_mod, 
+                         dbo.trans_ubic_hh_enc.fec_mod, dbo.trans_ubic_hh_enc.Observacion, dbo.trans_ubic_hh_enc.activo, dbo.trans_ubic_hh_enc.operador_por_linea, dbo.trans_ubic_hh_enc.ubicacion_con_hh, dbo.trans_ubic_hh_enc.estado, 
+                         dbo.trans_ubic_hh_enc.cambio_estado, dbo.trans_ubic_hh_enc.IdReabastecimientoLog,
+						 CASE WHEN dbo.trans_ubic_hh_enc.operador_por_linea = 1 AND dbo.trans_ubic_hh_enc.IdReabastecimientoLog <>0  THEN 
+						 (SELECT TOP(1) o.nombres + ' ' + o.apellidos
+						  FROM dbo.trans_ubic_hh_det h inner join operador_bodega b on h.IdOperadorBodega = b.IdOperadorBodega
+						       inner join operador o on o.IdOperador = b.IdOperador
+						  WHERE h.IdTareaUbicacionEnc =  dbo.trans_ubic_hh_enc.IdTareaUbicacionEnc) ELSE '' END AS Nombre_Operador
+FROM            dbo.trans_ubic_hh_enc INNER JOIN
+                         dbo.motivo_ubicacion ON dbo.trans_ubic_hh_enc.IdMotivoUbicacion = dbo.motivo_ubicacion.IdMotivoUbicacion
+GO
