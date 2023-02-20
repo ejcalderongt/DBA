@@ -81,7 +81,7 @@ GO
 
 
 
---#AT20230216 Correcciones unidad de medida
+--#AT20230216 Correcciones unidad de medida *****/
 /****** Object:  View [dbo].[VW_Get_All_PickingUbic_By_IdPickingEnc_Detallado]    Script Date: 16/02/2023 20:12:21 ******/
 SET ANSI_NULLS ON
 GO
@@ -139,5 +139,62 @@ LEFT JOIN producto_clasificacion  pc on pc.IdClasificacion = p.IdClasificacion
 WHERE pu.dañado_picking = 0 and pu.no_encontrado = 0
 GO
 
+/******#CKFK20230219 Hice inner join con la tabla producto_estado para tomar los datos de picking ubic             *******/
+/****** Object:  View [dbo].[VW_Get_All_PickingUbic_By_IdPickingEnc_Detallado]    Script Date: 19/02/2023 14:18:24 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
 
 
+ALTER VIEW [dbo].[VW_Get_All_PickingUbic_By_IdPickingEnc_Detallado] AS
+SELECT pu.IdPickingUbic, pu.IdPickingEnc, pu.IdPickingDet, pu.IdUbicacion, 
+pu.IdPropietarioBodega, pu.IdProductoEstado, pu.IdUnidadMedida, pu.IdUbicacionAnterior, 
+pu.IdRecepcion, pu.lote, pu.fecha_vence, pu.fecha_minima, pu.serial, 
+pu.lic_plate, pu.acepto, pu.peso_solicitado, pu.peso_recibido, 
+pu.peso_verificado, pu.peso_despachado, pu.cantidad_solicitada, 
+pu.cantidad_recibida, pu.cantidad_verificada, pu.encontrado, 
+pu.dañado_verificacion, pu.fecha_real_vence, pu.no_packing, pu.fecha_picking, 
+pu.fecha_verificado, pu.fecha_packing, pu.fecha_despachado, pu.cantidad_despachada, 
+pu.user_agr, pu.fec_agr, pu.user_mod, pu.fec_mod, pu.activo, 
+pu.dañado_picking, pu.lic_plate_reemplazo, 
+pu.IdUbicacion_reemplazo, pu.IdStock_reemplazo, pu.IdBodega, 
+pu.IdOperadorBodega_Pickeo, pu.IdOperadorBodega_Verifico,
+pdet.IdPedidoEnc,pdet.IdPedidoDet,pu.IdPresentacion, pu.IdUnidadMedida IdUnidadMedidaBasica, 
+pdet.IdProductoBodega, 
+pdet.codigo_producto, pdet.nombre_producto,pp.nombre as nom_presentacion, um.Nombre as nom_unid_med,pe.nombre nom_estado,
+pu.IdProductoEstado IdEstado, pdet.Peso, pdet.Precio, sr.IdStockRes, sr.IdStock,
+dbo.Nombre_Completo_Ubicacion(pu.IdUbicacion,pu.IdBodega) as NombreUbicacion,
+CASE WHEN (
+CASE WHEN pu.IdPresentacion IS NOT NULL AND pu.IdPresentacion <> 0
+AND ISNULL(pp.CajasPorCama,0)>0 AND ISNULL(pp.CamasPorTarima,0)>0 THEN
+ROUND(pu.cantidad_solicitada / (ISNULL(pp.CajasPorCama,0)*ISNULL(pp.CamasPorTarima,0)),2) ELSE 0 END) < 1 
+THEN 0 ELSE (
+CASE WHEN pu.IdPresentacion IS NOT NULL AND pu.IdPresentacion <> 0
+AND ISNULL(pp.CajasPorCama,0)>0 AND ISNULL(pp.CamasPorTarima,0)>0 THEN
+ROUND(pu.cantidad_solicitada / (ISNULL(pp.CajasPorCama,0)*ISNULL(pp.CamasPorTarima,0)),2) ELSE 0 END) END Tarima,
+pu.no_encontrado,
+dbo.Nombre_Area(bodega_ubicacion.IdArea, pu.IdBodega) as NombreArea,
+pc.nombre as NombreClasificacion, pu.IdUbicacionTemporal, bodega_ubicacion.nivel,  pu.IdOperadorBodega_Asignado,
+bodega_ubicacion.IdTramo
+FROM           
+bodega INNER JOIN
+bodega_ubicacion INNER JOIN
+trans_picking_ubic AS pu ON pu.IdUbicacion = bodega_ubicacion.IdUbicacion 
+INNER JOIN trans_picking_det AS pkdet ON pkdet.IdPickingDet = pu.IdPickingDet 
+INNER JOIN trans_pe_det AS pdet ON pdet.IdPedidoDet = pkdet.IdPedidoDet INNER JOIN
+stock_res AS sr ON pkdet.IdPedidoDet = sr.IdPedidoDet AND pu.IdUbicacion = sr.IdUbicacion AND pu.IdStockRes = sr.IdStockRes ON 
+bodega.IdBodega = bodega_ubicacion.IdBodega 
+INNER JOIN trans_picking_enc ON bodega.IdBodega = trans_picking_enc.IdBodega
+AND pkdet.IdPickingEnc = trans_picking_enc.IdPickingEnc 
+INNER JOIN bodega_tramo ON bodega.IdBodega = bodega_tramo.IdBodega 
+AND bodega_ubicacion.IdTramo = bodega_tramo.IdTramo                                
+LEFT OUTER JOIN producto_presentacion pp ON pp.IdPresentacion = pu.IdPresentacion   
+INNER JOIN producto_bodega pb on pb.IdProductoBodega = pu.IdProductoBodega
+INNER JOIN producto p on p.IdProducto = pb.IdProducto
+INNER JOIN dbo.unidad_medida um ON um.IdUnidadMedida = pu.IdUnidadMedida 
+LEFT JOIN producto_clasificacion  pc on pc.IdClasificacion = p.IdClasificacion inner join 
+dbo.producto_estado pe on pu.IdProductoEstado = pe.IdEstado 
+WHERE pu.dañado_picking = 0 and pu.no_encontrado = 0
+GO
