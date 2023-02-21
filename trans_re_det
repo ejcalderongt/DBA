@@ -4,3 +4,7 @@ ALTER TABLE trans_re_det ADD IdOrdenCompraDet int null
 --#EJC20220407: El principio el fin.
 alter table trans_re_det add IdOrdenCompraEnc int null
 alter table trans_re_det add IdOrdenCompraDet int null
+
+--#EJC20230221: Control de stock jornada
+alter table trans_re_det add IdJornadaSistema int null default 0
+
