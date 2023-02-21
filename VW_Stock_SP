@@ -1,0 +1,35 @@
+/****** Object:  View [dbo].[VW_Stock_SP]    Script Date: 21/02/2023 14:22:13 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER VIEW [dbo].[VW_Stock_SP]
+AS
+SELECT dbo.producto_bodega.IdBodega, dbo.propietarios.IdPropietario, dbo.propietario_bodega.IdPropietarioBodega, dbo.producto.IdProducto, dbo.producto_bodega.IdProductoBodega, dbo.stock.IdStock, 
+                  dbo.bodega_ubicacion.IdUbicacion AS IdUbicacionActual, dbo.stock.IdUbicacion_anterior, dbo.unidad_medida.IdUnidadMedida, dbo.stock.IdProductoEstado, dbo.stock.IdPresentacion, dbo.stock.IdRecepcionEnc, 
+                  dbo.propietarios.nombre_comercial AS Propietario, bodega_ubicacion_1.descripcion AS UbicacionAnterior, dbo.unidad_medida.Nombre AS UnidadMedida, dbo.producto_presentacion.nombre AS Presentacion, dbo.producto.codigo, 
+                  dbo.producto.nombre, dbo.stock.lote, dbo.stock.fecha_ingreso, dbo.stock.serial, dbo.stock.añada, dbo.stock.cantidad, dbo.stock.fecha_vence, dbo.producto_estado.nombre AS NomEstado, 
+                  dbo.producto_estado.utilizable AS EstadoUtilizable, dbo.producto_estado.dañado, dbo.stock.IdUbicacion, dbo.stock.lic_plate, dbo.stock.peso, dbo.producto.IdIndiceRotacion, dbo.producto_presentacion.alto, 
+                  dbo.producto_presentacion.largo, dbo.producto_presentacion.ancho, dbo.producto_presentacion.factor, dbo.stock.IdRecepcionDet
+FROM     dbo.unidad_medida INNER JOIN
+                  dbo.propietarios INNER JOIN
+                  dbo.propietario_bodega INNER JOIN
+                  dbo.stock INNER JOIN
+                  dbo.producto_bodega INNER JOIN
+                  dbo.producto ON dbo.producto_bodega.IdProducto = dbo.producto.IdProducto ON dbo.stock.IdProductoBodega = dbo.producto_bodega.IdProductoBodega ON 
+                  dbo.propietario_bodega.IdPropietarioBodega = dbo.stock.IdPropietarioBodega ON dbo.propietarios.IdPropietario = dbo.propietario_bodega.IdPropietario ON 
+                  dbo.unidad_medida.IdUnidadMedida = dbo.stock.IdUnidadMedida LEFT OUTER JOIN
+                  dbo.producto_estado ON dbo.stock.IdProductoEstado = dbo.producto_estado.IdEstado LEFT OUTER JOIN
+                  dbo.bodega_ubicacion AS bodega_ubicacion_1 ON dbo.stock.IdUbicacion_anterior = bodega_ubicacion_1.IdUbicacion LEFT OUTER JOIN
+                  dbo.bodega_ubicacion ON dbo.stock.IdUbicacion = dbo.bodega_ubicacion.IdUbicacion LEFT OUTER JOIN
+                  dbo.producto_presentacion ON dbo.stock.IdPresentacion = dbo.producto_presentacion.IdPresentacion
+GROUP BY dbo.propietarios.nombre_comercial, dbo.propietarios.IdPropietario, dbo.stock.IdStock, dbo.bodega_ubicacion.IdUbicacion, dbo.stock.IdUbicacion_anterior, bodega_ubicacion_1.descripcion, 
+                  dbo.propietario_bodega.IdPropietarioBodega, dbo.producto_bodega.IdProductoBodega, dbo.unidad_medida.IdUnidadMedida, dbo.unidad_medida.Nombre, dbo.producto_presentacion.nombre, dbo.producto.IdProducto, 
+                  dbo.producto.codigo, dbo.producto.nombre, dbo.stock.lote, dbo.stock.fecha_ingreso, dbo.stock.serial, dbo.stock.añada, dbo.stock.cantidad, dbo.producto_bodega.IdBodega, dbo.stock.fecha_vence, dbo.stock.IdProductoEstado, 
+                  dbo.producto_estado.nombre, dbo.producto_estado.utilizable, dbo.producto_estado.dañado, dbo.stock.IdUbicacion, dbo.stock.IdPresentacion, dbo.stock.IdRecepcionEnc, dbo.stock.lic_plate, dbo.stock.peso, 
+                  dbo.producto.IdIndiceRotacion, dbo.producto_presentacion.alto, dbo.producto_presentacion.largo, dbo.producto_presentacion.ancho, dbo.producto_presentacion.factor, dbo.stock.IdRecepcionDet
+GO
+
+
