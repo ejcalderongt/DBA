@@ -1,6 +1,21 @@
+
+CREATE NONCLUSTERED INDEX NCLI_I_NAV_TRANSACCIONES_OUT_20230221_EJC
+ON [dbo].[i_nav_transacciones_out] ([iddespachoenc],[lic_plate])INCLUDE ([idpedidoenc],[IdDespachoDet])
+
+CREATE NONCLUSTERED INDEX NCLI_STOCK_202302211402_EJC
+ON [dbo].[stock] ([IdPropietarioBodega])INCLUDE ([IdBodega],[IdProductoBodega],[IdProductoEstado],[IdPresentacion],[IdUnidadMedida],[IdUbicacion],
+[IdUbicacion_anterior],[IdRecepcionEnc],[IdRecepcionDet],[lote],[lic_plate],[serial],[cantidad],[fecha_ingreso],[fecha_vence],[añada],[peso],
+[atributo_variante_1],[pallet_no_estandar])
+
+CREATE NONCLUSTERED INDEX NCI_20230222_Stock
+ON [dbo].[stock] ([IdBodega])
+INCLUDE ([IdProductoBodega],[IdUbicacion])
+GO
+
 CREATE NONCLUSTERED INDEX NCLI_trans_picking_ubic_20200720_EJC
 ON [dbo].[trans_picking_ubic] ([dañado_verificacion],[dañado_picking])
-INCLUDE ([IdPickingDet],[IdProductoBodega],[IdProductoEstado],[IdPresentacion],[lote],[fecha_vence],[lic_plate],[cantidad_solicitada],[cantidad_recibida],[cantidad_verificada])
+INCLUDE ([IdPickingDet],[IdProductoBodega],[IdProductoEstado],[IdPresentacion],[lote],[fecha_vence],[lic_plate],[cantidad_solicitada],[cantidad_recibida],
+[cantidad_verificada])
 
 CREATE NONCLUSTERED INDEX NCLI_trans_pe_det_20200720_EJC
 ON [dbo].[trans_pe_det] ([IdPedidoEnc])
