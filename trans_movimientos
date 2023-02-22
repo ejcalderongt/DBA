@@ -1,3 +1,10 @@
+--#EJC20230221 Se agregaron estas columnas para garantizar poder realizar búsquedas y reportes con mayor facilidad
+alter table trans_movimientos add IdRecepcionDet int null default 0
+alter table trans_movimientos add IdPedidoEnc int null default 0
+alter table trans_movimientos add IdPedidoDet int null default 0
+alter table trans_movimientos add IdDespachoEnc int null default 0
+alter table trans_movimientos add IdDespachoDet int null default 0
+
 update trans_movimientos set IdTipoTarea = 2 where IdTipoTarea is null
 GO
 
