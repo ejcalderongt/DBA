@@ -1,3 +1,7 @@
+CREATE NONCLUSTERED INDEX NCI_20230223_trans_reabastecimiento_log
+ON [dbo].[trans_reabastecimiento_log] ([IdRellenado])
+INCLUDE ([IdBodega],[IdProductoBodega],[IdProducto],[Codigo_Producto],[Nombre_Producto],[IdUnidadMedidaBasica],[NombreUmBas],[IdPresentacion],[Presentacion],[Minimo],[Maximo],[IdProductoEstado],[Estado],[StockUMBas],[ReservadoUmBas],[DisponibleUMBas],[factor],[StockPres],[ReservadoPres],[DisponiblePres],[Ubicacion],[IdPropietarioBodega],[IdUbicacion],[IdTipoAccion],[Activo],[IdPropietario],[Nombre_Propietario],[user_agr],[fec_agr],[user_mod],[fec_mod],[IdUmBasAbastercerCon],[IdPresentacionAbastercerCon],[NombrePresentacionAbastecerCon],[Enviado],[Cancelado],[Fecha_Generacion_Inexistencia],[Hora_Generacion_Inexistencia],[Fecha_Procesamiento_BOF],[Hora_Procesamiento_BOF],[IdOperadorBodega],[Procesado_HH],[Fecha_Procesamiento_HH],[Stock_Ubicacion],[Cantidad_A_Ubicar],[Stock_Inferior],[Stock_Disponible],[IdTareaUbicacionEnc])
+GO
 
 CREATE NONCLUSTERED INDEX NCLI_I_NAV_TRANSACCIONES_OUT_20230221_EJC
 ON [dbo].[i_nav_transacciones_out] ([iddespachoenc],[lic_plate])INCLUDE ([idpedidoenc],[IdDespachoDet])
