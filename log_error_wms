@@ -1,5 +1,5 @@
 --#EJC20230301 Se agregaron campos nuevos
-alter table log_error_wms add Line_No int, Item_No nvarchar(50), UmBas nvarchar(50), Variant_Code nvarchar(50), Cantidad float, Referencia_Docuemento nvarchar(50)
+alter table log_error_wms add Line_No int, Item_No nvarchar(50), UmBas nvarchar(50), Variant_Code nvarchar(50), Cantidad float, Referencia_Documento nvarchar(50)
 
 BEGIN TRANSACTION
 SET QUOTED_IDENTIFIER ON
