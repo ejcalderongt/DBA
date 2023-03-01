@@ -1,3 +1,16 @@
+--CKFK20230301 Opcion Nueva LogWMS
+insert into menu_sistema values ('3.11', 'Log','pgLogWMS',2,3,0)
+
+insert into menu_sistema
+values ('3.11.1','Log WMS','mnuLogErrorWMS',3,'3.11',0)
+
+iF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '3.11.1')
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'3.11.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+
+iF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '3.11')
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'3.11',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+
+
 --10-Abr-2020 EJC
 insert into menu_sistema values ('1.2.1.19', 'Tipo Cuadrilla', 'mnuTipoCuadrilla','4','1.2.1',0)
 insert into menu_sistema values ('1.2.1.20', 'Cuadrilla', 'mnuCuadrilla','4','1.2.1',0)
