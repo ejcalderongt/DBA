@@ -1,3 +1,8 @@
+--#GT02032023 campo para limitar a cuantos dias se puede validar retroactivo de un ticket tms
+
+ALTER TABLE dbo.bodega 
+ ADD dias_limite_retroactivo INT NULL
+
 --#EJC20221121-1024AM
 alter table bodega add calcular_ubicacion_sugerida_ml bit not null default 0
 
