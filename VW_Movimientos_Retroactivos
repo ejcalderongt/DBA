@@ -1,0 +1,41 @@
+
+
+****** Object:  View [dbo].[VW_Movimientos_Retroactivos]    Script Date: 03/03/2023 17:56:27 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+CREATE view [dbo].[VW_Movimientos_Retroactivos] as
+WITH SomeCTE AS (
+select re_det.lic_plate, 
+case
+        when  oc.no_ticket_tms > 0  then cast(tms.Fecha_Ingreso as date)
+        else cast(re_det.fec_agr as date)
+    end as fecha_ingreso,
+oc.no_ticket_tms,oc.IdOrdenCompraEnc,re_det.IdRecepcionEnc
+from trans_re_det re_det inner join stock st
+on re_det.lic_plate=st.lic_plate inner join trans_oc_enc oc
+on re_det.IdOrdenCompraEnc=oc.IdOrdenCompraEnc left outer join
+tms_ticket tms on oc.no_ticket_tms = tms.IdTicket
+ ),
+SOMECTE2 as(
+select min(Fecha)fecha_min,lic_plate from stock_jornada group by lic_plate
+)
+ SELECT 
+  case
+        when  ct2.fecha_min = ct.fecha_ingreso    then 'Historico completo'
+        else 'Historico incompleto'
+    end as estado,
+	ct2.lic_plate licencia,ct.fecha_ingreso,ct2.fecha_min fecha_inicial_historico,
+	DATEDIFF(DAY,ct.fecha_ingreso , ct2.fecha_min)  AS dias_pendientes,
+	ct.no_ticket_tms ticket_tms,
+	ct.IdOrdenCompraEnc,ct.IdRecepcionEnc
+FROM SOMECTE2 ct2 INNER JOIN
+     SomeCTE ct ON  ct.lic_plate = ct2.lic_plate
+	 --order by ct.fecha_ingreso,ct2.lic_plate
+GO
+
+
