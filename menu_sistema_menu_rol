@@ -1,3 +1,12 @@
+--#GT03032023 Reporte para ver desfases en retroactivo por ticket tms
+
+insert into menu_sistema
+values ('2.5.1.8','Auditoria Retroactivo','cmdAuditoriaRetroactivo',4,'2.5.1',0)
+
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '2.5.1.8')
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'2.5.1.8',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+
+
 --CKFK20230301 Opcion Nueva LogWMS
 insert into menu_sistema values ('3.11', 'Log','pgLogWMS',2,3,0)
 
