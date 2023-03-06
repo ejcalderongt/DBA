@@ -1,6 +1,3 @@
---#EJC20230305 Campo para importar cliente con tiempos para los productos de los clientes
-alter table i_nav_config_enc add dias_vida_defecto_perecederos int not null default 0
-
 --#GT02032023 campo para limitar a cuantos dias se puede validar retroactivo de un ticket tms
 
 ALTER TABLE dbo.bodega 
