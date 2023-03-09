@@ -1,0 +1,31 @@
+/****** #GT09032023: Indicador de detalle  Object:  View [dbo].[VW_Indicador_Picking_Detalle]    Script Date: 09/03/2023 11:59:18 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+create view [dbo].[VW_Indicador_Picking_Detalle] as
+select picking_enc.estado,picking_enc.IdPickingEnc,picking_det.IdPedidoEnc pedido,picking_det.IdPedidoDet pedido_detalle,picking_enc.IdBodega,st_res.idubicacion,picking_det.codigo,
+pr.codigo_barra,pr.IdClasificacion,pr.IdFamilia,pr.IdMarca,pr.IdUnidadMedidaBasica,
+--pp.factor,st_res.IdUnidadMedida,
+um.Nombre UmBas,um.factor,st_res.lote,st_res.fecha_vence, 
+picking_det.cantidad,
+isnull(pp.nombre,'') presentacion,
+case when um.factor >1 then (picking_det.cantidad/um.factor) 
+else 0
+end as cantidad_presentacion,
+isnull(pc.nombre,'') clasificacion,
+isnull(pf.nombre,'') familia,
+isnull(pm.nombre,'') marca 
+from trans_picking_enc picking_enc inner join
+                                                          trans_picking_det picking_det on picking_enc.IdPickingEnc =picking_det.IdPickingEnc
+                                                          inner join stock_res st_res on picking_det.IdPickingEnc= st_res.IdPicking
+                                                                                           and picking_det.IdPedidoDet = st_res.IdPedidoDet 
+															inner join producto pr on picking_det.codigo=pr.codigo
+															left outer join producto_presentacion pp on pr.IdProducto = pp.IdProducto and pr.codigo=pp.codigo
+															left outer join producto_clasificacion pc on pr.IdClasificacion=pc.IdClasificacion
+															left outer join producto_familia pf on pr.IdFamilia=pf.IdFamilia
+															left outer join producto_marca pm on pr.IdMarca = pm.IdMarca
+															left outer join unidad_medida um on st_res.IdUnidadMedida = um.IdUnidadMedida
+where picking_enc.estado in ('Nuevo', 'Pendiente')
