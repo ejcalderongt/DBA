@@ -1,0 +1,16 @@
+/****** #GT09032023: indicador Object:  View [dbo].[VW_Indicador_Picking]    Script Date: 09/03/2023 11:58:36 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+create view [dbo].[VW_Indicador_Picking] as
+select picking_enc.estado,picking_enc.IdPickingEnc,picking_enc.IdBodega,COUNT(st_res.idubicacion) ubicaciones
+from trans_picking_enc picking_enc inner join
+                                                          trans_picking_det picking_det on picking_enc.IdPickingEnc =picking_det.IdPickingEnc
+                                                          left outer join stock_res st_res on picking_det.IdPickingEnc= st_res.IdPicking
+                                                                                           and picking_det.IdPedidoDet = st_res.IdPedidoDet where 
+picking_enc.estado in ('Nuevo', 'Pendiente')
+group by picking_enc.IdPickingEnc,picking_enc.IdBodega,picking_enc.estado
+GO
