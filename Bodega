@@ -1,3 +1,6 @@
+ALTER TABLE BODEGA ADD Permitir_Reemplazo_Picking_Misma_Licencia BIT NOT NULL DEFAULT 0
+
+
 --#GT02032023 campo para limitar a cuantos dias se puede validar retroactivo de un ticket tms
 
 ALTER TABLE dbo.bodega 
