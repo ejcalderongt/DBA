@@ -1,3 +1,7 @@
+--#GT14032023 campo para controlar horario ejecucion historico
+alter table bodega add horario_ejecucion_historico time default null
+
+
 ALTER TABLE BODEGA ADD Permitir_Reemplazo_Picking_Misma_Licencia BIT NOT NULL DEFAULT 0
 
 
