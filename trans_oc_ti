@@ -1,3 +1,7 @@
+--#EJC16032023
+alter table trans_oc_ti add bloquear_lotes bit not null default 0
+
+
 a:ter table trans_oc_ti add control_poliza bit default 0
 #EJC20210207:
 alter table trans_oc_ti add requerir_documento_ref bit default 0
