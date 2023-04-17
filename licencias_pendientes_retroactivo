@@ -1,0 +1,17 @@
+/****** Object:  Table [dbo].[licencias_pendientes_retroactivo]    Script Date: 14/04/2023 12:29:03 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[licencias_pendientes_retroactivo](
+	[licencia] [nvarchar](50) NOT NULL,
+	[fecha_ticket] [datetime] NOT NULL,
+	[fecha_inicial] [datetime] NOT NULL,
+ CONSTRAINT [PK_licencias_pendientes_retroactivo] PRIMARY KEY CLUSTERED 
+(
+	[licencia] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
