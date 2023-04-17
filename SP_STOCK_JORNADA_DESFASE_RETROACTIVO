@@ -1,0 +1,136 @@
+/****** Object:  StoredProcedure [dbo].[SP_STOCK_JORNADA_DESFASE_RETROACTIVO]    Script Date: 17/04/2023 8:59:44 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[SP_STOCK_JORNADA_DESFASE_RETROACTIVO]
+	
+	@RegistrosARevisar  AS INT OUTPUT
+	
+AS
+
+BEGIN	
+
+DECLARE @licencia varchar(50)
+DECLARE @fecha_ticket as datetime
+DECLARE @fecha_inicial as datetime
+Declare @fecha_minima as datetime
+Declare @fecha_incremental as datetime
+Declare @dias_faltantes as int
+Declare @message as nvarchar(200)
+declare @Severity as int
+declare @State as int
+--Declare @message2 as nvarchar(200)
+--Declare @message3 as nvarchar(200)
+
+DECLARE licencias_cursor CURSOR FOR
+SELECT licencia,fecha_ticket,Fecha_inicial
+FROM licencias_pendientes_retroactivo
+
+
+OPEN licencias_cursor
+
+WHILE @@FETCH_STATUS = 0
+BEGIN
+		-- valida cuantos dias requieren registros historicos tipo retroactivo
+		BEGIN TRY
+
+		select @fecha_minima= min( cast(fecha as date)) from stock_jornada where lic_plate=@licencia 
+		select @fecha_ticket= min(cast(fecha_ingreso_ticket_tms as date)) from stock_jornada where lic_plate=@licencia 	
+		SET @fecha_incremental = @fecha_ticket
+		set @dias_faltantes = datediff(day,@fecha_ticket,@fecha_minima)
+
+		iF @dias_faltantes > 1
+		begin
+			WHILE   @dias_faltantes > 0
+				begin
+				
+				-- inserta en tabla temporal la lista de registros con las fechas faltantes en el historico de la lP
+				if NOT EXISTS (select * from stock_jornada_temporal where fecha=@fecha_incremental and lic_plate=@licencia)
+				begin
+				insert into stock_jornada_temporal 
+					   select  IdStockJornada,
+							   IdJornadaSistema,
+							   @fecha_incremental,
+							   IdBodega, IdStock, IdPropietarioBodega, IdProductoBodega, IdProductoEstado, 
+							   IdPresentacion, IdUnidadMedida, IdUbicacion, IdUbicacion_anterior, IdRecepcionEnc, IdRecepcionDet, IdPedidoEnc,
+							   IdPickingEnc, IdDespachoEnc, lote, lic_plate, serial, cantidad, fecha_ingreso, fecha_vence, uds_lic_plate, no_bulto,
+							   fecha_manufactura, añada, user_agr, 
+							   getdate(),
+							   user_mod, 
+							   getdate(),
+							   activo, peso, temperatura, atributo_variante_1, pallet_no_estandar, 
+							   Propietario, Proveedor, Bodega, IdOrdenCompraEnc, No_DocumentoOC, No_DocumentoRec, ReferenciaOC,Fecha_Recepcion, 
+							   TipoTrans, Fecha_Agrego, codigo_producto, codigo_barra_producto, nombre_producto, existencia, nom_umBas, nom_estado_producto,
+							   nom_presentacion_producto, ubicacion_origen, no_poliza, valor_aduana, valor_fob, valor_iva, valor_dai, valor_seguro,
+							   valor_flete, peso_neto, numero_orden, codigo_regimen, nombre_regimen, dias_vencimiento_regimen,fecha_ingreso_ticket_tms, 
+							   es_retroactivo, factor, CamasPorTarima, CajasPorCama, Cantidad_Ingreso_Afecta_A_Salida, Stock_Jornada_Hash, IdTicketTMS, 
+							   fecha_procesado_stock_jornada, IdPropietario, IdClasificacion, Clasificacion, Regimen, posiciones, costo_unitario, procesado_erp, 
+							   no_documento_procesado_erp
+					from stock_jornada where lic_plate=@licencia and Fecha =@fecha_minima
+				END
+		
+				SET @fecha_incremental = DATEADD(DAY, 1, @fecha_incremental)
+				set @dias_faltantes = @dias_faltantes-1
+			END
+		END
+
+		END TRY
+
+		Begin Catch
+			set @Message  = ERROR_MESSAGE()
+				set @Severity = ERROR_SEVERITY()
+				set @State  = ERROR_STATE()
+				RAISERROR (@Message, @Severity, @State)
+		End Catch
+
+		FETCH NEXT FROM licencias_cursor   
+		INTO @licencia,@fecha_ticket,@fecha_inicial
+
+END
+
+CLOSE licencias_cursor;
+DEALLOCATE licencias_cursor;
+
+		-- inserta en la tabla stock_jornada, los registros pendientes por el ticket desfasado, desde la tabla temporal
+		BEGIN TRY
+					insert into stock_jornada
+					SELECT ROW_NUMBER() OVER(ORDER BY IdStockJornada asc)  + (select max(IdStockJornada) FROM stock_jornada) AS IdStockJornada, 
+							IdJornadaSistema, 
+							Fecha, IdBodega, IdStock, IdPropietarioBodega, IdProductoBodega, IdProductoEstado, 
+							IdPresentacion, IdUnidadMedida, IdUbicacion, IdUbicacion_anterior, IdRecepcionEnc, IdRecepcionDet, IdPedidoEnc,
+							IdPickingEnc, IdDespachoEnc, lote, lic_plate, serial, cantidad, fecha_ingreso, fecha_vence, uds_lic_plate, no_bulto,
+							fecha_manufactura, añada, user_agr, getdate(), user_mod, getdate(), 
+							activo, peso, temperatura, atributo_variante_1, pallet_no_estandar, 
+							Propietario, Proveedor, Bodega, IdOrdenCompraEnc, No_DocumentoOC, No_DocumentoRec, ReferenciaOC, Fecha_Recepcion, 
+							TipoTrans, 
+							Fecha_Agrego, codigo_producto, codigo_barra_producto, nombre_producto, existencia, nom_umBas, nom_estado_producto,
+							nom_presentacion_producto, ubicacion_origen, no_poliza, valor_aduana, valor_fob, valor_iva, valor_dai, valor_seguro,
+							valor_flete, peso_neto, numero_orden, codigo_regimen, nombre_regimen, dias_vencimiento_regimen, fecha_ingreso_ticket_tms, 
+							es_retroactivo, factor, CamasPorTarima, CajasPorCama, Cantidad_Ingreso_Afecta_A_Salida, Stock_Jornada_Hash, IdTicketTMS, 
+							fecha_procesado_stock_jornada, IdPropietario, IdClasificacion, Clasificacion, Regimen, posiciones, costo_unitario, procesado_erp, 
+							no_documento_procesado_erp
+					FROM stock_jornada_temporal
+
+		END TRY
+		Begin Catch
+				set @Message  = ERROR_MESSAGE()
+				set @Severity = ERROR_SEVERITY()
+				set @State  = ERROR_STATE()
+				RAISERROR (@Message, @Severity, @State)
+		End Catch
+
+	SELECT @RegistrosARevisar  =(SELECT COUNT(*) FROM stock_jornada_temporal)
+	RETURN @RegistrosARevisar
+
+END 
+
+GO
+
