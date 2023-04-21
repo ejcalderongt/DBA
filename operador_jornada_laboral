@@ -1,0 +1,49 @@
+--#EJC20032023 tabla para registrar las jornadas laborales asociadas a un operador 
+
+/****** Object:  Table [dbo].[operador_jornada_laboral]    Script Date: 19/04/2023 17:01:58 ******/ 
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[operador_jornada_laboral](
+    [IdOperadorJornadaLaboral] [int] NOT NULL,
+      [IdOperador] [int] NULL,
+      [IdBodega] [int] NULL,
+      [IdJornada] [int] NULL,
+      [activo] [bit] NULL,
+      [user_agr] [nvarchar](25) NULL,
+      [fec_agr] [datetime] NULL,
+      [user_mod] [nvarchar](25) NULL,
+      [fec_mod] [datetime] NULL,
+ CONSTRAINT [PK_operador_jornada_laboral] PRIMARY KEY CLUSTERED 
+(
+      [IdOperadorJornadaLaboral] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[operador_jornada_laboral] ADD  CONSTRAINT [DF_operador_jornada_laboral_activo]  DEFAULT ((1)) FOR [activo]
+GO
+
+ALTER TABLE [dbo].[operador_jornada_laboral]  WITH CHECK ADD  CONSTRAINT [FK_operador_jornada_laboral_bodega] FOREIGN KEY([IdBodega])
+REFERENCES [dbo].[bodega] ([IdBodega])
+GO
+
+ALTER TABLE [dbo].[operador_jornada_laboral] CHECK CONSTRAINT [FK_operador_jornada_laboral_bodega]
+GO
+
+ALTER TABLE [dbo].[operador_jornada_laboral]  WITH CHECK ADD  CONSTRAINT [FK_operador_jornada_laboral_jornada] FOREIGN KEY([IdJornada])
+REFERENCES [dbo].[jornada_laboral] ([IdJornada])
+GO
+
+ALTER TABLE [dbo].[operador_jornada_laboral] CHECK CONSTRAINT [FK_operador_jornada_laboral_bodega]
+GO
+
+ALTER TABLE [dbo].[operador_jornada_laboral]  WITH CHECK ADD  CONSTRAINT [FK_operador_jornada_laboral_operador] FOREIGN KEY([IdOperador])
+REFERENCES [dbo].[operador] ([IdOperador])
+GO
+
+ALTER TABLE [dbo].[operador_jornada_laboral] CHECK CONSTRAINT [FK_operador_jornada_laboral_operador]
+GO
