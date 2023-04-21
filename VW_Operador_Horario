@@ -1,3 +1,35 @@
+--#GT20042023 mejoras a la vista, con el uso de tabla operador_jornada_laboral ------------
+
+/****** Object:  View [dbo].[VW_Operador_Horario]    Script Date: 20/04/2023 15:20:17 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+ALTER VIEW [dbo].[VW_Operador_Horario]
+AS
+select 
+op.IdEmpresa, ojl.IdBodega, op.IdOperador, jl.IdJornada, jl.fecha_inicio, jl.fecha_fin, hle.IdHorarioLaboralEnc, 
+                         hld.dia, hld.hora_inicio, hld.hora_fin, hld.minimo_min_hora_ingreso, hld.maximo_min_hora_ingreso, 
+                         hld.minimo_min_hora_salida, hld.maximo_min_hora_salida, hld.tiempo_retraso_permitido, hld.horas_extras, 
+						 op.activo AS OperadorActivo, 
+                         opb.activo AS OperadorBodegaActivo, jl.activo AS JornadaLaboralActivo, hle.activo AS HorarioActivo, 
+						 hld.activo AS HorarioLaboralDetActivo, 
+                         tr.activo AS TurnoActivo
+from operador_jornada_laboral ojl 
+				INNER JOIN jornada_laboral jl on ojl.IdJornada=jl.IdJornada and ojl.IdBodega=jl.IdBodega
+				INNER JOIN horario_laboral_enc hle on jl.IdJornada=hle.IdJornada and jl.IdBodega=hle.IdBodega
+				INNER JOIN  horario_laboral_det hld on hle.IdHorarioLaboralEnc = hld.IdHorarioLaboralEnc
+				INNER JOIN turno tr on tr.IdTurno = hle.IdTurno and tr.IdBodega= hle.IdBodega
+				INNER JOIN  dbo.operador_bodega opb on ojl.IdOperador= opb.IdOperador and ojl.IdBodega=opb.IdBodega
+				INNER JOIN  operador op on opb.IdOperador= op.IdOperador
+
+GO
+
+
+
 ALTER VIEW [dbo].[VW_Operador_Horario]
 AS
 SELECT        o.IdEmpresa, dbo.operador_bodega.IdBodega, o.IdOperador, dbo.jornada_laboral.IdJornada, dbo.jornada_laboral.fecha_inicio, dbo.jornada_laboral.fecha_fin, dbo.horario_laboral_enc.IdHorarioLaboralEnc, 
