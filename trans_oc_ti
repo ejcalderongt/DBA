@@ -1,3 +1,9 @@
+--#CKFK20230508 Parámetro agregado para validar si se va a permitir o no agregar de un lote una cantidad mayor de lo ingresado en la tabla trans_oc_det_lote
+ALTER TABLE trans_oc_ti ADD permitir_excedente_lotes bit NOT NULL DEFAULT 0
+
+--#CKFK20230508 Update para B&B
+UPDATE trans_oc_ti SET permitir_excedente_lotes= 1 where IdTipoIngresoOC  in  (8,12)
+
 --#EJC16032023
 alter table trans_oc_ti add bloquear_lotes bit not null default 0
 
