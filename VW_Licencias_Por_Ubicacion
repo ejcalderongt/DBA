@@ -1,0 +1,15 @@
+/****** Object:  View [dbo].[VW_Licencias_Por_Ubicacion]    Script Date: 12/05/2023 01:19:12 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE VIEW [dbo].[VW_Licencias_Por_Ubicacion]
+AS
+SELECT        s.IdBodega AS Bodega, dbo.Nombre_Completo_Ubicacion(s.IdUbicacion, s.IdBodega) AS Ubicacion, COUNT(DISTINCT s.lic_plate) AS Cant_Lic, CASE WHEN bt.es_rack = 1 THEN 'Si' ELSE 'No' END AS Es_Rack
+FROM            dbo.stock AS s INNER JOIN
+                         dbo.bodega_ubicacion AS bu ON s.IdUbicacion = bu.IdUbicacion AND s.IdBodega = bu.IdBodega INNER JOIN
+                         dbo.bodega_tramo AS bt ON bt.IdSector = bu.IdSector AND bt.IdBodega = bu.IdBodega
+GROUP BY s.IdUbicacion, s.IdBodega, bt.es_rack
+GO
