@@ -1,3 +1,10 @@
+--#CKFK2020512  Reporte de Licencias por ubicación
+insert into menu_sistema
+values ('6.1.1.24','Licencias por ubicación','cmdLicenciasPorUbicacion',4,'6.1.1',0)
+
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '6.1.1.24')
+insert into menu_rol  values ((SELECT MAX(IDMENUROL) +1 FROM menu_rol),'6.1.1.24',1,'Erik Calderón',getdate(),'DTS ',getdate(),1,1)
+
 --#GT03032023 Reporte para ver desfases en retroactivo por ticket tms
 
 insert into menu_sistema
