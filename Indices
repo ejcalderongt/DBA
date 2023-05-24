@@ -1,3 +1,13 @@
+--24052023 indice para vw_historico_resumen cealsa--
+USE [IMS4MB_CEALSA_QAP]
+GO
+CREATE NONCLUSTERED INDEX NCLI_VW_Fiscal_historico_20230524_GT
+ON [dbo].[stock_jornada] ([IdRecepcionEnc],[IdRecepcionDet])
+INCLUDE ([Fecha],[IdBodega],[IdPropietarioBodega],[IdUbicacion],[lic_plate],[cantidad],[fecha_ingreso],[Propietario],[Bodega],[IdOrdenCompraEnc],[Fecha_Recepcion],[codigo_barra_producto],[nombre_producto],[no_poliza],[valor_aduana],[valor_iva],[valor_dai],[Clasificacion])
+GO
+
+
+
 --22052023 index para la vista de inventario en linea cealsa -------------------------
 CREATE NONCLUSTERED INDEX NCLI_Stock_20230522_EJC
 ON [dbo].[stock] ([IdRecepcionEnc])
