@@ -1,3 +1,11 @@
+--24052023 indice para vw_stock_res en CLC -------------
+GO
+CREATE NONCLUSTERED INDEX NCLI_Stock_Res_20230524_GT
+ON [dbo].[trans_oc_enc] ([IdTipoIngresoOC])
+INCLUDE ([IdMotivoDevolucion],[Referencia],[no_ticket_tms])
+GO
+
+
 --24052023 indice para vw_historico_resumen cealsa--
 CREATE NONCLUSTERED INDEX NCLI_VW_Fiscal_historico_20230524_GT
 ON [dbo].[stock_jornada] ([IdRecepcionEnc],[IdRecepcionDet])
