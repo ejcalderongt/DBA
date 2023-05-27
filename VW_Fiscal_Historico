@@ -42,12 +42,7 @@ FROM     dbo.stock_jornada AS sj INNER JOIN
 				  INNER JOIN dbo.trans_oc_ti on oc_enc.IdTipoIngresoOC=dbo.trans_oc_ti.IdTipoIngresoOC
 GO
 
-
-
-
 /********** #GT19042023, campo shipper se incluye en la vista **********************************************/
-
-
 /****** Object:  View [dbo].[VW_Fiscal_historico]    Script Date: 20/04/2023 0:18:24 ******/
 SET ANSI_NULLS ON
 GO
@@ -89,13 +84,6 @@ FROM     dbo.stock_jornada AS sj INNER JOIN
 				  LEFT OUTER JOIN dbo.trans_oc_embarcador embarcador on oc_det.IdEmbarcador= embarcador.IdEmbarcador
 GO
 
-
-
-
-
-
-
-
 /******#GT09032023: numero_referencia de oc_pol Object:  View [dbo].[VW_Fiscal_historico]    Script Date: 09/03/2023 15:58:09 ******/
 SET ANSI_NULLS ON
 GO
@@ -134,10 +122,6 @@ FROM     dbo.stock_jornada AS sj INNER JOIN
 				  INNER JOIN trans_oc_det oc_det on re_det.IdOrdenCompraEnc = oc_det.IdOrdenCompraEnc and re_det.IdOrdenCompraDet = oc_det.IdOrdenCompraDet
 				  LEFT OUTER JOIN  dbo.trans_oc_pol oc_pol on oc_enc.IdOrdenCompraEnc=oc_pol.IdOrdenCompraEnc
 GO
-
-
-
-
 
 CREATE VIEW VW_Fiscal_historico as
 
