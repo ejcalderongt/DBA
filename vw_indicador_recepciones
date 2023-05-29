@@ -1,0 +1,19 @@
+--#GT29052023 indicador de cuantas recepciones se han manejado por fecha (año,mes) y la bodega (régimen para cealsa)
+
+create view vw_indicador_recepciones as
+select re_det.IdRecepcionEnc,re_det.IdRecepcionDet,re_det.IdProductoBodega,re_det.IdPresentacion,re_det.IdUnidadMedida,
+re_det.IdOperadorBodega,
+re_det.cantidad_recibida,
+case when factor > 0 then re_det.cantidad_recibida else  0 end  [cajas/bultos],
+case when factor > 0 then round(re_det.cantidad_recibida*factor,4) else  re_det.cantidad_recibida end unidades,
+re_det.nombre_presentacion,re_det.nombre_unidad_medida,re_det.lic_plate,
+re_det.IdOrdenCompraEnc,re_det.IdOrdenCompraDet,pp.nombre presentacion,pp.factor,bd.nombre bodega,
+oc_enc.IdTipoIngresoOC,doc.Nombre documento,re_enc.fecha_recepcion fecha
+from trans_re_det re_det 
+							inner join trans_re_enc re_enc on re_det.IdRecepcionEnc = re_enc.IdRecepcionEnc
+							left outer join producto_presentacion pp on re_det.IdPresentacion=pp.IdPresentacion
+							inner join producto_bodega pb on re_det.IdProductoBodega=pb.IdProductoBodega
+							inner join bodega bd on pb.IdBodega=bd.IdBodega
+							inner join trans_oc_enc oc_enc on re_det.IdOrdenCompraEnc=oc_enc.IdOrdenCompraEnc
+							inner join trans_oc_ti doc on oc_enc.IdTipoIngresoOC=doc.IdTipoIngresoOC
+where re_enc.activo=1 and oc_enc.Activo=1
