@@ -1,4 +1,4 @@
-Insert into menu_sistema values('1.2.1.1.1','Habilitar Reemplazo','cmdHabilitarReemplazo',4,'1.2.1.1',0)
+Insert into menu_sistema values('1.2.1.1.1','Habilitar Reemplazo','cmdHabilitarReemplazo',4,'1.2.1.1',1)
 IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '1.2.1.1.1')
 insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'1.2.1.1.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
 
