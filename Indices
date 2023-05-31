@@ -1,10 +1,16 @@
+--31052023 para reporte fiscal histórico.
+
+CREATE NONCLUSTERED INDEX NCLI_Fiscal_Historico_20230531_GT
+ON [dbo].[trans_oc_pol] ([IdOrdenCompraEnc])
+INCLUDE ([numero_orden])
+GO
+
 --24052023 indice para vw_stock_res en CLC -------------
 GO
 CREATE NONCLUSTERED INDEX NCLI_Stock_Res_20230524_GT
 ON [dbo].[trans_oc_enc] ([IdTipoIngresoOC])
 INCLUDE ([IdMotivoDevolucion],[Referencia],[no_ticket_tms])
 GO
-
 
 --24052023 indice para vw_historico_resumen cealsa--
 CREATE NONCLUSTERED INDEX NCLI_VW_Fiscal_historico_20230524_GT
