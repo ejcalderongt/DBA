@@ -1,0 +1,20 @@
+--#GT29052023 indicador de cuantas recepciones se han manejado por fecha (año,mes) y la bodega (régimen para cealsa)
+
+create view VW_Indicador_Ingresos as
+select 
+oc.IdOrdenCompraEnc,
+re_enc.IdRecepcionEnc,
+cast(doc.es_devolucion as integer) devolucion,
+doc.nombre documento,
+cast(Fecha_Creacion as date) fecha,
+bd.IdBodega,
+bd.nombre bodega
+from trans_oc_enc oc inner join trans_oc_ti doc on oc.IdTipoIngresoOC = doc.IdTipoIngresoOC
+					 inner join bodega bd on oc.IdBodega=bd.IdBodega
+					 inner  join trans_re_oc re_oc on  oc.IdOrdenCompraEnc=re_oc.IdOrdenCompraEnc
+					 inner join trans_re_enc re_enc on re_oc.IdRecepcionEnc=re_enc.IdRecepcionEnc
+					 inner join trans_re_det re_det on re_enc.IdRecepcionEnc=re_det.IdRecepcionEnc
+where 
+oc.Activo=1 and re_enc.activo=1
+group by doc.es_devolucion,oc.IdOrdenCompraEnc,Fecha_Creacion,bd.IdBodega,bd.nombre,re_enc.IdRecepcionEnc,doc.Nombre
+
