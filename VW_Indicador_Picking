@@ -1,3 +1,34 @@
+--#GT02062023 mejora para indicadores
+
+create view vw_Indicador_Picking as
+select p_ubic.IdProductoBodega,p_ubic.IdPropietarioBodega,p_ubic.IdBodega,bd.nombre bodega,p_ubic.lic_plate,
+p_ubic.idpresentacion,pp.nombre presentacion,pp.factor,
+p_ubic.IdUnidadMedida,um.Nombre unidad,
+--sum(p_ubic.cantidad_despachada) cantidad_despachada,
+case when p_ubic.idpresentacion > 0 then sum(cantidad_despachada) else  0 end  [cajas/bultos],
+case when p_ubic.idpresentacion > 0 then round(sum(cantidad_despachada)*pp.factor,4) else  sum(cantidad_despachada) end unidades,
+cast(p_enc.fecha_picking as date) fecha,
+pe_enc.IdPedidoEnc,p_ubic.IdPickingEnc,
+pe_enc.IdTipoPedido,doc.Descripcion pedido
+from trans_picking_ubic p_ubic inner join producto_bodega pb on p_ubic.IdBodega=pb.IdBodega and p_ubic.IdProductoBodega=pb.IdProductoBodega
+							   inner join producto pr on pb.IdProducto= pr.IdProducto
+							   left outer join producto_presentacion pp on pr.IdProducto=pp.IdProducto and p_ubic.IdPresentacion = pp.IdPresentacion
+							   left outer join unidad_medida um on p_ubic.IdUnidadMedida=um.IdUnidadMedida
+							   inner join trans_picking_enc p_enc on p_ubic.IdPickingEnc=p_enc.IdPickingEnc
+							   inner join trans_pe_enc pe_enc on p_enc.IdPickingEnc = pe_enc.IdPickingEnc
+							   inner join trans_pe_tipo doc on pe_enc.IdTipoPedido=doc.IdTipoPedido
+							   inner join bodega bd on p_ubic.IdBodega=bd.IdBodega
+where p_ubic.activo=1 and p_enc.activo=1 and p_enc.estado='Despachado' 
+group by  p_ubic.IdProductoBodega,p_ubic.IdPropietarioBodega,p_ubic.IdBodega,p_ubic.lic_plate,
+p_ubic.idpresentacion,pp.nombre,
+p_ubic.IdUnidadMedida,um.Nombre,p_enc.fecha_picking,pe_enc.IdPedidoEnc,p_ubic.IdPickingEnc,
+pe_enc.IdTipoPedido,doc.Descripcion,bd.nombre,pp.factor,cantidad_despachada
+--order by p_enc.fecha_picking 
+
+
+
+
+
 /****** #GT09032023: indicador Object:  View [dbo].[VW_Indicador_Picking]    Script Date: 09/03/2023 11:58:36 ******/
 SET ANSI_NULLS ON
 GO
