@@ -1,0 +1,24 @@
+--#GT02062023 para indicadores
+
+alter view vw_Indicador_Despachos as
+select case when factor > 0 then round(sum(CantidadDespachada)*factor,4) else  sum(CantidadDespachada) end unidades,
+despacho_det.codigo,prod.nombre producto,isnull(presentacion.nombre,'') presentacion,ISNULL(presentacion.factor,0) factor,
+despacho_det.IdDespachoEnc,despacho_det.IdDespachoDet, 
+case when factor > 0 then round(sum(CantidadDespachada),4) else 0  end [cajas/bultos]
+, cast(enc.fecha as date) fecha,pr.nombre_comercial,cl.nombre_comercial cliente,bd.nombre bodega
+,pe_enc.IdTipoPedido, doc_salida.Descripcion tipo_salida
+from trans_despacho_det despacho_det left outer join producto_presentacion presentacion
+                                     on despacho_det.IdPresentacion = presentacion.IdPresentacion
+                                     INNER JOIN trans_despacho_enc enc on despacho_det.IdDespachoEnc = enc.IdDespachoEnc
+                                     INNER JOIN bodega bd on enc.IdBodega=bd.IdBodega
+                                     INNER JOIN producto prod on despacho_det.Codigo = prod.codigo
+									 INNER JOIN  propietario_bodega pb on enc.IdPropietarioBodega = pb.IdPropietarioBodega
+									 INNER JOIN propietarios pr on pb.IdPropietario= pr.IdPropietario
+									 INNER JOIN trans_pe_enc pe_enc on despacho_det.IdPedidoEnc = pe_enc.IdPedidoEnc
+									 INNER JOIN cliente cl on pe_enc.IdCliente= cl.IdCliente
+									 INNER JOIN trans_pe_tipo doc_salida on pe_enc.IdTipoPedido=doc_salida.IdTipoPedido
+									 
+where enc.activo=1 
+group by CantidadDespachada,despacho_det.Codigo,presentacion.nombre,presentacion.factor,despacho_det.IdDespachoEnc,enc.fecha,
+prod.nombre,pr.nombre_comercial,cl.nombre_comercial,bd.nombre,despacho_det.IdDespachoDet,pe_enc.IdTipoPedido,doc_salida.Descripcion
+--order by Fecha Desc
