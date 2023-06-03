@@ -1,0 +1,22 @@
+--#GT02062023 Indicador de verificación 
+
+create view vw_Indicador_Verificaciones as
+select  mov.IdMovimiento,mov.IdTransaccion,mov.IdPropietarioBodega,mov.IdProductoBodega,bd.IdBodega,bd.nombre bodega,
+mov.IdPresentacion,pp.nombre presentacion,pp.factor,
+mov.IdUnidadMedida,
+case when mov.IdPresentacion > 0 then cantidad else  0 end  [cajas/bultos],
+case when mov.IdPresentacion > 0 then round(sum(cantidad)*factor,4) else  sum(cantidad) end unidades,
+mov.IdTipoTarea,stt.Nombre tarea,mov.IdRecepcion,cast(mov.fecha as date) fecha,mov.barra_pallet licencia,
+mov.hora_ini,mov.hora_fin,mov.usuario_agr as operador,mov.IdPedidoEnc,mov.IdPedidoDet,p_enc.IdTipoPedido,doc.Descripcion pedido
+from trans_movimientos mov inner join sis_tipo_tarea stt on mov.IdTipoTarea=stt.IdTipoTarea
+						   left outer join producto_presentacion pp on mov.IdPresentacion=pp.IdPresentacion
+						   inner join producto_bodega pb on mov.IdProductoBodega=pb.IdProductoBodega
+						   inner join bodega bd on pb.IdBodega=bd.IdBodega
+						   left outer join trans_pe_enc p_enc on mov.IdPedidoEnc=p_enc.IdPedidoEnc
+						   inner join trans_pe_tipo doc on p_enc.IdTipoPedido=doc.IdTipoPedido
+where mov.IdTipoTarea=11
+group by mov.IdMovimiento,mov.IdTransaccion,mov.IdPropietarioBodega,mov.IdProductoBodega,
+mov.IdPresentacion,pp.nombre,pp.factor,
+mov.IdUnidadMedida,mov.cantidad,mov.IdTipoTarea,stt.Nombre,mov.IdRecepcion,mov.fecha,mov.barra_pallet,
+mov.hora_ini,mov.hora_fin,mov.usuario_agr,mov.IdPedidoEnc,mov.IdPedidoDet,bd.IdBodega,bd.nombre,p_enc.IdTipoPedido,doc.Descripcion 
+--order by mov.fecha asc
