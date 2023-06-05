@@ -1,0 +1,62 @@
+--#GT05062023  asocia a un operador activo con una jornada laboral de la bodega o bodegas, para trazar el marcaje diario, asi como log-in y log-out--
+
+CREATE PROCEDURE asignar_jornada_laboral
+@JornadaLaboral as integer
+as
+declare @IdOperador as integer
+declare @IdEmpresa as integer
+declare @fetch_outer_cursor int
+declare @fetch_inner_cursor int
+
+ DECLARE operadorcursor CURSOR 
+FOR SELECT IdOperador FROM operador
+
+OPEN operadorcursor
+
+FETCH NEXT FROM operadorcursor INTO @IdOperador
+
+WHILE @@FETCH_STATUS = 0
+    BEGIN
+			print '---------------------------------'
+            print ' inicia iteracion de operador: ' + STR(@IdOperador)
+
+            declare @IdBodega as integer
+            DECLARE bodegacursor CURSOR 
+                FOR SELECT IdBodega FROM bodega
+            OPEN bodegacursor
+            FETCH NEXT FROM bodegacursor INTO @IdBodega      
+            
+            WHILE @@FETCH_STATUS = 0
+                BEGIN
+
+			if EXISTS (select *from operador_bodega where IdOperador=@IdOperador and IdBodega=@IdBodega and activo=1)
+			begin
+					   print ' inicia iteracion de bodega: ' + STR(@IdBodega)
+
+						if @JornadaLaboral = 0 --no hay jornada especifica, se insertan todas
+							begin
+								insert into operador_jornada_laboral
+								select ROW_NUMBER() OVER(ORDER BY o.IdOperador ASC) + ISNULL((select max(IdOperadorJornadaLaboral) FROM operador_jornada_laboral),0) AS IdOperadorJornadaLaboral,
+								o.IdOperador, j.IdBodega, j.IdJornada, j.activo, 1, getdate(),1,getdate()
+								from operador o cross join jornada_laboral j
+								where j.IdBodega =@IdBodega and o.IdOperador=@IdOperador
+								order by o.IdOperador
+							end
+						else --si hay una jornada especifica, se inserta únicamente esa.
+							begin
+								insert into operador_jornada_laboral
+								select ROW_NUMBER() OVER(ORDER BY o.IdOperador ASC) + ISNULL((select max(IdOperadorJornadaLaboral) FROM operador_jornada_laboral),0) AS IdOperadorJornadaLaboral,
+								o.IdOperador, j.IdBodega, j.IdJornada, j.activo, 1, getdate(),1,getdate()
+								from operador o cross join jornada_laboral j
+								where j.IdBodega =@IdBodega and j.IdJornada = @JornadaLaboral	and o.IdOperador=@IdOperador
+							end
+			end
+
+                      FETCH NEXT FROM bodegacursor INTO @IdBodega      
+                END
+            CLOSE bodegacursor;
+            DEALLOCATE bodegacursor;
+            FETCH NEXT FROM operadorcursor INTO @IdOperador
+    END
+CLOSE operadorcursor;
+DEALLOCATE operadorcursor;
