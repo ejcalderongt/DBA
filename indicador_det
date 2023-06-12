@@ -17,3 +17,15 @@ CREATE TABLE [dbo].[indicador_det](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+
+insert into indicador_det(IdIndicadorEnc,IdIndicadorDet,descripcion,estado,fec_agr) 
+values (1,1,'Indicador_Ingresos','A',getdate())
+
+insert into indicador_det(IdIndicadorEnc,IdIndicadorDet,descripcion,estado,fec_agr) 
+values (2,2,'Indicador_Pedidos','A',getdate())
+
+insert into indicador_det(IdIndicadorEnc,IdIndicadorDet,descripcion,estado,fec_agr) 
+values (2,3,'Indicador_Picking','A',getdate())
+
+insert into indicador_det(IdIndicadorEnc,IdIndicadorDet,descripcion,estado,fec_agr) 
+values (2,4,'Indicador_Verificacion','A',getdate())
