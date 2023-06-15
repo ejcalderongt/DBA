@@ -1,0 +1,13 @@
+delete from propietarios
+delete from propietario_bodega
+delete from cliente
+delete from cliente_bodega
+delete from operador
+delete from operador_bodega
+DELETE FROM operador_jornada_laboral
+delete from producto
+delete from producto_bodega
+delete from producto_presentacion
+delete from producto_parametros
+delete from producto_parametro_a
+delete from producto_parametro_b
