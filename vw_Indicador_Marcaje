@@ -1,0 +1,28 @@
+--#GT15062023 Vista para indicador de marcaje desde la HH
+
+****** Object:  View [dbo].[vw_Indicador_Marcaje]    Script Date: 15/06/2023 10:34:25 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+create view [dbo].[vw_Indicador_Marcaje] as
+select 
+convert(time(0), Hora_inicio_horario, 114) horario_inicia,
+convert(time(0), Hora_fin_horario, 114) horario_finaliza,
+DATEDIFF(HOUR, min( convert(time(0), Hora_inicio_horario, 114)) , max(convert(time(0), Hora_fin_horario, 114))) horas_laborales,
+min( convert(time(0), Hora_entro, 114)) marcaje_entrada,
+max(convert(time(0), Hora_salio, 114)) marcaje_salida,
+DATEDIFF(HOUR, min( convert(time(0), Hora_entro, 114)) , max(convert(time(0), Hora_salio, 114))) horas_marcaje,
+Fec_lectura fecha_marcaje,marcaje.IdOperador,marcaje.IdBodega,bodega.nombre as bodega,
+operador.nombres +' '+operador.apellidos as operador
+from marcaje inner join bodega on marcaje.IdBodega=bodega.IdBodega
+			 inner join operador on marcaje.IdOperador=operador.IdOperador
+
+--where Fec_lectura>='20230612'
+group by marcaje.Fec_lectura,marcaje.IdOperador,Hora_inicio_horario,Hora_fin_horario,marcaje.IdBodega,bodega.nombre,
+operador.nombres,operador.apellidos
+
+
+GO
