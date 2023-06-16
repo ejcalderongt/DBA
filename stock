@@ -1,3 +1,5 @@
+alter table stock add IdPickingUbicStock int null 
+alter table stock add IdPickingUbic int null
 
 ALTER TABLE [dbo].[stock]  WITH CHECK ADD  CONSTRAINT [FK_stock_bodega_ubicacion] FOREIGN KEY([IdUbicacion], [IdBodega])
 REFERENCES [dbo].[bodega_ubicacion] ([IdUbicacion], [IdBodega])
