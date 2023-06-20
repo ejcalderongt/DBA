@@ -1,3 +1,6 @@
+--#EJC202306201717:
+ALTER TABLE STOCK ADD IdPedidoDet int null 
+
 alter table stock add IdPickingUbicStock int null 
 alter table stock add IdPickingUbic int null
 
