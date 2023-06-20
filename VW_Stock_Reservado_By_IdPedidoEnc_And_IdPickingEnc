@@ -1,3 +1,4 @@
+--·EJC202306201733: Reemplazo por query en código para obtener el stock reservado por Pedido y Picking.
 ALTER VIEW VW_Stock_Reservado_By_IdPedidoEnc_And_IdPickingEnc AS
 SELECT 
 p.codigo, 
