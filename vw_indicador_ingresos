@@ -1,3 +1,50 @@
+--#21062023: se agregan campos como el estado del producto, el factor y si tiene presentación (caja/bultos)--
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+Alter view [dbo].[VW_Indicador_Ingresos] as
+select 
+oc.IdOrdenCompraEnc,
+re_enc.IdRecepcionEnc,
+cast(doc.es_devolucion as integer) devolucion,
+doc.nombre documento,
+cast(Fecha_Creacion as date) fecha,
+bd.IdBodega,
+bd.nombre bodega,
+prod.codigo codigo,
+prod.nombre producto,
+isnull(presentacion.nombre,'') presentacion,ISNULL(presentacion.factor,0) factor,
+round(sum(cantidad_recibida),4) as unidades,
+case when factor > 0 then round(sum(cantidad_recibida),4) else 0  end [cajas/bultos],
+pr.nombre_comercial propietario,
+estado.nombre estado
+from trans_oc_enc oc inner join trans_oc_ti doc on oc.IdTipoIngresoOC = doc.IdTipoIngresoOC
+					 inner join bodega bd on oc.IdBodega=bd.IdBodega
+					 inner  join trans_re_oc re_oc on  oc.IdOrdenCompraEnc=re_oc.IdOrdenCompraEnc
+					 inner join trans_re_enc re_enc on re_oc.IdRecepcionEnc=re_enc.IdRecepcionEnc
+					 inner join trans_re_det re_det on re_enc.IdRecepcionEnc=re_det.IdRecepcionEnc
+					 inner join producto prod on re_det.codigo_producto = prod.codigo
+					 inner join  propietario_bodega pb on oc.IdPropietarioBodega = pb.IdPropietarioBodega
+					 inner join propietarios pr on pb.IdPropietario= pr.IdPropietario
+					 left outer join producto_presentacion presentacion
+                                     on re_det.IdPresentacion = presentacion.IdPresentacion
+					 inner join producto_estado estado on re_det.IdProductoEstado=estado.IdEstado
+													   and estado.IdPropietario=pr.IdPropietario
+where 
+oc.Activo=1 and re_enc.activo=1
+group by doc.es_devolucion,oc.IdOrdenCompraEnc,Fecha_Creacion,bd.IdBodega,bd.nombre,re_enc.IdRecepcionEnc,doc.Nombre
+,prod.codigo,pr.nombre_comercial,presentacion.factor,presentacion.nombre,prod.nombre,estado.nombre
+GO
+
+
+
+
+
+
 --#GT29052023 indicador de cuantas recepciones se han manejado por fecha (año,mes) y la bodega (régimen para cealsa)
 
 create view VW_Indicador_Ingresos as
