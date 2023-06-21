@@ -1,15 +1,12 @@
-USE [IMS4MB_BYB_PRD]
-GO
-
-/****** Object:  View [dbo].[VW_Stock_Reservado_By_IdPedidoEnc_And_IdPickingEnc]    Script Date: 20/06/2023 18:11:38 ******/
+/****** Object:  View [dbo].[VW_Stock_Reservado_By_IdPedidoEnc_And_IdPickingEnc]    Script Date: 21/06/2023 10:12:05 ******/
 SET ANSI_NULLS ON
 GO
 
 SET QUOTED_IDENTIFIER ON
 GO
 
-
 ALTER VIEW [dbo].[VW_Stock_Reservado_By_IdPedidoEnc_And_IdPickingEnc] AS
+
 SELECT 
 p.codigo, 
 p.nombre, 
@@ -35,7 +32,7 @@ dbo.stock.IdUnidadMedida,
 dbo.stock.lote, 
 dbo.stock.lic_plate, 
 dbo.stock.serial, 
-dbo.stock.cantidad AS Cantidad_Reservada, 
+SUM(ISNULL(dbo.trans_picking_ubic.cantidad_solicitada, 0)) AS Cantidad_Reservada, 
 SUM(ISNULL(dbo.trans_picking_ubic.cantidad_solicitada, 0)) AS CantidadReservadaPicking, 
 dbo.stock.peso, 
 'PICKEADO_STOCK' AS 'Estado', 
@@ -78,11 +75,12 @@ dbo.stock.IdPedidoDet = dbo.trans_picking_det.IdPedidoDet ON bu.IdBodega = dbo.t
 AND bu.IdUbicacion = dbo.trans_picking_ubic.IdUbicacion 
 LEFT OUTER JOIN dbo.producto_presentacion AS pp ON dbo.stock.IdPresentacion = pp.IdPresentacion
 WHERE  (ISNULL(dbo.trans_picking_ubic.dañado_verificacion, 0) = 0) AND (ISNULL(dbo.trans_picking_ubic.dañado_picking, 0) = 0) AND (ISNULL(dbo.trans_picking_ubic.no_encontrado, 0) = 0) AND (ISNULL(dbo.stock.IdPickingEnc, 0) <> 0) AND 
-                  (ISNULL(dbo.stock.IdPedidoEnc, 0) <> 0) AND (ISNULL(dbo.stock.IdPickingUbic, 0) <> 0)
+(ISNULL(dbo.stock.IdPedidoEnc, 0) <> 0) AND (ISNULL(dbo.stock.IdPickingUbic, 0) <> 0)
 GROUP BY p.codigo, p.nombre, pp.nombre, pe.nombre, um.Nombre, pr.nombre_comercial, bu.descripcion, pp.factor, pp.factor, dbo.stock.IdPedidoDet, dbo.stock.IdStock, dbo.stock.IdPropietarioBodega, dbo.stock.IdProductoBodega, 
-                  dbo.stock.IdUbicacion, dbo.stock.IdProductoEstado, dbo.stock.IdPresentacion, dbo.stock.IdUnidadMedida, dbo.stock.lote, dbo.stock.lic_plate, dbo.stock.serial, dbo.stock.cantidad, dbo.stock.peso, dbo.stock.fecha_vence, 
-                  dbo.stock.uds_lic_plate, dbo.stock.IdUbicacion_anterior, dbo.stock.no_bulto, dbo.stock.IdRecepcionEnc, dbo.stock.IdPickingEnc, dbo.stock.IdPedidoEnc, dbo.stock.IdDespachoEnc, dbo.stock.añada, dbo.stock.fecha_manufactura, 
-                  ISNULL(dbo.trans_picking_ubic.acepto, 0), ISNULL(dbo.trans_picking_ubic.encontrado, 0), bu.IdTramo, bu.indice_x, bu.nivel, bu.IdUbicacion, dbo.stock.IdBodega, dbo.stock.fecha_ingreso,dbo.stock.IdRecepcionDet
+dbo.stock.IdUbicacion, dbo.stock.IdProductoEstado, dbo.stock.IdPresentacion, dbo.stock.IdUnidadMedida, dbo.stock.lote, dbo.stock.lic_plate, dbo.stock.serial, dbo.stock.cantidad, dbo.stock.peso, dbo.stock.fecha_vence, 
+dbo.stock.uds_lic_plate, dbo.stock.IdUbicacion_anterior, dbo.stock.no_bulto, dbo.stock.IdRecepcionEnc, dbo.stock.IdPickingEnc, dbo.stock.IdPedidoEnc, dbo.stock.IdDespachoEnc, dbo.stock.añada, dbo.stock.fecha_manufactura, 
+ISNULL(dbo.trans_picking_ubic.acepto, 0), ISNULL(dbo.trans_picking_ubic.encontrado, 0), bu.IdTramo, bu.indice_x, bu.nivel, bu.IdUbicacion, dbo.stock.IdBodega, dbo.stock.fecha_ingreso,dbo.stock.IdRecepcionDet
+
 UNION
 
 SELECT 
@@ -94,8 +92,8 @@ um.Nombre AS unidadmedida,
 pr.nombre_comercial AS propietario, 
 dbo.Nombre_Completo_Ubicacion(bu.IdUbicacion, bu.IdBodega) AS ubicacion_nombre,
 pp.factor, 
-ISNULL(s.cantidad, 0) AS CantidadSF, 
-ISNULL(ISNULL(s.cantidad, 0) / pp.factor, 0) AS Cantidad, 
+ISNULL(res.cantidad, 0) AS CantidadSF, 
+ISNULL(ISNULL(res.cantidad, 0) / pp.factor, 0) AS Cantidad, 
 res.IdStockRes, 
 res.IdTransaccion, 
 res.Indicador, 
@@ -172,3 +170,4 @@ res.idbodega,
 res.fecha_ingreso, 
 s.IdRecepcionEnc, 
 s.IdRecepcionDet
+GO
