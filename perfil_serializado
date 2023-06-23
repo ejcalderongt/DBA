@@ -1,3 +1,3 @@
 INSERT INTO perfil_serializado VALUES(1,'Individual',1)
-INSERT INTO perfil_serializado VALUES(1,'Rango',1)
-INSERT INTO perfil_serializado VALUES(1,'Único',1)
+INSERT INTO perfil_serializado VALUES(2,'Rango',1)
+INSERT INTO perfil_serializado VALUES(3,'Único',1)
