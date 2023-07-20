@@ -1,3 +1,4 @@
+/****** CKFK Se quitó de la vista la relación con la trans_ubic_hh_det para evitar la duplicación de registros ******/
 /****** Object:  View [dbo].[VW_Cambios_Ubicacion]    Script Date: 7/19/2023 7:30:51 PM ******/
 SET ANSI_NULLS ON
 GO
