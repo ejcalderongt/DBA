@@ -1,6 +1,23 @@
 /****** Object:  View [dbo].[VW_Productos_BECOFARMA_WMS]    Script Date: 24/07/2023 10:29:03 ******/
 
 
+ALTER VIEW [dbo].[VW_Productos_BECOFARMA_WMS]
+AS
+SELECT 
+oitm.ItemCode, --0
+oitm.CodeBars as CodigoBarra, --1
+oitm.ItemName,--2
+oitm.U_molecula as Clasificacion, --3
+oitb.ItmsGrpCod as CodFamilia,--4
+oitb.ItmsGrpNam as Familia,--5
+oitm.U_art_marca as Marca,--6
+oitm.U_Tipo_Prod as TipoProducto,--7
+oitm.U_Um_Prod as Umbas,--8
+oitm.U_ENVIADO_WMS--9
+FROM dbo.OITB LEFT OUTER JOIN--10
+dbo.OITM ON dbo.OITB.ItmsGrpCod = dbo.OITM.ItmsGrpCod--11
+GO
+
 CREATE VIEW [dbo].[VW_Productos_BECOFARMA_WMS]
 AS
 SELECT 
