@@ -1,4 +1,12 @@
---#GT12062023 opciones para cargar indicadores
+--#GT12062023 insert del menu indicadores y de los combos en el form
+
+Insert into menu_sistema values('3.12','Análitica','pgAnalitica',2,'3',0)
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '3.12')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'3.12',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+
+Insert into menu_sistema values('3.12.1','Análitica','mnuAnalitica',3,'3.12',0)
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '3.12.1')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'3.12.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
 
 insert into indicador_enc(IdIndicadorEnc,descripcion,estado,fec_agr) values(1,'Ingresos','A',getdate ())
 insert into indicador_enc(IdIndicadorEnc,descripcion,estado,fec_agr) values(2,'Salidas','A',getdate ())
