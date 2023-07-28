@@ -1,0 +1,46 @@
+/****** Object:  View [dbo].[VW_Stock_Pickeado]    Script Date: 28/07/2023 16:10:52 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER VIEW [dbo].[VW_Stock_Pickeado]
+AS
+SELECT dbo.trans_picking_ubic_stock.IdPedidoEnc, dbo.trans_picking_ubic_stock.idpickingenc, dbo.trans_picking_ubic_stock.IdPickingUbic, dbo.trans_picking_ubic_stock.IdPickingDet, dbo.trans_picking_ubic_stock.IdPedidoDet, 
+                  dbo.trans_picking_ubic_stock.IdBodega, dbo.trans_picking_ubic_stock.IdPickingUbicStock, dbo.stock.IdProductoBodega, dbo.stock.IdProductoEstado, dbo.stock.IdPresentacion, dbo.stock.IdUnidadMedida, dbo.stock.IdUbicacion, 
+                  dbo.trans_picking_ubic_stock.IdOperadorBodega_Pickeo, dbo.trans_picking_ubic_stock.IdOperadorBodega_Verifico, dbo.stock.IdStock, dbo.propietarios.nombre_comercial AS Propietario, dbo.stock.lote AS Lote, 
+                  dbo.stock.serial AS Serial, dbo.producto.codigo AS Codigo_Producto, dbo.producto.nombre AS Nombre_Producto, 
+				  SUM(dbo.stock.cantidad) AS CantidadUmbas,
+				  SUM(dbo.stock.peso) AS Peso,
+				  dbo.unidad_medida.Nombre AS UmBas,
+                  dbo.producto_presentacion.nombre AS Presentacion, dbo.stock.fecha_vence AS Vence, dbo.stock.lic_plate AS Licencia, dbo.producto_estado.nombre AS Producto_Estado, dbo.trans_picking_ubic_stock.fec_agr AS Fecha_Picking, 
+                  ISNULL(dbo.operador.nombres, '') + ' ' + ISNULL(dbo.operador.apellidos, '') AS Operador_Pickeo, 
+				  ISNULL(operador_1.nombres, '') + ' ' + ISNULL(operador_1.apellidos, '') AS Operador_Verifico, 
+                  dbo.Nombre_Completo_Ubicacion(dbo.trans_picking_ubic_stock.IdUbicacionAnterior, dbo.trans_picking_ubic_stock.IdBodega) as Ubicacion_Anterior,
+				  dbo.Nombre_Completo_Ubicacion(dbo.stock.IdUbicacion, dbo.stock.IdBodega) as Ubicacion_Actual,
+				  dbo.stock.fecha_ingreso
+FROM     dbo.trans_picking_ubic_stock INNER JOIN
+                  dbo.stock ON dbo.trans_picking_ubic_stock.IdPedidoEnc = dbo.stock.IdPedidoEnc AND dbo.trans_picking_ubic_stock.idpickingenc = dbo.stock.IdPickingEnc AND dbo.trans_picking_ubic_stock.IdPedidoDet = dbo.stock.IdPedidoDet AND 
+                  dbo.trans_picking_ubic_stock.IdPropietarioBodega = dbo.stock.IdPropietarioBodega AND dbo.trans_picking_ubic_stock.IdProductoBodega = dbo.stock.IdProductoBodega AND 
+                  dbo.trans_picking_ubic_stock.IdProductoEstado = dbo.stock.IdProductoEstado AND dbo.trans_picking_ubic_stock.IdPresentacion = dbo.stock.IdPresentacion AND 
+                  dbo.trans_picking_ubic_stock.IdUnidadMedida = dbo.stock.IdUnidadMedida INNER JOIN
+                  dbo.producto_bodega ON dbo.stock.IdProductoBodega = dbo.producto_bodega.IdProductoBodega AND dbo.stock.IdProductoBodega = dbo.producto_bodega.IdProductoBodega INNER JOIN
+                  dbo.producto ON dbo.producto_bodega.IdProducto = dbo.producto.IdProducto INNER JOIN
+                  dbo.propietario_bodega ON dbo.stock.IdPropietarioBodega = dbo.propietario_bodega.IdPropietarioBodega AND dbo.stock.IdPropietarioBodega = dbo.propietario_bodega.IdPropietarioBodega INNER JOIN
+                  dbo.propietarios ON dbo.propietario_bodega.IdPropietario = dbo.propietarios.IdPropietario LEFT OUTER JOIN
+                  dbo.unidad_medida ON dbo.stock.IdUnidadMedida = dbo.unidad_medida.IdUnidadMedida AND dbo.stock.IdUnidadMedida = dbo.unidad_medida.IdUnidadMedida AND 
+                  dbo.producto.IdUnidadMedidaBasica = dbo.unidad_medida.IdUnidadMedida LEFT OUTER JOIN
+                  dbo.producto_estado ON dbo.stock.IdProductoEstado = dbo.producto_estado.IdEstado AND dbo.stock.IdProductoEstado = dbo.producto_estado.IdEstado LEFT OUTER JOIN
+                  dbo.producto_presentacion ON dbo.stock.IdPresentacion = dbo.producto_presentacion.IdPresentacion AND dbo.stock.IdPresentacion = dbo.producto_presentacion.IdPresentacion AND 
+                  dbo.producto.IdProducto = dbo.producto_presentacion.IdProducto LEFT OUTER JOIN
+                  dbo.operador_bodega AS operador_bodega_1 INNER JOIN
+                  dbo.operador AS operador_1 ON operador_bodega_1.IdOperador = operador_1.IdOperador ON dbo.trans_picking_ubic_stock.IdOperadorBodega_Verifico = operador_bodega_1.IdOperadorBodega LEFT OUTER JOIN
+                  dbo.operador INNER JOIN
+                  dbo.operador_bodega ON dbo.operador.IdOperador = dbo.operador_bodega.IdOperador ON dbo.trans_picking_ubic_stock.IdOperadorBodega_Pickeo = dbo.operador_bodega.IdOperadorBodega
+GROUP BY dbo.trans_picking_ubic_stock.IdBodega, dbo.trans_picking_ubic_stock.idpickingenc, dbo.trans_picking_ubic_stock.IdPickingUbicStock, dbo.stock.IdProductoBodega, dbo.stock.IdProductoEstado, dbo.stock.IdPresentacion, 
+                  dbo.stock.IdUnidadMedida, dbo.stock.IdUbicacion, dbo.trans_picking_ubic_stock.IdOperadorBodega_Pickeo, dbo.trans_picking_ubic_stock.IdOperadorBodega_Verifico, dbo.stock.lote, dbo.stock.serial, dbo.stock.fecha_vence, 
+                  dbo.stock.lic_plate, dbo.trans_picking_ubic_stock.fec_agr, ISNULL(dbo.operador.nombres, '') + ' ' + ISNULL(dbo.operador.apellidos, ''), operador_1.nombres, operador_1.apellidos, dbo.producto.codigo, dbo.producto.nombre, 
+                  dbo.trans_picking_ubic_stock.IdPickingUbic, dbo.trans_picking_ubic_stock.IdPickingDet, dbo.trans_picking_ubic_stock.IdPedidoEnc, dbo.trans_picking_ubic_stock.IdPedidoDet, dbo.producto_presentacion.nombre, 
+                  dbo.unidad_medida.Nombre, dbo.producto_estado.nombre, dbo.propietarios.nombre_comercial, dbo.trans_picking_ubic_stock.IdUbicacionAnterior, dbo.stock.fecha_ingreso, dbo.stock.IdStock, stock.IdBodega
+GO
