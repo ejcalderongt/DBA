@@ -1,3 +1,6 @@
+--#CKFK20230728 Se agrega este parámetro para filtrar los pedidos en el despacho.
+ALTER TABLE bodega ADD filtrar_pedidos_usuario bit NOT NULL DEFAULT 1
+
 --#GT14032023 campo para controlar horario ejecucion historico
 alter table bodega add horario_ejecucion_historico time default null
 
