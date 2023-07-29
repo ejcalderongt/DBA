@@ -2,12 +2,8 @@
 SET ANSI_NULLS ON
 GO
 
- 
-
 SET QUOTED_IDENTIFIER ON
 GO
-
- 
 
 ALTER VIEW [dbo].[VW_Stock_Pickeado]
 AS
@@ -43,6 +39,8 @@ GROUP BY dbo.trans_picking_ubic_stock.IdBodega, dbo.trans_picking_ubic_stock.idp
                   dbo.trans_picking_ubic_stock.IdPickingUbic, dbo.trans_picking_ubic_stock.IdPickingDet, dbo.trans_picking_ubic_stock.IdPedidoEnc, dbo.trans_picking_ubic_stock.IdPedidoDet, dbo.producto_presentacion.nombre, 
                   dbo.unidad_medida.Nombre, dbo.producto_estado.nombre, dbo.propietarios.nombre_comercial, dbo.trans_picking_ubic_stock.IdUbicacionAnterior, dbo.stock.fecha_ingreso, dbo.stock.IdStock, dbo.stock.IdBodega
 GO
+
+
 /****** Object:  View [dbo].[VW_Stock_Pickeado]    Script Date: 28/07/2023 16:10:52 ******/
 SET ANSI_NULLS ON
 GO
