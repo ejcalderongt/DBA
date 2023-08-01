@@ -23,7 +23,7 @@ CREATE TABLE [dbo].[trans_picking_ubic_stock](
 	[fecha_vence] [datetime] NULL,
 	[fecha_minima] [datetime] NULL,
 	[serial] [nvarchar](35) NULL,
-	[lic_plate] [nvarchar](25) NULL,
+	[Licencia] [nvarchar](25) NULL,
 	[cantidad_pickeada] [float] NULL,
 	[cantidad_verificada] [float] NULL,
 	[peso_pickeado] [float] NULL,
