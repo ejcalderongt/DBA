@@ -14,20 +14,22 @@ CREATE TABLE [dbo].[trans_picking_ubic_stock](
 	[IdUbicacionAnterior] [int] NULL,
 	[IdRecepcion] [bigint] NULL,
 	[IdPedidoEnc] [int] NULL,
-	[IdPedidoDet] [int] NULL,	
+	[IdPedidoDet] [int] NULL,
 	[idpickingenc] [int] NULL,
 	[IdOperadorBodega] [int] NULL,
 	[IdOperadorBodega_Pickeo] [int] NULL,
-	[IdOperadorBodega_Verifico] [int] NULL,	
+	[IdOperadorBodega_Verifico] [int] NULL,
 	[lote] [nvarchar](35) NULL,
 	[fecha_vence] [datetime] NULL,
 	[fecha_minima] [datetime] NULL,
 	[serial] [nvarchar](35) NULL,
 	[lic_plate] [nvarchar](25) NULL,
-	[cantidad_recibida] [float] NULL,
-	[cantidad_verificada] [float] NULL,	
+	[cantidad_pickeada] [float] NULL,
+	[cantidad_verificada] [float] NULL,
+	[peso_pickeado] [float] NULL,
+	[peso_verificado] [float] NULL,
 	[fecha_picking] [datetime] NULL,
-	[fecha_verificado] [datetime] NULL,	
+	[fecha_verificado] [datetime] NULL,
 	[fecha_despachado] [datetime] NULL,
 	[cantidad_despachada] [float] NULL,
 	[user_agr] [nvarchar](50) NULL,
@@ -37,9 +39,16 @@ CREATE TABLE [dbo].[trans_picking_ubic_stock](
 	[activo] [bit] NULL,
 	[IdUbicacionTemporal] [int] NULL,
 	[IdOperadorBodega_Asignado] [int] NULL,
+	[IdRecepcionDet] [int] NULL,	
  CONSTRAINT [PK_trans_picking_ubic_stock] PRIMARY KEY CLUSTERED 
 (
 	[IdPickingUbicStock] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[trans_picking_ubic_stock] ADD  DEFAULT ((0)) FOR [peso_pickeado]
+GO
+
+ALTER TABLE [dbo].[trans_picking_ubic_stock] ADD  DEFAULT ((0)) FOR [peso_verificado]
 GO
