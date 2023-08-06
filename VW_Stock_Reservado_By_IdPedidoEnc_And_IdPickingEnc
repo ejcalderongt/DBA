@@ -1,4 +1,5 @@
-/****** Object:  View [dbo].[VW_Stock_Reservado_By_IdPedidoEnc_And_IdPickingEnc]    Script Date: 26/07/2023 09:49:07 ******/
+
+/****** Object:  View [dbo].[VW_Stock_Reservado_By_IdPedidoEnc_And_IdPickingEnc]    Script Date: 5/08/2023 16:27:24 ******/
 SET ANSI_NULLS ON
 GO
 
@@ -105,7 +106,7 @@ SUM(ISNULL(dbo.trans_picking_ubic.peso_verificado, 0)) AS Peso_Verificado,
 ISNULL(dbo.trans_picking_ubic.acepto, 0) AS Acepto, 
 SUM(ISNULL(dbo.trans_picking_ubic.cantidad_recibida, 0)) AS cantidad_recibida, 
 SUM(ISNULL(dbo.trans_picking_ubic.cantidad_verificada, 0)) AS cantidad_verificada, 
-SUM(ISNULL(dbo.trans_picking_ubic.cantidad_despachada, 0)) 							
+SUM(ISNULL(dbo.trans_picking_ubic.cantidad_despachada, 0))                             
 AS Cantidad_Despachada, ISNULL(dbo.trans_picking_ubic.encontrado, 0) AS Encontrado, 
 res.idbodega, 
 res.fecha_ingreso,
@@ -115,27 +116,25 @@ bu.indice_x,
 bu.nivel,
 trans_picking_ubic.IdPickingUbic
 FROM dbo.stock_res AS res 
-	 LEFT OUTER JOIN dbo.propietario_bodega AS prb ON res.IdPropietarioBodega = prb.IdPropietarioBodega 
-	 INNER JOIN dbo.producto_bodega AS pb ON pb.IdProductoBodega = res.IdProductoBodega 
-	 INNER JOIN dbo.producto_estado AS pe ON res.IdProductoEstado = pe.IdEstado 
-	 INNER JOIN dbo.unidad_medida AS um ON res.IdUnidadMedida = um.IdUnidadMedida 
-	 INNER JOIN dbo.propietarios AS pr ON prb.IdPropietario = pr.IdPropietario 
-	 INNER JOIN dbo.producto AS p ON pb.IdProducto = p.IdProducto 
-	 LEFT OUTER JOIN  dbo.bodega_ubicacion AS bu 
-	 RIGHT OUTER JOIN dbo.trans_picking_det 
-	 INNER JOIN dbo.trans_picking_ubic 
-	 ON dbo.trans_picking_det.IdPickingDet = dbo.trans_picking_ubic.IdPickingDet 
-	 ON bu.IdBodega = dbo.trans_picking_ubic.IdBodega 
-	 AND bu.IdUbicacion = dbo.trans_picking_ubic.IdUbicacion 
-	 ON res.idbodega = dbo.trans_picking_ubic.IdBodega 
-	 AND res.IdPedidoDet = dbo.trans_picking_det.IdPedidoDet 
-	 AND res.IdStock = dbo.trans_picking_ubic.IdStock 
-	 AND res.IdStockRes = dbo.trans_picking_ubic.IdStockRes 
-	 LEFT OUTER JOIN dbo.stock AS s ON res.IdStock = s.IdStock 
-	 LEFT OUTER JOIN dbo.producto_presentacion AS pp ON res.IdPresentacion = pp.IdPresentacion
+     LEFT OUTER JOIN dbo.propietario_bodega AS prb ON res.IdPropietarioBodega = prb.IdPropietarioBodega 
+     INNER JOIN dbo.producto_bodega AS pb ON pb.IdProductoBodega = res.IdProductoBodega 
+     INNER JOIN dbo.producto_estado AS pe ON res.IdProductoEstado = pe.IdEstado 
+     INNER JOIN dbo.unidad_medida AS um ON res.IdUnidadMedida = um.IdUnidadMedida 
+     INNER JOIN dbo.propietarios AS pr ON prb.IdPropietario = pr.IdPropietario 
+     INNER JOIN dbo.producto AS p ON pb.IdProducto = p.IdProducto 
+     INNER JOIN  dbo.bodega_ubicacion AS bu ON bu.IdBodega = res.idbodega
+     AND bu.IdUbicacion = res.IdUbicacion 
+     LEFT OUTER JOIN dbo.trans_picking_det 
+     LEFT OUTER JOIN dbo.trans_picking_ubic 
+	 ON dbo.trans_picking_det.IdPickingDet = dbo.trans_picking_ubic.IdPickingDet      
+     ON res.idbodega = dbo.trans_picking_ubic.IdBodega 
+     AND res.IdPedidoDet = dbo.trans_picking_det.IdPedidoDet 
+     AND res.IdStock = dbo.trans_picking_ubic.IdStock 
+     AND res.IdStockRes = dbo.trans_picking_ubic.IdStockRes 
+     INNER JOIN dbo.stock AS s ON res.IdStock = s.IdStock 
+     LEFT OUTER JOIN dbo.producto_presentacion AS pp ON res.IdPresentacion = pp.IdPresentacion
 WHERE  (ISNULL(dbo.trans_picking_ubic.dañado_verificacion, 0) = 0) AND (ISNULL(dbo.trans_picking_ubic.dañado_picking, 0) = 0) AND (ISNULL(dbo.trans_picking_ubic.no_encontrado, 0) = 0)
---and trans_picking_ubic.IdPedidoEnc = 1
-GROUP BY p.codigo, p.nombre, pp.nombre, pe.nombre, um.Nombre, pr.nombre_comercial, bu.descripcion, s.cantidad, pp.factor, s.cantidad / pp.factor, res.IdStockRes, res.IdTransaccion, res.Indicador, res.IdPedidoDet, res.IdStock, 																																
+GROUP BY p.codigo, p.nombre, pp.nombre, pe.nombre, um.Nombre, pr.nombre_comercial, bu.descripcion, s.cantidad, pp.factor, s.cantidad / pp.factor, res.IdStockRes, res.IdTransaccion, res.Indicador, res.IdPedidoDet, res.IdStock,                                                                                                                                 
 res.IdPropietarioBodega, res.IdProductoBodega, res.IdUbicacion, res.IdProductoEstado, res.IdPresentacion, res.IdUnidadMedida, res.lote, res.lic_plate, res.serial, res.cantidad, res.peso, res.estado, res.fecha_vence, res.uds_lic_plate, 
 res.ubicacion_ant, res.no_bulto, res.IdRecepcion, res.IdPicking, res.IdPedido, 
 res.IdDespacho, res.añada, --res.fecha_manufactura, 
@@ -159,7 +158,7 @@ pp.nombre AS presentacion,
 pe.nombre AS NomEstado, 
 um.Nombre AS unidadmedida, 
 pr.nombre_comercial AS propietario, 
-dbo.Nombre_Completo_Ubicacion(res.IdUbicacion_anterior, res.IdBodega) AS ubicacion_nombre,
+dbo.Nombre_Completo_Ubicacion(res.IdUbicacion, res.IdBodega) AS ubicacion_nombre,
 MAX(pp.factor) factor, 
 SUM(ISNULL(res.cantidad, 0)) AS CantidadSF, 
 SUM(ISNULL(ISNULL(res.cantidad, 0) / pp.factor, 0)) AS Cantidad, 
@@ -208,26 +207,25 @@ bu.indice_x,
 bu.nivel,
 trans_picking_ubic.IdPickingUbic
 FROM dbo.stock AS res 
-	 LEFT OUTER JOIN dbo.propietario_bodega AS prb ON res.IdPropietarioBodega = prb.IdPropietarioBodega 
-	 INNER JOIN dbo.producto_bodega AS pb ON pb.IdProductoBodega = res.IdProductoBodega 
-	 INNER JOIN dbo.producto_estado AS pe ON res.IdProductoEstado = pe.IdEstado 
-	 INNER JOIN dbo.unidad_medida AS um ON res.IdUnidadMedida = um.IdUnidadMedida 
-	 INNER JOIN dbo.propietarios AS pr ON prb.IdPropietario = pr.IdPropietario 
-	 INNER JOIN dbo.producto AS p ON pb.IdProducto = p.IdProducto 
-	 LEFT OUTER JOIN  dbo.bodega_ubicacion AS bu 
-	 RIGHT OUTER JOIN dbo.trans_picking_det 
-	 INNER JOIN dbo.trans_picking_ubic 
-	 ON dbo.trans_picking_det.IdPickingDet = dbo.trans_picking_ubic.IdPickingDet 
-	 ON bu.IdBodega = dbo.trans_picking_ubic.IdBodega 
-	 AND bu.IdUbicacion = dbo.trans_picking_ubic.IdUbicacion 
-	 ON res.idbodega = dbo.trans_picking_ubic.IdBodega 
-	 AND res.IdPedidoDet = dbo.trans_picking_ubic.IdPedidoDet 
-	 AND res.IdPickingUbic = dbo.trans_picking_ubic.IdPickingUbic
-	 and res.IdPedidoEnc = dbo.trans_picking_ubic.IdPedidoEnc
-	 and res.IdPickingEnc = dbo.trans_picking_ubic.IdPickingEnc
-	 LEFT OUTER JOIN dbo.producto_presentacion AS pp ON res.IdPresentacion = pp.IdPresentacion
+     LEFT OUTER JOIN dbo.propietario_bodega AS prb ON res.IdPropietarioBodega = prb.IdPropietarioBodega 
+     INNER JOIN dbo.producto_bodega AS pb ON pb.IdProductoBodega = res.IdProductoBodega 
+     INNER JOIN dbo.producto_estado AS pe ON res.IdProductoEstado = pe.IdEstado 
+     INNER JOIN dbo.unidad_medida AS um ON res.IdUnidadMedida = um.IdUnidadMedida 
+     INNER JOIN dbo.propietarios AS pr ON prb.IdPropietario = pr.IdPropietario 
+     INNER JOIN dbo.producto AS p ON pb.IdProducto = p.IdProducto 
+	  INNER JOIN  dbo.bodega_ubicacion AS bu ON bu.IdBodega = res.idbodega
+     AND bu.IdUbicacion = res.IdUbicacion 
+     LEFT OUTER JOIN dbo.trans_picking_det 
+     LEFT OUTER JOIN dbo.trans_picking_ubic 
+	 ON dbo.trans_picking_det.IdPickingDet = dbo.trans_picking_ubic.IdPickingDet      
+     ON res.idbodega = dbo.trans_picking_ubic.IdBodega 
+     AND res.IdPedidoDet = dbo.trans_picking_det.IdPedidoDet 
+     AND res.IdPickingUbic = dbo.trans_picking_ubic.IdPickingUbic 
+	 AND res.IdPedidoEnc = dbo.trans_picking_det.IdPedidoEnc
+     LEFT OUTER JOIN dbo.producto_presentacion AS pp ON res.IdPresentacion = pp.IdPresentacion
 WHERE  (ISNULL(dbo.trans_picking_ubic.dañado_verificacion, 0) = 0)
 AND (ISNULL(dbo.trans_picking_ubic.dañado_picking, 0) = 0) AND (ISNULL(dbo.trans_picking_ubic.no_encontrado, 0) = 0)
+AND res.IdPedidoEnc<>0 AND res.IdPickingEnc <> 0
 GROUP BY p.codigo, p.nombre, pp.nombre, pe.nombre, um.Nombre, pr.nombre_comercial, bu.descripcion,
 res.IdPickingEnc,trans_picking_ubic.IdStock,trans_picking_ubic.IdStockRes,
 res.IdPedidoDet,res.IdPropietarioBodega, res.IdProductoBodega, res.IdUbicacion, res.IdProductoEstado, res.IdPresentacion, 
@@ -246,7 +244,7 @@ bu.IdBodega,
 res.idbodega, 
 res.fecha_ingreso, 
 trans_picking_ubic.IdPickingUbic) AS T
-where t.IdPedidoEnc = 1
+--where t.IdPedidoEnc = 1
 Group by codigo, 
 nombre, 
 presentacion, 
@@ -289,4 +287,7 @@ IdTramo,
 indice_x, 
 nivel,
 IdPickingUbic
+
 GO
+
+
