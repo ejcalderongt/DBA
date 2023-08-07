@@ -1,3 +1,8 @@
+--#EJC20230807 Campos agregados para control 
+ALTER TABLE TRANS_PICKING_UBIC ADD procesado_bof bit not null default 0
+ALTER TABLE TRANS_PICKING_UBIC ADD IdUsuario_bof_pickeo int null
+ALTER TABLE TRANS_PICKING_UBIC ADD fecha_procesado_bof date null default '19000101'
+
 alter table trans_picking_ubic add cantidad_packing float null default 0
 alter table trans_picking_ubic add peso_packing float null default 0
 alter table trans_picking_ubic add no_bulto_packing nvarchar(50) null default ''
