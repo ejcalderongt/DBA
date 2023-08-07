@@ -50,5 +50,10 @@ GO
 ALTER TABLE [dbo].[trans_picking_ubic_stock] ADD  DEFAULT ((0)) FOR [peso_pickeado]
 GO
 
+--#EJC20230807 Campos agregados para control 
+ALTER TABLE TRANS_PICKING_UBIC_STOCK ADD procesado_bof bit not null default 0
+ALTER TABLE TRANS_PICKING_UBIC_STOCK ADD IdUsuario_bof_pickeo int null
+ALTER TABLE TRANS_PICKING_UBIC_STOCK ADD fecha_procesado_bof date null default '19000101'
+
 ALTER TABLE [dbo].[trans_picking_ubic_stock] ADD  DEFAULT ((0)) FOR [peso_verificado]
 GO
