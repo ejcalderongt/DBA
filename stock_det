@@ -1,3 +1,8 @@
+--#GT11082023: se agrega campo de fecha 
+alter table stock_det add fec_agr datetime default getdate()
+
+
+------------------------------------------------------------
 CREATE TABLE [dbo].[stock_det](
 	[IdStock] [int] NOT NULL,
 	[posiciones] [int] NULL,
