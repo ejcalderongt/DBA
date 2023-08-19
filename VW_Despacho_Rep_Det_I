@@ -1,6 +1,5 @@
-/------------- GT16082023: se agrega numero orden poliza --------------------------------------/
-ALTER VIEW [dbo].[VW_Despacho_Rep_Det_I]
-AS
+/------------- GT18082023: reporte de salidas muestra la poliza de ingreso y la de salida cuando es fiscal --------------------------------------/
+ALTER VIEW [dbo].[VW_Despacho_Rep_Det_I] AS
 SELECT dbo.trans_despacho_enc.IdBodega, dbo.trans_picking_ubic.IdPickingUbic, dbo.trans_picking_ubic.IdStock, dbo.trans_picking_ubic.IdPedidoDet, dbo.trans_picking_ubic.IdPropietarioBodega, dbo.trans_picking_ubic.IdProductoBodega, 
                   dbo.trans_picking_ubic.IdProductoEstado, dbo.trans_picking_ubic.IdPresentacion, dbo.trans_picking_ubic.IdUnidadMedida, dbo.trans_picking_ubic.IdRecepcion, dbo.trans_despacho_enc.IdDespachoEnc, 
                   dbo.trans_despacho_det.IdDespachoDet, dbo.trans_despacho_det.IdPedidoEnc, dbo.producto.IdProducto, dbo.propietarios.nombre_comercial AS Propietario, dbo.trans_despacho_det.Codigo AS Codigo_Producto, 
@@ -15,7 +14,8 @@ SELECT dbo.trans_despacho_enc.IdBodega, dbo.trans_picking_ubic.IdPickingUbic, db
                   dbo.empresa_transporte_pilotos.nombres AS Nombre_Piloto, dbo.empresa_transporte_pilotos.apellidos AS Apellido_Piloto, dbo.empresa_transporte_pilotos.no_carnet AS No_Carnet_Piloto, 
                   dbo.empresa_transporte_pilotos.no_licencia AS No_Licencia_Piloto, dbo.trans_picking_ubic.lic_plate AS Licencia, dbo.producto_parametro_a.Nombre AS parametro_a, dbo.producto_parametro_b.Nombre AS parametro_b, 
                   dbo.producto_marca.nombre AS marca, dbo.producto_clasificacion.nombre AS clasificacion, dbo.producto_familia.nombre AS familia
-				   ,pe_pol.numero_orden, pe_pol.codigo_poliza
+				   ,pe_pol.numero_orden numero_orden_pedido, pe_pol.codigo_poliza codigo_poliza_pedido,
+				   oc_pol.codigo_poliza codigo_poliza_ingreso, oc_pol.numero_orden numero_orden_ingreso
 FROM     dbo.trans_pe_enc INNER JOIN
                   dbo.cliente ON dbo.trans_pe_enc.IdCliente = dbo.cliente.IdCliente INNER JOIN
                   dbo.trans_despacho_enc INNER JOIN
@@ -40,10 +40,9 @@ FROM     dbo.trans_pe_enc INNER JOIN
                   dbo.trans_despacho_det.IdPresentacion = dbo.trans_picking_ubic.IdPresentacion LEFT OUTER JOIN
                   dbo.unidad_medida ON dbo.trans_despacho_det.IdUnidadMedidaBasica = dbo.unidad_medida.IdUnidadMedida LEFT OUTER JOIN
                   dbo.producto_presentacion ON dbo.trans_despacho_det.IdPresentacion = dbo.producto_presentacion.IdPresentacion
-		  LEFT OUTER JOIN dbo.trans_pe_det pe_det on  dbo.trans_pe_enc.IdPedidoEnc = pe_det.IdPedidoEnc LEFT JOIN
-		  --dbo.trans_oc_pol oc_pol on   pe_det.IdPedidoEnc = oc_pol.IdOrdenCompraEnc
-		  dbo.trans_pe_pol pe_pol on trans_pe_enc.IdPedidoEnc = pe_pol.IdOrdenPedidoEnc
-						 
+				  LEFT OUTER JOIN trans_pe_pol pe_pol on trans_pe_enc.IdPedidoEnc = pe_pol.IdOrdenPedidoEnc
+				  INNER JOIN trans_re_oc re_oc on dbo.trans_picking_ubic.IdRecepcion=re_oc.IdRecepcionEnc
+				  LEFT OUTER JOIN trans_oc_pol oc_pol on re_oc.IdOrdenCompraEnc=oc_pol.IdOrdenCompraEnc
 GO
 
 
