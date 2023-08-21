@@ -1,0 +1,27 @@
+--#GT21082023Devuelve nombre del sector en la bodega 
+
+CREATE FUNCTION [dbo].[Nombre_Sector] 
+(
+    @IdSector INT,
+    @IdBodega INT
+)
+RETURNS NVARCHAR(200)
+AS
+BEGIN
+
+    DECLARE @resultado NVARCHAR(200)
+    -- Declare the return variable here
+
+    SELECT @resultado = a.Descripcion
+    FROM bodega_sector a
+    WHERE (a.IdSector=@IdSector) 
+    And a.idbodega = @IdBodega
+
+ 
+
+    RETURN @resultado;
+
+ 
+
+END
+GO
