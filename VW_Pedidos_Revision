@@ -1,0 +1,18 @@
+---#EJC202308211455:
+
+ALTER VIEW [dbo].[VW_Pedidos_Revision]
+AS
+SELECT dbo.trans_pe_enc.Fecha_Pedido, dbo.trans_pe_enc.IdPedidoEnc, dbo.propietarios.nombre_comercial AS Propietario, dbo.cliente.nombre_comercial AS Cliente, dbo.trans_pe_enc.IdBodega, dbo.trans_pe_enc.no_documento, 
+                  dbo.trans_pe_enc.referencia, dbo.trans_pe_enc.no_documento_externo, dbo.cliente.nit AS NIT_Cliente, dbo.propietarios.NIT AS NIT_Propietario, dbo.trans_pe_pol.fecha_aceptacion, dbo.trans_pe_pol.numero_orden, 
+                  dbo.trans_pe_pol.dua
+FROM     dbo.trans_pe_pol RIGHT OUTER JOIN
+                  dbo.trans_pe_enc INNER JOIN
+                  dbo.propietario_bodega ON dbo.trans_pe_enc.IdPropietarioBodega = dbo.propietario_bodega.IdPropietarioBodega INNER JOIN
+                  dbo.propietarios ON dbo.propietario_bodega.IdPropietario = dbo.propietarios.IdPropietario ON dbo.trans_pe_pol.IdOrdenPedidoEnc = dbo.trans_pe_enc.IdPedidoEnc LEFT OUTER JOIN
+                  dbo.cliente_bodega RIGHT OUTER JOIN
+                  dbo.cliente ON dbo.cliente_bodega.IdCliente = dbo.cliente.IdCliente ON dbo.trans_pe_enc.IdCliente = dbo.cliente.IdCliente
+WHERE  (dbo.trans_pe_enc.Fecha_Pedido BETWEEN '20230411' AND '20230811')
+GROUP BY dbo.trans_pe_enc.IdPedidoEnc, dbo.propietarios.nombre_comercial, dbo.cliente.nombre_comercial, dbo.trans_pe_enc.IdBodega, dbo.trans_pe_enc.Fecha_Pedido, dbo.trans_pe_enc.no_documento, dbo.trans_pe_enc.referencia, 
+                  dbo.trans_pe_enc.no_documento_externo, dbo.cliente.nit, dbo.propietarios.NIT, dbo.trans_pe_pol.fecha_aceptacion, dbo.trans_pe_pol.numero_orden, dbo.trans_pe_pol.dua
+HAVING (dbo.trans_pe_enc.IdBodega = 2)
+GO
