@@ -1,0 +1,167 @@
+/****** Object:  Table [dbo].[trans_picking_ubic_reproceso]    Script Date: 27/08/2023 13:39:16 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[trans_picking_ubic_reproceso](
+	[IdPickingUbicReproceso] [int] NOT NULL,
+	[IdPickingUbic] [int] NOT NULL,
+	[IdPickingEnc] [int] NOT NULL,
+	[IdPickingDet] [int] NOT NULL,
+	[IdUbicacion] [int] NULL,
+	[IdStock] [int] NULL,
+	[IdPropietarioBodega] [int] NULL,
+	[IdProductoBodega] [int] NULL,
+	[IdProductoEstado] [int] NULL,
+	[IdPresentacion] [int] NULL,
+	[IdUnidadMedida] [int] NULL,
+	[IdUbicacionAnterior] [int] NULL,
+	[IdRecepcion] [bigint] NULL,
+	[lote] [nvarchar](35) NULL,
+	[fecha_vence] [datetime] NULL,
+	[fecha_minima] [datetime] NULL,
+	[serial] [nvarchar](35) NULL,
+	[lic_plate] [nvarchar](25) NULL,
+	[acepto] [bit] NULL,
+	[peso_solicitado] [float] NULL,
+	[peso_recibido] [float] NULL,
+	[peso_verificado] [float] NULL,
+	[peso_despachado] [float] NULL,
+	[cantidad_solicitada] [float] NULL,
+	[cantidad_recibida] [float] NULL,
+	[cantidad_verificada] [float] NULL,
+	[encontrado] [bit] NULL,
+	[dañado_verificacion] [bit] NULL,
+	[fecha_real_vence] [datetime] NULL,
+	[no_packing] [nvarchar](50) NULL,
+	[fecha_picking] [datetime] NULL,
+	[fecha_verificado] [datetime] NULL,
+	[fecha_packing] [datetime] NULL,
+	[fecha_despachado] [datetime] NULL,
+	[cantidad_despachada] [float] NULL,
+	[user_agr] [nvarchar](50) NULL,
+	[fec_agr] [datetime] NULL,
+	[user_mod] [nvarchar](50) NULL,
+	[fec_mod] [datetime] NULL,
+	[activo] [bit] NULL,
+	[IdPedidoDet] [int] NULL,
+	[dañado_picking] [bit] NULL,
+	[IdStockRes] [int] NOT NULL,
+	[lic_plate_reemplazo] [nvarchar](50) NULL,
+	[IdUbicacion_reemplazo] [int] NULL,
+	[IdStock_reemplazo] [int] NULL,
+	[IdBodega] [int] NULL,
+	[IdOperadorBodega_Pickeo] [int] NULL,
+	[IdOperadorBodega_Verifico] [int] NULL,
+	[IdPedidoEnc] [int] NULL,
+	[no_encontrado] [bit] NOT NULL,
+	[IdUbicacionTemporal] [int] NULL,
+	[IdOperadorBodega_Asignado] [int] NULL,
+	[procesado_bof] [bit] NOT NULL,
+	[fecha_procesado_bof] [date] NULL,
+	[IdUsuario_bof_pickeo] [int] NULL,
+ CONSTRAINT [PK_trans_picking_ubic_reproceso] PRIMARY KEY CLUSTERED 
+(
+	[IdPickingUbicReproceso] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[trans_picking_ubic_reproceso] ADD  CONSTRAINT [DF__trans_picking_ubic_reproceso__idpic__668D7FF3]  DEFAULT ((0)) FOR [IdPickingEnc]
+GO
+
+ALTER TABLE [dbo].[trans_picking_ubic_reproceso] ADD  CONSTRAINT [DF_picking_ubic_reproceso_cant_veri]  DEFAULT ((0)) FOR [cantidad_verificada]
+GO
+
+ALTER TABLE [dbo].[trans_picking_ubic_reproceso] ADD  CONSTRAINT [DF_picking_ubic_reproceso_encontrado]  DEFAULT ((1)) FOR [encontrado]
+GO
+
+ALTER TABLE [dbo].[trans_picking_ubic_reproceso] ADD  CONSTRAINT [DF_picking_ubic_reproceso_dañado_verificacion]  DEFAULT ((0)) FOR [dañado_verificacion]
+GO
+
+ALTER TABLE [dbo].[trans_picking_ubic_reproceso] ADD  DEFAULT ((0)) FOR [no_encontrado]
+GO
+
+ALTER TABLE [dbo].[trans_picking_ubic_reproceso] ADD  DEFAULT ((0)) FOR [IdOperadorBodega_Asignado]
+GO
+
+ALTER TABLE [dbo].[trans_picking_ubic_reproceso] ADD  DEFAULT ((0)) FOR [procesado_bof]
+GO
+
+ALTER TABLE [dbo].[trans_picking_ubic_reproceso] ADD  DEFAULT ('19000101') FOR [fecha_procesado_bof]
+GO
+
+ALTER TABLE [dbo].[trans_picking_ubic_reproceso]  WITH CHECK ADD  CONSTRAINT [FK_trans_picking_ubic_reproceso_trans_picking_det] FOREIGN KEY([IdPickingDet])
+REFERENCES [dbo].[trans_picking_det] ([IdPickingDet])
+GO
+
+ALTER TABLE [dbo].[trans_picking_ubic_reproceso] CHECK CONSTRAINT [FK_trans_picking_ubic_reproceso_trans_picking_det]
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Ubicación en la bodega de donde será tomado el producto al momento del picking' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic_reproceso', @level2type=N'COLUMN',@level2name=N'IdUbicacion'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Lote de producto a pickear' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic_reproceso', @level2type=N'COLUMN',@level2name=N'lote'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'fecha de vencimiento del producto' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic_reproceso', @level2type=N'COLUMN',@level2name=N'fecha_vence'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'fecha mínima de vencimiento que puede ser despachada (sirve para reemplazar el producto por otra fecha de vencimiento)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic_reproceso', @level2type=N'COLUMN',@level2name=N'fecha_minima'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'número de serie, aplica para equipos con serie, no serializados ej: linea blanca, motores, etc.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic_reproceso', @level2type=N'COLUMN',@level2name=N'serial'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'código único de pallet' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic_reproceso', @level2type=N'COLUMN',@level2name=N'lic_plate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Indica si el operador escaneó o no esta linea, se utiliza para saber si una línea del picking fue reemplazada por otra' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic_reproceso', @level2type=N'COLUMN',@level2name=N'acepto'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Peso solicitado en el pedido' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic_reproceso', @level2type=N'COLUMN',@level2name=N'peso_solicitado'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Peso recibido en el picking' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic_reproceso', @level2type=N'COLUMN',@level2name=N'peso_recibido'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Peso verificado en el picking' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic_reproceso', @level2type=N'COLUMN',@level2name=N'peso_verificado'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Peso despachado' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic_reproceso', @level2type=N'COLUMN',@level2name=N'peso_despachado'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'cantidad solicitada en pedido' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic_reproceso', @level2type=N'COLUMN',@level2name=N'cantidad_solicitada'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'cantidad recibida en línea de picking en ubicación de bodega' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic_reproceso', @level2type=N'COLUMN',@level2name=N'cantidad_recibida'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'cantidad verificada' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic_reproceso', @level2type=N'COLUMN',@level2name=N'cantidad_verificada'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Si el producto fue encontrado en el picking ' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic_reproceso', @level2type=N'COLUMN',@level2name=N'encontrado'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'si el producto en la línea de picking estaba dañado, se marca como dañado con este campo' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic_reproceso', @level2type=N'COLUMN',@level2name=N'dañado_verificacion'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Código del paquete en el que se almaceno x producto de la línea del picking' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic_reproceso', @level2type=N'COLUMN',@level2name=N'no_packing'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'fecha y hora en la que se proceso la línea de picking' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic_reproceso', @level2type=N'COLUMN',@level2name=N'fecha_picking'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'fecha y hora en la que se proceso la verificación de la línea de picking' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic_reproceso', @level2type=N'COLUMN',@level2name=N'fecha_verificado'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'fecha y hora en la que se registró el packing de la línea del picking' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic_reproceso', @level2type=N'COLUMN',@level2name=N'fecha_packing'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'fecha en la que se realizó el despacho del producto' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic_reproceso', @level2type=N'COLUMN',@level2name=N'fecha_despachado'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'cantidad despachada' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic_reproceso', @level2type=N'COLUMN',@level2name=N'cantidad_despachada'
+GO
