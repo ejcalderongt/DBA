@@ -1,293 +1,494 @@
-
-/****** Object:  View [dbo].[VW_Stock_Reservado_By_IdPedidoEnc_And_IdPickingEnc]    Script Date: 5/08/2023 16:27:24 ******/
+/****** Object:  View [dbo].[VW_Stock_Reservado_By_IdPedidoEnc_And_IdPickingEnc]    Script Date: 27/08/2023 10:42:51 
+--#EJC20230827:Agregué tipo_registro para diferenciar reserva de pickeado (que ya está en stock)
+******/
 SET ANSI_NULLS ON
 GO
 
 SET QUOTED_IDENTIFIER ON
 GO
 
-ALTER view [dbo].[VW_Stock_Reservado_By_IdPedidoEnc_And_IdPickingEnc] as
+ALTER view [dbo].[VW_Stock_Reservado_By_IdPedidoEnc_And_IdPickingEnc] as 
 SELECT 
-codigo, 
-nombre, 
-presentacion, 
-NomEstado, 
-unidadmedida, 
-Propietario, 
-Ubicacion_nombre,
-factor, 
-SUM(CantidadSF) CantidadSF, 
-SUM(Cantidad) Cantidad, 
-IdStockRes, 
-IdTransaccion, 
-Indicador, 
-IdPedidoDet, 
-IdStock, 
-IdPropietarioBodega, 
-IdProductoBodega, 
-IdUbicacion, 
-IdProductoEstado, 
-IdPresentacion, 
-IdUnidadMedida, 
-lote, 
-lic_plate, 
-serial,
-SUM(Cantidad_Reservada) Cantidad_Reservada,
-MAX(CantidadSolicitadaPicking)CantidadSolicitadaPicking, 
-MAX(PesoSolicitadoPicking) PesoSolicitadoPicking, 
-SUM(peso) peso, 
-estado, 
-fecha_vence, 
-uds_lic_plate, 
-UbicacionAnt,
-no_bulto, 
-IdRecepcionEnc, 
-IdPickingEnc, 
-IdPedidoEnc, 
-IdDespachoEnc, 
-añada, 
-fecha_manufactura, 
-MAX(Peso_Recibido) Peso_Recibido, 
-MAX(Peso_Verificado)Peso_Verificado, 
-Acepto, 
-MAX(cantidad_recibida) cantidad_recibida, 
-MAX(cantidad_verificada)cantidad_verificada, 
-MAX(Cantidad_Despachada)Cantidad_Despachada,
-Encontrado, 
-idbodega, 
-fecha_ingreso,
-IdRecepcionDet,
-IdTramo,
-indice_x, 
-nivel,
-IdPickingUbic
-FROM (SELECT 
-p.codigo, 
-p.nombre, 
-pp.nombre AS presentacion, 
-pe.nombre AS NomEstado, 
-um.Nombre AS unidadmedida, 
-pr.nombre_comercial AS propietario, 
-dbo.Nombre_Completo_Ubicacion(bu.IdUbicacion, bu.IdBodega) AS ubicacion_nombre,
-pp.factor, 
-ISNULL(res.cantidad, 0) AS CantidadSF, 
-ISNULL(ISNULL(res.cantidad, 0) / pp.factor, 0) AS Cantidad, 
-res.IdStockRes, 
-res.IdTransaccion, 
-res.Indicador, 
-res.IdPedidoDet, 
-res.IdStock, 
-res.IdPropietarioBodega, 
-res.IdProductoBodega, 
-res.IdUbicacion, 
-res.IdProductoEstado, 
-res.IdPresentacion, 
-res.IdUnidadMedida, 
-res.lote, 
-res.lic_plate, 
-res.serial,
-res.cantidad AS Cantidad_Reservada,
-SUM(ISNULL(dbo.trans_picking_ubic.cantidad_solicitada, 0)) AS CantidadSolicitadaPicking, 
-SUM(ISNULL(dbo.trans_picking_ubic.peso_solicitado, 0)) AS PesoSolicitadoPicking, 
-res.peso, 
-res.estado, 
-res.fecha_vence, 
-res.uds_lic_plate, 
-dbo.Nombre_Completo_Ubicacion(res.ubicacion_ant, res.idbodega) as UbicacionAnt,
-res.no_bulto, 
-res.IdRecepcion AS IdRecepcionEnc, 
-res.IdPicking as IdPickingEnc, 
-res.IdPedido as IdPedidoEnc, 
-res.IdDespacho as IdDespachoEnc, 
-res.añada, 
-'19000101' fecha_manufactura, 
-SUM(ISNULL(dbo.trans_picking_ubic.peso_recibido, 0)) AS Peso_Recibido, 
-SUM(ISNULL(dbo.trans_picking_ubic.peso_verificado, 0)) AS Peso_Verificado, 
-ISNULL(dbo.trans_picking_ubic.acepto, 0) AS Acepto, 
-SUM(ISNULL(dbo.trans_picking_ubic.cantidad_recibida, 0)) AS cantidad_recibida, 
-SUM(ISNULL(dbo.trans_picking_ubic.cantidad_verificada, 0)) AS cantidad_verificada, 
-SUM(ISNULL(dbo.trans_picking_ubic.cantidad_despachada, 0))                             
-AS Cantidad_Despachada, ISNULL(dbo.trans_picking_ubic.encontrado, 0) AS Encontrado, 
-res.idbodega, 
-res.fecha_ingreso,
-s.IdRecepcionDet,
-bu.IdTramo,
-bu.indice_x, 
-bu.nivel,
-trans_picking_ubic.IdPickingUbic
-FROM dbo.stock_res AS res 
-     LEFT OUTER JOIN dbo.propietario_bodega AS prb ON res.IdPropietarioBodega = prb.IdPropietarioBodega 
-     INNER JOIN dbo.producto_bodega AS pb ON pb.IdProductoBodega = res.IdProductoBodega 
-     INNER JOIN dbo.producto_estado AS pe ON res.IdProductoEstado = pe.IdEstado 
-     INNER JOIN dbo.unidad_medida AS um ON res.IdUnidadMedida = um.IdUnidadMedida 
-     INNER JOIN dbo.propietarios AS pr ON prb.IdPropietario = pr.IdPropietario 
-     INNER JOIN dbo.producto AS p ON pb.IdProducto = p.IdProducto 
-     INNER JOIN  dbo.bodega_ubicacion AS bu ON bu.IdBodega = res.idbodega
-     AND bu.IdUbicacion = res.IdUbicacion 
-     LEFT OUTER JOIN dbo.trans_picking_det 
-     LEFT OUTER JOIN dbo.trans_picking_ubic 
-	 ON dbo.trans_picking_det.IdPickingDet = dbo.trans_picking_ubic.IdPickingDet      
-     ON res.idbodega = dbo.trans_picking_ubic.IdBodega 
-     AND res.IdPedidoDet = dbo.trans_picking_det.IdPedidoDet 
-     AND res.IdStock = dbo.trans_picking_ubic.IdStock 
-     AND res.IdStockRes = dbo.trans_picking_ubic.IdStockRes 
-     INNER JOIN dbo.stock AS s ON res.IdStock = s.IdStock 
-     LEFT OUTER JOIN dbo.producto_presentacion AS pp ON res.IdPresentacion = pp.IdPresentacion
-WHERE  (ISNULL(dbo.trans_picking_ubic.dañado_verificacion, 0) = 0) AND (ISNULL(dbo.trans_picking_ubic.dañado_picking, 0) = 0) AND (ISNULL(dbo.trans_picking_ubic.no_encontrado, 0) = 0)
-GROUP BY p.codigo, p.nombre, pp.nombre, pe.nombre, um.Nombre, pr.nombre_comercial, bu.descripcion, s.cantidad, pp.factor, s.cantidad / pp.factor, res.IdStockRes, res.IdTransaccion, res.Indicador, res.IdPedidoDet, res.IdStock,                                                                                                                                 
-res.IdPropietarioBodega, res.IdProductoBodega, res.IdUbicacion, res.IdProductoEstado, res.IdPresentacion, res.IdUnidadMedida, res.lote, res.lic_plate, res.serial, res.cantidad, res.peso, res.estado, res.fecha_vence, res.uds_lic_plate, 
-res.ubicacion_ant, res.no_bulto, res.IdRecepcion, res.IdPicking, res.IdPedido, 
-res.IdDespacho, res.añada, --res.fecha_manufactura, 
-ISNULL(dbo.trans_picking_ubic.acepto, 0), 
-ISNULL(dbo.trans_picking_ubic.encontrado, 0), 
-bu.IdTramo, 
-bu.indice_x, 
-bu.nivel, 
-bu.IdUbicacion, 
-bu.IdBodega,
-res.idbodega, 
-res.fecha_ingreso, 
-s.IdRecepcionEnc, 
-s.IdRecepcionDet,
-trans_picking_ubic.IdPickingUbic
-union
-SELECT 
-p.codigo, 
-p.nombre, 
-pp.nombre AS presentacion, 
-pe.nombre AS NomEstado, 
-um.Nombre AS unidadmedida, 
-pr.nombre_comercial AS propietario, 
-dbo.Nombre_Completo_Ubicacion(res.IdUbicacion, res.IdBodega) AS ubicacion_nombre,
-MAX(pp.factor) factor, 
-SUM(ISNULL(res.cantidad, 0)) AS CantidadSF, 
-SUM(ISNULL(ISNULL(res.cantidad, 0) / pp.factor, 0)) AS Cantidad, 
-trans_picking_ubic.IdStock IdStock, 
-res.IdPedidoEnc IdTransaccion, 
-'PED' Indicador, 
-res.IdPedidoDet, 
-trans_picking_ubic.IdStockRes IdStockRes, 
-res.IdPropietarioBodega, 
-res.IdProductoBodega, 
-res.IdUbicacion_anterior IdUbicacion, 
-res.IdProductoEstado, 
-res.IdPresentacion, 
-res.IdUnidadMedida, 
-res.lote, 
-res.lic_plate, 
-ISNULL(res.serial,'') serial,
-SUM(ISNULL(res.cantidad, 0)) AS Cantidad_Reservada,
-MAX(ISNULL(dbo.trans_picking_ubic.cantidad_solicitada, 0)) AS CantidadSolicitadaPicking, 
-MAX(ISNULL(dbo.trans_picking_ubic.peso_solicitado, 0)) AS PesoSolicitadoPicking, 
-SUM(ISNULL(res.peso, 0)) AS peso, 
-'PICKEADO' estado, 
-res.fecha_vence, 
-ISNULL(res.uds_lic_plate,0) uds_lic_plate, 
-dbo.Nombre_Completo_Ubicacion(res.IdUbicacion_anterior, res.idbodega) as UbicacionAnt,
-ISNULL(res.no_bulto,0) no_bulto, 
-res.IdRecepcionEnc, 
-res.IdPickingEnc, 
-res.IdPedidoEnc, 
-ISNULL(res.IdDespachoEnc,0) IdDespachoEnc, 
-res.añada, 
-'19000101' fecha_manufactura, 
-SUM(ISNULL(res.peso, 0)) AS Peso_Recibido, 
-MAX(ISNULL(dbo.trans_picking_ubic.peso_verificado, 0)) AS Peso_Verificado, 
-ISNULL(dbo.trans_picking_ubic.acepto, 0) AS Acepto,
-CASE WHEN res.IdPresentacion IS NOT NULL AND MAX(pp.factor)>0 THEN SUM(ISNULL(res.cantidad, 0))/max(pp.factor) 
-ELSE SUM(ISNULL(res.cantidad, 0)) END AS cantidad_recibida, 
-MAX(ISNULL(dbo.trans_picking_ubic.cantidad_verificada, 0)) AS cantidad_verificada, 
-SUM(ISNULL(dbo.trans_picking_ubic.cantidad_despachada, 0)) AS Cantidad_Despachada, 
-ISNULL(dbo.trans_picking_ubic.encontrado, 0) AS Encontrado, 
-res.idbodega, 
-res.fecha_ingreso,
-res.IdRecepcionDet,
-bu.IdTramo,
-bu.indice_x, 
-bu.nivel,
-trans_picking_ubic.IdPickingUbic
-FROM dbo.stock AS res 
-     LEFT OUTER JOIN dbo.propietario_bodega AS prb ON res.IdPropietarioBodega = prb.IdPropietarioBodega 
-     INNER JOIN dbo.producto_bodega AS pb ON pb.IdProductoBodega = res.IdProductoBodega 
-     INNER JOIN dbo.producto_estado AS pe ON res.IdProductoEstado = pe.IdEstado 
-     INNER JOIN dbo.unidad_medida AS um ON res.IdUnidadMedida = um.IdUnidadMedida 
-     INNER JOIN dbo.propietarios AS pr ON prb.IdPropietario = pr.IdPropietario 
-     INNER JOIN dbo.producto AS p ON pb.IdProducto = p.IdProducto 
-	  INNER JOIN  dbo.bodega_ubicacion AS bu ON bu.IdBodega = res.idbodega
-     AND bu.IdUbicacion = res.IdUbicacion 
-     LEFT OUTER JOIN dbo.trans_picking_det 
-     LEFT OUTER JOIN dbo.trans_picking_ubic 
-	 ON dbo.trans_picking_det.IdPickingDet = dbo.trans_picking_ubic.IdPickingDet      
-     ON res.idbodega = dbo.trans_picking_ubic.IdBodega 
-     AND res.IdPedidoDet = dbo.trans_picking_det.IdPedidoDet 
-     AND res.IdPickingUbic = dbo.trans_picking_ubic.IdPickingUbic 
-	 AND res.IdPedidoEnc = dbo.trans_picking_det.IdPedidoEnc
-     LEFT OUTER JOIN dbo.producto_presentacion AS pp ON res.IdPresentacion = pp.IdPresentacion
-WHERE  (ISNULL(dbo.trans_picking_ubic.dañado_verificacion, 0) = 0)
-AND (ISNULL(dbo.trans_picking_ubic.dañado_picking, 0) = 0) AND (ISNULL(dbo.trans_picking_ubic.no_encontrado, 0) = 0)
-AND res.IdPedidoEnc<>0 AND res.IdPickingEnc <> 0
-GROUP BY p.codigo, p.nombre, pp.nombre, pe.nombre, um.Nombre, pr.nombre_comercial, bu.descripcion,
-res.IdPickingEnc,trans_picking_ubic.IdStock,trans_picking_ubic.IdStockRes,
-res.IdPedidoDet,res.IdPropietarioBodega, res.IdProductoBodega, res.IdUbicacion, res.IdProductoEstado, res.IdPresentacion, 
-res.IdUnidadMedida, res.lote, res.lic_plate, res.serial,
-res.IdProductoEstado, res.fecha_vence, res.uds_lic_plate, 
-res.IdUbicacion_anterior, res.no_bulto, res.IdRecepcionEnc, res.IdPickingEnc, res.IdPedidoEnc, 
-res.IdDespachoEnc, res.añada, 
-res.IdRecepcionDet,
-ISNULL(dbo.trans_picking_ubic.acepto, 0), 
-ISNULL(dbo.trans_picking_ubic.encontrado, 0), 
-bu.IdTramo, 
-bu.indice_x, 
-bu.nivel, 
-bu.IdUbicacion, 
-bu.IdBodega,
-res.idbodega, 
-res.fecha_ingreso, 
-trans_picking_ubic.IdPickingUbic) AS T
---where t.IdPedidoEnc = 1
-Group by codigo, 
-nombre, 
-presentacion, 
-NomEstado, 
-unidadmedida, 
-propietario, 
-ubicacion_nombre,
-factor, 
-Encontrado,
-IdStockRes, 
-IdTransaccion, 
-Indicador, 
-IdPedidoDet, 
-IdStock, 
-IdPropietarioBodega, 
-IdProductoBodega, 
-IdUbicacion, 
-IdProductoEstado, 
-IdPresentacion, 
-IdUnidadMedida, 
-lote, 
-lic_plate, 
-serial,
-estado, 
-fecha_vence, 
-uds_lic_plate, 
-UbicacionAnt,
-no_bulto, 
-IdRecepcionEnc, 
-IdPickingEnc, 
-IdPedidoEnc, 
-IdDespachoEnc, 
-añada, 
-fecha_manufactura, 
-Acepto,
-idbodega, 
-fecha_ingreso,
-IdRecepcionDet,
-IdTramo,
-indice_x, 
-nivel,
-IdPickingUbic
-
+  codigo, 
+  nombre, 
+  presentacion, 
+  nomestado, 
+  unidadmedida, 
+  propietario, 
+  ubicacion_nombre, 
+  factor, 
+  sum(cantidadsf) cantidadsf, 
+  sum(cantidad) cantidad, 
+  idstockres, 
+  idtransaccion, 
+  indicador, 
+  idpedidodet, 
+  idstock, 
+  idpropietariobodega, 
+  idproductobodega, 
+  idubicacion, 
+  idproductoestado, 
+  idpresentacion, 
+  idunidadmedida, 
+  lote, 
+  lic_plate, 
+  serial, 
+  sum(cantidad_reservada) cantidad_reservada, 
+  max(cantidadsolicitadapicking) cantidadsolicitadapicking, 
+  max(pesosolicitadopicking) pesosolicitadopicking, 
+  sum(peso) peso, 
+  estado, 
+  fecha_vence, 
+  uds_lic_plate, 
+  ubicacionant, 
+  no_bulto, 
+  idrecepcionenc, 
+  idpickingenc, 
+  idpedidoenc, 
+  iddespachoenc, 
+  añada, 
+  fecha_manufactura, 
+  max(peso_recibido) peso_recibido, 
+  max(peso_verificado) peso_verificado, 
+  acepto, 
+  max(cantidad_recibida) cantidad_recibida, 
+  max(cantidad_verificada) cantidad_verificada, 
+  max(cantidad_despachada) cantidad_despachada, 
+  encontrado, 
+  idbodega, 
+  fecha_ingreso, 
+  idrecepciondet, 
+  idtramo, 
+  indice_x, 
+  nivel, 
+  idpickingubic,
+  tipo_registro
+FROM 
+  (
+    SELECT 
+      p.codigo, 
+      p.nombre, 
+      pp.nombre AS presentacion, 
+      pe.nombre AS NomEstado, 
+      um.Nombre AS unidadmedida, 
+      pr.nombre_comercial AS propietario, 
+      dbo.Nombre_Completo_Ubicacion(bu.IdUbicacion, bu.IdBodega) AS ubicacion_nombre, 
+      pp.factor, 
+      ISNULL(res.cantidad, 0) AS CantidadSF, 
+      ISNULL(
+        ISNULL(res.cantidad, 0) / pp.factor, 
+        0
+      ) AS Cantidad, 
+      res.IdStockRes, 
+      res.IdTransaccion, 
+      res.Indicador, 
+      res.IdPedidoDet, 
+      res.IdStock, 
+      res.IdPropietarioBodega, 
+      res.IdProductoBodega, 
+      res.IdUbicacion, 
+      res.IdProductoEstado, 
+      res.IdPresentacion, 
+      res.IdUnidadMedida, 
+      res.lote, 
+      res.lic_plate, 
+      res.serial, 
+      res.cantidad AS Cantidad_Reservada, 
+      SUM(
+        ISNULL(
+          dbo.trans_picking_ubic.cantidad_solicitada, 
+          0
+        )
+      ) AS CantidadSolicitadaPicking, 
+      SUM(
+        ISNULL(
+          dbo.trans_picking_ubic.peso_solicitado, 
+          0
+        )
+      ) AS PesoSolicitadoPicking, 
+      res.peso, 
+      res.estado, 
+      res.fecha_vence, 
+      res.uds_lic_plate, 
+      dbo.Nombre_Completo_Ubicacion(res.ubicacion_ant, res.idbodega) as UbicacionAnt, 
+      res.no_bulto, 
+      res.IdRecepcion AS IdRecepcionEnc, 
+      res.IdPicking as IdPickingEnc, 
+      res.IdPedido as IdPedidoEnc, 
+      res.IdDespacho as IdDespachoEnc, 
+      res.añada, 
+      '19000101' fecha_manufactura, 
+      SUM(
+        ISNULL(
+          dbo.trans_picking_ubic.peso_recibido, 
+          0
+        )
+      ) AS Peso_Recibido, 
+      SUM(
+        ISNULL(
+          dbo.trans_picking_ubic.peso_verificado, 
+          0
+        )
+      ) AS Peso_Verificado, 
+      ISNULL(
+        dbo.trans_picking_ubic.acepto, 0
+      ) AS Acepto, 
+      SUM(
+        ISNULL(
+          dbo.trans_picking_ubic.cantidad_recibida, 
+          0
+        )
+      ) AS cantidad_recibida, 
+      SUM(
+        ISNULL(
+          dbo.trans_picking_ubic.cantidad_verificada, 
+          0
+        )
+      ) AS cantidad_verificada, 
+      SUM(
+        ISNULL(
+          dbo.trans_picking_ubic.cantidad_despachada, 
+          0
+        )
+      ) AS Cantidad_Despachada, 
+      ISNULL(
+        dbo.trans_picking_ubic.encontrado, 
+        0
+      ) AS Encontrado, 
+      res.idbodega, 
+      res.fecha_ingreso, 
+      s.IdRecepcionDet, 
+      bu.IdTramo, 
+      bu.indice_x, 
+      bu.nivel, 
+      trans_picking_ubic.IdPickingUbic, 
+      'RESERVA' AS Tipo_Registro
+    FROM 
+      dbo.stock_res AS res 
+      LEFT OUTER JOIN dbo.propietario_bodega AS prb ON res.IdPropietarioBodega = prb.IdPropietarioBodega 
+      INNER JOIN dbo.producto_bodega AS pb ON pb.IdProductoBodega = res.IdProductoBodega 
+      INNER JOIN dbo.producto_estado AS pe ON res.IdProductoEstado = pe.IdEstado 
+      INNER JOIN dbo.unidad_medida AS um ON res.IdUnidadMedida = um.IdUnidadMedida 
+      INNER JOIN dbo.propietarios AS pr ON prb.IdPropietario = pr.IdPropietario 
+      INNER JOIN dbo.producto AS p ON pb.IdProducto = p.IdProducto 
+      INNER JOIN dbo.bodega_ubicacion AS bu ON bu.IdBodega = res.idbodega 
+      AND bu.IdUbicacion = res.IdUbicacion 
+      LEFT OUTER JOIN dbo.trans_picking_det 
+      LEFT OUTER JOIN dbo.trans_picking_ubic ON dbo.trans_picking_det.IdPickingDet = dbo.trans_picking_ubic.IdPickingDet ON res.idbodega = dbo.trans_picking_ubic.IdBodega 
+      AND res.IdPedidoDet = dbo.trans_picking_det.IdPedidoDet 
+      AND res.IdStock = dbo.trans_picking_ubic.IdStock 
+      AND res.IdStockRes = dbo.trans_picking_ubic.IdStockRes 
+      INNER JOIN dbo.stock AS s ON res.IdStock = s.IdStock 
+      LEFT OUTER JOIN dbo.producto_presentacion AS pp ON res.IdPresentacion = pp.IdPresentacion 
+    WHERE 
+      (
+        ISNULL(
+          dbo.trans_picking_ubic.dañado_verificacion, 
+          0
+        ) = 0
+      ) 
+      AND (
+        ISNULL(
+          dbo.trans_picking_ubic.dañado_picking, 
+          0
+        ) = 0
+      ) 
+      AND (
+        ISNULL(
+          dbo.trans_picking_ubic.no_encontrado, 
+          0
+        ) = 0
+      ) 
+    GROUP BY 
+      p.codigo, 
+      p.nombre, 
+      pp.nombre, 
+      pe.nombre, 
+      um.Nombre, 
+      pr.nombre_comercial, 
+      bu.descripcion, 
+      s.cantidad, 
+      pp.factor, 
+      s.cantidad / pp.factor, 
+      res.IdStockRes, 
+      res.IdTransaccion, 
+      res.Indicador, 
+      res.IdPedidoDet, 
+      res.IdStock, 
+      res.IdPropietarioBodega, 
+      res.IdProductoBodega, 
+      res.IdUbicacion, 
+      res.IdProductoEstado, 
+      res.IdPresentacion, 
+      res.IdUnidadMedida, 
+      res.lote, 
+      res.lic_plate, 
+      res.serial, 
+      res.cantidad, 
+      res.peso, 
+      res.estado, 
+      res.fecha_vence, 
+      res.uds_lic_plate, 
+      res.ubicacion_ant, 
+      res.no_bulto, 
+      res.IdRecepcion, 
+      res.IdPicking, 
+      res.IdPedido, 
+      res.IdDespacho, 
+      res.añada, 
+      --res.fecha_manufactura, 
+      ISNULL(
+        dbo.trans_picking_ubic.acepto, 0
+      ), 
+      ISNULL(
+        dbo.trans_picking_ubic.encontrado, 
+        0
+      ), 
+      bu.IdTramo, 
+      bu.indice_x, 
+      bu.nivel, 
+      bu.IdUbicacion, 
+      bu.IdBodega, 
+      res.idbodega, 
+      res.fecha_ingreso, 
+      s.IdRecepcionEnc, 
+      s.IdRecepcionDet, 
+      trans_picking_ubic.IdPickingUbic 
+    UNION 
+    SELECT 
+      p.codigo, 
+      p.nombre, 
+      pp.nombre AS presentacion, 
+      pe.nombre AS NomEstado, 
+      um.Nombre AS unidadmedida, 
+      pr.nombre_comercial AS propietario, 
+      dbo.Nombre_Completo_Ubicacion(res.IdUbicacion, res.IdBodega) AS ubicacion_nombre, 
+      MAX(pp.factor) factor, 
+      SUM(
+        ISNULL(res.cantidad, 0)
+      ) AS CantidadSF, 
+      SUM(
+        ISNULL(
+          ISNULL(res.cantidad, 0) / pp.factor, 
+          0
+        )
+      ) AS Cantidad, 
+      trans_picking_ubic.IdStock IdStock, 
+      res.IdPedidoEnc IdTransaccion, 
+      'PED' Indicador, 
+      res.IdPedidoDet, 
+      trans_picking_ubic.IdStockRes IdStockRes, 
+      res.IdPropietarioBodega, 
+      res.IdProductoBodega, 
+      res.IdUbicacion_anterior IdUbicacion, 
+      res.IdProductoEstado, 
+      res.IdPresentacion, 
+      res.IdUnidadMedida, 
+      res.lote, 
+      res.lic_plate, 
+      ISNULL(res.serial, '') serial, 
+      SUM(
+        ISNULL(res.cantidad, 0)
+      ) AS Cantidad_Reservada, 
+      MAX(
+        ISNULL(
+          dbo.trans_picking_ubic.cantidad_solicitada, 
+          0
+        )
+      ) AS CantidadSolicitadaPicking, 
+      MAX(
+        ISNULL(
+          dbo.trans_picking_ubic.peso_solicitado, 
+          0
+        )
+      ) AS PesoSolicitadoPicking, 
+      SUM(
+        ISNULL(res.peso, 0)
+      ) AS peso, 
+      'PICKEADO' estado, 
+      res.fecha_vence, 
+      ISNULL(res.uds_lic_plate, 0) uds_lic_plate, 
+      dbo.Nombre_Completo_Ubicacion(
+        res.IdUbicacion_anterior, res.idbodega
+      ) as UbicacionAnt, 
+      ISNULL(res.no_bulto, 0) no_bulto, 
+      res.IdRecepcionEnc, 
+      res.IdPickingEnc, 
+      res.IdPedidoEnc, 
+      ISNULL(res.IdDespachoEnc, 0) IdDespachoEnc, 
+      res.añada, 
+      '19000101' fecha_manufactura, 
+      SUM(
+        ISNULL(res.peso, 0)
+      ) AS Peso_Recibido, 
+      MAX(
+        ISNULL(
+          dbo.trans_picking_ubic.peso_verificado, 
+          0
+        )
+      ) AS Peso_Verificado, 
+      ISNULL(
+        dbo.trans_picking_ubic.acepto, 0
+      ) AS Acepto, 
+      CASE WHEN res.IdPresentacion IS NOT NULL 
+      AND MAX(pp.factor)> 0 THEN SUM(
+        ISNULL(res.cantidad, 0)
+      )/ max(pp.factor) ELSE SUM(
+        ISNULL(res.cantidad, 0)
+      ) END AS cantidad_recibida, 
+      MAX(
+        ISNULL(
+          dbo.trans_picking_ubic.cantidad_verificada, 
+          0
+        )
+      ) AS cantidad_verificada, 
+      SUM(
+        ISNULL(
+          dbo.trans_picking_ubic.cantidad_despachada, 
+          0
+        )
+      ) AS Cantidad_Despachada, 
+      ISNULL(
+        dbo.trans_picking_ubic.encontrado, 
+        0
+      ) AS Encontrado, 
+      res.idbodega, 
+      res.fecha_ingreso, 
+      res.IdRecepcionDet, 
+      bu.IdTramo, 
+      bu.indice_x, 
+      bu.nivel, 
+      trans_picking_ubic.IdPickingUbic, 
+      'PICKEADO' AS Tipo_Registro 
+    FROM 
+      dbo.stock AS res 
+      LEFT OUTER JOIN dbo.propietario_bodega AS prb ON res.IdPropietarioBodega = prb.IdPropietarioBodega 
+      INNER JOIN dbo.producto_bodega AS pb ON pb.IdProductoBodega = res.IdProductoBodega 
+      INNER JOIN dbo.producto_estado AS pe ON res.IdProductoEstado = pe.IdEstado 
+      INNER JOIN dbo.unidad_medida AS um ON res.IdUnidadMedida = um.IdUnidadMedida 
+      INNER JOIN dbo.propietarios AS pr ON prb.IdPropietario = pr.IdPropietario 
+      INNER JOIN dbo.producto AS p ON pb.IdProducto = p.IdProducto 
+      INNER JOIN dbo.bodega_ubicacion AS bu ON bu.IdBodega = res.idbodega 
+      AND bu.IdUbicacion = res.IdUbicacion 
+      LEFT OUTER JOIN dbo.trans_picking_det 
+      LEFT OUTER JOIN dbo.trans_picking_ubic ON dbo.trans_picking_det.IdPickingDet = dbo.trans_picking_ubic.IdPickingDet ON res.idbodega = dbo.trans_picking_ubic.IdBodega 
+      AND res.IdPedidoDet = dbo.trans_picking_det.IdPedidoDet 
+      AND res.IdPickingUbic = dbo.trans_picking_ubic.IdPickingUbic 
+      AND res.IdPedidoEnc = dbo.trans_picking_det.IdPedidoEnc 
+      LEFT OUTER JOIN dbo.producto_presentacion AS pp ON res.IdPresentacion = pp.IdPresentacion 
+    WHERE 
+      (
+        ISNULL(
+          dbo.trans_picking_ubic.dañado_verificacion, 
+          0
+        ) = 0
+      ) 
+      AND (
+        ISNULL(
+          dbo.trans_picking_ubic.dañado_picking, 
+          0
+        ) = 0
+      ) 
+      AND (
+        ISNULL(
+          dbo.trans_picking_ubic.no_encontrado, 
+          0
+        ) = 0
+      ) 
+      AND res.IdPedidoEnc <> 0 
+      AND res.IdPickingEnc <> 0 
+    GROUP BY 
+      p.codigo, 
+      p.nombre, 
+      pp.nombre, 
+      pe.nombre, 
+      um.Nombre, 
+      pr.nombre_comercial, 
+      bu.descripcion, 
+      res.IdPickingEnc, 
+      trans_picking_ubic.IdStock, 
+      trans_picking_ubic.IdStockRes, 
+      res.IdPedidoDet, 
+      res.IdPropietarioBodega, 
+      res.IdProductoBodega, 
+      res.IdUbicacion, 
+      res.IdProductoEstado, 
+      res.IdPresentacion, 
+      res.IdUnidadMedida, 
+      res.lote, 
+      res.lic_plate, 
+      res.serial, 
+      res.IdProductoEstado, 
+      res.fecha_vence, 
+      res.uds_lic_plate, 
+      res.IdUbicacion_anterior, 
+      res.no_bulto, 
+      res.IdRecepcionEnc, 
+      res.IdPickingEnc, 
+      res.IdPedidoEnc, 
+      res.IdDespachoEnc, 
+      res.añada, 
+      res.IdRecepcionDet, 
+      ISNULL(
+        dbo.trans_picking_ubic.acepto, 0
+      ), 
+      ISNULL(
+        dbo.trans_picking_ubic.encontrado, 
+        0
+      ), 
+      bu.IdTramo, 
+      bu.indice_x, 
+      bu.nivel, 
+      bu.IdUbicacion, 
+      bu.IdBodega, 
+      res.idbodega, 
+      res.fecha_ingreso, 
+      trans_picking_ubic.IdPickingUbic
+  ) AS T --where t.IdPedidoEnc = 1
+Group by 
+  codigo, 
+  nombre, 
+  presentacion, 
+  NomEstado, 
+  unidadmedida, 
+  propietario, 
+  ubicacion_nombre, 
+  factor, 
+  Encontrado, 
+  IdStockRes, 
+  IdTransaccion, 
+  Indicador, 
+  IdPedidoDet, 
+  IdStock, 
+  IdPropietarioBodega, 
+  IdProductoBodega, 
+  IdUbicacion, 
+  IdProductoEstado, 
+  IdPresentacion, 
+  IdUnidadMedida, 
+  lote, 
+  lic_plate, 
+  serial, 
+  estado, 
+  fecha_vence, 
+  uds_lic_plate, 
+  UbicacionAnt, 
+  no_bulto, 
+  IdRecepcionEnc, 
+  IdPickingEnc, 
+  IdPedidoEnc, 
+  IdDespachoEnc, 
+  añada, 
+  fecha_manufactura, 
+  Acepto, 
+  idbodega, 
+  fecha_ingreso, 
+  IdRecepcionDet, 
+  IdTramo, 
+  indice_x, 
+  nivel, 
+  IdPickingUbic,
+  Tipo_Registro
 GO
 
 
