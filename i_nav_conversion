@@ -1,0 +1,25 @@
+/****** Object:  Table [dbo].[i_nav_conversion]    Script Date: 28/08/2023 16:00:37 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[i_nav_conversion](
+	[IdConversion] [int] NOT NULL,
+	[Item_No] [nvarchar](50) NULL,
+	[Code] [nvarchar](50) NULL,
+	[Qty_per_Unit_of_Measure] [float] NULL,
+	[Height] [float] NULL,
+	[Width] [float] NULL,
+	[Length] [float] NULL,
+	[Cubage] [float] NULL,
+	[Weight] [float] NULL,
+	[Package_Type] [nvarchar](50) NULL,
+	[ItemUnitOfMeasure] [nvarchar](50) NULL,
+ CONSTRAINT [PK_i_nav_conversion] PRIMARY KEY CLUSTERED 
+(
+	[IdConversion] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
