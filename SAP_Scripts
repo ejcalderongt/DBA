@@ -1,0 +1,5 @@
+
+--·EJC202308311937: Indice proveedores
+CREATE NONCLUSTERED INDEX NCLI_OCRD_DTS_202308311936
+ON [dbo].[OCRD] ([CardType])
+INCLUDE ([CardName],[Address],[Phone1],[E_Mail],[U_nit])
