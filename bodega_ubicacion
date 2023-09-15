@@ -1,0 +1,1 @@
+alter table bodega_ubicacion add posicion_x float default 0, posicion_y float default 0
