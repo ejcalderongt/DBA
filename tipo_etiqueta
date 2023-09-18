@@ -1,3 +1,12 @@
+--#GT12082023 llave foranea de clasificacion etiqueta
+
+ALTER TABLE [dbo].[tipo_etiqueta]  WITH CHECK ADD  CONSTRAINT [FK_tipo_etiqueta_producto_clasificacion_etiqueta] FOREIGN KEY([Idclasificacion_etiqueta])
+REFERENCES [dbo].[producto_clasificacion_etiqueta] ([Idclasificacion_etiqueta])
+GO
+ALTER TABLE [dbo].[tipo_etiqueta] CHECK CONSTRAINT [FK_tipo_etiqueta_producto_clasificacion_etiqueta]
+GO
+
+
 INSERT INTO tipo_etiqueta
 SELECT 2 IdTipoEtiqueta, 'CEALSA' Nombre, 2.75 Alto, 3 Ancho, MargenIzq, MagenDer, MargenSup, MargenInf, user_agr,getdate() fec_agr, user_mod, getdate()fec_mod, activo
 FROM Tipo_etiqueta WHERE IdTipoEtiqueta = 1;
@@ -9,3 +18,6 @@ alter table tipo_etiqueta add codigo_zpl nvarchar(5000) null
 
 INSERT INTO tipo_etiqueta (IdTipoEtiqueta, Nombre, Alto, Ancho, MargenIzq, MagenDer, MargenSup, MargenInf, user_agr, fec_agr, user_mod, fec_mod, activo, dpi, codigo_zpl)
 VALUES(5,'2x2',2,2,	0.16,0.16,0.16,0.16,1,'20220717',1,'20220717',1,203,NULL)
+
+
+
