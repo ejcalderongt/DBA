@@ -1,0 +1,18 @@
+-- #GT18092023 define si es etiqueta para producto o para úbicación de rack
+
+/****** Object:  Table [dbo].[producto_clasificacion_etiqueta]    Script Date: 18/09/2023 15:49:15 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[producto_clasificacion_etiqueta](
+	[Idclasificacion_etiqueta] [int] NOT NULL,
+	[Descripcion] [nvarchar](50) NOT NULL,
+ CONSTRAINT [PK_producto_clasificacion_etiqueta] PRIMARY KEY CLUSTERED 
+(
+	[Idclasificacion_etiqueta] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
