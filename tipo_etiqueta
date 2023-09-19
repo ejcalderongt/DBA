@@ -1,5 +1,7 @@
 --#GT12082023 llave foranea de clasificacion etiqueta
 
+ALTER TABLE tipo_etiqueta ADD Idclasificacion_etiqueta int null
+
 ALTER TABLE [dbo].[tipo_etiqueta]  WITH CHECK ADD  CONSTRAINT [FK_tipo_etiqueta_producto_clasificacion_etiqueta] FOREIGN KEY([Idclasificacion_etiqueta])
 REFERENCES [dbo].[producto_clasificacion_etiqueta] ([Idclasificacion_etiqueta])
 GO
