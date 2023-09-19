@@ -1,4 +1,4 @@
---#GT12082023 llave foranea de clasificacion etiqueta
+--#GT18092023 llave foranea de clasificacion etiqueta
 
 ALTER TABLE tipo_etiqueta ADD Idclasificacion_etiqueta int null
 
