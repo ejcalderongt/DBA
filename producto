@@ -1,3 +1,18 @@
+/****** CKFK20230921 se agregó el NOT NULL al campo IdUnidadMedidaBasica  ******/
+DROP INDEX [NCL_Producto_20200115_ejc] ON [dbo].[producto]
+GO
+
+ALTER TABLE producto ALTER COLUMN IdUnidadMedidaBasica int NOT NULL
+
+/****** Object:  Index [NCL_Producto_20200115_ejc]    Script Date: 21/09/2023 08:46:58 ******/
+CREATE NONCLUSTERED INDEX [NCL_Producto_20200115_ejc] ON [dbo].[producto]
+(
+	[IdUnidadMedidaBasica] ASC
+)
+INCLUDE([codigo],[nombre],[codigo_barra]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+
+
 alter table producto add IdUnidadMedidaCobro int null
 
 --CKFK 20210504
