@@ -1,8 +1,8 @@
+--#EJC20230922 Valores por defecto para productos no recibidos
+alter table i_nav_config_enc add lote_defecto_entrada_mercancia_sap nvarchar(50), fecha_vence_defecto datetime default '19900101'
 
 --#EJC202303031620:
 alter table i_nav_config_enc add dias_vida_defecto_perecederos int not null default 0
-
-
 
 --#EJC202211071706:
 alter table i_nav_config_enc add conservar_zona_picking_clavaud bit default 0
