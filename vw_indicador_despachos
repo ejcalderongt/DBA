@@ -6,7 +6,7 @@ despacho_det.codigo,prod.nombre producto,isnull(presentacion.nombre,'') presenta
 despacho_det.IdDespachoEnc,despacho_det.IdDespachoDet, 
 case when factor > 0 then round(sum(CantidadDespachada),4) else 0  end [cajas/bultos]
 , cast(enc.fecha as date) fecha,pr.nombre_comercial,cl.nombre_comercial cliente,bd.nombre bodega
-,pe_enc.IdTipoPedido, doc_salida.Descripcion tipo_salida
+,pe_enc.IdTipoPedido, doc_salida.Descripcion tipo_salida, bd.IdBodega
 from trans_despacho_det despacho_det left outer join producto_presentacion presentacion
                                      on despacho_det.IdPresentacion = presentacion.IdPresentacion
                                      INNER JOIN trans_despacho_enc enc on despacho_det.IdDespachoEnc = enc.IdDespachoEnc
@@ -20,5 +20,5 @@ from trans_despacho_det despacho_det left outer join producto_presentacion prese
 									 
 where enc.activo=1 
 group by CantidadDespachada,despacho_det.Codigo,presentacion.nombre,presentacion.factor,despacho_det.IdDespachoEnc,enc.fecha,
-prod.nombre,pr.nombre_comercial,cl.nombre_comercial,bd.nombre,despacho_det.IdDespachoDet,pe_enc.IdTipoPedido,doc_salida.Descripcion
+prod.nombre,pr.nombre_comercial,cl.nombre_comercial,bd.nombre,despacho_det.IdDespachoDet,pe_enc.IdTipoPedido,doc_salida.Descripcion, bd.IdBodega
 --order by Fecha Desc
