@@ -1,1 +1,6 @@
+--#GT27092023: campo para carta cupo en bodega fiscal
+
+alter table trans_re_enc ADD carta_cupo [nvarchar](50) NULL
+
+------------------------------------------------------------------
 alter table trans_re_enc add IdBodega int
