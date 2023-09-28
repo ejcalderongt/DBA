@@ -1,3 +1,50 @@
+--#GT 28092023: ingreso fiscal, carta cupo, cbm y otros campos para SAT.
+
+ALTER VIEW [dbo].[VW_Ingreso_Fiscal] as
+select 
+bd.IdBodega,
+bd.nombre,
+oc_enc.IdOrdenCompraEnc,
+oc_det.IdOrdenCompraDet,oc_det.No_Linea,
+oc_enc.IdProveedorBodega,
+pv.nombre proveedor,
+oc_enc.IdTipoIngresoOC,
+oc_ti.Nombre tipo_ingreso,
+oc_enc.IdPedidoEncDevolucion,oc_enc.no_documento_devolucion,
+oc_enc.IdMotivoDevolucion,
+oc_det.IdPresentacion,oc_det.IdProductoBodega,
+pr.codigo,pr.codigo_barra,oc_det.nombre_producto,
+oc_estado.Nombre estado,
+oc_det.cantidad,oc_det.cantidad_recibida recibido,
+oc_det.IdUnidadMedidaBasica,oc_det.nombre_unidad_medida_basica,
+oc_det.peso,pc.nombre clasificacion,
+oc_enc.Fecha_Creacion fecha_registro,
+oc_pol.fecha_llegada fecha_llegada_poliza,
+oc_enc.Observacion observacion_ingreso,oc_enc.Referencia,
+oc_pol.numero_orden,oc_pol.codigo_poliza,
+oc_pol.IdRegimen,r_fiscal.codigo_regimen,
+vehiculo.placa,re_enc.NoGuia as contenedor,
+oc_pol.cbm,re_enc.observacion,re_enc.carta_cupo,
+oc_det.activo
+from trans_oc_enc oc_enc LEFT OUTER JOIN trans_oc_det oc_det
+on oc_enc.IdOrdenCompraEnc= oc_det.IdOrdenCompraEnc
+LEFT OUTER JOIN producto_bodega pb on oc_det.IdProductoBodega = pb.IdProductoBodega
+LEFT OUTER JOIN producto pr on pb.IdProducto= pr.IdProducto
+INNER JOIN bodega bd on oc_enc.IDBODEGA = bd.IdBodega
+LEFT OUTER JOIN producto_clasificacion pc on pr.IdClasificacion=pc.IdClasificacion
+LEFT OUTER JOIN trans_oc_pol oc_pol on oc_enc.IdOrdenCompraEnc=oc_pol.IdOrdenCompraEnc
+LEFT OUTER JOIN trans_re_oc re_oc on oc_enc.IdOrdenCompraEnc=re_oc.IdOrdenCompraEnc
+LEFT OUTER JOIN trans_re_enc re_enc on re_oc.IdRecepcionEnc=re_enc.IdRecepcionEnc
+INNER JOIN proveedor_bodega p_bodega on oc_enc.IdProveedorBodega = p_bodega.IdAsignacion
+INNER JOIN proveedor pv on p_bodega.IdProveedor=pv.IdProveedor
+LEFT OUTER JOIN empresa_transporte_vehiculos vehiculo on re_enc.idvehiculo= vehiculo.IdVehiculo
+INNER JOIN trans_oc_ti oc_ti on oc_enc.IdTipoIngresoOC=oc_ti.IdTipoIngresoOC
+LEFT OUTER JOIN regimen_fiscal r_fiscal on oc_pol.IdRegimen= r_fiscal.IdRegimen
+INNER JOIN trans_oc_estado oc_estado on oc_enc.IdEstadoOC=oc_estado.IdEstadoOC
+GO
+
+
+
 --#GT18092023 Ingreso con póliza para bodegas fiscales.
 
 CREATE VIEW [dbo].[VW_Ingreso_Fiscal]
