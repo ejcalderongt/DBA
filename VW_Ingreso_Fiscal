@@ -23,7 +23,8 @@ oc_pol.fecha_llegada fecha_llegada_poliza,
 oc_enc.Observacion observacion_ingreso,oc_enc.Referencia,
 oc_pol.numero_orden,oc_pol.codigo_poliza,
 oc_pol.IdRegimen,r_fiscal.codigo_regimen,
-vehiculo.placa,re_enc.NoGuia as contenedor,
+vehiculo.placa,re_enc.No_Marchamo,
+re_enc.NoGuia as contenedor,
 oc_pol.cbm,re_enc.observacion,re_enc.carta_cupo,
 oc_det.activo
 from trans_oc_enc oc_enc LEFT OUTER JOIN trans_oc_det oc_det
