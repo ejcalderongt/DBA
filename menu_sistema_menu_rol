@@ -1,3 +1,12 @@
+--#CKFK20231003: Opcion para ver el menú de QA para hacer pruebas de reserva
+Insert into menu_sistema values('3.13','QA','rbPageQA',2,'3',0)
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '3.13')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'3.13',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+
+Insert into menu_sistema values('3.13.1','QA','mnuQAReservas',3,'3.13',0)
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '3.13.1')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'3.13.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+
 --#GT12092023: inserta opcion para ver ingresos con póliza en el apartado de reportes fiscales
 
 Insert into menu_sistema values('2.5.1.9','Ingresos Fiscales','cmdIngresoPoliza',4,'2.5.1',0)
