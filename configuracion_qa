@@ -1,13 +1,12 @@
 CREATE TABLE [dbo].[configuracion_qa](
-	[IdConfiguracionQA] [int] NOT NULL,
+	[IdConfiguracionQA] [int] IDENTITY(1,1) NOT NULL,
 	[Nombre] [nvarchar](50) NULL,
 	[FechaEjecucion] [datetime] NULL,
 	[IdEmpresaOrigen] [int] NULL,
 	[IdBodegaOrigen] [int] NULL,
 	[IdPropietarioOrigen] [int] NULL,
-	[IdPropietarioBodega] [int] NULL,
-	[Codigo_Producto] [int] NULL,
-	[Codigo_Cliente] [int] NULL,
+	[IdProducto] [int] NULL,
+	[IdCliente] [int] NULL,
 	[Cantidad_Pedido_Presentacion] [float] NULL,
 	[Cantidad_Pedido_UMBas] [float] NULL,
 	[user_agr] [nvarchar](50) NULL,
@@ -22,4 +21,35 @@ CREATE TABLE [dbo].[configuracion_qa](
 	[IdConfiguracionQA] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[configuracion_qa] ADD  CONSTRAINT [DF_configuracion_qa_activo]  DEFAULT ((1)) FOR [activo]
+GO
+
+ALTER TABLE [dbo].[configuracion_qa]  WITH CHECK ADD  CONSTRAINT [FK_configuracion_qa_bodega] FOREIGN KEY([IdBodegaOrigen])
+REFERENCES [dbo].[bodega] ([IdBodega])
+GO
+
+ALTER TABLE [dbo].[configuracion_qa] CHECK CONSTRAINT [FK_configuracion_qa_bodega]
+GO
+
+ALTER TABLE [dbo].[configuracion_qa]  WITH CHECK ADD  CONSTRAINT [FK_configuracion_qa_cliente] FOREIGN KEY([IdCliente])
+REFERENCES [dbo].[cliente] ([IdCliente])
+GO
+
+ALTER TABLE [dbo].[configuracion_qa] CHECK CONSTRAINT [FK_configuracion_qa_cliente]
+GO
+
+ALTER TABLE [dbo].[configuracion_qa]  WITH CHECK ADD  CONSTRAINT [FK_configuracion_qa_empresa] FOREIGN KEY([IdEmpresaOrigen])
+REFERENCES [dbo].[empresa] ([IdEmpresa])
+GO
+
+ALTER TABLE [dbo].[configuracion_qa] CHECK CONSTRAINT [FK_configuracion_qa_empresa]
+GO
+
+ALTER TABLE [dbo].[configuracion_qa]  WITH CHECK ADD  CONSTRAINT [FK_configuracion_qa_producto] FOREIGN KEY([IdProducto])
+REFERENCES [dbo].[producto] ([IdProducto])
+GO
+
+ALTER TABLE [dbo].[configuracion_qa] CHECK CONSTRAINT [FK_configuracion_qa_producto]
 GO
