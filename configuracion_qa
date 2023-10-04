@@ -1,0 +1,25 @@
+CREATE TABLE [dbo].[configuracion_qa](
+	[IdConfiguracionQA] [int] NOT NULL,
+	[Nombre] [nvarchar](50) NULL,
+	[FechaEjecucion] [datetime] NULL,
+	[IdEmpresaOrigen] [int] NULL,
+	[IdBodegaOrigen] [int] NULL,
+	[IdPropietarioOrigen] [int] NULL,
+	[IdPropietarioBodega] [int] NULL,
+	[Codigo_Producto] [int] NULL,
+	[Codigo_Cliente] [int] NULL,
+	[Cantidad_Pedido_Presentacion] [float] NULL,
+	[Cantidad_Pedido_UMBas] [float] NULL,
+	[user_agr] [nvarchar](50) NULL,
+	[fec_agr] [datetime] NULL,
+	[user_mod] [nvarchar](50) NULL,
+	[fec_mod] [datetime] NULL,
+	[activo] [bit] NOT NULL,
+	[Resultado] [nvarchar](250) NULL,
+	[Observaciones] [nvarchar](250) NULL,
+ CONSTRAINT [PK_configuracion_qa] PRIMARY KEY CLUSTERED 
+(
+	[IdConfiguracionQA] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
