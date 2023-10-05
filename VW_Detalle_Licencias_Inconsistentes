@@ -1,0 +1,33 @@
+/****** Object:  View [dbo].[VW_Licencias_Por_Ubicacion]    Script Date: 4/10/2023 01:13:08 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER VIEW [dbo].[VW_Detalle_Licencias_Inconsistentes]
+AS
+SELECT S4.lic_plate Licencia, pr.Codigo, pr.Nombre, dbo.Nombre_Completo_Ubicacion(s4.IdUbicacion, s4.IdBodega) Ubicacion
+FROM   stock S4 inner join 
+       producto_bodega pb on s4.IdProductoBodega = pb.IdProductoBodega inner join
+	   producto pr on pr.IdProducto = pb.IdProducto
+WHERE  S4.IdUbicacion IN (
+							SELECT s3.IdUbicacion
+							FROM   dbo.stock AS s3 INNER JOIN
+								   dbo.bodega_ubicacion AS bu ON s3.IdUbicacion = bu.IdUbicacion AND s3.IdBodega = bu.IdBodega INNER JOIN
+								   dbo.bodega_tramo AS bt ON bt.IdSector = bu.IdSector AND bt.IdBodega = bu.IdBodega
+							WHERE  bu.nivel>1 
+							GROUP BY s3.IdUbicacion, s3.IdBodega, bt.es_rack
+							HAVING COUNT(DISTINCT s3.lic_plate)>1) 
+       AND S4.IDSTOCK NOT IN (SELECT MAX(IdStock)
+                              FROM stock s2 WHERE Idubicacion in  (SELECT s.IdUbicacion
+																   FROM    dbo.stock AS s INNER JOIN
+																		   dbo.bodega_ubicacion AS bu ON s.IdUbicacion = bu.IdUbicacion AND s.IdBodega = bu.IdBodega INNER JOIN
+																		   dbo.bodega_tramo AS bt ON bt.IdSector = bu.IdSector AND bt.IdBodega = bu.IdBodega
+																	WHERE  bu.nivel>1 
+																	GROUP BY s.IdUbicacion, s.IdBodega, bt.es_rack
+																	HAVING COUNT(DISTINCT s.lic_plate)>1)
+
+                               GROUP BY IdUbicacion)
+	   AND S4.IdStock NOT IN (SELECT IdStock FROM stock_res)
+GO
