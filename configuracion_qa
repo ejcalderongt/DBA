@@ -1,5 +1,5 @@
 CREATE TABLE [dbo].[configuracion_qa](
-	[IdConfiguracionQA] [int] IDENTITY(1,1) NOT NULL,
+	[IdConfiguracionQA] [int] NOT NULL,
 	[Nombre] [nvarchar](50) NULL,
 	[FechaEjecucion] [datetime] NULL,
 	[IdEmpresaOrigen] [int] NULL,
