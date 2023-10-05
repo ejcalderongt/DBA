@@ -1,0 +1,33 @@
+
+--#GT05102023: tabla para guardar razones de corregir una póliza para bodega fiscal ---
+
+/****** Object:  Table [dbo].[motivo_anulacion]    Script Date: 5/10/2023 13:28:47 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[trans_oc_pol_motivo_correccion](
+	[IdMotivoCorreccion] [int] NOT NULL,
+	[IdEmpresa] [int] NOT NULL,
+	[Nombre] [nvarchar](50) NULL,
+	[activo] [bit] NULL,
+	[user_agr] [nvarchar](50) NULL,
+	[fec_agr] [datetime] NULL,
+	[user_mod] [nvarchar](50) NULL,
+	[fec_mod] [datetime] NULL,
+ CONSTRAINT [PK_motivo_correccion] PRIMARY KEY CLUSTERED 
+(
+	[IdMotivoCorreccion] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[trans_oc_pol_motivo_correccion]  WITH CHECK ADD  CONSTRAINT [FK_motivo_correccion_empresa] FOREIGN KEY([IdEmpresa])
+REFERENCES [dbo].[empresa] ([IdEmpresa])
+GO
+
+ALTER TABLE [dbo].[trans_oc_pol_motivo_correccion] CHECK CONSTRAINT [FK_motivo_correccion_empresa]
+GO
+
