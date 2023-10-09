@@ -26,4 +26,3 @@ GO
 ALTER TABLE [dbo].[trans_pe_det_log_reserva] ADD  CONSTRAINT [DF__trans_pe_det_log_reserva__3B43FA92]  DEFAULT ((0)) FOR [IdPedidoEnc]
 GO
 
-SELECT * FROM trans_pe_det_log_reserva
