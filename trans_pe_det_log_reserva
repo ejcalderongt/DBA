@@ -1,0 +1,29 @@
+/****** #EJC202310091353 ******/
+CREATE TABLE [dbo].[trans_pe_det_log_reserva](
+	[IdLogReserva] [int] NOT NULL,	
+	[IdBodega] [int] NULL,
+	[Fecha] [datetime] NULL,	
+	[IdPedidoEnc] [int] NOT NULL,	
+	[Line_No] [int] NULL,
+	[Item_No] [nvarchar](50) NULL,
+	[UmBas] [nvarchar](50) NULL,
+	[Variant_Code] [nvarchar](50) NULL,
+	[MensajeLog] [nvarchar](max) NULL,
+	[Cantidad] [float] NULL,
+	[Caso_Reserva] [nvarchar](50) NULL,
+	[EsError] [bit] NOT NULL DEFAULT 0,
+	[Referencia_Documento] [nvarchar](50) NULL,
+ CONSTRAINT [PK_trans_pe_det_log_reserva] PRIMARY KEY CLUSTERED 
+(
+	[IdLogReserva] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[trans_pe_det_log_reserva] ADD  CONSTRAINT [DF_trans_pe_det_log_reserva]  DEFAULT (getdate()) FOR [Fecha]
+GO
+
+ALTER TABLE [dbo].[trans_pe_det_log_reserva] ADD  CONSTRAINT [DF__trans_pe_det_log_reserva__3B43FA92]  DEFAULT ((0)) FOR [IdPedidoEnc]
+GO
+
+SELECT * FROM trans_pe_det_log_reserva
