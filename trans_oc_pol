@@ -1,3 +1,6 @@
+--#GT10102023: campo para filtrar la duca activa cuando se registra más de una a la misma OC
+ALTER TABLE trans_oc_pol add activo bit NOT NULL DEFAULT 1
+
 alter table trans_oc_pol
 add codigo_poliza nvarchar(50),
 ticket nvarchar(50),
