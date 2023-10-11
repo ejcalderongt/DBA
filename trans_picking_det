@@ -1,3 +1,8 @@
+--#GT11102023 se homologa el campo producto acorde a la tabla maestra
+ALTER TABLE trans_picking_det ALTER COLUMN codigo NVARCHAR(50)
+
+
+
 ALTER TABLE trans_picking_det 
 ADD codigo NVARCHAR(25), 
 nombre NVARCHAR(100)
