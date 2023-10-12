@@ -1,3 +1,9 @@
+--#GT12102023: SE NOMBRA LICENCIA A lic_plate, y se agrega cantidad_recibida --------------
+
+alter trans_picking_ubic_stock add cantidad_recibida as float default null
+EXEC sp_rename 'Licencia', 'lic_plate', 'COLUMN';
+
+-------------------------------------------------------------------------------------------
 CREATE TABLE [dbo].[trans_picking_ubic_stock](
 	[IdPickingUbicStock] [int] NOT NULL,
 	[IdBodega] [int] NULL,
@@ -57,3 +63,5 @@ ALTER TABLE TRANS_PICKING_UBIC_STOCK ADD fecha_procesado_bof date null default '
 
 ALTER TABLE [dbo].[trans_picking_ubic_stock] ADD  DEFAULT ((0)) FOR [peso_verificado]
 GO
+
+
