@@ -1,9 +1,10 @@
---#EJC20230922 Valores por defecto para productos no recibidos
-alter table i_nav_config_enc add lote_defecto_entrada_mercancia_sap nvarchar(50), fecha_vence_defecto datetime default '19900101'
-
+--#EJC20231017 Valores por defecto para interface SAP Becofarma
 Alter table i_nav_config_enc add codigo_bodega_erp_nc nvarchar(50) null
 Alter table i_nav_config_enc add lote_defecto_entrada_nc nvarchar(50) null
 Alter table i_nav_config_enc add vence_defecto_nc datetime null default '19000101'
+
+--#EJC20230922 Valores por defecto para productos no recibidos
+alter table i_nav_config_enc add lote_defecto_entrada_mercancia_sap nvarchar(50), fecha_vence_defecto datetime default '19900101'
 
 
 --#EJC202303031620:
