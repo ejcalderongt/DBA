@@ -1,0 +1,22 @@
+/****** Object:  Table [dbo].[i_nav_config_producto_estado] EJC Script Date: 16/10/2023 18:11:23 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[i_nav_config_producto_estado](
+	[idnavconfigproductoestado] [int] NOT NULL,	
+	[IdProductoEstado] [int] NULL,	
+	[codigo_bodega_erp] [nvarchar](50) NULL,	
+	[activo] [bit] NULL,
+	[fec_agr] [datetime] NULL,
+	[user_agr] [nvarchar](50) NULL,
+	[fec_mod] [datetime] NULL,
+	[user_mod] [nvarchar](50) NULL,
+ CONSTRAINT [PK_i_nav_config_producto_estado_1] PRIMARY KEY CLUSTERED 
+(
+	[idnavconfigproductoestado] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
