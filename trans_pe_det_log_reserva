@@ -1,3 +1,9 @@
+/****** #EJC202310200006******/
+alter table trans_pe_det_log_reserva add Fecha_Vence date null
+alter table trans_pe_det_log_reserva add IdPedidoDet int null
+alter table trans_pe_det_log_reserva add IdStock int null
+alter table trans_pe_det_log_reserva add IdStockRes int null
+
 /****** #EJC202310091353 ******/
 CREATE TABLE [dbo].[trans_pe_det_log_reserva](
 	[IdLogReserva] [int] NOT NULL,	
