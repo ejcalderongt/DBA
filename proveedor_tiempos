@@ -1,0 +1,43 @@
+/****** Object:  Table [dbo].[proveedor_tiempos] #EJC   Script Date: 23/10/2023 09:05:44 ******/
+
+CREATE TABLE [dbo].[proveedor_tiempos](
+	[IdTiempoproveedor] [int] NOT NULL,
+	[Idproveedor] [int] NOT NULL,
+	[IdFamilia] [int] NULL,
+	[IdClasificacion] [int] NULL,
+	[Dias_Local] [int] NULL,
+	[Dias_Exterior] [int] NULL,
+	[user_agr] [nvarchar](25) NULL,
+	[fec_agr] [datetime] NULL,
+	[user_mod] [nvarchar](25) NULL,
+	[fec_mod] [datetime] NULL,
+	[activo] [bit] NULL,
+ CONSTRAINT [PK_proveedor_tiempos_1] PRIMARY KEY CLUSTERED 
+(
+	[IdTiempoproveedor] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[proveedor_tiempos]  WITH CHECK ADD  CONSTRAINT [FK_proveedor_tiempos_proveedor] FOREIGN KEY([Idproveedor])
+REFERENCES [dbo].[proveedor] ([Idproveedor])
+GO
+
+ALTER TABLE [dbo].[proveedor_tiempos] CHECK CONSTRAINT [FK_proveedor_tiempos_proveedor]
+GO
+
+ALTER TABLE [dbo].[proveedor_tiempos]  WITH CHECK ADD  CONSTRAINT [FK_proveedor_tiempos_producto_clasificacion] FOREIGN KEY([IdClasificacion])
+REFERENCES [dbo].[producto_clasificacion] ([IdClasificacion])
+GO
+
+ALTER TABLE [dbo].[proveedor_tiempos] CHECK CONSTRAINT [FK_proveedor_tiempos_producto_clasificacion]
+GO
+
+ALTER TABLE [dbo].[proveedor_tiempos]  WITH CHECK ADD  CONSTRAINT [FK_proveedor_tiempos_producto_familia] FOREIGN KEY([IdFamilia])
+REFERENCES [dbo].[producto_familia] ([IdFamilia])
+GO
+
+ALTER TABLE [dbo].[proveedor_tiempos] CHECK CONSTRAINT [FK_proveedor_tiempos_producto_familia]
+GO
+
+
