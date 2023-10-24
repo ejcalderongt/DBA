@@ -1,3 +1,6 @@
+--#EJC20231024 Valores por defecto para interface SAP Becofarma
+Alter table i_nav_config_enc add IdProductoEstado_NC int null
+
 --#EJC20231017 Valores por defecto para interface SAP Becofarma
 Alter table i_nav_config_enc add codigo_bodega_erp_nc nvarchar(50) null
 Alter table i_nav_config_enc add lote_defecto_entrada_nc nvarchar(50) null
