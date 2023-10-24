@@ -1,0 +1,18 @@
+/****** Object:  View [dbo].[VW_TiempoCliente]    Script Date: 24/10/2023 14:10:02 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+CREATE VIEW [dbo].[VW_TiempoProveedor]
+AS
+SELECT     pf.nombre AS Familia, pc.nombre AS Clasificación, ct.*
+FROM         dbo.proveedor_tiempos AS ct LEFT OUTER JOIN
+                      dbo.producto_familia AS pf ON ct.IdFamilia = pf.IdFamilia LEFT OUTER JOIN
+                      dbo.producto_clasificacion AS pc ON ct.IdClasificacion = pc.IdClasificacion
+GO
+
+
+
