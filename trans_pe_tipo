@@ -1,3 +1,6 @@
+--#CKFK20231027 Parametrizar a nivel de documento si se activa o no las fotografías en la verificación
+ALTER TABLE trans_pe_tipo ADD requerir_fotografia_recepcion bit NOT NULL DEFAULT 0
+
 alter table trans_pe_tipo add control_poliza bit default 0
 update trans_pe_tipo set control_poliza = 0
 
