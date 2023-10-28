@@ -1,4 +1,7 @@
---#EJC20231017 Parámetro agregado para validar si el pedido es de importacion o no
+--#EJC20231023 Parámetro agregado para validar si el documento de ingreso permite producto vencido
+ALTER TABLE trans_oc_ti add permitir_vencido_ingreso bit NOT NULL DEFAULT 0
+
+--#EJC20231017 Parámetro agregado para validar si el documento de ingreso es de importacion o no
 ALTER TABLE trans_oc_ti add es_importacion bit NOT NULL DEFAULT 0
 
 --#CKFK20230508 Parámetro agregado para validar si se va a permitir o no agregar de un lote una cantidad mayor de lo ingresado en la tabla trans_oc_det_lote
