@@ -1,0 +1,29 @@
+/****** Object:  Table [dbo].[trans_picking_img]    Script Date: 27/10/2023 21:29:57 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[trans_picking_img](
+	[IdImagen] [int] NOT NULL,
+	[IdPickingEnc] [int] NOT NULL,
+	[Imagen] [image] NOT NULL,
+	[user_agr] [nvarchar](50) NOT NULL,
+	[fec_agr] [datetime] NOT NULL,
+	[observacion] [nvarchar](150) NULL,
+ CONSTRAINT [PK_trans_picking_img] PRIMARY KEY CLUSTERED 
+(
+	[IdImagen] ASC,
+	[IdPickingEnc] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[trans_picking_img]  WITH CHECK ADD  CONSTRAINT [FK_trans_picking_img_trans_picking_enc] FOREIGN KEY([IdPickingEnc])
+REFERENCES [dbo].[trans_picking_enc] ([IdPickingEnc])
+GO
+
+ALTER TABLE [dbo].[trans_picking_img] CHECK CONSTRAINT [FK_trans_picking_img_trans_picking_enc]
+GO
+
