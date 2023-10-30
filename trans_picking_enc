@@ -1,5 +1,5 @@
 --#EJC20231027: Funcionalidad para tomar fotografías en la verificación
-ALTER TABLE trans_pe_tipo ADD fotografia_verificacion bit NOT NULL DEFAULT 0
+ALTER TABLE trans_picking_enc ADD fotografia_verificacion bit NOT NULL DEFAULT 0
 
 --#EJC20210805: Preparación Idealsa Regional
 alter table trans_picking_enc add requiere_preparacion bit null default 0
