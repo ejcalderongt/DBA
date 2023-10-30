@@ -1,4 +1,4 @@
-/****** Object:  View [dbo].[VW_Licencias_Por_Ubicacion]    Script Date: 4/10/2023 01:13:08 ******/
+/****** Object:  View [dbo].[VW_Licencias_Por_Ubicacion]  (EJC - Agregué IdBodega 20231030)  Script Date: 4/10/2023 01:13:08 ******/
 SET ANSI_NULLS ON
 GO
 
@@ -7,7 +7,7 @@ GO
 
 ALTER VIEW [dbo].[VW_Detalle_Licencias_Inconsistentes]
 AS
-SELECT S4.lic_plate Licencia, pr.Codigo, pr.Nombre, dbo.Nombre_Completo_Ubicacion(s4.IdUbicacion, s4.IdBodega) Ubicacion
+SELECT S4.lic_plate Licencia, pr.Codigo, pr.Nombre, dbo.Nombre_Completo_Ubicacion(s4.IdUbicacion, s4.IdBodega) Ubicacion,, pb.IdBodega
 FROM   stock S4 inner join 
        producto_bodega pb on s4.IdProductoBodega = pb.IdProductoBodega inner join
 	   producto pr on pr.IdProducto = pb.IdProducto
