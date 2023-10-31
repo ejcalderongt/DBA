@@ -1,3 +1,6 @@
+--#EJC20231031 Se agrega este parámetro para que los lotes solo tengan una fecha de vencimiento
+ALTER TABLE bodega add homologar_lote_vencimiento bit not null default 0
+
 --#CKFK20230728 Se agrega este parámetro para filtrar los pedidos en el despacho.
 ALTER TABLE bodega ADD liberar_stock_despachos_parciales bit NOT NULL DEFAULT 0
 
