@@ -1,7 +1,7 @@
 ALTER TABLE TRANS_PICKING_UBIC_STOCK ADD cantidad_recibida float default null
 
 --#GT12102023: SE NOMBRA LICENCIA A lic_plate, y se agrega cantidad_recibida --------------
-EXEC sp_rename 'Licencia', 'lic_plate', 'COLUMN';
+EXEC sp_rename 'TRANS_PICKING_UBIC_STOCK.lic_plate', 'licencia', 'COLUMN';
 
 -------------------------------------------------------------------------------------------
 CREATE TABLE [dbo].[trans_picking_ubic_stock](
