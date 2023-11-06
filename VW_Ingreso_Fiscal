@@ -1,5 +1,28 @@
---/#GT19102023: mostrar polizas activas/inactivas
+--#EJC20231106 Agregó campo no_contenedor
+Alter view VW_Ingreso_Fiscal
+as
+SELECT bd.IdBodega, oc_enc.IdOrdenCompraEnc, oc_det.IdOrdenCompraDet, oc_pol.IdOrdenCompraPol, oc_enc.IdProveedorBodega, oc_enc.IdTipoIngresoOC, bd.nombre AS Nombre_Recinto, oc_pol.dua AS DUCA, 
+                  oc_pol.numero_orden AS Numero_Orden_DUCA, oc_det.No_Linea AS Linea, pr.codigo AS Mercancia_Codigo, oc_det.nombre_producto AS Mercancia_Descripcion, oc_estado.Nombre AS Mercancia_Estado, 
+                  oc_det.cantidad AS Cantidad_Documento, oc_det.cantidad_recibida, oc_det.nombre_unidad_medida_basica AS UM, oc_det.peso, oc_enc.Fecha_Creacion AS Fecha_Ingreso, oc_pol.fecha_llegada AS Fecha_Llegada_Poliza, 
+                  oc_enc.Observacion AS Observacion_Ingreso, oc_enc.Referencia, oc_pol.codigo_poliza, oc_pol.IdRegimen, r_fiscal.codigo_regimen, vehiculo.placa AS Placa_Transporte, re_enc.No_Marchamo, re_enc.observacion AS Observacion, 
+                  re_enc.carta_cupo AS Carta_Cupo, oc_pol.Activo AS Activo, re_enc.no_contenedor as No_Contenedor
+FROM     dbo.trans_oc_enc AS oc_enc LEFT OUTER JOIN
+                  dbo.trans_oc_det AS oc_det ON oc_enc.IdOrdenCompraEnc = oc_det.IdOrdenCompraEnc LEFT OUTER JOIN
+                  dbo.producto_bodega AS pb ON oc_det.IdProductoBodega = pb.IdProductoBodega LEFT OUTER JOIN
+                  dbo.producto AS pr ON pb.IdProducto = pr.IdProducto INNER JOIN
+                  dbo.bodega AS bd ON oc_enc.IDBODEGA = bd.IdBodega LEFT OUTER JOIN
+                  dbo.producto_clasificacion AS pc ON pr.IdClasificacion = pc.IdClasificacion LEFT OUTER JOIN
+                  dbo.trans_oc_pol AS oc_pol ON oc_enc.IdOrdenCompraEnc = oc_pol.IdOrdenCompraEnc LEFT OUTER JOIN
+                  dbo.trans_re_oc AS re_oc ON oc_enc.IdOrdenCompraEnc = re_oc.IdOrdenCompraEnc LEFT OUTER JOIN
+                  dbo.trans_re_enc AS re_enc ON re_oc.IdRecepcionEnc = re_enc.IdRecepcionEnc INNER JOIN
+                  dbo.proveedor_bodega AS p_bodega ON oc_enc.IdProveedorBodega = p_bodega.IdAsignacion INNER JOIN
+                  dbo.proveedor AS pv ON p_bodega.IdProveedor = pv.IdProveedor LEFT OUTER JOIN
+                  dbo.empresa_transporte_vehiculos AS vehiculo ON re_enc.idvehiculo = vehiculo.IdVehiculo INNER JOIN
+                  dbo.trans_oc_ti AS oc_ti ON oc_enc.IdTipoIngresoOC = oc_ti.IdTipoIngresoOC LEFT OUTER JOIN
+                  dbo.regimen_fiscal AS r_fiscal ON oc_pol.IdRegimen = r_fiscal.IdRegimen INNER JOIN
+                  dbo.trans_oc_estado AS oc_estado ON oc_enc.IdEstadoOC = oc_estado.IdEstadoOC
 
+--/#GT19102023: mostrar polizas activas/inactivas
 /****** Object:  View [dbo].[VW_Ingreso_Fiscal]    Script Date: 19/10/2023 10:23:24 ******/
 SET ANSI_NULLS ON
 GO
