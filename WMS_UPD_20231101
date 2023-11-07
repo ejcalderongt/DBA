@@ -681,3 +681,15 @@ FROM            dbo.producto_presentacion RIGHT OUTER JOIN
                          dbo.empresa_transporte_pilotos ON dbo.trans_despacho_enc.IdPiloto = dbo.empresa_transporte_pilotos.IdPiloto
 GO
 
+/****** #EJC202310200006******/
+alter table trans_pe_det_log_reserva add Fecha_Vence date null
+GO
+
+alter table trans_pe_det_log_reserva add IdPedidoDet int null
+GO
+
+alter table trans_pe_det_log_reserva add IdStock int null
+GO
+
+alter table trans_pe_det_log_reserva add IdStockRes int null
+GO
