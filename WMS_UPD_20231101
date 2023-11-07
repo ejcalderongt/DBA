@@ -1,1 +1,8 @@
-
+-- Version 1.0 to 1.1 Updates
+-- ==========================
+GO
+--#EJC20231031 Se agrega este parámetro para que los lotes solo tengan una fecha de vencimiento
+ALTER TABLE bodega ADD homologar_lote_vencimiento bit NOT NULL DEFAULT 0
+/* Código SQL adicional para actualizar de la versión 1.0 a 1.1 */
+-- Aquí irían las demás instrucciones SQL como ALTER TABLE, CREATE TABLE, etc.
+GO
