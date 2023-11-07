@@ -68,6 +68,7 @@ GO
 --#GT12092023: inserta opcion para ver ingresos con póliza en el apartado de reportes fiscales
 
 Insert into menu_sistema values('2.5.1.9','Ingresos Fiscales','cmdIngresoPoliza',4,'2.5.1',0)
+GO
 IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '2.5.1.9')
 insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'2.5.1.9',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
 GO
@@ -93,6 +94,7 @@ GO
 
 
 alter table tipo_etiqueta add Idclasificacion_etiqueta int null
+GO
 
 ALTER TABLE [dbo].[tipo_etiqueta]  WITH CHECK ADD  CONSTRAINT [FK_tipo_etiqueta_producto_clasificacion_etiqueta] FOREIGN KEY([Idclasificacion_etiqueta])
 REFERENCES [dbo].[producto_clasificacion_etiqueta] ([Idclasificacion_etiqueta])
