@@ -1,72 +1,72 @@
 -- Version 1.0 to 1.1 Updates
 -- ==========================
 GO
+
 --#EJC20231031 Se agrega este parámetro para que los lotes solo tengan una fecha de vencimiento
-ALTER TABLE bodega ADD homologar_lote_vencimiento bit NOT NULL DEFAULT 0
+ALTER TABLE bodega ADD homologar_lote_vencimiento bit NOT NULL DEFAULT 0;
+GO
+
 /* Código SQL adicional para actualizar de la versión 1.0 a 1.1 */
 -- Aquí irían las demás instrucciones SQL como ALTER TABLE, CREATE TABLE, etc.
 GO
 
-
-alter table trans_oc_pol
-add fecha_aceptacion date,
-fecha_llegada datetime,
-total_otros float,
-total_bultos_peso_neto float default 0
+-- Actualizaciones adicionales que podrían incluirse aquí
+ALTER TABLE trans_oc_pol
+ADD fecha_aceptacion date,
+    fecha_llegada datetime,
+    total_otros float,
+    total_bultos_peso_neto float DEFAULT 0;
 GO
 
-----#GT18092023 Ingreso con póliza para bodegas fiscales.
-
+--#GT18092023 Ingreso con póliza para bodegas fiscales.
 CREATE VIEW [dbo].[VW_Ingreso_Fiscal]
-as
-select 
-bd.IdBodega,
-bd.nombre,
-oc_enc.IdOrdenCompraEnc,
-oc_det.IdOrdenCompraDet,oc_det.No_Linea,
-oc_enc.IdProveedorBodega,
-pv.nombre proveedor,
-oc_enc.IdTipoIngresoOC,
-oc_ti.Nombre tipo_ingreso,
-oc_enc.IdPedidoEncDevolucion,oc_enc.no_documento_devolucion,
-oc_enc.IdMotivoDevolucion,
-oc_det.IdPresentacion,oc_det.IdProductoBodega,
-pr.codigo,pr.codigo_barra,oc_det.nombre_producto,
-oc_estado.Nombre estado,
-oc_det.cantidad,oc_det.cantidad_recibida recibido,
-oc_det.IdUnidadMedidaBasica,oc_det.nombre_unidad_medida_basica,
-oc_det.peso,
-pc.nombre clasificacion,
-oc_enc.Fecha_Creacion fecha_registro,
-oc_pol.fecha_llegada fecha_llegada_poliza,
-oc_enc.Observacion observacion_ingreso,oc_enc.Referencia,
-oc_pol.numero_orden,oc_pol.codigo_poliza,
-oc_pol.IdRegimen,
-r_fiscal.codigo_regimen,
-vehiculo.placa,
-re_enc.NoGuia as contenedor,
-re_enc.observacion,
-oc_det.activo
-from trans_oc_enc oc_enc LEFT OUTER JOIN trans_oc_det oc_det
-on oc_enc.IdOrdenCompraEnc= oc_det.IdOrdenCompraEnc
-LEFT OUTER JOIN producto_bodega pb on oc_det.IdProductoBodega = pb.IdProductoBodega
-LEFT OUTER JOIN producto pr on pb.IdProducto= pr.IdProducto
-INNER JOIN bodega bd on oc_enc.IDBODEGA = bd.IdBodega
-LEFT OUTER JOIN producto_clasificacion pc on pr.IdClasificacion=pc.IdClasificacion
-LEFT OUTER JOIN trans_oc_pol oc_pol on oc_enc.IdOrdenCompraEnc=oc_pol.IdOrdenCompraEnc
-LEFT OUTER JOIN trans_re_oc re_oc on oc_enc.IdOrdenCompraEnc=re_oc.IdOrdenCompraEnc
-LEFT OUTER JOIN trans_re_enc re_enc on re_oc.IdRecepcionEnc=re_enc.IdRecepcionEnc
-INNER JOIN proveedor_bodega p_bodega on oc_enc.IdProveedorBodega = p_bodega.IdAsignacion
-INNER JOIN proveedor pv on p_bodega.IdProveedor=pv.IdProveedor
-LEFT OUTER JOIN empresa_transporte_vehiculos vehiculo on re_enc.idvehiculo= vehiculo.IdVehiculo
-INNER JOIN trans_oc_ti oc_ti on oc_enc.IdTipoIngresoOC=oc_ti.IdTipoIngresoOC
-LEFT OUTER JOIN regimen_fiscal r_fiscal on oc_pol.IdRegimen= r_fiscal.IdRegimen
-INNER JOIN trans_oc_estado oc_estado on oc_enc.IdEstadoOC=oc_estado.IdEstadoOC
-
+AS
+SELECT 
+    bd.IdBodega,
+    bd.nombre,
+    oc_enc.IdOrdenCompraEnc,
+    oc_det.IdOrdenCompraDet, oc_det.No_Linea,
+    oc_enc.IdProveedorBodega,
+    pv.nombre AS proveedor,
+    oc_enc.IdTipoIngresoOC,
+    oc_ti.Nombre AS tipo_ingreso,
+    oc_enc.IdPedidoEncDevolucion, oc_enc.no_documento_devolucion,
+    oc_enc.IdMotivoDevolucion,
+    oc_det.IdPresentacion, oc_det.IdProductoBodega,
+    pr.codigo, pr.codigo_barra, oc_det.nombre_producto,
+    oc_estado.Nombre AS estado,
+    oc_det.cantidad, oc_det.cantidad_recibida AS recibido,
+    oc_det.IdUnidadMedidaBasica, oc_det.nombre_unidad_medida_basica,
+    oc_det.peso,
+    pc.nombre AS clasificacion,
+    oc_enc.Fecha_Creacion AS fecha_registro,
+    oc_pol.fecha_llegada AS fecha_llegada_poliza,
+    oc_enc.Observacion AS observacion_ingreso, oc_enc.Referencia,
+    oc_pol.numero_orden, oc_pol.codigo_poliza,
+    oc_pol.IdRegimen,
+    r_fiscal.codigo_regimen,
+    vehiculo.placa,
+    re_enc.NoGuia AS contenedor,
+    re_enc.observacion,
+    oc_det.activo
+FROM trans_oc_enc oc_enc 
+LEFT OUTER JOIN trans_oc_det oc_det ON oc_enc.IdOrdenCompraEnc = oc_det.IdOrdenCompraEnc
+LEFT OUTER JOIN producto_bodega pb ON oc_det.IdProductoBodega = pb.IdProductoBodega
+LEFT OUTER JOIN producto pr ON pb.IdProducto= pr.IdProducto
+INNER JOIN bodega bd ON oc_enc.IDBODEGA = bd.IdBodega
+LEFT OUTER JOIN producto_clasificacion pc ON pr.IdClasificacion=pc.IdClasificacion
+LEFT OUTER JOIN trans_oc_pol oc_pol ON oc_enc.IdOrdenCompraEnc=oc_pol.IdOrdenCompraEnc
+LEFT OUTER JOIN trans_re_oc re_oc ON oc_enc.IdOrdenCompraEnc=re_oc.IdOrdenCompraEnc
+LEFT OUTER JOIN trans_re_enc re_enc ON re_oc.IdRecepcionEnc=re_enc.IdRecepcionEnc
+INNER JOIN proveedor_bodega p_bodega ON oc_enc.IdProveedorBodega = p_bodega.IdAsignacion
+INNER JOIN proveedor pv ON p_bodega.IdProveedor=pv.IdProveedor
+LEFT OUTER JOIN empresa_transporte_vehiculos vehiculo ON re_enc.idvehiculo= vehiculo.IdVehiculo
+INNER JOIN trans_oc_ti oc_ti ON oc_enc.IdTipoIngresoOC=oc_ti.IdTipoIngresoOC
+LEFT OUTER JOIN regimen_fiscal r_fiscal ON oc_pol.IdRegimen= r_fiscal.IdRegimen
+INNER JOIN trans_oc_estado oc_estado ON oc_enc.IdEstadoOC=oc_estado.IdEstadoOC;
 GO
 
 --#GT12092023: inserta opcion para ver ingresos con póliza en el apartado de reportes fiscales
-
 Insert into menu_sistema values('2.5.1.9','Ingresos Fiscales','cmdIngresoPoliza',4,'2.5.1',0)
 GO
 IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '2.5.1.9')
@@ -74,7 +74,6 @@ insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'2.5.1.9',1,
 GO
 
 -- #GT18092023 define si es etiqueta para producto o para úbicación de rack
-
 /****** Object:  Table [dbo].[producto_clasificacion_etiqueta]    Script Date: 18/09/2023 15:49:15 ******/
 SET ANSI_NULLS ON
 GO
@@ -102,26 +101,6 @@ GO
 ALTER TABLE [dbo].[tipo_etiqueta] CHECK CONSTRAINT [FK_tipo_etiqueta_producto_clasificacion_etiqueta]
 GO
 
--- ================================================
--- Template generated from Template Explorer using:
--- Create Scalar Function (New Menu).SQL
---
--- Use the Specify Values for Template Parameters 
--- command (Ctrl-Shift-M) to fill in the parameter 
--- values below.
---
--- This block of comments will not be included in
--- the definition of the function.
--- ================================================
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
--- =============================================
--- Author:		Carolina Fuentes
--- Create date: 14-08-2023
--- Description:	Función para obtener porcentaje de avance del Pedido
--- =============================================
 CREATE FUNCTION Get_Porcentaje_Avance_Pedido
 (
 	@IdPedidoEnc int, @IdBodega int
@@ -145,26 +124,6 @@ BEGIN
 END
 GO
 
--- ================================================
--- Template generated from Template Explorer using:
--- Create Scalar Function (New Menu).SQL
---
--- Use the Specify Values for Template Parameters 
--- command (Ctrl-Shift-M) to fill in the parameter 
--- values below.
---
--- This block of comments will not be included in
--- the definition of the function.
--- ================================================
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
--- =============================================
--- Author:		Carolina Fuentes
--- Create date: 14-08-2023
--- Description:	Función para obtener porcentaje de avance del Picking
--- =============================================
 CREATE FUNCTION Get_Porcentaje_Avance_Picking 
 (
 	@IdPickingEnc int, @IdBodega int
@@ -313,6 +272,7 @@ GO
 
 ALTER TABLE trans_oc_ti add es_importacion bit NOT NULL DEFAULT 0
 GO
+
 ALTER TABLE trans_oc_ti add permitir_vencido_ingreso bit NOT NULL DEFAULT 0
 GO
 
@@ -672,11 +632,14 @@ GO
 
 Insert into menu_sistema values('3.13','SAT','rpgSAT',2,'3',0)
 GO
+
 Insert into menu_sistema values('3.13.1','SAT','mnuReportesSAT',3,'3.12',0)
 GO
+
 IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '3.13.1')
-insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'3.13.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+Insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'3.13.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
 GO
+
 IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '3.13')
 insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'3.13',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
 GO
