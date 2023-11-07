@@ -70,6 +70,7 @@ GO
 Insert into menu_sistema values('2.5.1.9','Ingresos Fiscales','cmdIngresoPoliza',4,'2.5.1',0)
 IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '2.5.1.9')
 insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'2.5.1.9',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+GO
 
 -- #GT18092023 define si es etiqueta para producto o para úbicación de rack
 
@@ -271,6 +272,7 @@ GO
 
 --#GT10102023: campo para filtrar la duca activa cuando se registra más de una a la misma OC
 ALTER TABLE trans_oc_pol add activo bit NOT NULL DEFAULT 1
+GO
 
 alter table trans_oc_pol
 add codigo_poliza nvarchar(50),
@@ -279,11 +281,13 @@ numero_orden nvarchar(50),
 fecha_aceptacion date,
 fecha_llegada datetime,
 total_otros float
+GO
 
 alter table trans_oc_pol add IdRegimen int null
-
+GO
 
 alter table trans_oc_pol add total_bultos_peso_neto float default 0
+GO
 
 ALTER TABLE trans_oc_pol
 ADD 
@@ -293,23 +297,31 @@ clase VARCHAR(50) NULL,
 mod_transporte VARCHAR(50) NULL,
 total_liquidar FLOAT NULL,
 total_general FLOAT NULL
+GO
 
 ALTER TABLE trans_oc_pol ADD Codigo_Barra nvarchar(1000)
+GO
 
 Alter table i_nav_config_enc add codigo_bodega_erp_nc nvarchar(50) null
+GO
 Alter table i_nav_config_enc add lote_defecto_entrada_nc nvarchar(50) null
+GO
 Alter table i_nav_config_enc add vence_defecto_nc datetime null default '19000101'
+GO
 
 ALTER TABLE trans_oc_ti add es_importacion bit NOT NULL DEFAULT 0
+GO
 ALTER TABLE trans_oc_ti add permitir_vencido_ingreso bit NOT NULL DEFAULT 0
+GO
 
 alter table trans_re_enc ADD carta_cupo [nvarchar](50) NULL
+GO
 
 ALTER TABLE trans_oc_pol add activo bit NOT NULL DEFAULT 1
+GO
 
 Alter table i_nav_config_enc add IdProductoEstado_NC int null
-
-
+GO
 
 CREATE TABLE [dbo].[trans_picking_ubic_stock](
 	[IdPickingUbicStock] [int] NOT NULL,
@@ -356,7 +368,7 @@ CREATE TABLE [dbo].[trans_picking_ubic_stock](
  CONSTRAINT [PK_trans_picking_ubic_stock] PRIMARY KEY CLUSTERED 
 (
 	[IdPickingUbicStock] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
 
@@ -365,17 +377,20 @@ GO
 
 --#EJC20230807 Campos agregados para control 
 ALTER TABLE TRANS_PICKING_UBIC_STOCK ADD procesado_bof bit not null default 0
+GO
 ALTER TABLE TRANS_PICKING_UBIC_STOCK ADD IdUsuario_bof_pickeo int null
+GO
 ALTER TABLE TRANS_PICKING_UBIC_STOCK ADD fecha_procesado_bof date null default '19000101'
-
+GO
 ALTER TABLE [dbo].[trans_picking_ubic_stock] ADD  DEFAULT ((0)) FOR [peso_verificado]
 GO
 
 
 ALTER TABLE TRANS_PICKING_UBIC_STOCK ADD cantidad_recibida float default null
+GO
 
 EXEC sp_rename 'TRANS_PICKING_UBIC_STOCK.lic_plate', 'licencia', 'COLUMN';
-
+GO
 /****** Object:  View [dbo].[VW_Stock_CambioUbic]    Script Date: 24/07/2023 15:55:28 ******/
 SET ANSI_NULLS ON
 GO
@@ -499,7 +514,9 @@ WHERE  S4.IdUbicacion IN (
 GO
 
 ALTER TABLE bodega add homologar_lote_vencimiento bit not null default 0
+GO
 ALTER TABLE trans_picking_enc ADD fotografia_verificacion bit NOT NULL DEFAULT 0
+GO
 
 /****** Object:  Table [dbo].[trans_picking_img]    Script Date: 29/10/2023 23:52:45 ******/
 SET ANSI_NULLS ON
@@ -645,9 +662,12 @@ FROM     dbo.trans_oc_enc AS oc_enc LEFT OUTER JOIN
 GO				  
 
 Insert into menu_sistema values('3.13','SAT','rpgSAT',2,'3',0)
+GO
 Insert into menu_sistema values('3.13.1','SAT','mnuReportesSAT',3,'3.12',0)
-
+GO
 IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '3.13.1')
 insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'3.13.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+GO
 IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '3.13')
 insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'3.13',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+GO
