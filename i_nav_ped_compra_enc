@@ -1,3 +1,5 @@
+alter table i_nav_ped_compra_enc add IsImport bit default 0
+
 alter table i_nav_ped_compra_enc add Document_Type int default 0
 
 alter table i_nav_ped_compra_enc add fec_agr datetime default getdate()
