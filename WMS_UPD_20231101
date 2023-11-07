@@ -639,7 +639,14 @@ alter table trans_re_enc add no_contenedor nvarchar(50)
 GO
 
 
-Alter view VW_Ingreso_Fiscal
+/****** Object:  View [dbo].[VW_Ingreso_Fiscal]    Script Date: 6/11/2023 19:54:24 ******/
+SET ANSI_NULLS ON
+GO
+ 
+SET QUOTED_IDENTIFIER ON
+GO
+ 
+ALTER view [dbo].[VW_Ingreso_Fiscal]
 as
 SELECT bd.IdBodega, oc_enc.IdOrdenCompraEnc, oc_det.IdOrdenCompraDet, oc_pol.IdOrdenCompraPol, oc_enc.IdProveedorBodega, oc_enc.IdTipoIngresoOC, bd.nombre AS Nombre_Recinto, oc_pol.dua AS DUCA, 
                   oc_pol.numero_orden AS Numero_Orden_DUCA, oc_det.No_Linea AS Linea, pr.codigo AS Mercancia_Codigo, oc_det.nombre_producto AS Mercancia_Descripcion, oc_estado.Nombre AS Mercancia_Estado, 
@@ -661,7 +668,7 @@ FROM     dbo.trans_oc_enc AS oc_enc LEFT OUTER JOIN
                   dbo.trans_oc_ti AS oc_ti ON oc_enc.IdTipoIngresoOC = oc_ti.IdTipoIngresoOC LEFT OUTER JOIN
                   dbo.regimen_fiscal AS r_fiscal ON oc_pol.IdRegimen = r_fiscal.IdRegimen INNER JOIN
                   dbo.trans_oc_estado AS oc_estado ON oc_enc.IdEstadoOC = oc_estado.IdEstadoOC
-GO				  
+GO			  
 
 Insert into menu_sistema values('3.13','SAT','rpgSAT',2,'3',0)
 GO
