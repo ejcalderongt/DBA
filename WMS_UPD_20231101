@@ -697,13 +697,16 @@ GO
 alter table i_nav_ped_compra_enc add IsImport bit default 0
 GO
 
-Insert into menu_sistema values('3.13.1.1','SAT','mnuRptIngresosSAT',4,'3.13.1',0)
+DELETE FROM menu_sistema WHERE IdMenu IN ('3.13.1.1','3.13.1.2','3.13.1.3')
 GO
 
-Insert into menu_sistema values('3.13.1.2','SAT','mnuRptSalidasSAT',4,'3.13.1',0)
+Insert into menu_sistema values('3.13.1.1','Ingresos SAT','mnuRptIngresosSAT',4,'3.13.1',0)
 GO
 
-Insert into menu_sistema values('3.13.1.3','SAT','mnurptExistenciasSAT',4,'3.13.1',0)
+Insert into menu_sistema values('3.13.1.2','Salidas SAT','mnuRptSalidasSAT',4,'3.13.1',0)
+GO
+
+Insert into menu_sistema values('3.13.1.3','Existencias SAT','mnurptExistenciasSAT',4,'3.13.1',0)
 GO
  
 IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '3.13.1.1')
