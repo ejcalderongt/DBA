@@ -1,4 +1,24 @@
- 
+--#CKFK20231118: Opcion para ver el menú de Actualizar BD y Actualizar Indices
+Insert into menu_sistema values('7.9','SAT','rpgActualizacionesBD',2,'7',0)
+GO
+Insert into menu_sistema values('7.9.1','SAT','mnuActualizarBD',3,'7.9',0)
+GO
+Insert into menu_sistema values('7.9.2','SAT','mnuActualizarIndices',3,'7.9',0)
+GO
+
+
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '7.9')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'7.9',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+GO
+
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '7.9.1')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'7.9.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+GO
+
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '7.9.2')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'7.9.2',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+GO
+
 INSERT INTO menu_sistema VALUES('7.5.1.1','Transacciones Out','cmdTransaccionesOut','4','7.5.1','1')
 GO
 
