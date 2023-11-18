@@ -1,1 +1,6 @@
-p
+'#CKFK20231118 Campos nuevos para agregar funcionalidad a los estados que manejen vencimiento
+ALTER TABLE producto_estado ADD dias_vencimiento_clasificacion int NOT NULL Default 0
+GO
+ALTER TABLE producto_estado ADD tolerancia_dias_vencimiento int NOT NULL Default 0
+GO
+
