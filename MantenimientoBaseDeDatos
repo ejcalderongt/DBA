@@ -1,0 +1,41 @@
+CREATE PROCEDURE MantenimientoBaseDeDatos
+AS
+BEGIN
+    DECLARE @TableName NVARCHAR(255);
+    DECLARE @DatabaseName NVARCHAR(255);
+
+    SET @DatabaseName = DB_NAME();
+
+    DECLARE TableCursor CURSOR FOR
+    SELECT t.name
+    FROM sys.tables t
+    INNER JOIN sys.indexes i ON t.object_id = i.object_id
+    WHERE i.index_id > 0
+    ORDER BY t.name;
+
+    OPEN TableCursor;
+
+    FETCH NEXT FROM TableCursor INTO @TableName;
+
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+        DECLARE @DynamicSQL NVARCHAR(MAX);
+        SET @DynamicSQL = 'ALTER INDEX ALL ON ' + QUOTENAME(@DatabaseName) + '.' + QUOTENAME(@TableName) + ' REORGANIZE;';
+        
+        PRINT 'Reorganizando índices para la tabla ' + @TableName;
+        EXEC sp_executesql @DynamicSQL;
+
+        FETCH NEXT FROM TableCursor INTO @TableName;
+    END
+
+    CLOSE TableCursor;
+    DEALLOCATE TableCursor;
+
+    -- Actualizar estadísticas
+    EXEC sp_updatestats;
+
+    -- Compactar la base de datos
+    DECLARE @ShrinkSQL NVARCHAR(MAX);
+    SET @ShrinkSQL = 'DBCC SHRINKDATABASE;';
+    EXEC sp_executesql @ShrinkSQL;
+END
