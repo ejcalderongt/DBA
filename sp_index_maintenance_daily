@@ -1,3 +1,47 @@
+/****** Object:  StoredProcedure [dbo].[sp_index_maintenance_daily] EJC Script Date: 18/11/2023 06:26:26 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER procedure [dbo].[sp_index_maintenance_daily]
+AS
+begin
+declare @i int=0
+declare @IndexCount int
+declare @IndexFregQuery nvarchar(max)
+declare @IndexRebuildQuery nvarchar(max)
+declare @IndexName varchar(500)
+declare @TableName varchar(500)
+declare @SchemaName varchar(500)
+DECLARE @DatabaseName NVARCHAR(150); 
+
+SELECT @DatabaseName = DB_NAME();
+
+create table #Fregmentedindex(Index_name varchar(max),table_name varchar(max),schema_name varchar(max))
+set @IndexFregQuery='SELECT i.[name],o.name,sch.name
+	FROM   [' + @DatabaseName + '].sys.dm_db_index_physical_stats (DB_ID('''+ @DatabaseName +'''), NULL, NULL, NULL, NULL) AS s
+	INNER JOIN [' + @DatabaseName + '].sys.indexes AS i ON s.object_id = i.object_id AND s.index_id = i.index_id
+	INNER JOIN [' + @DatabaseName + '].sys.objects AS o ON i.object_id = o.object_id
+	INNER JOIN [' + @DatabaseName + '].sys.schemas AS sch ON o.schema_id=sch.schema_id
+	WHERE (s.avg_fragmentation_in_percent > 30 ) and i.name is not null'
+insert into #Fregmentedindex(Index_name,table_name,schema_name) exec sp_executesql @IndexFregQuery
+set @IndexCount=(select count(1) from #Fregmentedindex)
+While (@IndexCount>@i)
+begin 
+(select top 1 @TableName=table_name, @IndexName=Index_name,@SchemaName= schema_name from #Fregmentedindex)
+Set @IndexRebuildQuery ='Alter index [' + @IndexName +'] on ['+@DatabaseName +'].['+@SchemaName+'].[' + @TableName +'] rebuild'
+exec sp_executesql @IndexRebuildQuery 
+set @i=@i+1
+delete from #Fregmentedindex where Index_name=@IndexName and table_name=@TableName
+End
+End
+GO
+
+
+
+
 /****** Object:  StoredProcedure [dbo].[sp_index_maintenance_daily]    Script Date: 4/08/2023 19:17:38 ******/
 SET ANSI_NULLS ON
 GO
