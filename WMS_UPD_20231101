@@ -789,4 +789,9 @@ IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '7.9.2')
 insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'7.9.2',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
 GO
 
+ALTER TABLE producto_estado ADD dias_vencimiento_clasificacion int NOT NULL Default 0
+GO
+ALTER TABLE producto_estado ADD tolerancia_dias_vencimiento int NOT NULL Default 0
+GO
+
 
