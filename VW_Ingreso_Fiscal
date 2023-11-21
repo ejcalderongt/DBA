@@ -1,3 +1,34 @@
+---#GT21112023: se agrega fecha abandono de la duca, se unen noguia y no_contenedor
+
+ALTER VIEW [dbo].[VW_Ingreso_Fiscal]
+AS
+SELECT bd.IdBodega, bd.nombre, oc_enc.IdOrdenCompraEnc, oc_det.IdOrdenCompraDet, oc_pol.IdOrdenCompraPol, oc_det.No_Linea, oc_enc.IdProveedorBodega, pv.nombre AS proveedor, oc_enc.IdTipoIngresoOC, 
+                  oc_ti.Nombre AS tipo_ingreso, oc_enc.IdPedidoEncDevolucion, oc_enc.No_Documento_Devolucion, oc_enc.IdMotivoDevolucion, oc_det.IdPresentacion, oc_det.IdProductoBodega, pr.codigo, pr.codigo_barra, oc_det.nombre_producto, 
+                  oc_estado.Nombre AS estado, oc_det.cantidad, oc_det.cantidad_recibida AS recibido, oc_det.IdUnidadMedidaBasica, oc_det.nombre_unidad_medida_basica, oc_det.peso, pc.nombre AS clasificacion, 
+                  oc_enc.Fecha_Creacion AS Fecha_Ingreso, oc_pol.fecha_llegada AS fecha_llegada_poliza, oc_enc.Observacion AS observacion_ingreso, oc_enc.Referencia, oc_pol.numero_orden, oc_pol.codigo_poliza, oc_pol.IdRegimen, 
+                  r_fiscal.codigo_regimen, vehiculo.placa, re_enc.No_Marchamo, oc_pol.cbm, re_enc.observacion, re_enc.carta_cupo, oc_pol.activo, oc_pol.dua, 
+				 case when re_enc.NoGuia <> '' then re_enc.NoGuia else
+				  re_enc.no_contenedor end AS No_Contenedor,
+				  DATEADD(day,r_fiscal.dias_vencimiento,re_enc.fecha_recepcion) as Fecha_Abandono 
+FROM     dbo.trans_oc_enc AS oc_enc LEFT OUTER JOIN
+                  dbo.trans_oc_det AS oc_det ON oc_enc.IdOrdenCompraEnc = oc_det.IdOrdenCompraEnc LEFT OUTER JOIN
+                  dbo.producto_bodega AS pb ON oc_det.IdProductoBodega = pb.IdProductoBodega LEFT OUTER JOIN
+                  dbo.producto AS pr ON pb.IdProducto = pr.IdProducto INNER JOIN
+                  dbo.bodega AS bd ON oc_enc.IDBODEGA = bd.IdBodega LEFT OUTER JOIN
+                  dbo.producto_clasificacion AS pc ON pr.IdClasificacion = pc.IdClasificacion LEFT OUTER JOIN
+                  dbo.trans_oc_pol AS oc_pol ON oc_enc.IdOrdenCompraEnc = oc_pol.IdOrdenCompraEnc LEFT OUTER JOIN
+                  dbo.trans_re_oc AS re_oc ON oc_enc.IdOrdenCompraEnc = re_oc.IdOrdenCompraEnc LEFT OUTER JOIN
+                  dbo.trans_re_enc AS re_enc ON re_oc.IdRecepcionEnc = re_enc.IdRecepcionEnc INNER JOIN
+                  dbo.proveedor_bodega AS p_bodega ON oc_enc.IdProveedorBodega = p_bodega.IdAsignacion INNER JOIN
+                  dbo.proveedor AS pv ON p_bodega.IdProveedor = pv.IdProveedor LEFT OUTER JOIN
+                  dbo.empresa_transporte_vehiculos AS vehiculo ON re_enc.idvehiculo = vehiculo.IdVehiculo INNER JOIN
+                  dbo.trans_oc_ti AS oc_ti ON oc_enc.IdTipoIngresoOC = oc_ti.IdTipoIngresoOC LEFT OUTER JOIN
+                  dbo.regimen_fiscal AS r_fiscal ON oc_pol.IdRegimen = r_fiscal.IdRegimen INNER JOIN
+                  dbo.trans_oc_estado AS oc_estado ON oc_enc.IdEstadoOC = oc_estado.IdEstadoOC
+GO
+
+
+
 -----------#GT14112023 la vista muestra no_contenedor, y la fecha creacion es la fecha_ingreso para el filtro -------------------
 
 /****** Object:  View [dbo].[VW_Ingreso_Fiscal]    Script Date: 14/11/2023 08:14:09 ******/
