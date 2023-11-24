@@ -1,0 +1,14 @@
+select IdBodega, datepart(year, fecha_pedido) Año , datepart(month, fecha_pedido) Mes, 
+count(IdpedidoEnc) Cantidad_Pedidos
+from trans_pe_enc
+where anulado = 0 and referencia<>'' and datepart(year, fecha_pedido)=2023
+and estado = 'Despachado'
+Group by IdBodega, datepart(month, fecha_pedido), datepart(year, fecha_pedido)  
+Order by IdBodega,datepart(year, fecha_pedido), datepart(month, fecha_pedido)
+
+select  IdBodega, datepart(year, Fecha_Recepcion) Año , datepart(month, Fecha_Recepcion) Mes,
+count(IdOrdenCompraEnc) Cantidad_Ingresos
+from trans_oc_enc
+where datepart(year, Fecha_Recepcion)=2023 and IdEstadoOC in (4,6)
+Group by IdBodega, datepart(month, Fecha_Recepcion), datepart(year, Fecha_Recepcion) 
+Order by IdBodega,datepart(year, Fecha_Recepcion), datepart(month, Fecha_Recepcion)
