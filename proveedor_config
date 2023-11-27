@@ -1,0 +1,56 @@
+
+--#Tabla para manejar transferencias de SAP a WMS
+
+CREATE TABLE [dbo].[proveedor_config](
+
+	[IdproveedorConfig] [int] NOT NULL,
+
+	[Idproveedor] [int] NULL,
+
+	[IdAreaOrigen] [int] NULL,
+
+	[IdUbicacionOrigen] [int] NULL,
+
+	[codigo_bodega_erp] [nvarchar](50) NULL,
+
+	[IdProductoEstado] [int] NULL,
+
+CONSTRAINT [PK_proveedor_config] PRIMARY KEY CLUSTERED 
+
+(
+
+	[IdproveedorConfig] ASC
+
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+
+) ON [PRIMARY]
+
+GO
+
+[16:54] Erik Calderon
+CREATE TABLE [dbo].[cliente_config](
+
+	[IdClienteConfig] [int] NOT NULL,
+
+	[IdCliente] [int] NULL,
+
+	[IdAreaDestino] [int] NULL,
+
+	[IdUbicacionDestino] [int] NULL,
+
+	[codigo_bodega_erp] [nvarchar](50) NULL,
+
+	[IdProductoEstado] [int] NULL,
+
+CONSTRAINT [PK_cliente_config] PRIMARY KEY CLUSTERED 
+
+(
+
+	[IdClienteConfig] ASC
+
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+
+) ON [PRIMARY]
+
+GO
+ 
