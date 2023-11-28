@@ -1,0 +1,39 @@
+CREATE TABLE [dbo].[regla_vencimiento](
+    [IdReglaVencimiento] [int] IDENTITY(1,1) PRIMARY KEY NOT NULL,
+    [NombreRegla] [nvarchar](255),
+    [IdBodega] [int] NOT NULL,
+    [IdProductoFamilia] [int] NULL,
+    [IdProductoClasificacion] [int] NULL,
+    [TiempoVencimientoDias] [int] NOT NULL,
+    [TipoNotificacion] [nvarchar](50),
+    [IdPropietarioMercancia] [int] NULL,
+    [IdProveedor] [int] NULL,
+    [IdCliente] [int] NULL,
+    [Activa] [bit] NOT NULL,
+    [FechaCreacion] [datetime] NOT NULL,
+    [UsuarioCreacion] [nvarchar](255),
+    [FechaModificacion] [datetime] NULL,
+    [UsuarioModificacion] [nvarchar](255),
+    FOREIGN KEY ([IdBodega]) REFERENCES [dbo].[bodega]([IdBodega]),
+    FOREIGN KEY ([IdProductoFamilia]) REFERENCES [dbo].[producto_familia]([IdFamilia]),
+    FOREIGN KEY ([IdProductoClasificacion]) REFERENCES [dbo].[producto_clasificacion]([IdClasificacion]),
+    FOREIGN KEY ([IdPropietarioMercancia]) REFERENCES [dbo].[propietarios]([IdPropietario]),
+    FOREIGN KEY ([IdProveedor]) REFERENCES [dbo].[proveedor]([IdProveedor]),
+    FOREIGN KEY ([IdCliente]) REFERENCES [dbo].[cliente]([IdCliente])
+)
+GO
+
+CREATE TABLE [dbo].[reglas_vencimiento_contacto](
+    [IdContacto] [int] IDENTITY(1,1) PRIMARY KEY NOT NULL,
+    [NombreContacto] [nvarchar](255),
+    [CorreoElectronico] [nvarchar](255),
+    [TelefonoFijo] [nvarchar](50) NULL,
+    [TelefonoMovil] [nvarchar](50) NULL,
+    [IdReglaVencimiento] [int] NOT NULL,
+    [FechaCreacion] [datetime] NOT NULL,
+    [UsuarioCreacion] [nvarchar](255),
+    [FechaModificacion] [datetime] NULL,
+    [UsuarioModificacion] [nvarchar](255),
+    FOREIGN KEY ([IdReglaVencimiento]) REFERENCES [dbo].[regla_vencimiento]([IdReglaVencimiento])
+)
+GO
