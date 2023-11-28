@@ -1,26 +1,11 @@
-select T0.IdBodega, 
-       datepart(year, fecha_pedido) Año, 
-	   datepart(month, fecha_pedido) Mes, 
-       count(distinct T0.IdpedidoEnc) Cantidad_Pedidos, 
-	   count(distinct T1.IdPedidoDet) CantLineas_Pedido,
-	   count(distinct T2.IdPickingUbic) CantLineas_Picking,
-       count(distinct T1.IdPedidoDet)/
-       iif(count(distinct T0.IdpedidoEnc)=0,1,count(distinct T0.IdpedidoEnc)) Promedio_lineas_Pedido
-from trans_pe_enc T0 inner join trans_pe_det T1 on T0.IdPedidoEnc = T1.IdPedidoEnc
-inner join trans_picking_ubic T2 ON T2.IdPedidoDet = T1.IdPedidoDet
-where anulado = 0 and referencia<>'' and datepart(year, fecha_pedido)=2023
-and estado = 'Despachado' and T2.cantidad_recibida>0
-Group by T0.IdBodega, datepart(month, fecha_pedido), datepart(year, fecha_pedido)  
-Order by T0.IdBodega,datepart(year, fecha_pedido), datepart(month, fecha_pedido)
-
-SELECT T4.IdBodega, 
+SELECT 'Ingresos' Tipo_Documento,T4.IdBodega, T5.Nombre, 
        T4.Año, 
 	   T4.Mes, 
 	   T4.Cantidad_Ingresos, 
 	   SUM(T4.Cantidad_Lineas_Ingreso) Cantidad_Lineas_Ingreso, 
 	   SUM(T4.Cantidad_Lineas_Ingreso)/ 
 	   IIF(T4.Cantidad_Ingresos=0,1,T4.Cantidad_Ingresos) Promedio_Lineas_Ingreso, 
-	   SUM(T4.Cantidad_Licencias) Cantidad_Licencias
+	   IIF(SUM(T4.Cantidad_Licencias)=0,SUM(T4.Cantidad_Lineas_Ingreso),SUM(T4.Cantidad_Licencias)) Lineas_Picking
 FROM (select T0.IdBodega, 
        datepart(year, Fecha_Recepcion) Año , 
 	   datepart(month, Fecha_Recepcion) Mes,
@@ -48,5 +33,6 @@ where datepart(year, Fecha_Recepcion)=2023 and
       IdEstadoOC in (4,6) AND
 	  T1.cantidad_recibida>0
 Group by T0.IdBodega, datepart(month, Fecha_Recepcion), datepart(year, Fecha_Recepcion)) T4
-Group By T4.IdBodega, T4.Año, T4.Mes,T4.Cantidad_Ingresos
-Order by T4.IdBodega, T4.Año, T4.Mes
+inner join bodega T5 ON T5.IdBodega = T4.IdBodega
+Group By T4.IdBodega, T4.Año, T4.Mes,T4.Cantidad_Ingresos, T5.nombre
+Order by Tipo_Documento, IdBodega, Año, Mes
