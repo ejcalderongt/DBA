@@ -1,3 +1,27 @@
+/****** Ordenar la vista por estos campos Order by Tipo_Documento, IdBodega, Año, Mes ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE VIEW [dbo].[VW_Transacciones_WMS]
+AS
+select 'Salidas' Tipo_Documento, T0.IdBodega, T3.nombre,
+       datepart(year, fecha_pedido) Año, 
+	   datepart(month, fecha_pedido) Mes, 
+       count(distinct T0.IdpedidoEnc) Cantidad_Pedidos, 
+	   count(distinct T1.IdPedidoDet) CantLineas_Pedido,
+	   count(distinct T1.IdPedidoDet)/
+       iif(count(distinct T0.IdpedidoEnc)=0,1,count(distinct T0.IdpedidoEnc)) Promedio_lineas_Pedido,
+       count(distinct T2.IdPickingUbic) Lineas_Picking
+from trans_pe_enc T0 inner join trans_pe_det T1 on T0.IdPedidoEnc = T1.IdPedidoEnc
+inner join trans_picking_ubic T2 ON T2.IdPedidoDet = T1.IdPedidoDet
+inner join bodega T3 ON T3.IdBodega = t0.IdBodega
+where anulado = 0 and referencia<>'' and datepart(year, fecha_pedido)=2023
+and estado = 'Despachado' and T2.cantidad_recibida>0
+Group by T0.IdBodega, datepart(month, fecha_pedido), datepart(year, fecha_pedido), T3.nombre 
+Union
 SELECT 'Ingresos' Tipo_Documento,T4.IdBodega, T5.Nombre, 
        T4.Año, 
 	   T4.Mes, 
@@ -35,4 +59,5 @@ where datepart(year, Fecha_Recepcion)=2023 and
 Group by T0.IdBodega, datepart(month, Fecha_Recepcion), datepart(year, Fecha_Recepcion)) T4
 inner join bodega T5 ON T5.IdBodega = T4.IdBodega
 Group By T4.IdBodega, T4.Año, T4.Mes,T4.Cantidad_Ingresos, T5.nombre
-Order by Tipo_Documento, IdBodega, Año, Mes
+GO
+
