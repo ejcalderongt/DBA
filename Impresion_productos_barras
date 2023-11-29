@@ -1,0 +1,11 @@
+--#Campos para imprimir zpl desde BOF
+
+
+alter table Impresion_productos_barras add IdBodega int
+alter table Impresion_productos_barras add IdProducto int
+alter table Impresion_productos_barras add IdProductoEstado int
+alter table Impresion_productos_barras add Licencia nvarchar(50)
+alter table Impresion_productos_barras add IdTipoTarea int
+alter table Impresion_productos_barras add IdTransaccionEnc int
+alter table Impresion_productos_barras add IdTransaccionDet int
+alter table Impresion_productos_barras add ZPL nvarchar(4000)
