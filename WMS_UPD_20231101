@@ -856,3 +856,71 @@ FROM            dbo.producto_estado AS e INNER JOIN
                          dbo.producto_estado_ubic AS pe ON pe.IdEstado = e.IdEstado LEFT OUTER JOIN
                          dbo.bodega_ubicacion AS u ON u.IdUbicacion = e.IdUbicacionDefecto AND pe.IdUbicacionDefecto = u.IdUbicacion
 GO
+
+
+alter table Impresion_productos_barras add IdBodega int,
+                                           IdProducto int,
+										   IdProductoEstado int,
+										   Licencia nvarchar(50),
+										   IdTipoTarea int,
+										   IdTransaccionEnc int,
+										   IdTransaccionDet int,
+										   ZPL nvarchar(4000)
+GO
+
+alter table impresora add numero_serie nvarchar(50) null,
+                         IdImpresoraMarca int null,
+						 IdLenguaje int null,
+						 IdTipoConexion int null
+GO
+
+
+
+CREATE TABLE [dbo].[Impresora_Marca](
+    [IdImpresoraMarca] [int] IDENTITY(1,1) NOT NULL,
+    [Codigo] [varchar](50) NULL,
+    [Nombre] [varchar](50) NULL,
+    [User_agr] [nvarchar](50) NULL,
+    [Fec_agr] [datetime] NULL,
+    [User_mod] [nvarchar](50) NULL,
+    [Fec_mod] [datetime] NULL,
+    [Activo] [bit] NOT NULL,
+CONSTRAINT [PK_Impresora_Marca] PRIMARY KEY CLUSTERED 
+(
+    [IdImpresoraMarca] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[Impresora_Lenguaje](
+    [IdImpresoraLenguaje] [int] IDENTITY(1,1) NOT NULL,
+    [Codigo] [nvarchar](50) NULL,
+    [Nombre] [nvarchar](50) NULL,
+    [User_agr] [nvarchar](50) NULL,
+    [Fec_agr] [datetime] NULL,
+    [User_mod] [nvarchar](50) NULL,
+    [Fec_mod] [datetime] NULL,
+    [Activo] [bit] NOT NULL,
+CONSTRAINT [PK_Impresora_Lenguaje] PRIMARY KEY CLUSTERED 
+(
+    [IdImpresoraLenguaje] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[Impresora_Tipo_Conexion](
+    [IdImpresoraTipoConexion] [int] IDENTITY(1,1) NOT NULL,
+    [Codigo] [nvarchar](50) NULL,
+    [Nombre] [nvarchar](50) NULL,
+    [User_agr] [nvarchar](50) NULL,
+    [Fec_agr] [datetime] NULL,
+    [User_mod] [nvarchar](50) NULL,
+    [Fec_mod] [datetime] NULL,
+    [Activo] [bit] NOT NULL,
+CONSTRAINT [PK_Impresora_Tipo_Conexion] PRIMARY KEY CLUSTERED 
+(
+    [IdImpresoraTipoConexion] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
