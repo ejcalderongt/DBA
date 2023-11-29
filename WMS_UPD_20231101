@@ -877,7 +877,7 @@ GO
 
 
 CREATE TABLE [dbo].[Impresora_Marca](
-    [IdImpresoraMarca] [int] IDENTITY(1,1) NOT NULL,
+    [IdImpresoraMarca] [int] NOT NULL,
     [Codigo] [varchar](50) NULL,
     [Nombre] [varchar](50) NULL,
     [User_agr] [nvarchar](50) NULL,
@@ -893,7 +893,7 @@ CONSTRAINT [PK_Impresora_Marca] PRIMARY KEY CLUSTERED
 GO
 
 CREATE TABLE [dbo].[Impresora_Lenguaje](
-    [IdImpresoraLenguaje] [int] IDENTITY(1,1) NOT NULL,
+    [IdImpresoraLenguaje] [int] NOT NULL,
     [Codigo] [nvarchar](50) NULL,
     [Nombre] [nvarchar](50) NULL,
     [User_agr] [nvarchar](50) NULL,
@@ -909,7 +909,7 @@ CONSTRAINT [PK_Impresora_Lenguaje] PRIMARY KEY CLUSTERED
 GO
 
 CREATE TABLE [dbo].[Impresora_Tipo_Conexion](
-    [IdImpresoraTipoConexion] [int] IDENTITY(1,1) NOT NULL,
+    [IdImpresoraTipoConexion] [int] NOT NULL,
     [Codigo] [nvarchar](50) NULL,
     [Nombre] [nvarchar](50) NULL,
     [User_agr] [nvarchar](50) NULL,
