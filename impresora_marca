@@ -1,7 +1,7 @@
 --#tabla foranea para la impresora 29112023
 
 CREATE TABLE [dbo].[Impresora_Marca](
-    [IdImpresoraMarca] [int] IDENTITY(1,1) NOT NULL,
+    [IdImpresoraMarca] [int] NOT NULL,
     [Codigo] [varchar](50) NULL,
     [Nombre] [varchar](50) NULL,
     [User_agr] [nvarchar](50) NULL,
