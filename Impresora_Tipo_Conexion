@@ -1,0 +1,17 @@
+--#GT29112023 tipo de comunicacion de la impresa
+
+CREATE TABLE [dbo].[Impresora_Tipo_Conexion](
+    [IdImpresoraTipoConexion] [int] IDENTITY(1,1) NOT NULL,
+    [Codigo] [nvarchar](50) NULL,
+    [Nombre] [nvarchar](50) NULL,
+    [User_agr] [nvarchar](50) NULL,
+    [Fec_agr] [datetime] NULL,
+    [User_mod] [nvarchar](50) NULL,
+    [Fec_mod] [datetime] NULL,
+    [Activo] [bit] NOT NULL,
+CONSTRAINT [PK_Impresora_Tipo_Conexion] PRIMARY KEY CLUSTERED 
+(
+    [IdImpresoraTipoConexion] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
