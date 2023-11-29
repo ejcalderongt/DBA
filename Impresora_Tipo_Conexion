@@ -1,7 +1,7 @@
 --#GT29112023 tipo de comunicacion de la impresa
 
 CREATE TABLE [dbo].[Impresora_Tipo_Conexion](
-    [IdImpresoraTipoConexion] [int] IDENTITY(1,1) NOT NULL,
+    [IdImpresoraTipoConexion] [int] NOT NULL,
     [Codigo] [nvarchar](50) NULL,
     [Nombre] [nvarchar](50) NULL,
     [User_agr] [nvarchar](50) NULL,
