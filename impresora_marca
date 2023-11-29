@@ -1,0 +1,19 @@
+--#tabla foranea para la impresora 29112023
+
+CREATE TABLE [dbo].[Impresora_Marca](
+    [IdImpresoraMarca] [int] IDENTITY(1,1) NOT NULL,
+    [Codigo] [varchar](50) NULL,
+    [Nombre] [varchar](50) NULL,
+    [User_agr] [nvarchar](50) NULL,
+    [Fec_agr] [datetime] NULL,
+    [User_mod] [nvarchar](50) NULL,
+    [Fec_mod] [datetime] NULL,
+    [Activo] [bit] NOT NULL,
+CONSTRAINT [PK_Impresora_Marca] PRIMARY KEY CLUSTERED 
+(
+    [IdImpresoraMarca] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+tiene menú contextual
