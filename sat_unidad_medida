@@ -1,0 +1,23 @@
+--#GT01122023: tabla para guardar unidades umbas de SAT Guatemala --
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[sat_unidad_medida](
+	[IdSatUnidadMedida] [int] NOT NULL,
+	[codigo] [nvarchar](25) NOT NULL,
+	[nombre] [nvarchar](75) NOT NULL,
+	[activo] [bit] NULL,
+	[fec_agr] [datetime] NULL,
+	[user_mod] [nvarchar](50) NULL,
+	[fec_mod] [datetime] NULL,
+	[user_agr] [nvarchar](50) NULL,
+ CONSTRAINT [PK_sat_unidad_medida] PRIMARY KEY CLUSTERED 
+(
+	[IdSatUnidadMedida] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[sat_unidad_medida] ADD  DEFAULT ((1)) FOR [activo]
+GO
