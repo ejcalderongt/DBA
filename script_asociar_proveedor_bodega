@@ -9,3 +9,14 @@ FROM proveedor
 WHERE IdProveedor not in(select IdProveedor FROM proveedor_bodega pb where IdBodega = @IdBodega) and activo =1
 
 ROLLBACK TRANSACTION
+GO
+
+-- Agregar la columna IdAreaOrigen a la tabla proveedor_bodega
+ALTER TABLE proveedor_bodega
+ADD IdAreaOrigen INT;
+GO 
+-- Agregar la restricción de clave foránea
+ALTER TABLE proveedor_bodega
+ADD CONSTRAINT FK_proveedor_bodega_area
+FOREIGN KEY (IdAreaOrigen, IdBodega) REFERENCES bodega_area(IdArea, IdBodega);
+GO
