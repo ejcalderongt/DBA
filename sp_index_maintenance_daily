@@ -1,3 +1,83 @@
+/****** Object:  StoredProcedure [dbo].[sp_index_maintenance_daily] EJC, Mejorado con IA Script Date: 02/12/2023 06:26:26 ******/
+
+ALTER PROCEDURE [dbo].[sp_index_maintenance_daily]
+AS
+BEGIN
+    DECLARE @DatabaseName NVARCHAR(150) = DB_NAME();
+    DECLARE @DynamicSQL NVARCHAR(MAX);
+    DECLARE @TableName VARCHAR(255);
+    DECLARE @ViewName VARCHAR(255);
+    DECLARE @IndexCount INT;
+    DECLARE @IndexFregQuery NVARCHAR(MAX);
+    DECLARE @IndexRebuildQuery NVARCHAR(MAX);
+    DECLARE @IndexName VARCHAR(500);
+    DECLARE @SchemaName VARCHAR(500);
+
+    -- Actualizar estadísticas
+    EXEC sp_updatestats;
+
+    -- Reconstruir índices para todas las tablas
+    DECLARE TableCursor CURSOR FOR 
+    SELECT table_name FROM information_schema.tables 
+    WHERE table_type = 'base table';
+
+    OPEN TableCursor;
+    FETCH NEXT FROM TableCursor INTO @TableName;
+
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+        SET @DynamicSQL = N'ALTER INDEX ALL ON dbo.[' + @TableName + '] REBUILD';
+        EXEC sp_executesql @DynamicSQL;
+        FETCH NEXT FROM TableCursor INTO @TableName;
+    END;
+
+    CLOSE TableCursor;
+    DEALLOCATE TableCursor;
+
+    -- Limpiar espacio no utilizado
+    SET @DynamicSQL = N'DBCC SHRINKDATABASE(N''' + @DatabaseName + ''')';
+    EXEC sp_executesql @DynamicSQL;
+
+    -- Regenerar todas las vistas
+    DECLARE ViewCursor CURSOR FOR 
+    SELECT TABLE_NAME FROM INFORMATION_SCHEMA.VIEWS;
+
+    OPEN ViewCursor;
+    FETCH NEXT FROM ViewCursor INTO @ViewName;
+
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+        SET @DynamicSQL = N'EXEC sp_refreshview ''' + @ViewName + '''';
+        EXEC sp_executesql @DynamicSQL;
+        FETCH NEXT FROM ViewCursor INTO @ViewName;
+    END;
+
+    CLOSE ViewCursor;
+    DEALLOCATE ViewCursor;
+
+    -- Mantenimiento específico de índices
+    CREATE TABLE #Fregmentedindex(Index_name VARCHAR(MAX), table_name VARCHAR(MAX), schema_name VARCHAR(MAX));
+
+    SET @IndexFregQuery = 'SELECT i.[name], o.name, sch.name FROM sys.dm_db_index_physical_stats (DB_ID(), NULL, NULL, NULL, NULL) AS s INNER JOIN sys.indexes AS i ON s.object_id = i.object_id AND s.index_id = i.index_id INNER JOIN sys.objects AS o ON i.object_id = o.object_id INNER JOIN sys.schemas AS sch ON o.schema_id = sch.schema_id WHERE (s.avg_fragmentation_in_percent > 30 ) AND i.name IS NOT NULL';
+    INSERT INTO #Fregmentedindex(Index_name, table_name, schema_name) EXEC sp_executesql @IndexFregQuery;
+
+    SET @IndexCount = (SELECT COUNT(1) FROM #Fregmentedindex);
+
+    WHILE (@IndexCount > 0)
+    BEGIN 
+        SELECT TOP 1 @TableName = table_name, @IndexName = Index_name, @SchemaName = schema_name FROM #Fregmentedindex;
+        SET @IndexRebuildQuery = 'ALTER INDEX [' + @IndexName + '] ON dbo.[' + @TableName + '] REBUILD';
+        EXEC sp_executesql @IndexRebuildQuery;
+        DELETE FROM #Fregmentedindex WHERE Index_name = @IndexName AND table_name = @TableName;
+        SET @IndexCount = @IndexCount - 1;
+    END;
+
+    DROP TABLE #Fregmentedindex;
+END;
+GO
+
+
+
 /****** Object:  StoredProcedure [dbo].[sp_index_maintenance_daily] EJC Script Date: 18/11/2023 06:26:26 ******/
 SET ANSI_NULLS ON
 GO
