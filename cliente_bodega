@@ -1,0 +1,8 @@
+-- Agregar la columna IdAreaDestino a la tabla cliente_bodega
+ALTER TABLE cliente_bodega
+ADD IdAreaDestino INT;
+ 
+-- Agregar la restricción de clave foránea
+ALTER TABLE cliente_bodega
+ADD CONSTRAINT FK_cliente_bodega_area
+FOREIGN KEY (IdAreaDestino, IdBodega) REFERENCES bodega_area(IdArea, IdBodega);
