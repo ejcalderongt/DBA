@@ -1,0 +1,7 @@
+CREATE VIEW [dbo].[VW_Producto_Familia]
+AS
+SELECT dbo.producto_familia.IdFamilia, dbo.producto_familia.IdPropietario, dbo.propietarios.nombre_comercial AS Propietario, dbo.producto_familia.codigo, dbo.producto_familia.nombre, dbo.producto_familia.activo, 
+                  dbo.producto_familia.user_agr, dbo.producto_familia.fec_agr, dbo.producto_familia.user_mod, dbo.producto_familia.fec_mod
+FROM     dbo.producto_familia INNER JOIN
+                  dbo.propietarios ON dbo.producto_familia.IdPropietario = dbo.propietarios.IdPropietario
+GO
