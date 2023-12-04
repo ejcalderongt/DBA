@@ -478,6 +478,34 @@ values ('3.6.1.3','Salidas con dias piso','cmdSalidasDiasPiso',4,'3.6.1',0)
 IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '3.6.1.3')
 insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'3.6.1.3',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
 
+ Insert into menu_sistema values('8','Control de calidad','rpControlCalidad',1,'0',0)
+ GO
+ Insert into menu_sistema values('8.1','Control Calidad principal','rpGestionInventario',2,'8',0)
+ GO
+ Insert into menu_sistema values('8.1.1','Gestión de inventario','mnuGestionInventarioCalidad',3,'8.1',0)
+ GO
+  Insert into menu_sistema values('8.1.2','Reportes','mnuReportesControlCalidad',3,'8.1',0)
+ GO 
+
+ Insert into menu_sistema values('9','Manufactura Ligera','rpManufacturaLigera',1,'0',0)
+ GO
+
+ IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '8')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'8',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+GO
+ IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '8.1')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'8.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+GO
+ IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '8.1.1')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'8.1.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+GO
+ IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '8.1.2')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'8.1.2',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+GO
+ IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '9')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'9',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+GO
+
 
 
 
