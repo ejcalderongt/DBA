@@ -39,8 +39,9 @@ SELECT
     ts.UsedSpaceKB,
     CAST(ts.UsedSpaceKB / 1024.00 AS NUMERIC(36, 2)) AS UsedSpaceMB,
     ts.UnusedSpaceKB,
+	ds.TotalDatabaseSpaceKB,
     CAST(ts.UnusedSpaceKB / 1024.00 AS NUMERIC(36, 2)) AS UnusedSpaceMB,
-    CAST(ts.UsedSpaceKB / NULLIF(ds.TotalDatabaseSpaceKB, 0) * 100.0 AS NUMERIC(36, 2)) AS UsedSpacePercentage
+    CAST((ts.UsedSpaceKB * 100.0) / NULLIF(ds.TotalDatabaseSpaceKB, 0)AS NUMERIC(36, 2)) AS UsedSpacePercentage
 FROM 
     TableSizes ts
 CROSS JOIN 
