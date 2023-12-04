@@ -1145,3 +1145,13 @@ FROM
 CROSS JOIN 
     DatabaseSize ds
 GO
+
+
+update menu_sistema set titulo = 'Actualizar versión' where IdMenu = '7.9.1'
+update menu_sistema set titulo = 'Regenerar índices' where IdMenu = '7.9.2'
+Insert into menu_sistema values('7.9.3','Salud','mnuTamañoTablas',3,'7.9',0)
+GO
+
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '7.9.3')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'7.9.3',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+GO
