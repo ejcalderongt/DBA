@@ -1,3 +1,8 @@
+--20231204 Indice para operadores de picking
+CREATE NONCLUSTERED INDEX NCL_trans_picking_op_20231204
+ON [dbo].[trans_picking_op] ([IdPickingEnc])
+INCLUDE ([IdOperadorBodega])
+GO
 --31052023 para reporte fiscal histórico.
 
 CREATE NONCLUSTERED INDEX NCLI_Fiscal_Historico_20230531_GT
