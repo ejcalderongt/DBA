@@ -1156,3 +1156,37 @@ GO
 IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '7.9.3')
 insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'7.9.3',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
 GO
+
+-- Agregar la columna IdAreaOrigen a la tabla proveedor_bodega
+ALTER TABLE proveedor_bodega
+ADD IdAreaOrigen INT;
+ 
+-- Agregar la restricción de clave foránea
+ALTER TABLE proveedor_bodega
+ADD CONSTRAINT FK_proveedor_bodega_area
+FOREIGN KEY (IdAreaOrigen, IdBodega) REFERENCES bodega_area(IdArea, IdBodega);
+
+-- Agregar la columna IdAreaDestino a la tabla cliente_bodega
+ALTER TABLE cliente_bodega
+ADD IdAreaDestino INT;
+ 
+-- Agregar la restricción de clave foránea
+ALTER TABLE cliente_bodega
+ADD CONSTRAINT FK_cliente_bodega_area
+FOREIGN KEY (IdAreaDestino, IdBodega) REFERENCES bodega_area(IdArea, IdBodega);
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER VIEW [dbo].[VW_ProveedorBodega]
+AS
+SELECT        dbo.proveedor_bodega.IdBodega, dbo.proveedor_bodega.IdAsignacion, e.nombre AS Empresa, pr.nombre_comercial AS Propietario, p.IdEmpresa, p.IdPropietario, p.IdProveedor, p.nombre, p.telefono, p.nit, p.direccion, p.email, 
+                         p.contacto, p.activo, p.muestra_precio, p.user_agr, p.fec_agr, p.user_mod, p.fec_mod, p.actualiza_costo_oc, dbo.proveedor_bodega.activo AS activo_proveedor_bodega, p.codigo AS Código, p.idubicacionvirtual, 
+                         p.es_bodega_recepcion, p.es_bodega_traslado, proveedor_bodega.idAreaOrigen
+FROM            dbo.proveedor AS p INNER JOIN
+                         dbo.empresa AS e ON p.IdEmpresa = e.IdEmpresa INNER JOIN
+                         dbo.propietarios AS pr ON p.IdPropietario = pr.IdPropietario LEFT OUTER JOIN
+                         dbo.proveedor_bodega ON p.IdProveedor = dbo.proveedor_bodega.IdProveedor
+GO
