@@ -1243,3 +1243,22 @@ GROUP BY producto_estado.IdEstado, producto_estado.IdPropietario, producto_estad
          producto_estado.dañado, producto_estado.sistema, producto_estado.dias_vencimiento_clasificacion, producto_estado.tolerancia_dias_vencimiento
 GO
 
+INSERT INTO menu_sistema VALUES('7.5.1.1','Transacciones','cmdTransaccionesOut','4','7.5.1','1')
+INSERT INTO menu_sistema VALUES('7.5.1.2','Barras pallet','cmdBarrasPallet','4','7.5.1','1')
+INSERT INTO menu_sistema VALUES('7.5.1.3','Log interface','cmdLogInterface','4','7.5.1','1')
+
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '7.5.1.1')
+INSERT INTO menu_rol
+SELECT max(idMenuRol) + 1,'7.5.1.1','1','Erik Calderón','2019-04-10 00:00:00.000','Erik Calderón','2019-04-10 00:00:00.000','1','1'
+from menu_rol
+
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '7.5.1.2')
+INSERT INTO menu_rol
+SELECT max(idMenuRol) + 1,'7.5.1.2','1','Erik Calderón','2019-04-10 00:00:00.000','Erik Calderón','2019-04-10 00:00:00.000','1','1'
+from menu_rol
+
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '7.5.1.3')
+INSERT INTO menu_rol
+SELECT max(idMenuRol) + 1,'7.5.1.3','1','Erik Calderón','2019-04-10 00:00:00.000','Erik Calderón','2019-04-10 00:00:00.000','1','1'
+from menu_rol
+
