@@ -1,10 +1,36 @@
-CREATE PROCEDURE sp_eliminar_by_IdPedidoEnc
-    @IdPedidoEnc INT
+USE [IMS4MB_BYB_PRD2]
+GO
+
+/****** Object:  StoredProcedure [dbo].[sp_eliminar_by_IdPedidoEnc]    Script Date: 11/12/2023 19:45:57 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[sp_eliminar_by_IdPedidoEnc]
+    @IdPedidoEnc INT,
+    @IdPickingEnc INT OUTPUT
 AS
 BEGIN
     SET NOCOUNT ON;
     BEGIN TRY
         BEGIN TRANSACTION;
+
+        -- Obtener IdPickingEnc asociado con IdPedidoEnc
+        SELECT @IdPickingEnc = IdPickingEnc FROM trans_pe_enc WHERE IdPedidoEnc = @IdPedidoEnc;
+
+        -- Verificar si se encontró IdPickingEnc
+        IF @IdPickingEnc > 0  BEGIN
+            -- Eliminar registros de las tablas relacionadas con IdPickingEnc
+            DELETE FROM trans_picking_ubic WHERE IdPickingEnc = @IdPickingEnc;
+            DELETE FROM trans_picking_det WHERE IdPickingEnc = @IdPickingEnc;
+            DELETE FROM trans_picking_op WHERE IdPickingEnc = @IdPickingEnc;
+            DELETE FROM trans_picking_enc WHERE IdPickingEnc = @IdPickingEnc;
+        END
+
+        -- Eliminar registros de la tabla trans_pe_det
+        DELETE FROM stock_res WHERE IdPedido = @IdPedidoEnc;
 
         -- Eliminar registros de la tabla trans_pe_det
         DELETE FROM trans_pe_det WHERE IdPedidoEnc = @IdPedidoEnc;
