@@ -1,0 +1,28 @@
+CREATE PROCEDURE sp_eliminar_by_IdPedidoEnc
+    @IdPedidoEnc INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        -- Eliminar registros de la tabla trans_pe_det
+        DELETE FROM trans_pe_det WHERE IdPedidoEnc = @IdPedidoEnc;
+
+        -- Eliminar registros de la tabla trans_pe_enc
+        DELETE FROM trans_pe_enc WHERE IdPedidoEnc = @IdPedidoEnc;
+
+        -- Si todo sale bien, confirmar la transacción
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        -- Si ocurre un error, hacer rollback de la transacción
+        ROLLBACK TRANSACTION;
+
+        -- Opcionalmente, devolver información del error
+        DECLARE @ErrMsg NVARCHAR(4000), @ErrSeverity INT;
+        SELECT @ErrMsg = ERROR_MESSAGE(), @ErrSeverity = ERROR_SEVERITY();
+        RAISERROR(@ErrMsg, @ErrSeverity, 1);
+    END CATCH
+END
+GO
