@@ -1262,3 +1262,101 @@ INSERT INTO menu_rol
 SELECT max(idMenuRol) + 1,'7.5.1.3','1','Erik Calderón','2019-04-10 00:00:00.000','Erik Calderón','2019-04-10 00:00:00.000','1','1'
 from menu_rol
 
+CREATE TABLE [dbo].[regla_vencimiento](
+    [IdReglaVencimiento] [int] IDENTITY(1,1) PRIMARY KEY NOT NULL,
+    [NombreRegla] [nvarchar](255),
+    [IdBodega] [int] NOT NULL,
+    [IdProductoFamilia] [int] NULL,
+    [IdProductoClasificacion] [int] NULL,
+    [TiempoVencimientoDias] [int] NOT NULL,
+    [TipoNotificacion] [nvarchar](50),
+    [IdPropietarioMercancia] [int] NULL,
+    [IdProveedor] [int] NULL,
+    [IdCliente] [int] NULL,
+    [Activa] [bit] NOT NULL,
+    [FechaCreacion] [datetime] NOT NULL,
+    [UsuarioCreacion] [nvarchar](255),
+    [FechaModificacion] [datetime] NULL,
+    [UsuarioModificacion] [nvarchar](255),
+    FOREIGN KEY ([IdBodega]) REFERENCES [dbo].[bodega]([IdBodega]),
+    FOREIGN KEY ([IdProductoFamilia]) REFERENCES [dbo].[producto_familia]([IdFamilia]),
+    FOREIGN KEY ([IdProductoClasificacion]) REFERENCES [dbo].[producto_clasificacion]([IdClasificacion]),
+    FOREIGN KEY ([IdPropietarioMercancia]) REFERENCES [dbo].[propietarios]([IdPropietario]),
+    FOREIGN KEY ([IdProveedor]) REFERENCES [dbo].[proveedor]([IdProveedor]),
+    FOREIGN KEY ([IdCliente]) REFERENCES [dbo].[cliente]([IdCliente])
+)
+GO
+
+CREATE TABLE [dbo].[reglas_vencimiento_contacto](
+    [IdContacto] [int] IDENTITY(1,1) PRIMARY KEY NOT NULL,
+    [NombreContacto] [nvarchar](255),
+    [CorreoElectronico] [nvarchar](255),
+    [TelefonoFijo] [nvarchar](50) NULL,
+    [TelefonoMovil] [nvarchar](50) NULL,
+    [IdReglaVencimiento] [int] NOT NULL,
+    [FechaCreacion] [datetime] NOT NULL,
+    [UsuarioCreacion] [nvarchar](255),
+    [FechaModificacion] [datetime] NULL,
+    [UsuarioModificacion] [nvarchar](255),
+    FOREIGN KEY ([IdReglaVencimiento]) REFERENCES [dbo].[regla_vencimiento]([IdReglaVencimiento])
+)
+GO
+/****** Object:  StoredProcedure [dbo].[sp_eliminar_by_Referencia]    Script Date: 11/12/2023 19:45:57 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE exec [dbo].[sp_eliminar_by_Referencia]
+    @Referencia NVARCHAR(255)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @IdPedidoEnc INT;
+    DECLARE @IdPickingEnc INT;
+
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        -- Obtener IdPedidoEnc asociado con la Referencia
+        SELECT @IdPedidoEnc = IdPedidoEnc FROM trans_pe_enc WHERE Referencia = @Referencia;
+
+        -- Verificar si se encontró IdPedidoEnc
+        IF @IdPedidoEnc > 0 BEGIN
+
+            -- Obtener IdPickingEnc asociado con IdPedidoEnc
+            SELECT @IdPickingEnc = IdPickingEnc FROM trans_pe_enc WHERE IdPedidoEnc = @IdPedidoEnc;
+
+            -- Verificar si se encontró IdPickingEnc
+            IF @IdPickingEnc > 0 BEGIN
+                -- Eliminar registros de las tablas relacionadas con IdPickingEnc
+                DELETE FROM trans_picking_ubic WHERE IdPickingEnc = @IdPickingEnc;
+                DELETE FROM trans_picking_det WHERE IdPickingEnc = @IdPickingEnc;
+                DELETE FROM trans_picking_op WHERE IdPickingEnc = @IdPickingEnc;
+                DELETE FROM trans_picking_enc WHERE IdPickingEnc = @IdPickingEnc;
+            END
+
+            DELETE FROM stock_res WHERE IdPedido = @IdPedidoEnc;
+
+            -- Eliminar registros de la tabla trans_pe_det
+            DELETE FROM trans_pe_det WHERE IdPedidoEnc = @IdPedidoEnc;
+
+            -- Eliminar registros de la tabla trans_pe_enc
+            DELETE FROM trans_pe_enc WHERE IdPedidoEnc = @IdPedidoEnc;
+        END
+
+        -- Si todo sale bien, confirmar la transacción
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        -- Si ocurre un error, hacer rollback de la transacción
+        ROLLBACK TRANSACTION;
+
+        -- Opcionalmente, devolver información del error
+        DECLARE @ErrMsg NVARCHAR(4000), @ErrSeverity INT;
+        SELECT @ErrMsg = ERROR_MESSAGE(), @ErrSeverity = ERROR_SEVERITY();
+        RAISERROR(@ErrMsg, @ErrSeverity, 1);
+    END CATCH
+END
+GO
