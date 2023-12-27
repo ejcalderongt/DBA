@@ -1,3 +1,6 @@
+--#CKFK20231227: Se agrega el campo estado_defecto para bodega fiscal
+ALTER TABLE trans_re_enc ADD estado_defecto_recepcion int NULL
+
 --#EJC20231106: Se agrega el campo no_contenedor para bodega fiscal
 alter table trans_re_enc add no_contenedor nvarchar(50)
 
