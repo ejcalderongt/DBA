@@ -1,0 +1,35 @@
+CREATE VIEW [dbo].[VW_DEVOLUCION_CLIENTE_WMS]
+AS
+SELECT
+    OPCH.DocEntry,
+    OPCH.DocNum AS 'DocNum',
+    OPCH.DocDate AS 'Fecha_Documento',
+    OPCH.CardCode AS 'Código_Cliente',
+    OPCH.CardName AS 'Nombre_Cliente',
+    OPCH.NumAtCard AS 'Número de Pedido Cliente',
+	OPCH.Comments AS 'Observaciones',
+    OWHS.WhsCode AS 'Código de Bodega',
+    OWHS.WhsName AS 'Nombre de Bodega'
+FROM
+    OPCH
+INNER JOIN
+    RIN1 ON OPCH.DocEntry = RIN1.DocEntry
+INNER JOIN
+    OWHS ON RIN1.WhsCode = OWHS.WhsCode
+WHERE
+    OPCH.DocStatus ='O'
+AND 
+	OPCH.CANCELED='N'
+GROUP BY
+    OPCH.DocEntry, 
+    OPCH.DocNum, 
+    OPCH.DocDate, 
+    OPCH.CardCode, 
+    OPCH.CardName, 
+    OPCH.NumAtCard, 
+    OWHS.WhsCode, 
+    OWHS.WhsName,
+	OPCH.Comments
+GO
+
+
