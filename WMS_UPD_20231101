@@ -1360,3 +1360,232 @@ BEGIN
     END CATCH
 END
 GO
+
+/****** Object:  View [dbo].[vw_Indicador_Picking]    Script Date: 22-Jan-24 4:45:21 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+ALTER view [dbo].[vw_Indicador_Verificaciones] as
+
+SELECT T.IdProductoBodega,T.IdPropietarioBodega,T.IdBodega,T.bodega,T.lic_plate,
+T.idpresentacion,T.presentacion,T.factor,
+ISNULL(sum(T.[cajas/bultos]),0)  [cajas/bultos],
+ISNULL(SUM(T.unidades),0) unidades,
+T.fecha,
+T.IdUnidadMedida,T.unidad,
+T.fecha_picking,
+T.IdPedidoEnc,T.IdPickingEnc,
+T.IdTipoPedido,T.pedido,
+T.IdOperadorBodega_Verifico,
+T.operador_Verifico
+FROM (
+select p_ubic.IdProductoBodega,p_ubic.IdPropietarioBodega,p_ubic.IdBodega,bd.nombre bodega,p_ubic.lic_plate,
+p_ubic.idpresentacion,pp.nombre presentacion,pp.factor,
+sum(cantidad_recibida)  [cajas/bultos],
+0 unidades,
+cast(p_enc.fecha_picking as date) fecha,
+p_ubic.IdUnidadMedida,um.Nombre unidad,
+p_ubic.fecha_picking,
+pe_enc.IdPedidoEnc,p_ubic.IdPickingEnc,
+pe_enc.IdTipoPedido,doc.Descripcion pedido
+,p_ubic.IdOperadorBodega_Verifico,
+op.nombres +' '+ op.apellidos as operador_verifico
+from trans_picking_ubic p_ubic inner join producto_bodega pb on p_ubic.IdBodega=pb.IdBodega and p_ubic.IdProductoBodega=pb.IdProductoBodega
+							   inner join producto pr on pb.IdProducto= pr.IdProducto
+							   left outer join producto_presentacion pp on pr.IdProducto=pp.IdProducto and p_ubic.IdPresentacion = pp.IdPresentacion
+							   left outer join unidad_medida um on p_ubic.IdUnidadMedida=um.IdUnidadMedida
+							   inner join trans_picking_enc p_enc on p_ubic.IdPickingEnc=p_enc.IdPickingEnc
+							   inner join trans_pe_enc pe_enc on p_enc.IdPickingEnc = pe_enc.IdPickingEnc
+							   inner join trans_pe_tipo doc on pe_enc.IdTipoPedido=doc.IdTipoPedido
+							   inner join bodega bd on p_ubic.IdBodega=bd.IdBodega
+							   inner join operador_bodega op_bodega  on p_ubic.IdOperadorBodega_Verifico=op_bodega.IdOperadorBodega
+							   inner join operador op on op_bodega.IdOperador = op.IdOperador
+where p_ubic.activo=1 and p_enc.activo=1
+and p_ubic.IdPresentacion<>0
+group by  p_ubic.IdProductoBodega,p_ubic.IdPropietarioBodega,p_ubic.IdBodega,p_ubic.lic_plate,
+p_ubic.idpresentacion,pp.nombre,
+p_ubic.IdUnidadMedida,um.Nombre,p_ubic.fecha_picking,pe_enc.IdPedidoEnc,p_ubic.IdPickingEnc,
+pe_enc.IdTipoPedido,doc.Descripcion,bd.nombre,pp.factor,cantidad_despachada
+,p_ubic.IdOperadorBodega_Verifico
+,op.nombres,op.apellidos, cast(p_enc.fecha_picking as date)
+union
+select p_ubic.IdProductoBodega,p_ubic.IdPropietarioBodega,p_ubic.IdBodega,bd.nombre bodega,p_ubic.lic_plate,
+p_ubic.idpresentacion,pp.nombre presentacion,pp.factor,
+0 [cajas/bultos],
+sum(cantidad_recibida) unidades,
+cast(p_enc.fecha_picking as date) fecha,
+p_ubic.IdUnidadMedida,um.Nombre unidad,
+p_ubic.fecha_picking,
+pe_enc.IdPedidoEnc,p_ubic.IdPickingEnc,
+pe_enc.IdTipoPedido,doc.Descripcion pedido
+,p_ubic.IdOperadorBodega_Verifico,
+op.nombres +' '+ op.apellidos as operador_Verifico
+from trans_picking_ubic p_ubic inner join producto_bodega pb on p_ubic.IdBodega=pb.IdBodega and p_ubic.IdProductoBodega=pb.IdProductoBodega
+							   inner join producto pr on pb.IdProducto= pr.IdProducto
+							   left outer join producto_presentacion pp on pr.IdProducto=pp.IdProducto and p_ubic.IdPresentacion = pp.IdPresentacion
+							   left outer join unidad_medida um on p_ubic.IdUnidadMedida=um.IdUnidadMedida
+							   inner join trans_picking_enc p_enc on p_ubic.IdPickingEnc=p_enc.IdPickingEnc
+							   inner join trans_pe_enc pe_enc on p_enc.IdPickingEnc = pe_enc.IdPickingEnc
+							   inner join trans_pe_tipo doc on pe_enc.IdTipoPedido=doc.IdTipoPedido
+							   inner join bodega bd on p_ubic.IdBodega=bd.IdBodega
+							   inner join operador_bodega op_bodega  on p_ubic.IdOperadorBodega_Verifico=op_bodega.IdOperadorBodega
+							   inner join operador op on op_bodega.IdOperador = op.IdOperador
+where p_ubic.activo=1 and p_enc.activo=1
+and p_ubic.IdPresentacion=0
+group by  p_ubic.IdProductoBodega,p_ubic.IdPropietarioBodega,p_ubic.IdBodega,p_ubic.lic_plate,
+p_ubic.idpresentacion,pp.nombre,
+p_ubic.IdUnidadMedida,um.Nombre,p_ubic.fecha_picking,pe_enc.IdPedidoEnc,p_ubic.IdPickingEnc,
+pe_enc.IdTipoPedido,doc.Descripcion,bd.nombre,pp.factor,cantidad_despachada,
+p_ubic.IdOperadorBodega_Verifico,
+op.nombres,op.apellidos, cast(p_enc.fecha_picking as date)) AS T
+GROUP BY T.IdProductoBodega,T.IdPropietarioBodega,T.IdBodega,T.bodega,T.lic_plate,
+T.idpresentacion,T.presentacion,T.factor,
+T.fecha,
+T.IdUnidadMedida,T.unidad,
+T.fecha_picking,
+T.IdPedidoEnc,T.IdPickingEnc,
+T.IdTipoPedido,T.pedido,
+T.IdOperadorBodega_Verifico,
+T.operador_Verifico
+GO
+
+
+/****** Object:  View [dbo].[vw_Indicador_Picking]    Script Date: 22-Jan-24 6:55:38 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+ALTER view [dbo].[vw_Indicador_Picking] as
+
+SELECT T.IdProductoBodega,T.IdPropietarioBodega,T.IdBodega,T.bodega,T.lic_plate,
+T.idpresentacion,T.presentacion,T.factor,
+ISNULL(sum(T.[cajas/bultos]),0)  [cajas/bultos],
+ISNULL(SUM(T.unidades),0) unidades,
+T.fecha,
+T.IdUnidadMedida,T.unidad,
+T.fecha_picking,
+T.IdPedidoEnc,T.IdPickingEnc,
+T.IdTipoPedido,T.pedido,
+T.IdOperadorBodega_Pickeo,
+T.operador_pickeo,
+T.IdOperadorBodega_Verifico
+FROM (
+select p_ubic.IdProductoBodega,p_ubic.IdPropietarioBodega,p_ubic.IdBodega,bd.nombre bodega,p_ubic.lic_plate,
+p_ubic.idpresentacion,pp.nombre presentacion,pp.factor,
+sum(cantidad_recibida)  [cajas/bultos],
+0 unidades,
+cast(p_enc.fecha_picking as date) fecha,
+p_ubic.IdUnidadMedida,um.Nombre unidad,
+p_ubic.fecha_picking,
+pe_enc.IdPedidoEnc,p_ubic.IdPickingEnc,
+pe_enc.IdTipoPedido,doc.Descripcion pedido
+,p_ubic.IdOperadorBodega_Pickeo,
+op.nombres +' '+ op.apellidos as operador_pickeo,
+p_ubic.IdOperadorBodega_Verifico
+from trans_picking_ubic p_ubic inner join producto_bodega pb on p_ubic.IdBodega=pb.IdBodega and p_ubic.IdProductoBodega=pb.IdProductoBodega
+							   inner join producto pr on pb.IdProducto= pr.IdProducto
+							   left outer join producto_presentacion pp on pr.IdProducto=pp.IdProducto and p_ubic.IdPresentacion = pp.IdPresentacion
+							   left outer join unidad_medida um on p_ubic.IdUnidadMedida=um.IdUnidadMedida
+							   inner join trans_picking_enc p_enc on p_ubic.IdPickingEnc=p_enc.IdPickingEnc
+							   inner join trans_pe_enc pe_enc on p_enc.IdPickingEnc = pe_enc.IdPickingEnc
+							   inner join trans_pe_tipo doc on pe_enc.IdTipoPedido=doc.IdTipoPedido
+							   inner join bodega bd on p_ubic.IdBodega=bd.IdBodega
+							   inner join operador_bodega op_bodega  on p_ubic.IdOperadorBodega_Pickeo=op_bodega.IdOperadorBodega
+							   inner join operador op on op_bodega.IdOperador = op.IdOperador
+where p_ubic.activo=1 and p_enc.activo=1
+and p_ubic.IdPresentacion<>0
+group by  p_ubic.IdProductoBodega,p_ubic.IdPropietarioBodega,p_ubic.IdBodega,p_ubic.lic_plate,
+p_ubic.idpresentacion,pp.nombre,
+p_ubic.IdUnidadMedida,um.Nombre,p_ubic.fecha_picking,pe_enc.IdPedidoEnc,p_ubic.IdPickingEnc,
+pe_enc.IdTipoPedido,doc.Descripcion,bd.nombre,pp.factor,cantidad_despachada
+,p_ubic.IdOperadorBodega_Pickeo,p_ubic.IdOperadorBodega_Verifico
+,op.nombres,op.apellidos, cast(p_enc.fecha_picking as date)
+union
+select p_ubic.IdProductoBodega,p_ubic.IdPropietarioBodega,p_ubic.IdBodega,bd.nombre bodega,p_ubic.lic_plate,
+p_ubic.idpresentacion,pp.nombre presentacion,pp.factor,
+0 [cajas/bultos],
+sum(cantidad_recibida) unidades,
+cast(p_enc.fecha_picking as date) fecha,
+p_ubic.IdUnidadMedida,um.Nombre unidad,
+p_ubic.fecha_picking,
+pe_enc.IdPedidoEnc,p_ubic.IdPickingEnc,
+pe_enc.IdTipoPedido,doc.Descripcion pedido
+,p_ubic.IdOperadorBodega_Pickeo,
+op.nombres +' '+ op.apellidos as operador_pickeo,
+p_ubic.IdOperadorBodega_Verifico
+from trans_picking_ubic p_ubic inner join producto_bodega pb on p_ubic.IdBodega=pb.IdBodega and p_ubic.IdProductoBodega=pb.IdProductoBodega
+							   inner join producto pr on pb.IdProducto= pr.IdProducto
+							   left outer join producto_presentacion pp on pr.IdProducto=pp.IdProducto and p_ubic.IdPresentacion = pp.IdPresentacion
+							   left outer join unidad_medida um on p_ubic.IdUnidadMedida=um.IdUnidadMedida
+							   inner join trans_picking_enc p_enc on p_ubic.IdPickingEnc=p_enc.IdPickingEnc
+							   inner join trans_pe_enc pe_enc on p_enc.IdPickingEnc = pe_enc.IdPickingEnc
+							   inner join trans_pe_tipo doc on pe_enc.IdTipoPedido=doc.IdTipoPedido
+							   inner join bodega bd on p_ubic.IdBodega=bd.IdBodega
+							   inner join operador_bodega op_bodega  on p_ubic.IdOperadorBodega_Pickeo=op_bodega.IdOperadorBodega
+							   inner join operador op on op_bodega.IdOperador = op.IdOperador
+where p_ubic.activo=1 and p_enc.activo=1
+and p_ubic.IdPresentacion=0
+group by  p_ubic.IdProductoBodega,p_ubic.IdPropietarioBodega,p_ubic.IdBodega,p_ubic.lic_plate,
+p_ubic.idpresentacion,pp.nombre,
+p_ubic.IdUnidadMedida,um.Nombre,p_ubic.fecha_picking,pe_enc.IdPedidoEnc,p_ubic.IdPickingEnc,
+pe_enc.IdTipoPedido,doc.Descripcion,bd.nombre,pp.factor,cantidad_despachada
+,p_ubic.IdOperadorBodega_Pickeo,p_ubic.IdOperadorBodega_Verifico
+,op.nombres,op.apellidos, cast(p_enc.fecha_picking as date)) AS T
+GROUP BY T.IdProductoBodega,T.IdPropietarioBodega,T.IdBodega,T.bodega,T.lic_plate,
+T.idpresentacion,T.presentacion,T.factor,
+T.fecha,
+T.IdUnidadMedida,T.unidad,
+T.fecha_picking,
+T.IdPedidoEnc,T.IdPickingEnc,
+T.IdTipoPedido,T.pedido,
+T.IdOperadorBodega_Pickeo,
+T.operador_pickeo,
+T.IdOperadorBodega_Verifico
+
+GO
+
+
+ALTER TABLE trans_re_enc ADD IdEstado_defecto_recepcion int NULL
+GO
+
+ALTER TABLE [dbo].[trans_pe_det]  WITH NOCHECK ADD  CONSTRAINT [FK_trans_pedido_det_unidad_medida] FOREIGN KEY([IdUnidadMedidaBasica])
+REFERENCES [dbo].[unidad_medida] ([IdUnidadMedida])
+GO
+
+ALTER TABLE [dbo].[trans_pe_det] NOCHECK CONSTRAINT [FK_trans_pedido_det_unidad_medida]
+GO
+
+
+ALTER TABLE [dbo].[trans_picking_ubic]  WITH CHECK ADD  CONSTRAINT [FK_trans_picking_ubic_unidad_medida] FOREIGN KEY([IdUnidadMedida])
+REFERENCES [dbo].[unidad_medida] ([IdUnidadMedida])
+GO
+
+ALTER TABLE [dbo].[trans_picking_ubic] CHECK CONSTRAINT [FK_trans_picking_ubic_unidad_medida]
+GO
+
+ALTER TABLE trans_picking_ubic_stock ALTER COLUMN licencia NVARCHAR(50) NULL
+GO
+
+CREATE NONCLUSTERED INDEX NCLI_Trans_Picking_Ubic_20240122_EJC
+ON [dbo].[trans_picking_ubic] ([activo],[IdOperadorBodega_Pickeo],[IdPedidoEnc])
+INCLUDE ([IdPickingEnc],[IdPropietarioBodega],[IdProductoBodega],[IdPresentacion],[IdUnidadMedida],[lic_plate],[cantidad_recibida],[cantidad_despachada],[IdBodega],[IdOperadorBodega_Verifico])
+GO
+
+CREATE NONCLUSTERED INDEX NCLI_Trans_Mov_20240122_EJC
+ON [dbo].[trans_movimientos] ([IdTipoTarea])
+INCLUDE ([IdOperadorBodega],[IdPedidoEnc])
+GO
+
+CREATE NONCLUSTERED INDEX NCLI_2401221558_VW_Tbleron
+ON [dbo].[trans_picking_ubic] ([activo])
+INCLUDE ([IdPickingEnc],[IdPropietarioBodega],[IdProductoBodega],[IdPresentacion],[IdUnidadMedida],[lic_plate],[cantidad_recibida],[cantidad_despachada],[IdBodega],[IdOperadorBodega_Pickeo],[IdOperadorBodega_Verifico],[IdPedidoEnc])
+GO
+
