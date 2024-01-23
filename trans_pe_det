@@ -1,3 +1,11 @@
+--#CKFK20240122 Agregamos contraint a la unidad de medida básica
+ALTER TABLE [dbo].[trans_pe_det]  WITH NOCHECK ADD  CONSTRAINT [FK_trans_pedido_det_unidad_medida] FOREIGN KEY([IdUnidadMedidaBasica])
+REFERENCES [dbo].[unidad_medida] ([IdUnidadMedida])
+GO
+
+ALTER TABLE [dbo].[trans_pe_det] NOCHECK CONSTRAINT [FK_trans_pedido_det_unidad_medida]
+GO
+
 --#EJC20210708: Cealsa fiscal:
 
 alter table trans_pe_det 
