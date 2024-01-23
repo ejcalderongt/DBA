@@ -1,3 +1,19 @@
+---20240122 Indices en trans_picking_ubic y movimientos
+CREATE NONCLUSTERED INDEX NCLI_Trans_Picking_Ubic_20240122_EJC
+ON [dbo].[trans_picking_ubic] ([activo],[IdOperadorBodega_Pickeo],[IdPedidoEnc])
+INCLUDE ([IdPickingEnc],[IdPropietarioBodega],[IdProductoBodega],[IdPresentacion],[IdUnidadMedida],[lic_plate],[cantidad_recibida],[cantidad_despachada],[IdBodega],[IdOperadorBodega_Verifico])
+GO
+
+CREATE NONCLUSTERED INDEX NCLI_Trans_Mov_20240122_EJC
+ON [dbo].[trans_movimientos] ([IdTipoTarea])
+INCLUDE ([IdOperadorBodega],[IdPedidoEnc])
+GO
+
+CREATE NONCLUSTERED INDEX NCLI_2401221558_VW_Tbleron
+ON [dbo].[trans_picking_ubic] ([activo])
+INCLUDE ([IdPickingEnc],[IdPropietarioBodega],[IdProductoBodega],[IdPresentacion],[IdUnidadMedida],[lic_plate],[cantidad_recibida],[cantidad_despachada],[IdBodega],[IdOperadorBodega_Pickeo],[IdOperadorBodega_Verifico],[IdPedidoEnc])
+GO
+
 --20231204 Indice para operadores de picking
 CREATE NONCLUSTERED INDEX NCL_trans_picking_op_20231204
 ON [dbo].[trans_picking_op] ([IdPickingEnc])
