@@ -1,3 +1,11 @@
+--#CKFK20240122 Agregamos contraint a la unidad de medida básica
+ALTER TABLE [dbo].[trans_picking_ubic]  WITH CHECK ADD  CONSTRAINT [FK_trans_picking_ubic_unidad_medida] FOREIGN KEY([IdUnidadMedida])
+REFERENCES [dbo].[unidad_medida] ([IdUnidadMedida])
+GO
+
+ALTER TABLE [dbo].[trans_picking_ubic] CHECK CONSTRAINT [FK_trans_picking_ubic_unidad_medida]
+GO
+
 --#EJC20230807 Campos agregados para control 
 ALTER TABLE TRANS_PICKING_UBIC ADD procesado_bof bit not null default 0
 ALTER TABLE TRANS_PICKING_UBIC ADD IdUsuario_bof_pickeo int null
