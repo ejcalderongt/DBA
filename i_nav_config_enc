@@ -1,3 +1,6 @@
+--#EJC20231024 Determina si la interfae es con SAPBO
+alter table i_nav_config_enc add interface_sap bit not null default 0
+
 --#EJC20231024 Valores por defecto para interface SAP Becofarma
 Alter table i_nav_config_enc add IdProductoEstado_NC int null
 
