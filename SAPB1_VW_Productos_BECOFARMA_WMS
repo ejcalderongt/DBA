@@ -4,4 +4,6 @@ SELECT dbo.OITM.ItemCode, dbo.OITM.CodeBars AS CodigoBarra, dbo.OITM.ItemName, d
                   dbo.OITM.U_Tipo_Prod AS TipoProducto, dbo.OITM.U_Um_Prod AS Umbas, dbo.OITM.U_ENVIADO_WMS, dbo.OITM.ManBtchNum
 FROM     dbo.OITB LEFT OUTER JOIN
                   dbo.OITM ON dbo.OITB.ItmsGrpCod = dbo.OITM.ItmsGrpCod
+WHERE OITM.validFor = 'Y' AND OITM.invntitem = 'Y' 
 GO
+
