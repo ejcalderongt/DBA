@@ -8,6 +8,6 @@ T0.u_nit As NIT,
 T0.Address As DIRECCION, 
 T0.E_Mail, T0.GroupCode
 FROM OCRD T0 LEFT JOIN OCPR T1 ON T0.CardCode = T1.CardCode
-WHERE (T0.CARDTYPE = 'C')
+WHERE (T0.CARDTYPE = 'C' AND T0.validFor = 'Y')
 GO
 
