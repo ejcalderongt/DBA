@@ -1,0 +1,25 @@
+VIEW [dbo].[VW_STOCK_POR_LOTE]
+AS
+SELECT 
+    T0.ItemCode AS 'Codigo',
+    T0.ItemName AS 'Nombre',
+    T1.WhsCode AS 'Codigo_Bodega',
+    T4.WhsName AS 'Nombre_Bodega',
+    T1.OnHand AS 'Total_Almacén',
+    T2.DistNumber AS 'Lote',
+    T3.Quantity AS 'Cantidad_Lote',
+	T2.ExpDate AS 'Fecha_Vence'
+FROM 
+    OITM T0 
+INNER JOIN 
+    OITW T1 ON T0.ItemCode = T1.ItemCode 
+INNER JOIN 
+    OBTN T2 ON T0.ItemCode = T2.ItemCode
+INNER JOIN 
+    OBTQ T3 ON T2.AbsEntry = T3.MdAbsEntry AND T1.WhsCode = T3.WhsCode
+INNER JOIN 
+    OWHS T4 ON T1.WhsCode = T4.WhsCode
+WHERE 
+    T1.OnHand > 0
+
+GO
