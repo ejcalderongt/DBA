@@ -1,1 +1,4 @@
+--#GT30012024: campo para identificar a un operador que manejara resolucion LP para recepcion en BOF
+--alter table operador add sistema bit default 0
+
 alter table operador add montacarga bit not null default 0
