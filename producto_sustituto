@@ -1,0 +1,75 @@
+--#GT06022024 se agregan campos a tabla para manejar equivalencias entre killios y garesa.
+
+ALTER TABLE [dbo].[producto_sustituto] DROP CONSTRAINT [FK_producto_sustituto_producto1]
+GO
+
+ALTER TABLE [dbo].[producto_sustituto] DROP CONSTRAINT [FK_producto_sustituto_producto_presentacion1]
+GO
+
+ALTER TABLE [dbo].[producto_sustituto] DROP CONSTRAINT [FK_producto_sustituto_producto_presentacion]
+GO
+
+ALTER TABLE [dbo].[producto_sustituto] DROP CONSTRAINT [FK_producto_sustituto_producto]
+GO
+
+/****** Object:  Table [dbo].[producto_sustituto]    Script Date: 6/02/2024 11:48:09 ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[producto_sustituto]') AND type in (N'U'))
+DROP TABLE [dbo].[producto_sustituto]
+GO
+
+/****** Object:  Table [dbo].[producto_sustituto]    Script Date: 6/02/2024 11:48:09 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[producto_sustituto](
+	[IdProductoSustituto] [int] NOT NULL,
+	[IdProductoOriginal] [int] NOT NULL,
+	[IdProductoPresentacionOriginal] [int] NULL,
+	[IdProductoReemplazo] [int] NOT NULL,
+	[IdProductoPresentacionReemplazo] [int] NULL,
+	[user_agr] [nvarchar](50) NULL,
+	[fec_agr] [datetime] NULL,
+	[user_mod] [nvarchar](25) NULL,
+	[fec_mod] [datetime] NULL,
+	[activo] [bit] NULL,
+	[codigo_barra_original] [nvarchar](50) NULL,
+	[codigo_barra_reemplazo] [nvarchar](50) NULL,
+ CONSTRAINT [PK_producto_sustituto] PRIMARY KEY CLUSTERED 
+(
+	[IdProductoSustituto] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[producto_sustituto]  WITH CHECK ADD  CONSTRAINT [FK_producto_sustituto_producto] FOREIGN KEY([IdProductoOriginal])
+REFERENCES [dbo].[producto] ([IdProducto])
+GO
+
+ALTER TABLE [dbo].[producto_sustituto] CHECK CONSTRAINT [FK_producto_sustituto_producto]
+GO
+
+ALTER TABLE [dbo].[producto_sustituto]  WITH CHECK ADD  CONSTRAINT [FK_producto_sustituto_producto_presentacion] FOREIGN KEY([IdProductoPresentacionOriginal])
+REFERENCES [dbo].[producto_presentacion] ([IdPresentacion])
+GO
+
+ALTER TABLE [dbo].[producto_sustituto] CHECK CONSTRAINT [FK_producto_sustituto_producto_presentacion]
+GO
+
+ALTER TABLE [dbo].[producto_sustituto]  WITH CHECK ADD  CONSTRAINT [FK_producto_sustituto_producto_presentacion1] FOREIGN KEY([IdProductoPresentacionReemplazo])
+REFERENCES [dbo].[producto_presentacion] ([IdPresentacion])
+GO
+
+ALTER TABLE [dbo].[producto_sustituto] CHECK CONSTRAINT [FK_producto_sustituto_producto_presentacion1]
+GO
+
+ALTER TABLE [dbo].[producto_sustituto]  WITH CHECK ADD  CONSTRAINT [FK_producto_sustituto_producto1] FOREIGN KEY([IdProductoReemplazo])
+REFERENCES [dbo].[producto] ([IdProducto])
+GO
+
+ALTER TABLE [dbo].[producto_sustituto] CHECK CONSTRAINT [FK_producto_sustituto_producto1]
+GO
+
+
