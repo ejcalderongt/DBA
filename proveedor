@@ -1,3 +1,15 @@
+
+--#GT09022024: CLC esta guardando nombres extensos según la duca
+ALTER TABLE propietarios 
+ALTER COLUMN contacto nvarchar(150) 
+
+ALTER TABLE propietarios 
+ALTER COLUMN nombre_comercial nvarchar(150) 
+
+ALTER TABLE proveedor
+alter column nombre nvarchar(150)
+
+
 #CKFK 20210312 Alter a la tabla 
 ALTER TABLE proveedor ALTER COLUMN contacto NVARCHAR(100) NULL
 
