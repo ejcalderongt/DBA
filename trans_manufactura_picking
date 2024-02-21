@@ -1,0 +1,56 @@
+/****** Object:  Table [dbo].[trans_manufactura_picking]    Script Date: 21-Feb-24 8:05:17 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[trans_manufactura_picking](
+	[IdManufacturaPicking] [int] NOT NULL,
+	[IdManufacturaDet] [int] NOT NULL,
+	[IdManufacturaEnc] [int] NOT NULL,
+	[IdPedidoDet] [int] NOT NULL,
+	[IdProductoBodega] [int] NULL,
+	[codigo_barra] [nvarchar](50) NULL,
+	[licencia] [nvarchar](50) NULL,
+	[cantidad] [float] NULL,
+	[licencia_manufactura] [nvarchar](50) NULL,
+	[user_agr] [nvarchar](30) NULL,
+	[fec_agr] [datetime] NULL,
+	[user_mod] [nvarchar](30) NULL,
+	[fec_mod] [datetime] NULL,
+ CONSTRAINT [PK_trans_manufactura_picking] PRIMARY KEY CLUSTERED 
+(
+	[IdManufacturaPicking] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[trans_manufactura_picking]  WITH CHECK ADD  CONSTRAINT [FK_trans_manufactura_picking_producto_bodega] FOREIGN KEY([IdProductoBodega])
+REFERENCES [dbo].[producto_bodega] ([IdProductoBodega])
+GO
+
+ALTER TABLE [dbo].[trans_manufactura_picking] CHECK CONSTRAINT [FK_trans_manufactura_picking_producto_bodega]
+GO
+
+ALTER TABLE [dbo].[trans_manufactura_picking]  WITH CHECK ADD  CONSTRAINT [FK_trans_manufactura_picking_trans_manufactura_det] FOREIGN KEY([IdManufacturaDet])
+REFERENCES [dbo].[trans_manufactura_det] ([IdManufacturaDet])
+GO
+
+ALTER TABLE [dbo].[trans_manufactura_picking] CHECK CONSTRAINT [FK_trans_manufactura_picking_trans_manufactura_det]
+GO
+
+ALTER TABLE [dbo].[trans_manufactura_picking]  WITH CHECK ADD  CONSTRAINT [FK_trans_manufactura_picking_trans_manufactura_enc] FOREIGN KEY([IdManufacturaEnc])
+REFERENCES [dbo].[trans_manufactura_enc] ([IdManufacturaEnc])
+GO
+
+ALTER TABLE [dbo].[trans_manufactura_picking] CHECK CONSTRAINT [FK_trans_manufactura_picking_trans_manufactura_enc]
+GO
+
+ALTER TABLE [dbo].[trans_manufactura_picking]  WITH CHECK ADD  CONSTRAINT [FK_trans_manufactura_picking_trans_pe_det] FOREIGN KEY([IdPedidoDet])
+REFERENCES [dbo].[trans_pe_det] ([IdPedidoDet])
+GO
+
+ALTER TABLE [dbo].[trans_manufactura_picking] CHECK CONSTRAINT [FK_trans_manufactura_picking_trans_pe_det]
+GO
+
