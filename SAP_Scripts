@@ -71,3 +71,32 @@ GROUP BY
 
 tiene menú contextual
 Redactar
+
+Dim SAP_Traslados As String = "SELECT  
+                                  T0.DOCENTRY,
+                                  T0.DOCNUM,
+                                  T0.DOCDATE,  
+                                  T0.CARDCODE,
+                                  T0.CARDNAME,
+                                  T0.DOCCUR,
+                                  T0.DOCTOTAL,
+                                  T0.JRNLMEMO,
+                                  T0.CANCELED,
+                                  T0.DOCSTATUS,  
+                                  CASE 
+                                      WHEN T0.DOCTYPE = 'I' THEN 'ARTICULO'    
+                                      ELSE 'SERVICIO'    
+                                  END AS TIPO_ORDEN_VENTA,
+                                  T1.FromWhsCod AS 'Codigo_Bodega_Origen',
+                                  OW1.WhsName AS 'Nombre_Bodega_Origen',
+                                  T1.WhsCode AS 'Codigo_Bodega_Destino',
+                                  OW2.WhsName AS 'Nombre_Bodega_Destino'
+                              FROM OWTQ T0
+                              INNER JOIN WTQ1 T1 ON T0.DocEntry = T1.DocEntry
+                              INNER JOIN OWHS OW1 ON T1.FromWhsCod = OW1.WhsCode
+                              INNER JOIN OWHS OW2 ON T1.WhsCode = OW2.WhsCode
+                              WHERE T0.DOCSTATUS = 'O' 
+                              AND T0.U_EnviadoWMS = 2 
+                              AND (T1.FromWhsCod IN (" & vCriteria & ")
+                                   OR T1.WhsCode IN (" & vCriteria & "))
+                              ORDER BY T0.DOCENTRY DESC"
