@@ -1,3 +1,26 @@
+------#GT22022024 inserto los valores para la sección de manufactura ligera
+
+insert into menu_sistema values('10.1','Manufactura Principal','rpMLTareas',2,'10',0)
+insert into menu_sistema values ('10.1.1','Gestion Manufactura','mnuManufactura',3,'10.1',0)
+insert into menu_sistema values('10.1.1.1','Transacciones','cmdTransaccionesManufactura',4,'10.1.1',0)
+insert into menu_sistema values('10.1.1.2','Tipo Transaccion','cmdTipo',4,'10.1.1',0)
+
+
+ IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '10.1')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'10.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+GO
+ IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '10.1.1')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'10.1.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+GO
+ IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '10.1.1.1')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'10.1.1.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+GO
+ IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '10.1.1.2')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'10.1.1.2',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+GO
+
+
+
 
 Insert into menu_sistema values('7.9','Mantenimiento base de datos','rpgActualizacionesBD',2,'7',0)
 GO
