@@ -1,3 +1,53 @@
+--#CKFK 20240221 Corrección a los menús de servicios, control de calidad y manufactura ligera
+delete from menu_sistema where IdMenu like '8%'
+delete from menu_rol where IdMenu  like '8%'
+delete from menu_sistema where IdMenu like '9%'
+delete from menu_rol where IdMenu  like '9%'
+
+insert into menu_sistema values ('8','Servicios','Servicios',1,'0',1)
+insert into menu_sistema values ('8.1','pgRegistroServicios','pgRegistroServicios',2,'8',0)
+insert into menu_sistema values ('8.1.1','Registro de servicios','mnuRegistroServicios',3,'8.1',0)
+insert into menu_sistema values ('8.2','pgReporteServicios','pgReporteServicios',2,'8',0)
+insert into menu_sistema values ('8.2.1','Reportes de Servicios','mnuReporteServicios',3,'8.1',0)
+insert into menu_sistema values ('8.1.1.1','Ingresos','mnuServiciosIngreso',4,'8.1.1',0)
+insert into menu_sistema values('8.1.1.2','Salidas','mnuServiciosSalidas',4,'8.1.1',0)
+
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'8',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'8.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'8.1.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'8.2',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'8.2.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'8.1.1.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'8.1.1.2',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+
+Insert into menu_sistema values('9','Control de calidad','rpControlCalidad',1,'0',0)
+GO
+Insert into menu_sistema values('9.1','Control Calidad principal','rpGestionInventario',2,'9',0)
+GO
+Insert into menu_sistema values('9.1.1','Gestión de inventario','mnuGestionInventarioCalidad',3,'9.1',0)
+GO
+Insert into menu_sistema values('9.1.2','Reportes','mnuReportesControlCalidad',3,'9.1',0)
+GO 
+Insert into menu_sistema values('10','Manufactura Ligera','rpManufacturaLigera',1,'0',0)
+GO
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '9')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'9',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+GO
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '9.1')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'9.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+GO
+
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '9.1.1')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'9.1.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+GO
+
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '9.1.2')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'9.1.2',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+GO
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '10')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'10',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+GO
+
 ------#GT22022024 inserto los valores para la sección de manufactura ligera
 
 insert into menu_sistema values('10.1','Manufactura Principal','rpMLTareas',2,'10',0)
@@ -18,9 +68,6 @@ GO
  IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '10.1.1.2')
 insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'10.1.1.2',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
 GO
-
-
-
 
 Insert into menu_sistema values('7.9','Mantenimiento base de datos','rpgActualizacionesBD',2,'7',0)
 GO
