@@ -1,0 +1,20 @@
+CREATE TABLE [dbo].[i_nav_ped_traslado_det_lote](
+	[NoEnc] [nvarchar](50) NOT NULL,
+	[Line_No] [int] NOT NULL,
+	[No] [nvarchar](50) NOT NULL,
+	[Batch_No] [nvarchar](100) NOT NULL,
+	[Serial_No] [nvarchar](100) NOT NULL,
+	[Expiration_Date] [datetime] NULL,
+	[Quantity_Base] [float] NULL,
+	[Variant_Code] [nvarchar](25) NULL,
+	[Whs] [nvarchar](25) NULL,
+	[Fec_Agr] [datetime] NULL,
+CONSTRAINT [PK_i_nav_ped_traslado_det_lote] PRIMARY KEY CLUSTERED 
+(
+	[NoEnc] ASC,
+	[Line_No] ASC,
+	[No] ASC,
+	[Batch_No] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
