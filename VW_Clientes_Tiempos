@@ -1,0 +1,26 @@
+/****** Object:  View [dbo].[VW_Clientes_Tiempos]    Script Date: 29-Feb-24 6:08:05 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE VIEW [dbo].[VW_Clientes_Tiempos]
+AS
+SELECT  cliente.Codigo, cliente.Nombre_Comercial, 
+        COUNT(DISTINCT IdFamilia) Cant_Familias, 
+		COUNT(DISTINCT IdClasificacion) Cant_Clasificacion
+FROM cliente_tiempos INNER JOIN cliente ON cliente.IdCliente = cliente_tiempos.IdCliente
+WHERE cliente.activo = 1
+GROUP BY cliente.codigo, cliente.nombre_comercial
+UNION
+SELECT cliente.Codigo, cliente.Nombre_Comercial, 
+       0 Cant_Familias, 
+	   0 Cant_Clasificacion
+FROM cliente
+WHERE cliente.activo = 1 AND
+ NOT EXISTS (SELECT DISTINCT cliente_tiempos.idcliente 
+                  FROM cliente_tiempos 
+				  WHERE cliente_tiempos.IdCliente = cliente.IdCliente)
+
+GO
