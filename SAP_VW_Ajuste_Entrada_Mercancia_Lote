@@ -1,0 +1,14 @@
+SELECT 
+    T0.DocEntry, T0.DocNum, T0.DocDate, T0.Comments, 
+    T1.ItemCode, T1.Dscription, T1.Quantity, T1.WhsCode, 
+    COALESCE(T2.BatchNum, '') AS BatchNum, 
+    COALESCE(T2.Quantity, 0) AS BatchQuantity, 
+    COALESCE(T3.ExpDate, '19000101') AS ExpirationDate
+FROM 
+    OIGN T0
+    INNER JOIN IGN1 T1 ON T0.DocEntry = T1.DocEntry
+    LEFT JOIN IBT1 T2 ON T1.DocEntry = T2.BaseEntry AND T1.LineNum = T2.BaseLinNum AND T2.BaseType = 59
+    LEFT JOIN OBTN T3 ON T2.BatchNum = T3.DistNumber AND T2.ItemCode = T3.ItemCode
+WHERE 
+    T0.DocDate BETWEEN '2022-01-01' AND '2022-01-31'
+    AND T0.CANCELED = 'N'
