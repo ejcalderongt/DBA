@@ -7,7 +7,8 @@ CREATE TABLE [dbo].[i_nav_ped_traslado_det_lote](
 	[Expiration_Date] [datetime] NULL,
 	[Quantity_Base] [float] NULL,
 	[Variant_Code] [nvarchar](25) NULL,
-	[Whs] [nvarchar](25) NULL,
+	[WhsFrom] [nvarchar](25) NULL,
+        [WhsTo] [nvarchar](25) NULL,
 	[Fec_Agr] [datetime] NULL,
 CONSTRAINT [PK_i_nav_ped_traslado_det_lote] PRIMARY KEY CLUSTERED 
 (
