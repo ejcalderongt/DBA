@@ -1,3 +1,5 @@
+ALTER TABLE [dbo].[trans_ubic_hh_det] ADD no_linea int NULL
+
 EXEC sp_rename 'trans_ubic_hh_det.IdOperador', 'IdOperadorBodega', 'COLUMN';
 
 ALTER TABLE [dbo].[trans_ubic_hh_det] ADD IdBodega int NULL
