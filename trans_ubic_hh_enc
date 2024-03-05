@@ -1,1 +1,4 @@
 alter table trans_ubic_hh_enc add IdReabastecimientoLog int null
+
+alter table trans_ubic_hh_enc add es_traslado_sap bit not null default 0
+alter table trans_ubic_hh_enc add no_documento nvarchar(50) null
