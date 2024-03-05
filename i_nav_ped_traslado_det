@@ -10,3 +10,7 @@ alter table i_nav_ped_traslado_det add fec_agr datetime default getdate()
 --#CKFK20230212: Agregar columna para mostrar la cantidad reservada en el WMS
 ALTER TABLE i_nav_ped_traslado_det
 add Quantity_Reserved_WMS float null
+
+ALTER TABLE i_nav_ped_traslado_det
+ADD transfer_From_CodeField NVARCHAR(25) null,
+    scan_type NVARCHAR(25) null
