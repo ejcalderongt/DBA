@@ -1,3 +1,4 @@
 Alter table i_nav_producto add Item_Category_Name nvarchar(100)
 Alter table i_nav_producto add Gen_Prod_Posting_Name nvarchar(100)
 Alter table i_nav_producto add Producto_Group_Name nvarchar(100)
+Alter table i_nav_producto add Manufacturing_Process nvarchar(50) not null default ''
