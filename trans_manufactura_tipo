@@ -1,19 +1,13 @@
-/****** Object:  Table [dbo].[trans_manufactura_tipo]    Script Date: 21-Feb-24 8:05:40 AM ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
-
 CREATE TABLE [dbo].[trans_manufactura_tipo](
 	[IdManufacturaTipo] [int] NOT NULL,
 	[nombre] [nvarchar](50) NULL,
 	[codigo] [nvarchar](50) NULL,
+	[activo] [bit] NOT NULL DEFAULT 1,
 	[user_agr] [nvarchar](30) NULL,
 	[fec_agr] [datetime] NULL,
 	[user_mod] [nvarchar](30) NULL,
 	[fec_mod] [datetime] NULL,
- CONSTRAINT [PK_trans_manufactura_tipo] PRIMARY KEY CLUSTERED 
+CONSTRAINT [PK_trans_manufactura_tipo] PRIMARY KEY CLUSTERED 
 (
 	[IdManufacturaTipo] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
