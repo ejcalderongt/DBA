@@ -1,3 +1,104 @@
+--#GT19032024 remover identity de la tabla.
+
+ALTER TABLE [dbo].[regla_vencimiento] DROP CONSTRAINT [FK__regla_ven__IdPro__09792B82]
+GO
+
+ALTER TABLE [dbo].[regla_vencimiento] DROP CONSTRAINT [FK__regla_ven__IdPro__08850749]
+GO
+
+ALTER TABLE [dbo].[regla_vencimiento] DROP CONSTRAINT [FK__regla_ven__IdPro__0790E310]
+GO
+
+ALTER TABLE [dbo].[regla_vencimiento] DROP CONSTRAINT [FK__regla_ven__IdPro__069CBED7]
+GO
+
+ALTER TABLE [dbo].[regla_vencimiento] DROP CONSTRAINT [FK__regla_ven__IdCli__0A6D4FBB]
+GO
+
+ALTER TABLE [dbo].[regla_vencimiento] DROP CONSTRAINT [FK__regla_ven__IdBod__05A89A9E]
+GO
+
+/****** Object:  Table [dbo].[regla_vencimiento]    Script Date: 19/03/2024 09:03:31 ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[regla_vencimiento]') AND type in (N'U'))
+DROP TABLE [dbo].[regla_vencimiento]
+GO
+
+/****** Object:  Table [dbo].[regla_vencimiento]    Script Date: 19/03/2024 09:03:31 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[regla_vencimiento](
+	[IdReglaVencimiento] [int] NOT NULL,
+	[NombreRegla] [nvarchar](255) NULL,
+	[IdBodega] [int] NOT NULL,
+	[IdProductoFamilia] [int] NULL,
+	[IdProductoClasificacion] [int] NULL,
+	[TiempoVencimientoDias] [int] NOT NULL,
+	[TipoNotificacion] [nvarchar](50) NULL,
+	[IdPropietarioMercancia] [int] NULL,
+	[IdProveedor] [int] NULL,
+	[IdCliente] [int] NULL,
+	[Activa] [bit] NOT NULL,
+	[FechaCreacion] [datetime] NOT NULL,
+	[UsuarioCreacion] [nvarchar](255) NULL,
+	[FechaModificacion] [datetime] NULL,
+	[UsuarioModificacion] [nvarchar](255) NULL,
+ CONSTRAINT [PK__regla_ve__6A511C702A6C0725] PRIMARY KEY CLUSTERED 
+(
+	[IdReglaVencimiento] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[regla_vencimiento]  WITH CHECK ADD  CONSTRAINT [FK__regla_ven__IdBod__05A89A9E] FOREIGN KEY([IdBodega])
+REFERENCES [dbo].[bodega] ([IdBodega])
+GO
+
+ALTER TABLE [dbo].[regla_vencimiento] CHECK CONSTRAINT [FK__regla_ven__IdBod__05A89A9E]
+GO
+
+ALTER TABLE [dbo].[regla_vencimiento]  WITH CHECK ADD  CONSTRAINT [FK__regla_ven__IdCli__0A6D4FBB] FOREIGN KEY([IdCliente])
+REFERENCES [dbo].[cliente] ([IdCliente])
+GO
+
+ALTER TABLE [dbo].[regla_vencimiento] CHECK CONSTRAINT [FK__regla_ven__IdCli__0A6D4FBB]
+GO
+
+ALTER TABLE [dbo].[regla_vencimiento]  WITH CHECK ADD  CONSTRAINT [FK__regla_ven__IdPro__069CBED7] FOREIGN KEY([IdProductoFamilia])
+REFERENCES [dbo].[producto_familia] ([IdFamilia])
+GO
+
+ALTER TABLE [dbo].[regla_vencimiento] CHECK CONSTRAINT [FK__regla_ven__IdPro__069CBED7]
+GO
+
+ALTER TABLE [dbo].[regla_vencimiento]  WITH CHECK ADD  CONSTRAINT [FK__regla_ven__IdPro__0790E310] FOREIGN KEY([IdProductoClasificacion])
+REFERENCES [dbo].[producto_clasificacion] ([IdClasificacion])
+GO
+
+ALTER TABLE [dbo].[regla_vencimiento] CHECK CONSTRAINT [FK__regla_ven__IdPro__0790E310]
+GO
+
+ALTER TABLE [dbo].[regla_vencimiento]  WITH CHECK ADD  CONSTRAINT [FK__regla_ven__IdPro__08850749] FOREIGN KEY([IdPropietarioMercancia])
+REFERENCES [dbo].[propietarios] ([IdPropietario])
+GO
+
+ALTER TABLE [dbo].[regla_vencimiento] CHECK CONSTRAINT [FK__regla_ven__IdPro__08850749]
+GO
+
+ALTER TABLE [dbo].[regla_vencimiento]  WITH CHECK ADD  CONSTRAINT [FK__regla_ven__IdPro__09792B82] FOREIGN KEY([IdProveedor])
+REFERENCES [dbo].[proveedor] ([IdProveedor])
+GO
+
+ALTER TABLE [dbo].[regla_vencimiento] CHECK CONSTRAINT [FK__regla_ven__IdPro__09792B82]
+GO
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------
+
 CREATE TABLE [dbo].[regla_vencimiento](
     [IdReglaVencimiento] [int] IDENTITY(1,1) PRIMARY KEY NOT NULL,
     [NombreRegla] [nvarchar](255),
