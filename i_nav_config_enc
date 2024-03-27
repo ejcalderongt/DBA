@@ -1,5 +1,5 @@
 --#EJC20240327 Determina si los ajustes y traslados llevan autorización
-ALTER i_nav_config_enc add 
+ALTER table i_nav_config_enc add 
 sap_control_draft_ajustes bit not null default 0,
 sap_control_draft_traslados bit not null default 0
 
