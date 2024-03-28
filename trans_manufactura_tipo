@@ -1,3 +1,12 @@
+DELETE FROM trans_manufactura_tipo
+INSERT [dbo].[trans_manufactura_tipo] ([IdTipoManufactura], [nombre], [codigo], [user_agr], [fec_agr], [user_mod], [fec_mod]) VALUES (0, N'SIN PROCESO', N'0', N'0', CAST(N'2024-03-28T00:00:00.000' AS DateTime), N'1', CAST(N'2024-03-28T00:00:00.000' AS DateTime))
+INSERT [dbo].[trans_manufactura_tipo] ([IdTipoManufactura], [nombre], [codigo], [user_agr], [fec_agr], [user_mod], [fec_mod]) VALUES (1, N'PEGAR STICKERS', N'1', N'1', CAST(N'2024-03-28T00:00:00.000' AS DateTime), N'1', CAST(N'2024-03-28T00:00:00.000' AS DateTime))
+INSERT [dbo].[trans_manufactura_tipo] ([IdTipoManufactura], [nombre], [codigo], [user_agr], [fec_agr], [user_mod], [fec_mod]) VALUES (2, N'IMPRESIÓN INKJET', N'2', N'1', CAST(N'2024-03-28T00:00:00.000' AS DateTime), N'1', CAST(N'2024-03-28T00:00:00.000' AS DateTime))
+INSERT [dbo].[trans_manufactura_tipo] ([IdTipoManufactura], [nombre], [codigo], [user_agr], [fec_agr], [user_mod], [fec_mod]) VALUES (3, N'ATADO PROMOCIONAL', N'3', N'1', CAST(N'2024-03-28T00:00:00.000' AS DateTime), N'1', CAST(N'2024-03-28T00:00:00.000' AS DateTime))
+INSERT [dbo].[trans_manufactura_tipo] ([IdTipoManufactura], [nombre], [codigo], [user_agr], [fec_agr], [user_mod], [fec_mod]) VALUES (4, N'RETIRAR STICKERS', N'4', N'1', CAST(N'2024-03-28T00:00:00.000' AS DateTime), N'1', CAST(N'2024-03-28T00:00:00.000' AS DateTime))
+INSERT [dbo].[trans_manufactura_tipo] ([IdTipoManufactura], [nombre], [codigo], [user_agr], [fec_agr], [user_mod], [fec_mod]) VALUES (5, N'VARIOS', N'5', N'1', CAST(N'2024-03-28T00:00:00.000' AS DateTime), N'1', CAST(N'2024-03-28T00:00:00.000' AS DateTime))
+
+
 --#Se actualiza el campo llave al mismo nombre que en pedido y producto.
 
 /****** Object:  Table [dbo].[trans_manufactura_tipo]    Script Date: 25/03/2024 11:00:55 ******/
