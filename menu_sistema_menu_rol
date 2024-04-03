@@ -28,8 +28,8 @@ Insert into menu_sistema values('9.1.1','Gestión de inventario','mnuGestionInve
 GO
 Insert into menu_sistema values('9.1.2','Reportes','mnuReportesControlCalidad',3,'9.1',0)
 GO 
-Insert into menu_sistema values('10','Manufactura Ligera','rpManufacturaLigera',1,'0',0)
-GO
+
+
 IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '9')
 insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'9',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
 GO
@@ -44,6 +44,11 @@ GO
 IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '9.1.2')
 insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'9.1.2',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
 GO
+
+-----------------------------------------------
+Insert into menu_sistema values('10','Manufactura Ligera','rpManufacturaLigera',1,'0',0)
+GO
+
 IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '10')
 insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'10',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
 GO
@@ -69,6 +74,7 @@ GO
 insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'10.1.1.2',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
 GO
 
+-----------------------------------------------------------------------------------------------------
 Insert into menu_sistema values('7.9','Mantenimiento base de datos','rpgActualizacionesBD',2,'7',0)
 GO
 Insert into menu_sistema values('7.9.1','Actualizar versión','mnuActualizarBD',3,'7.9',0)
