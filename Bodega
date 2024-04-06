@@ -1,3 +1,7 @@
+--#CKFK20240405 Se agrega esta campo para poder saber si la bodega tiene interface con SAP
+ALTER TABLE bodega ADD 
+interface_SAP bit not null default 0
+
 --#CKFK20240403 Se agregan estos Id para poder tener el valor por defecto para la impresión de la licencia de los productos
 ALTER TABLE bodega ADD 
 IdTipoEtiquetaLicencia int NOT NULL default 0,
