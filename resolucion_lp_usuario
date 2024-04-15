@@ -1,0 +1,19 @@
+CREATE TABLE [dbo].[resolucion_lp_usuario](
+	[idresolucionlpusuario] [int] NOT NULL,
+	[idusuario] [int] NOT NULL,
+	[idbodega] [int] NULL,
+	[serie] [nvarchar](50) NULL,
+	[correlativo_inicial] [int] NULL,
+	[correlativo_final] [int] NULL,
+	[correlativo_actual] [int] NULL,
+	[activo] [bit] NULL,
+	[user_agr] [nvarchar](25) NOT NULL,
+	[fec_agr] [datetime] NOT NULL,
+	[user_mod] [nvarchar](25) NOT NULL,
+	[fec_mod] [datetime] NOT NULL,
+ CONSTRAINT [PK_resolucion_lp_usuario] PRIMARY KEY CLUSTERED 
+(
+	[idresolucionlpusuario] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
