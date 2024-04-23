@@ -2,7 +2,8 @@
 /******#CKFK 19-Apr-24 11:26:56 PM Se agrega campo IdArea ******/
 ALTER VIEW [dbo].[VW_Stock_Res]
 AS
-SELECT dbo.stock.idbodega, dbo.bodega.nombre AS Bodega, dbo.propietarios.IdPropietario, dbo.propietario_bodega.IdPropietarioBodega, dbo.propietarios.nombre_comercial AS Propietario, dbo.producto.IdProducto, 
+
+SELECT '5',dbo.stock.IdBodega, dbo.bodega.nombre AS Bodega, dbo.propietarios.IdPropietario, dbo.propietario_bodega.IdPropietarioBodega, dbo.propietarios.nombre_comercial AS Propietario, dbo.producto.IdProducto, 
                   dbo.producto_bodega.IdProductoBodega, dbo.stock.IdStock, dbo.stock.IdUbicacion_anterior, dbo.unidad_medida.IdUnidadMedida, dbo.stock.IdProductoEstado, dbo.stock.IdPresentacion, dbo.stock.IdRecepcionEnc, dbo.producto.codigo, 
                   dbo.producto.codigo_barra, dbo.producto.nombre, dbo.unidad_medida.Nombre AS UnidadMedida, dbo.producto_presentacion.nombre AS Presentacion, dbo.stock.lote, dbo.stock.fecha_ingreso, dbo.stock.fecha_vence, 
                   dbo.stock.cantidad AS Cantidad_UMBas, ISNULL(dbo.stock.cantidad, 0) AS CantidadSF, ISNULL(dbo.stock.cantidad / dbo.producto_presentacion.factor, 0) AS Cantidad_Presentacion, dbo.producto_presentacion.factor, 
@@ -28,8 +29,8 @@ SELECT dbo.stock.idbodega, dbo.bodega.nombre AS Bodega, dbo.propietarios.IdPropi
                   AS ingreso_ticket, dbo.bodega.IdEmpresa, dbo.producto.IdTipoEtiqueta, dbo.bodega_ubicacion.ubicacion_picking, dbo.producto_presentacion.CamasPorTarima, dbo.producto_presentacion.CajasPorCama, MAX(dbo.stock_res.IdPedido) 
                   AS IdPedido, dbo.stock.pallet_no_estandar, ISNULL(dbo.trans_oc_embarcador.Nombre, 'N/D') AS Embarcador, ISNULL(dbo.trans_oc_enc.IdOrdenCompraEnc, 0) AS Documento_Ingreso, SUM(ISNULL(dbo.stock_res.cantidad, 0)) 
                   AS CantidadReservada, dbo.Nombre_Completo_Ubicacion(dbo.stock.IdUbicacion, dbo.bodega_ubicacion.IdBodega) AS Nombre_Completo, dbo.bodega_tramo.es_rack, ISNULL(dbo.trans_oc_enc.Referencia, '') AS ReferenciaOCEnc, 
-                  dbo.producto.precio AS precio_producto, dbo.producto.costo AS costo_producto, dbo.trans_re_det.costo AS costo_ingreso, dbo.stock.IdRecepcionDet, dbo.trans_oc_ti.Nombre AS Ingreso, dbo.trans_oc_ti.es_devolucion, 
-                  dbo.trans_re_det.No_Linea, dbo.bodega_ubicacion.IdArea
+                  dbo.producto.precio AS precio_producto, dbo.producto.costo AS costo_producto, dbo.trans_re_det.costo AS costo_ingreso, dbo.stock.IdRecepcionDet,ISNULL(trans_oc_ti.Nombre,'ND') Ingreso, ISNULL(trans_oc_ti.es_devolucion,0) es_devolucion,
+				  ISNULL(trans_re_det.No_Linea,0) No_Linea, ISNULL(bodega_ubicacion.IdArea,0) IdArea
 FROM     dbo.p_parametro RIGHT OUTER JOIN
                   dbo.producto_parametro_a RIGHT OUTER JOIN
                   dbo.producto_parametros RIGHT OUTER JOIN
@@ -54,7 +55,7 @@ FROM     dbo.p_parametro RIGHT OUTER JOIN
                   dbo.producto_parametro_b.IdProductoParametroB = dbo.producto.IDPRODUCTOPARAMETROB ON dbo.producto_clasificacion.IdClasificacion = dbo.producto.IdClasificacion LEFT OUTER JOIN
                   dbo.stock_res ON dbo.stock.IdStock = dbo.stock_res.IdStock ON dbo.trans_re_oc.IdRecepcionEnc = dbo.stock.IdRecepcionEnc LEFT OUTER JOIN
                   dbo.motivo_devolucion ON dbo.trans_oc_enc.IdMotivoDevolucion = dbo.motivo_devolucion.IdMotivoDevolucion ON dbo.trans_oc_pol.IdOrdenCompraEnc = dbo.trans_oc_enc.IdOrdenCompraEnc ON 
-                  dbo.bodega_ubicacion.IdBodega = dbo.stock.idbodega AND dbo.bodega_ubicacion.IdUbicacion = dbo.stock.IdUbicacion ON dbo.producto_presentacion.IdPresentacion = dbo.stock.IdPresentacion ON 
+                  dbo.bodega_ubicacion.IdBodega = dbo.stock.IdBodega AND dbo.bodega_ubicacion.IdUbicacion = dbo.stock.IdUbicacion ON dbo.producto_presentacion.IdPresentacion = dbo.stock.IdPresentacion ON 
                   dbo.indice_rotacion.IdIndiceRotacion = dbo.producto.IdIndiceRotacion ON dbo.stock_parametro.IdStock = dbo.stock.IdStock ON dbo.producto_parametros.IdProductoParametro = dbo.stock_parametro.IdProductoParametro AND 
                   dbo.producto_parametros.IdProducto = dbo.producto.IdProducto ON dbo.producto_parametro_a.IdProductoParametroA = dbo.producto.IDPRODUCTOPARAMETROA LEFT OUTER JOIN
                   dbo.producto_estado ON dbo.stock.IdProductoEstado = dbo.producto_estado.IdEstado LEFT OUTER JOIN
@@ -66,9 +67,9 @@ FROM     dbo.p_parametro RIGHT OUTER JOIN
                   dbo.trans_re_det ON dbo.trans_re_det.IdRecepcionEnc = dbo.trans_re_enc.IdRecepcionEnc AND dbo.stock.IdRecepcionDet = dbo.trans_re_det.IdRecepcionDet LEFT OUTER JOIN
                   dbo.trans_oc_det ON dbo.trans_re_det.IdOrdenCompraDet = dbo.trans_oc_det.IdOrdenCompraDet AND dbo.trans_re_det.IdOrdenCompraEnc = dbo.trans_oc_det.IdOrdenCompraEnc LEFT OUTER JOIN
                   dbo.trans_oc_embarcador ON dbo.trans_oc_det.IdEmbarcador = dbo.trans_oc_embarcador.IdEmbarcador INNER JOIN
-                  dbo.bodega ON dbo.stock.idbodega = dbo.bodega.IdBodega LEFT OUTER JOIN
-                  dbo.tms_ticket ON dbo.trans_oc_enc.no_ticket_tms = dbo.tms_ticket.IdTicket INNER JOIN
-                  dbo.trans_oc_ti ON dbo.trans_oc_enc.IdTipoIngresoOC = dbo.trans_oc_ti.IdTipoIngresoOC
+                  dbo.bodega ON dbo.stock.IdBodega = dbo.bodega.IdBodega LEFT OUTER JOIN
+                  dbo.tms_ticket ON dbo.trans_oc_enc.no_ticket_tms = dbo.tms_ticket.IdTicket
+				  LEFT outer join trans_oc_ti on dbo.trans_oc_enc.IdTipoIngresoOC = trans_oc_ti.IdTipoIngresoOC
 GROUP BY dbo.propietarios.nombre_comercial, dbo.propietarios.IdPropietario, dbo.stock.IdStock, dbo.bodega_ubicacion.IdUbicacion, dbo.stock.IdUbicacion_anterior, dbo.propietario_bodega.IdPropietarioBodega, 
                   dbo.producto_bodega.IdProductoBodega, dbo.unidad_medida.IdUnidadMedida, dbo.unidad_medida.Nombre, dbo.producto_presentacion.nombre, dbo.producto.IdProducto, dbo.producto.codigo, dbo.producto.nombre, dbo.stock.lote, 
                   dbo.stock.fecha_ingreso, dbo.stock.serial, dbo.stock.añada, dbo.stock.fecha_vence, dbo.stock.IdProductoEstado, dbo.producto_estado.nombre, dbo.producto_estado.utilizable, dbo.producto_estado.dañado, dbo.stock.IdUbicacion, 
@@ -78,12 +79,12 @@ GROUP BY dbo.propietarios.nombre_comercial, dbo.propietarios.IdPropietario, dbo.
                   dbo.stock.cantidad / dbo.producto_presentacion.factor, dbo.stock.atributo_variante_1, dbo.bodega_ubicacion.nivel, dbo.bodega_ubicacion.indice_x, dbo.bodega_ubicacion.descripcion, dbo.bodega_tramo.descripcion, 
                   dbo.bodega_ubicacion.orientacion_pos, dbo.motivo_devolucion.Nombre, dbo.trans_oc_pol.codigo_poliza, dbo.bodega_ubicacion.IdBodega, dbo.trans_oc_pol.numero_orden, dbo.producto_familia.nombre, dbo.trans_oc_pol.NoPoliza, 
                   dbo.trans_oc_enc.Referencia, dbo.bodega_ubicacion.IdArea, dbo.producto_clasificacion.nombre, dbo.producto_parametro_a.IdProductoParametroA, dbo.producto_parametro_b.IdProductoParametroB, 
-                  dbo.producto_parametro_a.Nombre, dbo.producto_parametro_b.Nombre, dbo.stock.idbodega, dbo.p_parametro.descripcion, dbo.p_parametro.tipo, dbo.stock_parametro.valor_numerico, dbo.stock_parametro.valor_texto, 
+                  dbo.producto_parametro_a.Nombre, dbo.producto_parametro_b.Nombre, dbo.stock.IdBodega, dbo.p_parametro.descripcion, dbo.p_parametro.tipo, dbo.stock_parametro.valor_numerico, dbo.stock_parametro.valor_texto, 
                   dbo.stock_parametro.valor_fecha, dbo.stock_parametro.valor_logico, dbo.producto_tipo.IdTipoProducto, dbo.producto_marca.IdMarca, dbo.producto_marca.nombre, dbo.producto_tipo.NombreTipoProducto, 
                   dbo.bodega_ubicacion.activo, dbo.bodega_ubicacion.bloqueada, dbo.bodega_ubicacion.ubicacion_merma, dbo.trans_oc_enc.IdOrdenCompraEnc, dbo.stock_det.posiciones, dbo.trans_oc_det.costo, dbo.trans_oc_det.cantidad_recibida, 
                   dbo.trans_oc_det.IdEmbarcador, dbo.trans_oc_embarcador.Nombre, dbo.bodega.nombre, dbo.tms_ticket.Fecha_Ingreso, dbo.bodega.IdEmpresa, dbo.producto.IdTipoEtiqueta, dbo.bodega_ubicacion.ubicacion_picking, 
                   dbo.producto_presentacion.CamasPorTarima, dbo.producto_presentacion.CajasPorCama, dbo.stock.pallet_no_estandar, dbo.bodega_tramo.es_rack, dbo.producto.precio, dbo.producto.costo, dbo.trans_re_det.costo, 
-                  dbo.stock.IdRecepcionDet, dbo.trans_oc_ti.Nombre, dbo.trans_oc_ti.es_devolucion, dbo.trans_re_det.No_Linea, dbo.bodega_ubicacion.IdArea
+                  dbo.stock.IdRecepcionDet,trans_oc_ti.Nombre, trans_oc_ti.es_devolucion,trans_re_det.No_Linea, bodega_ubicacion.IdArea
 GO
 
 /--#GT12032024: se agerga el no_linea de la recepcion para saber de que linea despachar en fiscal
