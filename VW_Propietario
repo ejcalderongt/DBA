@@ -1,8 +1,9 @@
 
 ALTER VIEW [dbo].[VW_Propietario]
 AS
-SELECT        e.nombre AS Empresa, p.IdPropietario, p.IdEmpresa, p.IdTipoActualizacionCosto, p.contacto, p.nombre_comercial, p.imagen, p.telefono, p.direccion, p.activo, p.user_agr, p.fec_agr, p.user_mod, p.fec_mod, p.email, 
-                         p.actualiza_costo_oc, p.color, p.codigo, p.sistema, p.nit
+SELECT        e.nombre AS Empresa, p.IdPropietario, p.IdEmpresa, p.IdTipoActualizacionCosto, p.contacto, p.nombre_comercial, p.imagen, p.telefono, p.direccion,
+              p.activo, p.user_agr, p.fec_agr, p.user_mod, p.fec_mod, p.email, 
+              p.actualiza_costo_oc, p.color, p.codigo, p.sistema, p.nit, p.es_consolidador
 FROM            dbo.propietarios AS p LEFT OUTER JOIN
                          dbo.empresa AS e ON p.IdEmpresa = e.IdEmpresa
 GO
