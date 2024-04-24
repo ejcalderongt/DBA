@@ -3,7 +3,7 @@
 ALTER VIEW [dbo].[VW_Stock_Res]
 AS
 
-SELECT '5',dbo.stock.IdBodega, dbo.bodega.nombre AS Bodega, dbo.propietarios.IdPropietario, dbo.propietario_bodega.IdPropietarioBodega, dbo.propietarios.nombre_comercial AS Propietario, dbo.producto.IdProducto, 
+SELECT dbo.stock.IdBodega, dbo.bodega.nombre AS Bodega, dbo.propietarios.IdPropietario, dbo.propietario_bodega.IdPropietarioBodega, dbo.propietarios.nombre_comercial AS Propietario, dbo.producto.IdProducto, 
                   dbo.producto_bodega.IdProductoBodega, dbo.stock.IdStock, dbo.stock.IdUbicacion_anterior, dbo.unidad_medida.IdUnidadMedida, dbo.stock.IdProductoEstado, dbo.stock.IdPresentacion, dbo.stock.IdRecepcionEnc, dbo.producto.codigo, 
                   dbo.producto.codigo_barra, dbo.producto.nombre, dbo.unidad_medida.Nombre AS UnidadMedida, dbo.producto_presentacion.nombre AS Presentacion, dbo.stock.lote, dbo.stock.fecha_ingreso, dbo.stock.fecha_vence, 
                   dbo.stock.cantidad AS Cantidad_UMBas, ISNULL(dbo.stock.cantidad, 0) AS CantidadSF, ISNULL(dbo.stock.cantidad / dbo.producto_presentacion.factor, 0) AS Cantidad_Presentacion, dbo.producto_presentacion.factor, 
