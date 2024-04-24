@@ -1,3 +1,5 @@
+--#GT24042024 campo para identificar a los consolidadores en bodega multipropietario
+alter table propietarios add es_consolidador bit default null
 
 alter table propietarios add NIT nvarchar(50)
 ALTER TABLE propietarios ADD codigo_acceso nvarchar(50) NULL,
