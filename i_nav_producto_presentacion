@@ -1,0 +1,11 @@
+CREATE  TABLE [dbo].[i_nav_producto_presentacion](
+	[No] [nvarchar](50) NOT NULL,
+	[Codigo_Pres] [nvarchar](150) NOT NULL,
+	[Factor] [float] NULL
+ CONSTRAINT [PK_i_nav_producto_presentacion] PRIMARY KEY CLUSTERED 
+(
+	[No] ASC,
+	[Codigo_Pres] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
