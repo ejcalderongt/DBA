@@ -1,3 +1,7 @@
+--#CKFK20240425
+ALTER TABLE [dbo].[trans_oc_det] ADD  DEFAULT ((0)) FOR [No_Linea]
+GO
+
 alter table trans_oc_det
 add valor_aduana float default 0,
 valor_fob float default 0,
