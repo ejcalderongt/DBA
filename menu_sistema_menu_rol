@@ -1,3 +1,8 @@
+--#CKFK 20240426  Se agregó esta opción para eliminar líneas en la recepciónn
+Insert into menu_sistema values('2.1.1.2','Eliminar línea recepción','mnuEliminarLineaRecepcion',4,'2.1.1',1)
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '2.1.1.2')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'2.1.1.2',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+
 --#CKFK 20240221 Corrección a los menús de servicios, control de calidad y manufactura ligera
 delete from menu_sistema where IdMenu like '8%'
 delete from menu_rol where IdMenu  like '8%'
