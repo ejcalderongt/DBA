@@ -1,0 +1,22 @@
+--#GT08052024: tabla para registrar movimientos de prefactura que no es consolidador.
+
+CREATE TABLE [dbo].[trans_prefactura_mov](
+	[Idtransprefacturamov] [int] NOT NULL,
+	[IdTransPrefacturaEnc] [int] NULL,
+	[IdOrdenCompraPol] [int] NULL,
+	[poliza_oc_numero_orden] [nvarchar](50) NULL,
+	[cantidad_tarimas] [int] NULL,
+	[cantidad_cajas] [int] NULL,
+	[costo_x_caja] [decimal](18, 5) NULL,
+	[almacenaje] [decimal](18, 5) NULL,
+	[manejo] [decimal](18, 5) NULL,
+	[user_agr] [nvarchar](50) NULL,
+	[fec_agr] [datetime] NULL,
+	[user_mod] [nvarchar](50) NULL,
+	[fec_mod] [datetime] NULL,
+ CONSTRAINT [PK_trans_prefactura_mov] PRIMARY KEY CLUSTERED 
+(
+	[Idtransprefacturamov] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
