@@ -1,0 +1,1 @@
+alter table producto_marca add codigo nvarchar(50) null
