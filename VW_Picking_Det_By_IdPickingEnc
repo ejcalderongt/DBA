@@ -1,3 +1,30 @@
+/****** #CKFK20240516 Agregamos campo IdTipoManufactura con la palabra Bono ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER VIEW [dbo].[VW_Picking_Det_By_IdPickingEnc]
+AS
+SELECT        b.nombre AS Bodega, c.nombre_comercial AS Cliente, pr.nombre_comercial AS Propietario, penc.Fecha_Pedido, pcdet.IdPickingDet, pcdet.IdPickingEnc, pcdet.IdPedidoDet, pcdet.IdOperadorBodega, pcdet.cantidad, 
+                         pcdet.cliente_dias, pcdet.cantidad_recibida, pcdet.user_agr, pcdet.fec_agr, pcdet.user_mod, pcdet.fec_mod, pcdet.activo, pcdet.IdPedidoEnc, p.IdProducto, pdet.IdPresentacion, pdet.IdUnidadMedidaBasica, pdet.IdEstado, 
+                         dbo.producto_estado.nombre AS Nombre_Estado, dbo.producto_presentacion.nombre AS Nombre_Presentacion, dbo.unidad_medida.Nombre AS Nombre_Unidad_Medida, p.codigo, p.nombre,
+						 case when p.IdTipoManufactura = 1 THEN 'Bono' ELSE '' END Bono
+FROM            dbo.trans_picking_det AS pcdet INNER JOIN
+                         dbo.trans_pe_det AS pdet ON pcdet.IdPedidoDet = pdet.IdPedidoDet INNER JOIN
+                         dbo.trans_pe_enc AS penc ON pdet.IdPedidoEnc = penc.IdPedidoEnc INNER JOIN
+                         dbo.propietario_bodega AS prb ON penc.IdPropietarioBodega = prb.IdPropietarioBodega INNER JOIN
+                         dbo.propietarios AS pr ON prb.IdPropietario = pr.IdPropietario INNER JOIN
+                         dbo.bodega AS b ON penc.IdBodega = b.IdBodega INNER JOIN
+                         dbo.cliente AS c ON penc.IdCliente = c.IdCliente INNER JOIN
+                         dbo.producto_bodega AS pb ON pdet.IdProductoBodega = pb.IdProductoBodega INNER JOIN
+                         dbo.producto AS p ON pb.IdProducto = p.IdProducto INNER JOIN
+                         dbo.producto_estado ON pdet.IdEstado = dbo.producto_estado.IdEstado INNER JOIN
+                         dbo.unidad_medida ON pdet.IdUnidadMedidaBasica = dbo.unidad_medida.IdUnidadMedida LEFT OUTER JOIN
+                         dbo.producto_presentacion ON pdet.IdPresentacion = dbo.producto_presentacion.IdPresentacion
+GO
+
 ALTER VIEW [dbo].[VW_Picking_Det_By_IdPickingEnc]
 AS
 SELECT        b.nombre AS Bodega, c.nombre_comercial AS Cliente, pr.nombre_comercial AS Propietario, penc.Fecha_Pedido, pcdet.IdPickingDet, pcdet.IdPickingEnc, pcdet.IdPedidoDet, pcdet.IdOperadorBodega, pcdet.cantidad, 
