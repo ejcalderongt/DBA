@@ -1,3 +1,27 @@
+/****** #EJC202405 Agregamos campos nuevos a la vista de orden de compra******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER VIEW [dbo].[VW_OrdenCompra]
+AS
+SELECT DISTINCT 
+                  enc.IdOrdenCompraEnc AS Código, b.nombre AS Bodega, pr.nombre_comercial AS Propietario, pv.nombre AS Proveedor, tpi.Nombre AS [Tipo Ingreso], e.Nombre AS Estado, enc.No_Documento AS [No. Documento], enc.Referencia, enc.Procedencia, prb.IdPropietario, enc.Activo, 
+                  enc.IdPropietarioBodega, enc.Fec_Agr AS Fecha, tpi.es_devolucion, enc.Enviado_A_ERP, enc.IdBodega, dbo.trans_oc_pol.codigo_poliza AS NoPoliza, dbo.trans_oc_pol.numero_orden AS NoOrden, enc.no_documento_recepcion_erp AS No_Documento_Recepcion_ERP, 
+                  enc.No_Documento_Devolucion, enc.No_Documento_Ubicacion_ERP, enc.no_ticket_tms AS No_Ticket_TMS, enc.No_Marchamo, enc.Control_Poliza
+FROM        dbo.proveedor AS pv INNER JOIN
+                  dbo.proveedor_bodega AS pb ON pv.IdProveedor = pb.IdProveedor RIGHT OUTER JOIN
+                  dbo.trans_oc_pol RIGHT OUTER JOIN
+                  dbo.bodega AS b INNER JOIN
+                  dbo.trans_oc_ti AS tpi INNER JOIN
+                  dbo.trans_oc_enc AS enc ON tpi.IdTipoIngresoOC = enc.IdTipoIngresoOC INNER JOIN
+                  dbo.trans_oc_estado AS e ON enc.IdEstadoOC = e.IdEstadoOC ON b.IdBodega = enc.IdBodega ON dbo.trans_oc_pol.IdOrdenCompraEnc = enc.IdOrdenCompraEnc ON pb.IdAsignacion = enc.IdProveedorBodega LEFT OUTER JOIN
+                  dbo.propietarios AS pr INNER JOIN
+                  dbo.propietario_bodega AS prb ON pr.IdPropietario = prb.IdPropietario ON enc.IdPropietarioBodega = prb.IdPropietarioBodega
+GO
+
 /****** Object:  View [dbo].[VW_OrdenCompra]    Script Date: 28/04/2021 14:35:32 ******/
 
 ALTER VIEW [dbo].[VW_OrdenCompra]
