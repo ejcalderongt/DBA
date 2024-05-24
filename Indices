@@ -1,3 +1,9 @@
+---20240122 Indices en trans_movimientos
+CREATE NONCLUSTERED INDEX NCL_EJC20240524_trans_movimientos
+ON [dbo].[trans_movimientos] ([IdTransaccion],[IdTipoTarea])
+INCLUDE ([IdPropietarioBodega],[IdProductoBodega],[IdUbicacionOrigen],[IdUbicacionDestino],[IdPresentacion],[IdEstadoOrigen],[IdEstadoDestino],[IdUnidadMedida],[IdBodegaDestino],[IdRecepcion],[cantidad],[serie],[peso],[lote],[fecha_vence],[fecha],[barra_pallet],[hora_ini],[hora_fin],[fecha_agr],[usuario_agr],[cantidad_hist],[peso_hist],[lic_plate],[IdOperadorBodega],[IdRecepcionDet],[IdPedidoEnc],[IdPedidoDet],[IdDespachoEnc],[IdDespachoDet])
+GO
+
 ---20240122 Indices en trans_picking_ubic y movimientos
 CREATE NONCLUSTERED INDEX NCLI_Trans_Picking_Ubic_20240122_EJC
 ON [dbo].[trans_picking_ubic] ([activo],[IdOperadorBodega_Pickeo],[IdPedidoEnc])
