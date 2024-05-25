@@ -1,8 +1,10 @@
+--#CKFK20240525 Agregamos la bodega origen
+ALTER TABLE trans_pe_enc ADD bodega_origen NVARCHAR(50) NULL
+
 --#GT25032024: campo para identificar tipo manufactura a nivel de encabezado del pedido
 
 ALTER TABLE trans_pe_enc add IdTipoManufactura int null
 GO
-
 
 --#EJC202111174: Alamacenar el no de picking de NAV.
 alter table trans_pe_enc add No_Picking_ERP nvarchar(50)
