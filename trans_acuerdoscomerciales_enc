@@ -1,0 +1,28 @@
+/****** Object:  Table [dbo].[trans_acuerdoscomerciales_enc]    Script Date: 29/05/2024 13:33:30 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[trans_acuerdoscomerciales_enc](
+	[IdAcuerdoEnc] [int] NOT NULL,
+	[IdCliente] [int] NOT NULL,
+	[codigo_acuerdo] [int] NULL,
+	[descripcion] [varchar](500) NULL,
+	[tipo_cobro] [char](1) NULL,
+	[cod_moneda] [int] NULL,
+	[moneda] [varchar](20) NULL,
+	[estado] [bit] NULL,
+	[user_agr] [nvarchar](30) NULL,
+	[fec_agr] [datetime] NULL,
+	[user_mod] [nvarchar](30) NULL,
+	[fec_mod] [datetime] NULL,
+	[fec_erp] [datetime] NULL,
+ CONSTRAINT [PK_trans_acuerdoscomerciales_enc] PRIMARY KEY CLUSTERED 
+(
+	[IdAcuerdoEnc] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
