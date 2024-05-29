@@ -1,0 +1,53 @@
+/****** Object:  Table [dbo].[trans_acuerdoscomerciales_det]    Script Date: 29/05/2024 13:33:46 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[trans_acuerdoscomerciales_det](
+	[IdAcuerdoDet] [int] NOT NULL,
+	[IdAcuerdoEnc] [int] NULL,
+	[codigo_producto] [varchar](50) NOT NULL,
+	[servicio] [varchar](100) NULL,
+	[nemonico] [varchar](10) NULL,
+	[codigo_acuerdo] [int] NULL,
+	[correlativo_detalleacuerdo] [int] NULL,
+	[descripcion] [varchar](200) NULL,
+	[numero_unidades] [numeric](15, 5) NULL,
+	[monto] [numeric](20, 8) NULL,
+	[porcentaje] [numeric](15, 5) NULL,
+	[dias_eventos] [int] NULL,
+	[corre_cbcatalogoproductos] [int] NULL,
+	[estado] [bit] NULL,
+	[prioridad] [tinyint] NULL,
+	[IdBodega] [int] NULL,
+	[IdTipoCobro] [int] NULL,
+	[user_agr] [int] NULL,
+	[fec_agr] [datetime] NULL,
+	[user_mod] [int] NULL,
+	[fec_mod] [datetime] NULL,
+ CONSTRAINT [PK_trans_acuerdoscomerciales_det] PRIMARY KEY CLUSTERED 
+(
+	[IdAcuerdoDet] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[trans_acuerdoscomerciales_det] ADD  CONSTRAINT [DF__trans_det__estad__3DB7E997]  DEFAULT ((0)) FOR [estado]
+GO
+
+ALTER TABLE [dbo].[trans_acuerdoscomerciales_det] ADD  CONSTRAINT [DF__trans_det__prior__3EAC0DD0]  DEFAULT ((0)) FOR [prioridad]
+GO
+
+ALTER TABLE [dbo].[trans_acuerdoscomerciales_det]  WITH CHECK ADD  CONSTRAINT [FK_trans_acuerdoscomerciales_det_trans_acuerdoscomerciales_enc] FOREIGN KEY([IdAcuerdoEnc])
+REFERENCES [dbo].[trans_acuerdoscomerciales_enc] ([IdAcuerdoEnc])
+GO
+
+ALTER TABLE [dbo].[trans_acuerdoscomerciales_det] CHECK CONSTRAINT [FK_trans_acuerdoscomerciales_det_trans_acuerdoscomerciales_enc]
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Bodega donde aplicar el servicio' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_acuerdoscomerciales_det', @level2type=N'COLUMN',@level2name=N'IdBodega'
+GO
+
+
