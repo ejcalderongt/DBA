@@ -1,4 +1,4 @@
-/******#CKFK 29-05-24 11:57 PM Se agregaron campos ,trans_oc_enc.Referencia,trans_re_oc.No_Docto ******/
+/******#CKFK 29-05-24 11:57 PM Se agregaron campos ,trans_oc_enc.Referencia,trans_re_oc.No_Docto, dbo.trans_re_enc.No_Contenedor ******/
 ALTER VIEW [dbo].[VW_Stock_Res]
 AS
 
@@ -29,7 +29,7 @@ SELECT dbo.stock.IdBodega, dbo.bodega.nombre AS Bodega, dbo.propietarios.IdPropi
                   AS IdPedido, dbo.stock.pallet_no_estandar, ISNULL(dbo.trans_oc_embarcador.Nombre, 'N/D') AS Embarcador, ISNULL(dbo.trans_oc_enc.IdOrdenCompraEnc, 0) AS Documento_Ingreso, SUM(ISNULL(dbo.stock_res.cantidad, 0)) 
                   AS CantidadReservada, dbo.Nombre_Completo_Ubicacion(dbo.stock.IdUbicacion, dbo.bodega_ubicacion.IdBodega) AS Nombre_Completo, dbo.bodega_tramo.es_rack, ISNULL(dbo.trans_oc_enc.Referencia, '') AS ReferenciaOCEnc, 
                   dbo.producto.precio AS precio_producto, dbo.producto.costo AS costo_producto, dbo.trans_re_det.costo AS costo_ingreso, dbo.stock.IdRecepcionDet,ISNULL(trans_oc_ti.Nombre,'ND') Ingreso, ISNULL(trans_oc_ti.es_devolucion,0) es_devolucion,
-				  ISNULL(trans_re_det.No_Linea,0) No_Linea, ISNULL(bodega_ubicacion.IdArea,0) IdArea,trans_oc_enc.Referencia,trans_re_oc.No_Docto, , dbo.trans_re_enc.No_Contenedor
+		  ISNULL(trans_re_det.No_Linea,0) No_Linea, ISNULL(bodega_ubicacion.IdArea,0) IdArea,trans_oc_enc.Referencia,trans_re_oc.No_Docto, , dbo.trans_re_enc.No_Contenedor
 FROM     dbo.p_parametro RIGHT OUTER JOIN
                   dbo.producto_parametro_a RIGHT OUTER JOIN
                   dbo.producto_parametros RIGHT OUTER JOIN
