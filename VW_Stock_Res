@@ -29,7 +29,7 @@ SELECT dbo.stock.IdBodega, dbo.bodega.nombre AS Bodega, dbo.propietarios.IdPropi
                   AS IdPedido, dbo.stock.pallet_no_estandar, ISNULL(dbo.trans_oc_embarcador.Nombre, 'N/D') AS Embarcador, ISNULL(dbo.trans_oc_enc.IdOrdenCompraEnc, 0) AS Documento_Ingreso, SUM(ISNULL(dbo.stock_res.cantidad, 0)) 
                   AS CantidadReservada, dbo.Nombre_Completo_Ubicacion(dbo.stock.IdUbicacion, dbo.bodega_ubicacion.IdBodega) AS Nombre_Completo, dbo.bodega_tramo.es_rack, ISNULL(dbo.trans_oc_enc.Referencia, '') AS ReferenciaOCEnc, 
                   dbo.producto.precio AS precio_producto, dbo.producto.costo AS costo_producto, dbo.trans_re_det.costo AS costo_ingreso, dbo.stock.IdRecepcionDet,ISNULL(trans_oc_ti.Nombre,'ND') Ingreso, ISNULL(trans_oc_ti.es_devolucion,0) es_devolucion,
-				  ISNULL(trans_re_det.No_Linea,0) No_Linea, ISNULL(bodega_ubicacion.IdArea,0) IdArea,trans_oc_enc.Referencia,trans_re_oc.No_Docto
+				  ISNULL(trans_re_det.No_Linea,0) No_Linea, ISNULL(bodega_ubicacion.IdArea,0) IdArea,trans_oc_enc.Referencia,trans_re_oc.No_Docto, , dbo.trans_re_enc.No_Contenedor
 FROM     dbo.p_parametro RIGHT OUTER JOIN
                   dbo.producto_parametro_a RIGHT OUTER JOIN
                   dbo.producto_parametros RIGHT OUTER JOIN
@@ -83,7 +83,7 @@ GROUP BY dbo.propietarios.nombre_comercial, dbo.propietarios.IdPropietario, dbo.
                   dbo.bodega_ubicacion.activo, dbo.bodega_ubicacion.bloqueada, dbo.bodega_ubicacion.ubicacion_merma, dbo.trans_oc_enc.IdOrdenCompraEnc, dbo.stock_det.posiciones, dbo.trans_oc_det.costo, dbo.trans_oc_det.cantidad_recibida, 
                   dbo.trans_oc_det.IdEmbarcador, dbo.trans_oc_embarcador.Nombre, dbo.bodega.nombre, dbo.tms_ticket.Fecha_Ingreso, dbo.bodega.IdEmpresa, dbo.producto.IdTipoEtiqueta, dbo.bodega_ubicacion.ubicacion_picking, 
                   dbo.producto_presentacion.CamasPorTarima, dbo.producto_presentacion.CajasPorCama, dbo.stock.pallet_no_estandar, dbo.bodega_tramo.es_rack, dbo.producto.precio, dbo.producto.costo, dbo.trans_re_det.costo, 
-                  dbo.stock.IdRecepcionDet,trans_oc_ti.Nombre, trans_oc_ti.es_devolucion,trans_re_det.No_Linea, bodega_ubicacion.IdArea,trans_oc_enc.Referencia,trans_re_oc.No_Docto
+                  dbo.stock.IdRecepcionDet,trans_oc_ti.Nombre, trans_oc_ti.es_devolucion,trans_re_det.No_Linea, bodega_ubicacion.IdArea,trans_oc_enc.Referencia,trans_re_oc.No_Docto, dbo.trans_re_enc.No_Contenedor
 GO
 
 /******#CKFK 19-Apr-24 11:26:56 PM Se agrega campo IdArea ******/
