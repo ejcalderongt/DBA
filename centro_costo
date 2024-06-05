@@ -1,3 +1,7 @@
+/******#EJC20240501 se agregó el campo Referencia ******/
+ ALTER TABLE [dbo].[centro_costo]
+ADD Referencia [nvarchar](150) NULL
+
 /****** Object:  Table [dbo].[centro_costo]    Script Date: 30/03/2022 08:11:34 ******/
 SET ANSI_NULLS ON
 GO
