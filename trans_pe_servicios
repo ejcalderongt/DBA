@@ -1,3 +1,45 @@
+--#GT05062024: campos adicionales para uso cealsa
+/****** Object:  Table [dbo].[trans_pe_servicios]    Script Date: 5/06/2024 08:55:51 ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[trans_pe_servicios]') AND type in (N'U'))
+DROP TABLE [dbo].[trans_pe_servicios]
+GO
+
+/****** Object:  Table [dbo].[trans_pe_servicios]    Script Date: 5/06/2024 08:55:51 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[trans_pe_servicios](
+	[IdOrdenPedidoServicio] [int] NOT NULL,
+	[IdOrdenPedidoEnc] [int] NOT NULL,
+	[IdAcuerdo] [int] NULL,
+	[IdServicio] [int] NULL,
+	[IdAcuerdoDet] [int] NULL,
+	[observacion] [nvarchar](150) NULL,
+	[codigo_producto] [nvarchar](50) NULL,
+	[nombre_servicio] [nvarchar](50) NULL,
+	[unid_medida] [int] NULL,
+	[nombre_unidad] [nvarchar](50) NULL,
+	[corre_detalleacuerdo] [int] NULL,
+	[corre_catalogoproductos] [int] NULL,
+	[cantidad] [int] NULL,
+	[IdpropietarioBodega] [int] NULL,
+	[user_agr] [nvarchar](50) NULL,
+	[fec_agr] [datetime] NULL,
+	[user_mod] [nvarchar](50) NULL,
+	[fec_mod] [datetime] NULL,
+ CONSTRAINT [PK_trans_pe_Serv] PRIMARY KEY CLUSTERED 
+(
+	[IdOrdenPedidoServicio] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+
+-----------------------------------------------------
 /****** Object:  Table [dbo].[trans_oc_servicios]    Script Date: 25/01/2021 19:52:06 ******/
 SET ANSI_NULLS ON
 GO
