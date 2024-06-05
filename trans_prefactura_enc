@@ -1,0 +1,147 @@
+EXEC sys.sp_dropextendedproperty @name=N'MS_Description' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_prefactura_enc', @level2type=N'COLUMN',@level2name=N'fecha_hasta'
+GO
+
+EXEC sys.sp_dropextendedproperty @name=N'MS_Description' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_prefactura_enc', @level2type=N'COLUMN',@level2name=N'fecha_desde'
+GO
+
+EXEC sys.sp_dropextendedproperty @name=N'MS_Description' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_prefactura_enc', @level2type=N'COLUMN',@level2name=N'poliza_pe_numero_orden'
+GO
+
+EXEC sys.sp_dropextendedproperty @name=N'MS_Description' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_prefactura_enc', @level2type=N'COLUMN',@level2name=N'IdOrdenPedidoPol'
+GO
+
+EXEC sys.sp_dropextendedproperty @name=N'MS_Description' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_prefactura_enc', @level2type=N'COLUMN',@level2name=N'poliza_oc_numero_orden'
+GO
+
+EXEC sys.sp_dropextendedproperty @name=N'MS_Description' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_prefactura_enc', @level2type=N'COLUMN',@level2name=N'IdOrdenCompraPol'
+GO
+
+EXEC sys.sp_dropextendedproperty @name=N'MS_Description' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_prefactura_enc', @level2type=N'COLUMN',@level2name=N'IdTipoCuenta'
+GO
+
+EXEC sys.sp_dropextendedproperty @name=N'MS_Description' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_prefactura_enc', @level2type=N'COLUMN',@level2name=N'IdClienteBodega'
+GO
+
+EXEC sys.sp_dropextendedproperty @name=N'MS_Description' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_prefactura_enc', @level2type=N'COLUMN',@level2name=N'IdPropietarioBodega'
+GO
+
+ALTER TABLE [dbo].[trans_prefactura_enc] DROP CONSTRAINT [FK_Trans_Prefactura_propietario_bodega]
+GO
+
+ALTER TABLE [dbo].[trans_prefactura_enc] DROP CONSTRAINT [FK_Trans_Prefactura_enc_trans_oc_enc]
+GO
+
+ALTER TABLE [dbo].[trans_prefactura_enc] DROP CONSTRAINT [FK_Trans_Prefactura_enc_cliente_bodega]
+GO
+
+ALTER TABLE [dbo].[trans_prefactura_enc] DROP CONSTRAINT [FK_Trans_Prefactura_bodega]
+GO
+
+ALTER TABLE [dbo].[trans_prefactura_enc] DROP CONSTRAINT [DF_trans_prefactura_enc_anulada]
+GO
+
+ALTER TABLE [dbo].[trans_prefactura_enc] DROP CONSTRAINT [DF_trans_prefactura_enc_IdTipoCuenta]
+GO
+
+/****** Object:  Table [dbo].[trans_prefactura_enc]    Script Date: 5/06/2024 08:47:19 ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[trans_prefactura_enc]') AND type in (N'U'))
+DROP TABLE [dbo].[trans_prefactura_enc]
+GO
+
+/****** Object:  Table [dbo].[trans_prefactura_enc]    Script Date: 5/06/2024 08:47:19 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[trans_prefactura_enc](
+	[IdTransPrefacturaEnc] [int] NOT NULL,
+	[IdBodega] [int] NOT NULL,
+	[IdPropietarioBodega] [int] NOT NULL,
+	[IdClienteBodega] [int] NULL,
+	[IdOrdenCompraEnc] [int] NULL,
+	[IdTipoCuenta] [int] NULL,
+	[Tipo_Cambio] [decimal](18, 4) NULL,
+	[IdOrdenCompraPol] [int] NULL,
+	[poliza_oc_numero_orden] [nvarchar](50) NULL,
+	[IdOrdenPedidoEnc] [int] NULL,
+	[IdOrdenPedidoPol] [int] NULL,
+	[poliza_pe_numero_orden] [nvarchar](50) NULL,
+	[user_agr] [nvarchar](50) NULL,
+	[fec_agr] [datetime] NULL,
+	[user_mod] [nvarchar](50) NULL,
+	[fec_mod] [datetime] NULL,
+	[anulada] [bit] NOT NULL,
+	[fecha_desde] [datetime] NULL,
+	[fecha_hasta] [datetime] NULL,
+	[es_consolidador] [bit] NULL,
+ CONSTRAINT [PK_Trans_Prefactura_1] PRIMARY KEY CLUSTERED 
+(
+	[IdTransPrefacturaEnc] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[trans_prefactura_enc] ADD  CONSTRAINT [DF_trans_prefactura_enc_IdTipoCuenta]  DEFAULT ((0)) FOR [IdTipoCuenta]
+GO
+
+ALTER TABLE [dbo].[trans_prefactura_enc] ADD  CONSTRAINT [DF_trans_prefactura_enc_anulada]  DEFAULT ((0)) FOR [anulada]
+GO
+
+ALTER TABLE [dbo].[trans_prefactura_enc]  WITH CHECK ADD  CONSTRAINT [FK_Trans_Prefactura_bodega] FOREIGN KEY([IdBodega])
+REFERENCES [dbo].[bodega] ([IdBodega])
+GO
+
+ALTER TABLE [dbo].[trans_prefactura_enc] CHECK CONSTRAINT [FK_Trans_Prefactura_bodega]
+GO
+
+ALTER TABLE [dbo].[trans_prefactura_enc]  WITH CHECK ADD  CONSTRAINT [FK_Trans_Prefactura_enc_cliente_bodega] FOREIGN KEY([IdClienteBodega])
+REFERENCES [dbo].[cliente_bodega] ([IdClienteBodega])
+GO
+
+ALTER TABLE [dbo].[trans_prefactura_enc] CHECK CONSTRAINT [FK_Trans_Prefactura_enc_cliente_bodega]
+GO
+
+ALTER TABLE [dbo].[trans_prefactura_enc]  WITH CHECK ADD  CONSTRAINT [FK_Trans_Prefactura_enc_trans_oc_enc] FOREIGN KEY([IdOrdenCompraEnc])
+REFERENCES [dbo].[trans_oc_enc] ([IdOrdenCompraEnc])
+GO
+
+ALTER TABLE [dbo].[trans_prefactura_enc] CHECK CONSTRAINT [FK_Trans_Prefactura_enc_trans_oc_enc]
+GO
+
+ALTER TABLE [dbo].[trans_prefactura_enc]  WITH CHECK ADD  CONSTRAINT [FK_Trans_Prefactura_propietario_bodega] FOREIGN KEY([IdPropietarioBodega])
+REFERENCES [dbo].[propietario_bodega] ([IdPropietarioBodega])
+GO
+
+ALTER TABLE [dbo].[trans_prefactura_enc] CHECK CONSTRAINT [FK_Trans_Prefactura_propietario_bodega]
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Consolidador' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_prefactura_enc', @level2type=N'COLUMN',@level2name=N'IdPropietarioBodega'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'consignatario menor o hijo de un consolidador' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_prefactura_enc', @level2type=N'COLUMN',@level2name=N'IdClienteBodega'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'indica si es precuenta o prefactura' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_prefactura_enc', @level2type=N'COLUMN',@level2name=N'IdTipoCuenta'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Relaciòn con pòliza de ingreso' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_prefactura_enc', @level2type=N'COLUMN',@level2name=N'IdOrdenCompraPol'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'almacenar nùmero de òrden por auditoria y accesibilidad' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_prefactura_enc', @level2type=N'COLUMN',@level2name=N'poliza_oc_numero_orden'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Relación con la póliza de salida' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_prefactura_enc', @level2type=N'COLUMN',@level2name=N'IdOrdenPedidoPol'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'numero de órden póliza de salida, almacenar por auditoría' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_prefactura_enc', @level2type=N'COLUMN',@level2name=N'poliza_pe_numero_orden'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Fecha inicial documento de precuenta o factura' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_prefactura_enc', @level2type=N'COLUMN',@level2name=N'fecha_desde'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Fecha final documento de precuenta o factura' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_prefactura_enc', @level2type=N'COLUMN',@level2name=N'fecha_hasta'
+GO
+
+
