@@ -7,6 +7,6 @@ alter table i_nav_ped_traslado_enc add RoadCodigoVendedor nvarchar(50) null
 alter table i_nav_ped_traslado_enc add Manufacturing_Process int null
 
 ALTER TABLE i_nav_ped_traslado_enc
-ADD Address2 NVARCHAR(255) NULL,
+ADD Address NVARCHAR(255) NULL,
     Comments NVARCHAR(255) NULL
 GO
