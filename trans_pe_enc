@@ -1,6 +1,11 @@
---#CKFK20240525 Agregamos la bodega origen
-ALTER TABLE trans_pe_enc ADD bodega_origen NVARCHAR(50) NULL
+--#CKFK20240606 Modificamos el campo Observacion porque era NVARCHAR(MAX)
+ALTER TABLE trans_pe_enc ALTER COLUMN Observacion NVARCHAR(255) NULL
 
+--#CKFK20240525 Agregamos la bodega origen y destino
+ALTER TABLE trans_pe_enc ADD bodega_origen NVARCHAR(50) NULL
+GO
+ALTER TABLE trans_pe_enc ADD bodega_destino NVARCHAR(50) NULL
+GO
 --#GT25032024: campo para identificar tipo manufactura a nivel de encabezado del pedido
 
 ALTER TABLE trans_pe_enc add IdTipoManufactura int null
