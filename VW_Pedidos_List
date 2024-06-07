@@ -7,12 +7,16 @@ GO
 
 ALTER VIEW [dbo].[VW_Pedidos_List]
 AS
-SELECT       dbo.trans_pe_enc.IdPedidoEnc AS Correlativo, dbo.trans_pe_enc.IdBodega, dbo.trans_pe_enc.no_documento, dbo.trans_pe_enc.referencia, dbo.trans_pe_enc.Fecha_Pedido, 
-                         dbo.cliente.codigo + ' - ' + dbo.cliente.nombre_comercial AS Cliente, dbo.trans_pe_enc.estado, dbo.bodega.nombre AS Bodega, dbo.bodega_muelles.nombre AS Muelle, dbo.propietarios.nombre_comercial AS Propietario, 
-                         dbo.road_p_vendedor.codigo + ' - ' + dbo.road_p_vendedor.nombre AS RoadVendedor, dbo.road_ruta.CODIGO + ' - ' + dbo.road_ruta.NOMBRE AS RoadRuta, dbo.trans_pe_enc.fec_agr AS Fecha, dbo.trans_pe_enc.anulado, 
-                         dbo.trans_pe_enc.activo, dbo.trans_pe_enc.Enviado_A_ERP, dbo.trans_pe_enc.fec_agr, dbo.trans_pe_enc.IdPickingEnc, dbo.trans_pe_tipo.Descripcion AS TipoDocumento,
-                         dbo.trans_pe_enc.no_despacho as IdDespachoEnc, dbo.trans_pe_enc.Observacion, Roadruta1.CODIGO + ' ' + Roadruta1.NOMBRE AS RutaDespacho, dbo.trans_pe_enc.Referencia_Documento_Ingreso_Bodega_Destino AS Referencia2, dbo.trans_pe_enc.No_Picking_ERP, dbo.trans_pe_enc.no_documento_externo, 
-                         dbo.trans_pe_enc.bodega_origen, dbo.trans_pe_enc.bodega_destino
+SELECT      dbo.trans_pe_enc.IdPedidoEnc AS Correlativo, dbo.trans_pe_enc.IdBodega, dbo.trans_pe_enc.no_documento, dbo.trans_pe_enc.referencia, 
+            dbo.trans_pe_enc.Referencia_Documento_Ingreso_Bodega_Destino AS Referencia2,dbo.trans_pe_enc.Fecha_Pedido, 
+            dbo.cliente.codigo + ' - ' + dbo.cliente.nombre_comercial AS Cliente, dbo.trans_pe_enc.estado, dbo.bodega.nombre AS Bodega, 
+            dbo.bodega_muelles.nombre AS Muelle, dbo.propietarios.nombre_comercial AS Propietario, 
+            dbo.road_p_vendedor.codigo + ' - ' + dbo.road_p_vendedor.nombre AS RoadVendedor, 
+            dbo.road_ruta.CODIGO + ' - ' + dbo.road_ruta.NOMBRE AS RoadRuta, dbo.trans_pe_enc.fec_agr AS Fecha, dbo.trans_pe_enc.anulado, 
+            dbo.trans_pe_enc.activo, dbo.trans_pe_enc.Enviado_A_ERP, dbo.trans_pe_enc.fec_agr, dbo.trans_pe_enc.IdPickingEnc, 
+            dbo.trans_pe_tipo.Descripcion AS TipoDocumento, dbo.trans_pe_enc.no_despacho as IdDespachoEnc, dbo.trans_pe_enc.Observacion, 
+            Roadruta1.CODIGO + ' ' + Roadruta1.NOMBRE AS RutaDespacho, dbo.trans_pe_enc.No_Picking_ERP, dbo.trans_pe_enc.no_documento_externo, 
+            dbo.trans_pe_enc.bodega_origen, dbo.trans_pe_enc.bodega_destino
 FROM            dbo.trans_pe_enc INNER JOIN
                          dbo.trans_pe_tipo ON dbo.trans_pe_enc.IdTipoPedido = dbo.trans_pe_tipo.IdTipoPedido LEFT OUTER JOIN
                          dbo.bodega ON dbo.trans_pe_enc.IdBodega = dbo.bodega.IdBodega LEFT OUTER JOIN
