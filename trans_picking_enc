@@ -1,3 +1,6 @@
+ALTER TABLE trans_picking_enc ADD IdBodegaMuelle int NULL
+GO
+
 --#EJC20231027: Funcionalidad para tomar fotografías en la verificación
 ALTER TABLE trans_picking_enc ADD fotografia_verificacion bit NOT NULL DEFAULT 0
 
