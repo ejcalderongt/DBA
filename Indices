@@ -1,3 +1,8 @@
+---20240609 Indice en trans_picking_enc
+CREATE NONCLUSTERED INDEX NCLI_Trans_Picking_Enc_20240609_EJC
+ON [dbo].[trans_picking_enc] ([IdPropietarioBodega])
+INCLUDE ([IdBodega],[IdUbicacionPicking],[fecha_picking],[hora_ini],[hora_fin],[estado],[detalle_operador],[activo],[procesado_bof],[IdBodegaMuelle])
+
 ---20240122 Indices en trans_movimientos
 CREATE NONCLUSTERED INDEX NCL_EJC20240524_trans_movimientos
 ON [dbo].[trans_movimientos] ([IdTransaccion],[IdTipoTarea])
