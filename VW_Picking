@@ -8,6 +8,6 @@ FROM     dbo.trans_picking_enc AS enc INNER JOIN
                   dbo.propietario_bodega AS pb ON enc.IdPropietarioBodega = pb.IdPropietarioBodega INNER JOIN
                   dbo.propietarios AS p ON pb.IdPropietario = p.IdPropietario INNER JOIN
                   dbo.bodega AS b ON enc.IdBodega = b.IdBodega INNER JOIN
-                  dbo.bodega_ubicacion AS bu ON enc.IdUbicacionPicking = bu.IdUbicacion AND enc.IdBodega = bu.IdBodega INNER JOIN
+                  dbo.bodega_ubicacion AS bu ON enc.IdUbicacionPicking = bu.IdUbicacion AND enc.IdBodega = bu.IdBodega LEFT OUTER JOIN
                   dbo.bodega_muelles ON b.IdBodega = dbo.bodega_muelles.IdBodega AND enc.IdBodegaMuelle = dbo.bodega_muelles.IdMuelle
 GO
