@@ -1,4 +1,4 @@
-/****** Object:  View [dbo].[VW_BodegaMuelle]    Script Date: 9/06/2024 20:25:14 ******/
+/****** #EJC202406092025 Se agregó el campo Ubicacion ******/
 SET ANSI_NULLS ON
 GO
 
