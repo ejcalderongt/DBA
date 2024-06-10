@@ -1,0 +1,1 @@
+ALTER TABLE bodega_muelles ADD IdUbicacionDefecto int NULL
