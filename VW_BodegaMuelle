@@ -10,5 +10,6 @@ AS
 SELECT bm.IdMuelle AS Código, b.nombre AS Bodega, bm.nombre AS Muelle, bm.activo,
 dbo.Nombre_Completo_Ubicacion(bm.IdUbicacionDefecto,bm.IdBodega) as Ubicacion
 FROM     dbo.bodega_muelles AS bm INNER JOIN
-dbo.bodega AS b ON bm.IdBodega = b.IdBodega INNER JOIN
+dbo.bodega AS b ON bm.IdBodega = b.IdBodega LEFT OUTER JOIN
 dbo.bodega_ubicacion ON bm.IdBodega = dbo.bodega_ubicacion.IdBodega AND bm.IdUbicacionDefecto = dbo.bodega_ubicacion.IdUbicacion
+GO
