@@ -1,0 +1,14 @@
+/****** Object:  View [dbo].[VW_BodegaMuelle]    Script Date: 9/06/2024 20:25:14 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER VIEW [dbo].[VW_BodegaMuelle]
+AS
+SELECT bm.IdMuelle AS Código, b.nombre AS Bodega, bm.nombre AS Muelle, bm.activo,
+dbo.Nombre_Completo_Ubicacion(bm.IdUbicacionDefecto,bm.IdBodega) as Ubicacion
+FROM     dbo.bodega_muelles AS bm INNER JOIN
+dbo.bodega AS b ON bm.IdBodega = b.IdBodega INNER JOIN
+dbo.bodega_ubicacion ON bm.IdBodega = dbo.bodega_ubicacion.IdBodega AND bm.IdUbicacionDefecto = dbo.bodega_ubicacion.IdUbicacion
