@@ -1,3 +1,6 @@
+--#CKFK20240612 Agregamos el campo IdPrioridadPicking
+ALTER TABLE TRANS_PICKING_ENC ADD IdPrioridadPicking null default 0
+
 --#CKFK20240122 Agregamos contraint a la unidad de medida básica
 ALTER TABLE [dbo].[trans_picking_ubic]  WITH CHECK ADD  CONSTRAINT [FK_trans_picking_ubic_unidad_medida] FOREIGN KEY([IdUnidadMedida])
 REFERENCES [dbo].[unidad_medida] ([IdUnidadMedida])
