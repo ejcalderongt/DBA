@@ -1,3 +1,7 @@
+--20240612AT Agregó campo IdPrioridadPicking
+ALTER TABLE trans_picking_enc ADD IdPrioridadPicking int Null
+GO
+
 ALTER TABLE trans_picking_enc ADD IdBodegaMuelle int NULL
 GO
 
