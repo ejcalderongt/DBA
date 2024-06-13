@@ -1,3 +1,9 @@
+--#GT13062024: campo para guardar el peso neto y diferenciarlo del peso bruto en prefactura.
+
+ALTER TABLE trans_pe_pol ADD total_bultos_peso_neto float NULL
+
+
+---------------------------------------------------------------
 CREATE TABLE [dbo].[trans_pe_pol](
 	[IdOrdenPedidoPol] [int] NOT NULL,
 	[IdOrdenPedidoEnc] [int] NOT NULL,
