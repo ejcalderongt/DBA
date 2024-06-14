@@ -10,3 +10,9 @@ ALTER TABLE i_nav_ped_traslado_enc
 ADD Address NVARCHAR(255) NULL,
     Comments NVARCHAR(255) NULL
 GO
+
+ALTER TABLE i_nav_ped_traslado_enc 
+ALTER COLUMN Transfer_from_Name nvarchar(150) null
+
+ALTER TABLE i_nav_ped_traslado_enc 
+ALTER COLUMN Transfer_to_Name nvarchar(150) null
