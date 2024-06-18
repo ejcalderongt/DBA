@@ -1,3 +1,86 @@
+--#GT18062024: se agregan ajustes negativos al reporte.
+
+ALTER VIEW [dbo].[VW_Movimientos_Propietario] AS
+SELECT					m.IdTransaccion,stt.Nombre AS TipoTarea,	
+						pe_det.IdPedidoEnc,despacho_det.IdDespachoEnc,despacho_det.IdDespachoDet,
+						despacho_enc.observacion,
+						isnull(enc.ticket,0) AS no_ticket_tms,
+						enc.codigo_poliza as poliza,
+					    enc.numero_orden,
+						regimen_f.codigo_regimen as regimen_ingreso,
+						oc_enc.Referencia referencia,
+						m.IdRecepcion,
+						CASE
+							WHEN oc_det.valor_aduana >0 THEN 
+							(oc_det.valor_aduana/oc_det.cantidad)*m.cantidad
+
+												ELSE 0
+						END AS valor_aduana,
+						CASE
+							WHEN oc_det.valor_dai >0 THEN 
+							(oc_det.valor_dai/oc_det.cantidad)*m.cantidad
+												ELSE 0
+						END AS valor_dai,
+						CASE
+							WHEN oc_det.valor_iva >0 THEN 
+							(oc_det.valor_iva/oc_det.cantidad)*m.cantidad
+												ELSE 0
+						END AS valor_iva,
+						pr.nombre_comercial AS Propietario, p.nombre AS Producto,
+						pp.nombre AS presentacion, 
+						u.Nombre AS UMBas, 
+						CASE when stt.IdTipoTarea=17 THEN m.cantidad *-1
+							 else m.cantidad END as cantidad,		
+						 --m.cantidad,
+						 m.fecha, p.IdProducto, p.codigo,
+                         p.codigo_barra AS codigo_barra, stt.IdTipoTarea, stt.Contabilizar, m.fecha_vence, 
+						 m.IdPresentacion, m.IdUnidadMedida, 
+						 prb.IdPropietarioBodega,
+                         prb.IdBodega, m.barra_pallet licencia, dbo.producto_clasificacion.nombre AS Clasificacion, dbo.producto_familia.nombre AS Familia, 
+						 m.IdMovimiento, dbo.bodega.codigo AS Codigo_Bodega_Origen, dbo.bodega.nombre AS Nombre_Bodega_Origen, dbo.Nombre_Area(u1.IdArea, m.IdBodegaOrigen)
+                         AS NombreArea, pp.factor,
+						 cast(re_det.fecha_ingreso as date) fecha_ingreso_rec,cast(tms.Fecha_Ingreso as date)fecha_ingreso_ticket,
+						 pe_pol.numero_orden numero_orden_salida,pe_pol.codigo_poliza codigo_poliza_salida,regimen_s.codigo_regimen regimen_salida
+			
+FROM            dbo.trans_movimientos AS m LEFT OUTER JOIN
+                         dbo.propietario_bodega AS prb ON m.IdPropietarioBodega = prb.IdPropietarioBodega INNER JOIN
+                         dbo.propietarios AS pr ON prb.IdPropietario = pr.IdPropietario LEFT OUTER JOIN
+                         dbo.producto_bodega AS pb ON m.IdProductoBodega = pb.IdProductoBodega INNER JOIN
+                         dbo.producto AS p ON pb.IdProducto = p.IdProducto LEFT OUTER JOIN
+                         dbo.producto_clasificacion ON p.IdClasificacion = dbo.producto_clasificacion.IdClasificacion LEFT OUTER JOIN
+                         dbo.producto_familia ON p.IdFamilia = dbo.producto_familia.IdFamilia LEFT OUTER JOIN
+                         dbo.bodega ON m.IdBodegaOrigen = dbo.bodega.IdBodega AND m.IdEmpresa = dbo.bodega.IdEmpresa LEFT OUTER JOIN
+                         dbo.bodega AS bodega_1 ON m.IdEmpresa = bodega_1.IdEmpresa AND m.IdBodegaDestino = bodega_1.IdBodega LEFT OUTER JOIN
+                         dbo.bodega_ubicacion AS u2 ON m.IdUbicacionDestino = u2.IdUbicacion AND u2.IdBodega = m.IdBodegaDestino LEFT OUTER JOIN
+                         dbo.bodega_ubicacion AS u1 ON m.IdUbicacionOrigen = u1.IdUbicacion AND u1.IdBodega = m.IdBodegaOrigen LEFT OUTER JOIN
+                         dbo.producto_presentacion AS pp ON m.IdPresentacion = pp.IdPresentacion LEFT OUTER JOIN
+                         dbo.producto_estado AS pe1 ON m.IdEstadoOrigen = pe1.IdEstado LEFT OUTER JOIN
+                         dbo.producto_estado AS pe2 ON m.IdEstadoDestino = pe2.IdEstado LEFT OUTER JOIN
+                         dbo.unidad_medida AS u ON m.IdUnidadMedida = u.IdUnidadMedida INNER JOIN
+                         dbo.sis_tipo_tarea AS stt ON m.IdTipoTarea = stt.IdTipoTarea
+
+						 INNER JOIN dbo.trans_re_oc AS re ON m.IdRecepcion = re.IdRecepcionEnc
+						 LEFT OUTER JOIN dbo.trans_pe_det pe_det on m.IdPedidoEnc= pe_det.IdPedidoEnc and m.IdPedidoDet = pe_det.IdPedidoDet 
+						 LEFT OUTER JOIN dbo.trans_despacho_det despacho_det on m.IdDespachoEnc = despacho_det.IdDespachoEnc and m.IdDespachoDet = despacho_det.IdDespachoDet
+						 LEFT OUTER JOIN dbo.trans_oc_pol AS enc ON re.IdOrdenCompraEnc = enc.IdOrdenCompraEnc 
+						 INNER JOIN dbo.trans_re_det re_det on m.IdRecepcion = re_det.IdRecepcionEnc and re_det.lic_plate= m.barra_pallet collate Modern_Spanish_CI_AS 
+						 LEFT OUTER JOIN trans_pe_pol pe_pol on m.IdPedidoEnc = pe_pol.IdOrdenPedidoEnc 
+						 INNER JOIN dbo.trans_oc_det oc_det on re_det.IdOrdenCompraEnc = oc_det.IdOrdenCompraEnc
+						                        and re_det.IdOrdenCompraDet = oc_det.IdOrdenCompraDet 
+						 INNER JOIN dbo.trans_oc_enc oc_enc on oc_det.IdOrdenCompraEnc = oc_enc.IdOrdenCompraEnc 
+						 LEFT OUTER JOIN dbo.tms_ticket tms on oc_enc.no_ticket_tms = tms.IdTicket 
+						 LEFT OUTER JOIN dbo.trans_despacho_enc despacho_enc on despacho_det.IdDespachoEnc = despacho_enc.IdDespachoEnc
+						 LEFT OUTER JOIN dbo.regimen_fiscal regimen_f on enc.IdRegimen=regimen_f.IdRegimen
+						 LEFT OUTER JOIN dbo.regimen_fiscal regimen_s on pe_pol.IdRegimen=regimen_s.IdRegimen
+						 LEFT OUTER JOIN trans_ajuste_det d  ON d.idajusteenc = m.IdTransaccion 
+						 and m.IdProductoBodega = d.IdProductoBodega
+						 and ISNULL(m.IdPresentacion,0) = isnull(d.IdPresentacion,0)
+						 and m.IdUnidadMedida = d.IdUnidadMedida
+						 
+where (m.IdTipoTarea=5 or m.IdTipoTarea=1 OR m.IdTipoTarea=17 OR m.IdTipoTarea=13)
+
+
+--------------------------------------------------------------------------------------------------------------------------------
 --#GT16052024: se agregan los campos: regimen ingreso, numero orden ingreso, regimen salida, numero orden salida para cealsa.
 /****** Object:  View [dbo].[VW_Movimientos_Propietario]    Script Date: 20/05/2024 11:45:44 ******/
 SET ANSI_NULLS ON
