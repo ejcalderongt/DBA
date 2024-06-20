@@ -1,3 +1,6 @@
+--#CKFK20240620 Se agrega el campo restringir_areas_sap para poder saber si se permiten los cambios de ubicación entre áreas-
+ALTER TABLE bodega ADD restringir_areas_sap bit NOT NULL Default 0
+
 --#CKFK20240405 Se agrega esta campo para poder saber si la bodega tiene interface con SAP
 ALTER TABLE bodega ADD 
 interface_SAP bit not null default 0
