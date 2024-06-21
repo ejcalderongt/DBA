@@ -13,7 +13,7 @@ SELECT        dbo.trans_pe_enc.IdPedidoEnc, dbo.trans_pe_enc.IdBodega, dbo.trans
                          dbo.trans_pe_enc.correlativo, dbo.trans_pe_enc.Referencia_Documento_Ingreso_Bodega_Destino, dbo.trans_pe_enc.sync_mi3, dbo.trans_pe_tipo.Nombre AS Nombre_Tipo_Pedido, 
                          dbo.cliente.nombre_comercial AS Nombre_Cliente, dbo.propietarios.nombre_comercial AS Nombre_Propietario, dbo.propietario_bodega.IdPropietario, dbo.cliente.codigo AS Codigo_Cliente, dbo.cliente.es_bodega_recepcion, 
                          dbo.cliente.es_bodega_traslado, dbo.cliente.idubicacionvirtual, dbo.cliente.control_ultimo_lote AS control_ultimo_lote_cliente, dbo.trans_pe_enc.No_Picking_ERP,dbo.trans_pe_enc.fecha_preparacion,
-						 trans_pe_enc.IdTipoManufactura, trans_pe_enc.bodega_origen, trans_pe_enc.bodega_destino
+						 trans_pe_enc.IdTipoManufactura, trans_pe_enc.bodega_origen, trans_pe_enc.bodega_destino, trans_pe_enc.IdMotivoDevolucion
 FROM            dbo.propietarios INNER JOIN
                          dbo.propietario_bodega ON dbo.propietarios.IdPropietario = dbo.propietario_bodega.IdPropietario RIGHT OUTER JOIN
                          dbo.trans_pe_enc ON dbo.propietario_bodega.IdPropietarioBodega = dbo.trans_pe_enc.IdPropietarioBodega LEFT OUTER JOIN
