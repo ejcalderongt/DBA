@@ -3,3 +3,7 @@ Alter table i_nav_producto add Gen_Prod_Posting_Name nvarchar(100)
 Alter table i_nav_producto add Producto_Group_Name nvarchar(100)
 Alter table i_nav_producto add Manufacturing_Process int not null default '0'
 alter table i_nav_producto add BatchControl bit not null default 0
+
+#EJC20240621 Campos nuevos por nuevo filtro en producto a nivel de interface
+alter table i_nav_producto add product_class_code nvarchar(50)
+alter table i_nav_producto add product_class_name nvarchar(150)
