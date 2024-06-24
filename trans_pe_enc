@@ -1,3 +1,7 @@
+--#CKFK20240621 Campo nuevo por motivo de devolución
+ALTER TABLE trans_pe_enc ADD IdMotivoDevolucion int NULL
+GO
+
 --#GT13062024: campo para identificar el acuerdo comercial asociado al pedido
 ALTER TABLE trans_pe_enc ADD idacuerdocomercial int NULL
 
