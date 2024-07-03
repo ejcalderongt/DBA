@@ -1,3 +1,7 @@
+--#GT03072024: campo para diferenciar poliza de salida activa de las anuladas
+alter table trans_pe_pol add activo bit default 0
+
+
 --#GT13062024: campo para guardar el peso neto y diferenciarlo del peso bruto en prefactura.
 
 ALTER TABLE trans_pe_pol ADD total_bultos_peso_neto float NULL
