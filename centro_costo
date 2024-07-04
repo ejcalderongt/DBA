@@ -1,3 +1,7 @@
+/******#EJC20240703 se agregó el campo control_inventario ******/
+ ALTER TABLE [dbo].[centro_costo] ADD control_inventario bit not null default 0
+GO
+
 /******#EJC20240501 se agregó el campo Referencia ******/
  ALTER TABLE [dbo].[centro_costo]
 ADD Referencia [nvarchar](150) NULL
