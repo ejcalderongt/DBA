@@ -1,3 +1,7 @@
+--#GT09072024: campo para diferenciar si cálculamos cobro manejo por el peso bruto o neto de la póliza fiscal
+alter table trans_prefactura_enc add cobro_peso_bruto bit default 0
+
+
 --#GT03072024: campos para gestion de respuesta por parte del ERP al confirmar la prefactura.
 alter table trans_prefactura_enc add procesado_erp bit default 0
 alter table trans_prefactura_enc add autorizacion_erp nvarchar(200) default null
