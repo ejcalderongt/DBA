@@ -1,3 +1,10 @@
+--#GT09072024: campos adicionales para guardar fecha de cobro por cada linea, la orden de compra.
+
+alter table trans_prefactura_mov add unidades integer default 0
+alter table trans_prefactura_mov add IdOrdenCompraEnc integer default 0
+alter table trans_prefactura_mov add fecha_cobro date default null
+
+
 --#GT08052024: tabla para registrar movimientos de prefactura que no es consolidador.
 
 CREATE TABLE [dbo].[trans_prefactura_mov](
