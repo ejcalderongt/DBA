@@ -1,0 +1,23 @@
+--#GT10072024: listar las prefacturas guardadas.
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+create view [dbo].[VW_Get_Lista_PrefacturasEnc] as
+SELECT IdTransPrefacturaEnc as Codigo,prop.nombre_comercial as Propietario,
+isnull(prop2.nombre_comercial,prop.nombre_comercial) as Facturado,
+bd.nombre as Bodega,pf.fec_agr Fecha, Anulada,
+pf.es_consolidador as Consolidador,
+usr.nombres +' '+ usr.apellidos as operador,
+pf.procesado_erp,autorizacion_erp
+FROM trans_prefactura_enc pf inner join
+bodega bd on pf.IdBodega=bd.IdBodega inner join
+propietario_bodega pb on pf.IdPropietarioBodega=pb.IdPropietarioBodega inner join
+propietarios prop on pb.IdPropietario = prop.IdPropietario left outer join
+propietarios prop2 on pf.IdClienteBodega = prop2.IdPropietario inner join
+usuario usr on pf.user_agr=usr.IdUsuario 
+where 1=1
+GO
