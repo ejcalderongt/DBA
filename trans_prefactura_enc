@@ -1,3 +1,6 @@
+--#GT18072024: campo para guardar el valor que se enviará al ERP
+alter table trans_prefactura_det add monto_erp float default 0
+
 --#GT09072024: campo para diferenciar si cálculamos cobro manejo por el peso bruto o neto de la póliza fiscal
 alter table trans_prefactura_enc add cobro_peso_bruto bit default 0
 
