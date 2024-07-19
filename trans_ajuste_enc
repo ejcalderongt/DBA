@@ -1,5 +1,5 @@
---#EJC20240719: Agregar campo para enviar o no
-alter table trans_ajuste_enc add enviar bit not null default 0
+--#EJC20240719: Agregar campo para marcar registro como auditado o no
+alter table trans_ajuste_enc add auditado bit not null default 0
 
 --#EJC20220331: Guardar el IdCentroCosto
 ALTER TABLE trans_ajuste_enc add IdCentroCosto int null
