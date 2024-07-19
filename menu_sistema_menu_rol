@@ -1,7 +1,7 @@
 --#CKFK 20240719  Se agregó esta opción para auditar ajustes
 Insert into menu_sistema values('5.4.1.4','Auditado','chkAuditado',4,'5.4.1',0)
 IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '5.4.1.4')
-insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'2.1.1.2',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'5.4.1.4',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1)
 
 --#CKFK 20240426  Se agregó esta opción para eliminar líneas en la recepciónn
 Insert into menu_sistema values('2.1.1.2','Eliminar línea recepción','mnuEliminarLineaRecepcion',4,'2.1.1',1)
