@@ -8,3 +8,6 @@ add lic_plate nvarchar(50) null
 
 --#EJC20240723 Campo nuevo por importación de inventario teórico de SAP y de WMS
 alter table trans_inv_stock_prod add TipoTeoricoImportacion int null default 0
+
+alter table trans_inv_stock_prod ADD codigo_area NVARCHAR(10) null 
+GO
