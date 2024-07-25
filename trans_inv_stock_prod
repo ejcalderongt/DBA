@@ -11,3 +11,27 @@ alter table trans_inv_stock_prod add TipoTeoricoImportacion int null default 0
 
 alter table trans_inv_stock_prod ADD codigo_area NVARCHAR(10) null 
 GO
+
+CREATE FUNCTION [dbo].[Get_Codigo_Area_By_IdUbicacion] 
+(
+	@IdUbicacion INT,
+	@IdBodega INT
+)
+RETURNS NVARCHAR(10)
+AS
+BEGIN
+	
+	DECLARE @resultado NVARCHAR(10)
+	-- Declare the return variable here
+	
+	SELECT @resultado = a.codigo
+	FROM bodega_ubicacion u 
+	inner join bodega_area a on u.IdArea = a.IdArea
+	and u.IdBodega = a.IdBodega
+	WHERE (u.IdUbicacion=@IdUbicacion) 
+	And u.idbodega = @IdBodega
+
+	RETURN @resultado;
+
+END
+GO
