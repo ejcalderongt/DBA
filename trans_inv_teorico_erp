@@ -1,0 +1,26 @@
+/****** Object:  Table [dbo].[trans_inv_teorico_erp]    Script Date: 4/08/2024 23:30:08 ******/
+SET ANSI_NULLS ON
+GO
+ 
+CREATE TABLE [dbo].[trans_inv_teorico_erp](
+	[idinvteoricoerp] [int] NOT NULL,	
+	[idProducto] [int] NOT NULL,
+	[idPresentacion] [int] NOT NULL,
+	[cant] [float] NULL,
+	[peso] [float] NULL,
+	[idUnidadMedida] [int] NULL,
+	[lote] [nvarchar](50) NULL,
+	[fecha_vence] [datetime] NULL,
+	[codigo] [nvarchar](50) NULL,
+	[idbodega] [int] NULL,
+	[idubicacion] [int] NULL,
+	[lic_plate] [nvarchar](50) NULL,	
+	[codigo_area] [nvarchar](10) NULL,
+	[fecha_agr] [datetime] NULL,
+	[usuario_agr] [nvarchar](25) NULL,
+CONSTRAINT [PK_trans_inv_teorico_erp] PRIMARY KEY CLUSTERED 
+(	
+	[idinvteoricoerp] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
