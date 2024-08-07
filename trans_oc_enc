@@ -15,3 +15,6 @@ alter table trans_oc_enc add no_documento_ubicacion_erp nvarchar(50) null
 
 --#EJC20220228_1658PM: BYB Guardar si ya se hizo el PutAway en NAV.
 alter table trans_oc_enc add PutAway_Registrado bit default 0
+
+--#EJC20240807 Campo nuevo por funcionalida en Killios
+alter table trans_oc_enc add Codigo_Empresa_ERP nvarchar(50)
