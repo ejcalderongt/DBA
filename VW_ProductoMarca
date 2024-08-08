@@ -1,0 +1,7 @@
+
+ALTER VIEW [dbo].[VW_ProductoMarca]
+AS
+SELECT     m.IdMarca, p.IdPropietario, p.nombre_comercial AS Propietario, m.nombre, m.activo, m.user_agr, m.fec_agr, m.user_mod, m.fec_mod, m.codigo
+FROM         dbo.producto_marca AS m INNER JOIN
+                      dbo.propietarios AS p ON m.IdPropietario = p.IdPropietario
+GO
