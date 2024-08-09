@@ -6,3 +6,16 @@ alter table i_nav_ped_compra_enc add fec_agr datetime default getdate()
 
 --#EJC Campo nuevo por funcionalidad en Killios
 alter table i_nav_ped_compra_enc add Company_Code nvarchar(50)
+
+ALTER TABLE i_nav_ped_compra_enc ALTER COLUMN [Document_Type] int NOT NULL
+GO
+
+ALTER TABLE [dbo].[i_nav_ped_compra_enc] DROP CONSTRAINT [PK_i_nav_ped_compra_enc] WITH ( ONLINE = OFF )
+GO
+
+ALTER TABLE [dbo].[i_nav_ped_compra_enc] ADD  CONSTRAINT [PK_i_nav_ped_compra_enc] PRIMARY KEY CLUSTERED 
+(
+	[No] ASC,
+	[Document_Type] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
