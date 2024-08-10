@@ -1,15 +1,19 @@
-/****** Object:  View [dbo].[VW_Stock_Res_US]    Script Date: 10/08/2024 06:59:20 ******/
+/****** Object:  View [dbo].[VW_Stock_Res_US]    Script Date: 10/08/2024 07:13:33 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
 
 ALTER VIEW [dbo].[VW_Stock_Res_US]
 AS
-SELECT dbo.bodega_ubicacion.IdBodega, dbo.producto.IdProducto, dbo.producto_bodega.IdProductoBodega, dbo.stock.IdStock, dbo.unidad_medida.IdUnidadMedida, dbo.stock.IdPresentacion, dbo.producto.codigo, dbo.producto.codigo_barra, 
-                  dbo.stock.lote, dbo.stock.fecha_vence, dbo.stock.cantidad AS Cantidad_UMBas, dbo.stock.IdUbicacion, dbo.stock.lic_plate, dbo.producto.IdIndiceRotacion, dbo.bodega_ubicacion.IdTramo, 
+SELECT dbo.bodega_ubicacion.IdBodega, dbo.bodega_ubicacion.IdUbicacion, dbo.producto.IdProducto, dbo.producto_bodega.IdProductoBodega, dbo.stock.IdStock, dbo.unidad_medida.IdUnidadMedida, dbo.stock.IdPresentacion, 
+                  dbo.producto.codigo, dbo.producto.codigo_barra, dbo.stock.lote, dbo.stock.fecha_vence, dbo.stock.cantidad AS Cantidad_UMBas, dbo.stock.lic_plate, dbo.producto.IdIndiceRotacion, dbo.bodega_ubicacion.IdTramo, 
                   dbo.bodega_ubicacion.ancho AS Ancho_ubicacion, dbo.bodega_ubicacion.largo AS Largo_ubicacion, dbo.bodega_ubicacion.alto AS Alto_ubicacion, dbo.producto.existencia_min AS Existencia_min_umbas, 
                   dbo.producto.existencia_max AS Existencia_max_umbas, dbo.producto_presentacion.MinimoExistencia AS Existencia_min_pres, dbo.producto_presentacion.MaximoExistencia AS Existencia_max_pres, 
-                  dbo.bodega_ubicacion.IdUbicacion AS IdUbicacionActual, dbo.bodega_ubicacion.nivel AS Ubicacion_Nivel, dbo.bodega_ubicacion.indice_x AS Ubicacion_Indice_X, dbo.bodega_ubicacion.descripcion AS Ubicacion_Nombre, 
-                  dbo.bodega_tramo.descripcion AS Ubicacion_Tramo, dbo.bodega_ubicacion.activo, dbo.bodega_ubicacion.bloqueada, dbo.bodega_ubicacion.ubicacion_merma, dbo.producto_familia.nombre AS Familia, 
-                  dbo.Nombre_Area(dbo.bodega_ubicacion.IdArea, dbo.bodega_ubicacion.IdBodega) AS Area, dbo.producto_clasificacion.nombre AS Clasificacion, dbo.producto_tipo.IdTipoProducto, dbo.producto_marca.IdMarca, dbo.stock.cantidad, 
-                  dbo.bodega_tramo.es_rack, ISNULL(dbo.bodega_ubicacion.IdArea, 0) AS IdArea
+                  dbo.bodega_ubicacion.nivel AS Ubicacion_Nivel, dbo.bodega_ubicacion.indice_x AS Ubicacion_Indice_X, dbo.bodega_ubicacion.descripcion AS Ubicacion_Nombre, dbo.bodega_tramo.descripcion AS Ubicacion_Tramo, 
+                  dbo.bodega_ubicacion.activo, dbo.bodega_ubicacion.bloqueada, dbo.bodega_ubicacion.ubicacion_merma, dbo.producto_familia.nombre AS Familia, dbo.Nombre_Area(dbo.bodega_ubicacion.IdArea, dbo.bodega_ubicacion.IdBodega) 
+                  AS Area, dbo.producto_clasificacion.nombre AS Clasificacion, dbo.producto_tipo.IdTipoProducto, dbo.producto_marca.IdMarca, dbo.stock.cantidad, dbo.bodega_tramo.es_rack, ISNULL(dbo.bodega_ubicacion.IdArea, 0) AS IdArea
 FROM     dbo.producto_marca RIGHT OUTER JOIN
                   dbo.bodega_ubicacion LEFT OUTER JOIN
                   dbo.bodega INNER JOIN
@@ -30,11 +34,13 @@ FROM     dbo.producto_marca RIGHT OUTER JOIN
                   dbo.producto_tipo ON dbo.producto.IdTipoProducto = dbo.producto_tipo.IdTipoProducto AND dbo.producto.IdPropietario = dbo.producto_marca.IdPropietario LEFT OUTER JOIN
                   dbo.stock_det ON dbo.stock.IdStock = dbo.stock_det.IdStock
 GROUP BY dbo.stock.IdStock, dbo.bodega_ubicacion.IdUbicacion, dbo.producto_bodega.IdProductoBodega, dbo.unidad_medida.IdUnidadMedida, dbo.producto.IdProducto, dbo.producto.codigo, dbo.stock.lote, dbo.stock.fecha_vence, 
-                  dbo.stock.IdUbicacion, dbo.stock.IdPresentacion, dbo.stock.lic_plate, dbo.producto.IdIndiceRotacion, dbo.bodega_ubicacion.IdTramo, dbo.bodega_ubicacion.ancho, dbo.bodega_ubicacion.largo, dbo.bodega_ubicacion.alto, 
-                  dbo.producto.existencia_min, dbo.producto.existencia_max, dbo.producto.codigo_barra, dbo.producto_presentacion.MinimoExistencia, dbo.producto_presentacion.MaximoExistencia, dbo.stock.cantidad, dbo.bodega_ubicacion.nivel, 
-                  dbo.bodega_ubicacion.indice_x, dbo.bodega_ubicacion.descripcion, dbo.bodega_tramo.descripcion, dbo.producto_familia.nombre, dbo.bodega_ubicacion.IdArea, dbo.producto_clasificacion.nombre, dbo.producto_tipo.IdTipoProducto, 
-                  dbo.producto_marca.IdMarca, dbo.bodega_ubicacion.activo, dbo.bodega_ubicacion.bloqueada, dbo.bodega_ubicacion.ubicacion_merma, dbo.bodega_tramo.es_rack, dbo.bodega_ubicacion.IdArea, 
-                  dbo.Nombre_Area(dbo.bodega_ubicacion.IdArea, dbo.bodega_ubicacion.IdBodega), dbo.bodega_ubicacion.IdBodega
+                  dbo.stock.IdPresentacion, dbo.stock.lic_plate, dbo.producto.IdIndiceRotacion, dbo.bodega_ubicacion.IdTramo, dbo.bodega_ubicacion.ancho, dbo.bodega_ubicacion.largo, dbo.bodega_ubicacion.alto, dbo.producto.existencia_min, 
+                  dbo.producto.existencia_max, dbo.producto.codigo_barra, dbo.producto_presentacion.MinimoExistencia, dbo.producto_presentacion.MaximoExistencia, dbo.stock.cantidad, dbo.bodega_ubicacion.nivel, dbo.bodega_ubicacion.indice_x, 
+                  dbo.bodega_ubicacion.descripcion, dbo.bodega_tramo.descripcion, dbo.producto_familia.nombre, dbo.bodega_ubicacion.IdArea, dbo.producto_clasificacion.nombre, dbo.producto_tipo.IdTipoProducto, dbo.producto_marca.IdMarca, 
+                  dbo.bodega_ubicacion.activo, dbo.bodega_ubicacion.bloqueada, dbo.bodega_ubicacion.ubicacion_merma, dbo.bodega_tramo.es_rack, dbo.bodega_ubicacion.IdArea, dbo.Nombre_Area(dbo.bodega_ubicacion.IdArea, 
+                  dbo.bodega_ubicacion.IdBodega), dbo.bodega_ubicacion.IdBodega
+GO
+
 
 --#EJC20240810: Modelo 1, para nueva funcionalidad de ubicación sugerida.
 CREATE VIEW [dbo].[VW_Stock_Res_US]
