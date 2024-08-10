@@ -1,0 +1,59 @@
+--#EJC20240810: Modelo 1, para nueva funcionalidad de ubicación sugerida.
+CREATE VIEW [dbo].[VW_Stock_Res_US]
+AS
+SELECT dbo.stock.IdBodega, dbo.propietarios.IdPropietario, dbo.propietario_bodega.IdPropietarioBodega, dbo.producto.IdProducto, dbo.producto_bodega.IdProductoBodega, dbo.stock.IdStock, dbo.stock.IdUbicacion_anterior, 
+                  dbo.unidad_medida.IdUnidadMedida, dbo.stock.IdProductoEstado, dbo.stock.IdPresentacion, dbo.producto.codigo, dbo.producto.codigo_barra, dbo.stock.lote, dbo.stock.fecha_vence, dbo.stock.cantidad AS Cantidad_UMBas, 
+                  dbo.stock.IdUbicacion, dbo.stock.lic_plate, dbo.producto.IdIndiceRotacion, dbo.producto_presentacion.alto, dbo.producto_presentacion.largo, dbo.producto_presentacion.ancho, dbo.bodega_ubicacion.IdTramo, 
+                  dbo.bodega_ubicacion.ancho AS Ancho_ubicacion, dbo.bodega_ubicacion.largo AS Largo_ubicacion, dbo.bodega_ubicacion.alto AS Alto_ubicacion, dbo.producto.existencia_min AS Existencia_min_umbas, 
+                  dbo.producto.existencia_max AS Existencia_max_umbas, dbo.producto_presentacion.MinimoExistencia AS Existencia_min_pres, dbo.producto_presentacion.MaximoExistencia AS Existencia_max_pres, 
+                  dbo.bodega_ubicacion.IdUbicacion AS IdUbicacionActual, dbo.bodega_ubicacion.nivel AS Ubicacion_Nivel, dbo.bodega_ubicacion.indice_x AS Ubicacion_Indice_X, dbo.bodega_ubicacion.descripcion AS Ubicacion_Nombre, 
+                  dbo.bodega_tramo.descripcion AS Ubicacion_Tramo, dbo.bodega_ubicacion.activo, dbo.bodega_ubicacion.bloqueada, dbo.bodega_ubicacion.ubicacion_merma, dbo.producto_familia.nombre AS Familia, 
+                  dbo.Nombre_Area(dbo.bodega_ubicacion.IdArea, dbo.bodega_ubicacion.IdBodega) AS Area, dbo.producto_clasificacion.nombre AS Clasificacion, dbo.producto_tipo.IdTipoProducto, dbo.producto_marca.IdMarca, dbo.stock.cantidad, 
+                  dbo.bodega_tramo.es_rack, ISNULL(dbo.bodega_ubicacion.IdArea, 0) AS IdArea
+FROM     dbo.producto_familia RIGHT OUTER JOIN
+                  dbo.producto_parametros RIGHT OUTER JOIN
+                  dbo.stock_parametro RIGHT OUTER JOIN
+                  dbo.indice_rotacion RIGHT OUTER JOIN
+                  dbo.producto_presentacion RIGHT OUTER JOIN
+                  dbo.bodega_tramo RIGHT OUTER JOIN
+                  dbo.bodega_ubicacion ON dbo.bodega_tramo.IdTramo = dbo.bodega_ubicacion.IdTramo AND dbo.bodega_tramo.IdSector = dbo.bodega_ubicacion.IdSector AND dbo.bodega_tramo.IdArea = dbo.bodega_ubicacion.IdArea AND 
+                  dbo.bodega_tramo.IdBodega = dbo.bodega_ubicacion.IdBodega RIGHT OUTER JOIN
+                  dbo.bodega INNER JOIN
+                  dbo.trans_oc_pol RIGHT OUTER JOIN
+                  dbo.trans_re_oc LEFT OUTER JOIN
+                  dbo.trans_oc_enc ON dbo.trans_re_oc.IdOrdenCompraEnc = dbo.trans_oc_enc.IdOrdenCompraEnc RIGHT OUTER JOIN
+                  dbo.producto_clasificacion RIGHT OUTER JOIN
+                  dbo.producto_parametro_b RIGHT OUTER JOIN
+                  dbo.producto_bodega INNER JOIN
+                  dbo.producto ON dbo.producto_bodega.IdProducto = dbo.producto.IdProducto INNER JOIN
+                  dbo.unidad_medida INNER JOIN
+                  dbo.propietarios INNER JOIN
+                  dbo.stock INNER JOIN
+                  dbo.propietario_bodega ON dbo.stock.IdPropietarioBodega = dbo.propietario_bodega.IdPropietarioBodega ON dbo.propietarios.IdPropietario = dbo.propietario_bodega.IdPropietario ON 
+                  dbo.unidad_medida.IdUnidadMedida = dbo.stock.IdUnidadMedida ON dbo.producto_bodega.IdProductoBodega = dbo.stock.IdProductoBodega ON 
+                  dbo.producto_parametro_b.IdProductoParametroB = dbo.producto.IDPRODUCTOPARAMETROB ON dbo.producto_clasificacion.IdClasificacion = dbo.producto.IdClasificacion LEFT OUTER JOIN
+                  dbo.stock_res ON dbo.stock.IdStock = dbo.stock_res.IdStock ON dbo.trans_re_oc.IdRecepcionEnc = dbo.stock.IdRecepcionEnc LEFT OUTER JOIN
+                  dbo.motivo_devolucion ON dbo.trans_oc_enc.IdMotivoDevolucion = dbo.motivo_devolucion.IdMotivoDevolucion ON dbo.trans_oc_pol.IdOrdenCompraEnc = dbo.trans_oc_enc.IdOrdenCompraEnc ON 
+                  dbo.bodega.IdBodega = dbo.stock.IdBodega ON dbo.bodega_ubicacion.IdBodega = dbo.stock.IdBodega AND dbo.bodega_ubicacion.IdUbicacion = dbo.stock.IdUbicacion ON 
+                  dbo.producto_presentacion.IdPresentacion = dbo.stock.IdPresentacion ON dbo.indice_rotacion.IdIndiceRotacion = dbo.producto.IdIndiceRotacion ON dbo.stock_parametro.IdStock = dbo.stock.IdStock ON 
+                  dbo.producto_parametros.IdProductoParametro = dbo.stock_parametro.IdProductoParametro AND dbo.producto_parametros.IdProducto = dbo.producto.IdProducto LEFT OUTER JOIN
+                  dbo.producto_parametro_a ON dbo.producto.IDPRODUCTOPARAMETROA = dbo.producto_parametro_a.IdProductoParametroA LEFT OUTER JOIN
+                  dbo.producto_estado ON dbo.stock.IdProductoEstado = dbo.producto_estado.IdEstado ON dbo.producto_familia.IdFamilia = dbo.producto.IdFamilia LEFT OUTER JOIN
+                  dbo.p_parametro ON dbo.producto_parametros.IdParametro = dbo.p_parametro.IdParametro LEFT OUTER JOIN
+                  dbo.producto_marca ON dbo.producto.IdMarca = dbo.producto_marca.IdMarca AND dbo.producto.IdPropietario = dbo.producto_marca.IdPropietario LEFT OUTER JOIN
+                  dbo.producto_tipo ON dbo.producto.IdTipoProducto = dbo.producto_tipo.IdTipoProducto AND dbo.producto.IdPropietario = dbo.producto_marca.IdPropietario LEFT OUTER JOIN
+                  dbo.stock_det ON dbo.stock.IdStock = dbo.stock_det.IdStock LEFT OUTER JOIN
+                  dbo.trans_re_enc ON dbo.stock.IdRecepcionEnc = dbo.trans_re_enc.IdRecepcionEnc LEFT OUTER JOIN
+                  dbo.trans_re_det ON dbo.trans_re_det.IdRecepcionEnc = dbo.trans_re_enc.IdRecepcionEnc AND dbo.stock.IdRecepcionDet = dbo.trans_re_det.IdRecepcionDet LEFT OUTER JOIN
+                  dbo.trans_oc_det ON dbo.trans_re_det.IdOrdenCompraDet = dbo.trans_oc_det.IdOrdenCompraDet AND dbo.trans_re_det.IdOrdenCompraEnc = dbo.trans_oc_det.IdOrdenCompraEnc LEFT OUTER JOIN
+                  dbo.trans_oc_embarcador ON dbo.trans_oc_det.IdEmbarcador = dbo.trans_oc_embarcador.IdEmbarcador LEFT OUTER JOIN
+                  dbo.tms_ticket ON dbo.trans_oc_enc.no_ticket_tms = dbo.tms_ticket.IdTicket LEFT OUTER JOIN
+                  dbo.trans_oc_ti ON dbo.trans_oc_enc.IdTipoIngresoOC = dbo.trans_oc_ti.IdTipoIngresoOC
+GROUP BY dbo.propietarios.IdPropietario, dbo.stock.IdStock, dbo.bodega_ubicacion.IdUbicacion, dbo.stock.IdUbicacion_anterior, dbo.propietario_bodega.IdPropietarioBodega, dbo.producto_bodega.IdProductoBodega, 
+                  dbo.unidad_medida.IdUnidadMedida, dbo.producto.IdProducto, dbo.producto.codigo, dbo.stock.lote, dbo.stock.fecha_vence, dbo.stock.IdProductoEstado, dbo.stock.IdUbicacion, dbo.stock.IdPresentacion, dbo.stock.lic_plate, 
+                  dbo.producto.IdIndiceRotacion, dbo.producto_presentacion.alto, dbo.producto_presentacion.largo, dbo.producto_presentacion.ancho, dbo.bodega_ubicacion.IdTramo, dbo.bodega_ubicacion.ancho, dbo.bodega_ubicacion.largo, 
+                  dbo.bodega_ubicacion.alto, dbo.producto.existencia_min, dbo.producto.existencia_max, dbo.producto.codigo_barra, dbo.producto_presentacion.MinimoExistencia, dbo.producto_presentacion.MaximoExistencia, dbo.stock.cantidad, 
+                  dbo.bodega_ubicacion.nivel, dbo.bodega_ubicacion.indice_x, dbo.bodega_ubicacion.descripcion, dbo.bodega_tramo.descripcion, dbo.producto_familia.nombre, dbo.bodega_ubicacion.IdArea, dbo.producto_clasificacion.nombre, 
+                  dbo.stock.IdBodega, dbo.producto_tipo.IdTipoProducto, dbo.producto_marca.IdMarca, dbo.bodega_ubicacion.activo, dbo.bodega_ubicacion.bloqueada, dbo.bodega_ubicacion.ubicacion_merma, dbo.bodega_tramo.es_rack, 
+                  dbo.bodega_ubicacion.IdArea, dbo.Nombre_Area(dbo.bodega_ubicacion.IdArea, dbo.bodega_ubicacion.IdBodega)
+GO
