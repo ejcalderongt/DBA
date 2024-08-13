@@ -1,0 +1,20 @@
+SELECT 
+  CAST(fecha_picking AS DATE) AS Fecha,
+  DATEDIFF(HOUR, MIN(Inicio_Picking), MAX(Fin_Picking))  Horas_Picking_Total,
+  COUNT(distinct IdPickingEnc) AS Cantidad_Pickings
+FROM 
+  (SELECT
+     u.IdPickingEnc,
+     CAST(u.fecha_picking AS DATE) AS fecha_picking,
+     MIN(u.fecha_picking) OVER (PARTITION BY u.IdPickingEnc) AS Inicio_Picking,
+     MAX(u.fecha_picking) OVER (PARTITION BY u.IdPickingEnc) AS Fin_Picking
+   FROM [dbo].[trans_picking_enc] p INNER JOIN 
+     [dbo].[trans_picking_ubic] u ON p.IdPickingEnc = u.IdPickingEnc
+   WHERE 
+     u.fecha_picking IS NOT NULL AND cantidad_recibida>0 AND u.activo = 1 AND encontrado = 1 
+	 AND p.estado <> 'Anulado'
+  ) AS SubConsulta
+GROUP BY 
+  CAST(fecha_picking AS DATE)
+ORDER BY 
+  Fecha;
