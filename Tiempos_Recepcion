@@ -1,0 +1,90 @@
+WITH Recepciones AS (
+    SELECT
+        IdMovimiento,
+        IdEmpresa,
+        IdBodegaOrigen,
+        IdUbicacionDestino AS UbicacionRecepcion,
+        IdPropietarioBodega,
+        IdProductoBodega,
+        IdPresentacion,
+        IdEstadoDestino,
+        IdUnidadMedida,
+        MIN(fecha) AS FechaRecepcion,
+        MIN(hora_fin) AS HoraRecepcion,
+		    barra_pallet COLLATE SQL_Latin1_General_CP1_CI_AS as Licencia
+    FROM 
+        trans_movimientos
+    WHERE
+        IdTipoTarea = 1 -- Tipo de tarea para recepción
+    GROUP BY
+        IdMovimiento,
+        IdEmpresa,
+        IdBodegaOrigen,
+        IdUbicacionDestino,
+        IdPropietarioBodega,
+        IdProductoBodega,
+        IdPresentacion,
+        IdEstadoDestino,
+        IdUnidadMedida,
+		    barra_pallet
+),
+MovimientosUbicacion AS (
+    SELECT
+        mov.IdMovimiento,
+        mov.IdEmpresa,
+        mov.IdBodegaOrigen,
+        mov.IdUbicacionOrigen,
+        mov.IdUbicacionDestino,
+        mov.IdPropietarioBodega,
+        mov.IdProductoBodega,
+        mov.IdPresentacion,
+        mov.IdEstadoOrigen,
+        mov.IdEstadoDestino,
+        mov.IdUnidadMedida,
+        mov.IdTipoTarea,
+        mov.fecha AS FechaUbicacion,
+        mov.hora_fin AS HoraUbicacion,
+        rec.HoraRecepcion,
+		    rec.Licencia
+    FROM
+      trans_movimientos mov
+    INNER JOIN
+        Recepciones rec
+    ON
+        mov.IdEmpresa = rec.IdEmpresa
+        AND mov.IdBodegaOrigen = rec.IdBodegaOrigen
+        AND mov.IdUbicacionOrigen = rec.UbicacionRecepcion
+        AND mov.IdPropietarioBodega = rec.IdPropietarioBodega
+        AND mov.IdProductoBodega = rec.IdProductoBodega
+        AND mov.IdPresentacion = rec.IdPresentacion
+        AND mov.IdEstadoOrigen = rec.IdEstadoDestino
+        AND mov.IdUnidadMedida = rec.IdUnidadMedida
+		    AND mov.barra_pallet = rec.Licencia
+	WHERE mov.IdTipoTarea = 2 
+)
+SELECT
+    IdEmpresa,
+    IdBodegaOrigen,
+    IdUbicacionOrigen,
+    IdUbicacionDestino,
+    IdPropietarioBodega,
+    IdProductoBodega,
+    IdPresentacion,
+    IdEstadoOrigen,
+    IdEstadoDestino,
+    IdUnidadMedida,
+    FechaUbicacion,
+    HoraUbicacion,
+    HoraRecepcion,
+    DATEDIFF(SECOND, HoraRecepcion, HoraUbicacion) AS TiempoCicloSegundos,
+	  DATEDIFF(MINUTE, HoraRecepcion, HoraUbicacion) AS TiempoCicloMinutos,
+	  Licencia
+FROM
+    MovimientosUbicacion
+--ORDER BY
+--    FechaUbicacion;
+ 
+
+
+
+ 
