@@ -1,3 +1,13 @@
+CREATE NONCLUSTERED INDEX INC_CKFK_20280812_TRANS_MOVIMIENTOS
+ON [dbo].[trans_movimientos] ([IdTipoTarea])
+INCLUDE ([IdPropietarioBodega],[IdProductoBodega],[IdUbicacionDestino],[IdPresentacion],[IdEstadoDestino],[IdUnidadMedida],[hora_fin])
+GO
+  
+CREATE NONCLUSTERED INDEX INC_CKFK_20240812_TRANS_MOV2
+ON [dbo].[trans_movimientos] ([IdEmpresa],[IdBodegaOrigen],[IdPropietarioBodega],[IdProductoBodega],[IdUbicacionOrigen],[IdPresentacion],[IdEstadoOrigen],[IdUnidadMedida])
+INCLUDE ([IdUbicacionDestino],[IdEstadoDestino],[fecha],[hora_fin])
+GO
+
 ---20240609 Indice en trans_picking_enc
 CREATE NONCLUSTERED INDEX NCLI_Trans_Picking_Enc_20240609_EJC
 ON [dbo].[trans_picking_enc] ([IdPropietarioBodega])
