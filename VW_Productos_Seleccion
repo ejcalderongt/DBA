@@ -1,0 +1,10 @@
+CREATE VIEW VW_Productos_Seleccion
+AS
+SELECT producto.codigo, producto.nombre, producto.codigo_barra, producto_familia.nombre AS Familia, producto_clasificacion.nombre AS Clasificacion, producto_tipo.NombreTipoProducto AS Tipo, producto.IdProducto, producto.activo, 
+                  propietario_bodega.IdPropietarioBodega, propietario_bodega.IdBodega
+FROM     producto INNER JOIN
+                  propietario_bodega ON producto.IdPropietario = propietario_bodega.IdPropietario LEFT OUTER JOIN
+                  producto_clasificacion ON producto.IdClasificacion = producto_clasificacion.IdClasificacion LEFT OUTER JOIN
+                  producto_tipo ON producto.IdTipoProducto = producto_tipo.IdTipoProducto LEFT OUTER JOIN
+                  producto_familia ON producto.IdFamilia = producto_familia.IdFamilia
+GO
