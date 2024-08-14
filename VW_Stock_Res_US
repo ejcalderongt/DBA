@@ -32,7 +32,7 @@ GROUP BY dbo.stock.IdStock, dbo.bodega_ubicacion.IdUbicacion, dbo.producto_bodeg
                   dbo.producto.existencia_max, dbo.producto.codigo_barra, dbo.producto_presentacion.MinimoExistencia, dbo.producto_presentacion.MaximoExistencia, dbo.stock.cantidad, dbo.bodega_ubicacion.nivel, dbo.bodega_ubicacion.indice_x, 
                   dbo.bodega_ubicacion.descripcion, dbo.bodega_tramo.descripcion, dbo.producto_familia.nombre, dbo.bodega_ubicacion.IdArea, dbo.producto_clasificacion.nombre, dbo.producto_tipo.IdTipoProducto, dbo.producto_marca.IdMarca, 
                   dbo.bodega_ubicacion.activo, dbo.bodega_ubicacion.bloqueada, dbo.bodega_ubicacion.ubicacion_merma, dbo.bodega_tramo.es_rack, dbo.bodega_ubicacion.IdArea, dbo.Nombre_Area(dbo.bodega_ubicacion.IdArea, 
-                  dbo.bodega_ubicacion.IdBodega), dbo.bodega_ubicacion.IdBodega, dbo.stock.IdProductoEstado, dbo.producto.nombre.
+                  dbo.bodega_ubicacion.IdBodega), dbo.bodega_ubicacion.IdBodega, dbo.stock.IdProductoEstado, dbo.producto.nombre
 GO
 
 
