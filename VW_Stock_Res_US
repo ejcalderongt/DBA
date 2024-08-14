@@ -1,4 +1,4 @@
-ALTER VIEW [dbo].[VW_Stock_Res_US]
+ALTER  VIEW [dbo].[VW_Stock_Res_US]
 AS
 SELECT dbo.bodega_ubicacion.IdBodega, dbo.bodega_ubicacion.IdUbicacion, dbo.producto.IdProducto, dbo.producto.Nombre, dbo.producto_bodega.IdProductoBodega, dbo.stock.IdStock, dbo.unidad_medida.IdUnidadMedida, dbo.stock.IdPresentacion, 
                   dbo.producto.codigo, dbo.producto.codigo_barra, dbo.stock.lote, dbo.stock.fecha_vence, dbo.stock.cantidad AS Cantidad_UMBas, dbo.stock.lic_plate, dbo.producto.IdIndiceRotacion, dbo.bodega_ubicacion.IdTramo, 
@@ -27,13 +27,14 @@ FROM     dbo.producto_marca RIGHT OUTER JOIN
                   dbo.producto_familia ON dbo.producto.IdFamilia = dbo.producto_familia.IdFamilia ON dbo.producto_marca.IdMarca = dbo.producto.IdMarca AND dbo.producto_marca.IdPropietario = dbo.producto.IdPropietario LEFT OUTER JOIN
                   dbo.producto_tipo ON dbo.producto.IdTipoProducto = dbo.producto_tipo.IdTipoProducto AND dbo.producto.IdPropietario = dbo.producto_marca.IdPropietario LEFT OUTER JOIN
                   dbo.stock_det ON dbo.stock.IdStock = dbo.stock_det.IdStock
+WHERE dbo.bodega_ubicacion.bloqueada =0
+AND dbo.bodega_ubicacion.activo =1
 GROUP BY dbo.stock.IdStock, dbo.bodega_ubicacion.IdUbicacion, dbo.producto_bodega.IdProductoBodega, dbo.unidad_medida.IdUnidadMedida, dbo.producto.IdProducto, dbo.producto.codigo, dbo.stock.lote, dbo.stock.fecha_vence, 
                   dbo.stock.IdPresentacion, dbo.stock.lic_plate, dbo.producto.IdIndiceRotacion, dbo.bodega_ubicacion.IdTramo, dbo.bodega_ubicacion.ancho, dbo.bodega_ubicacion.largo, dbo.bodega_ubicacion.alto, dbo.producto.existencia_min, 
                   dbo.producto.existencia_max, dbo.producto.codigo_barra, dbo.producto_presentacion.MinimoExistencia, dbo.producto_presentacion.MaximoExistencia, dbo.stock.cantidad, dbo.bodega_ubicacion.nivel, dbo.bodega_ubicacion.indice_x, 
                   dbo.bodega_ubicacion.descripcion, dbo.bodega_tramo.descripcion, dbo.producto_familia.nombre, dbo.bodega_ubicacion.IdArea, dbo.producto_clasificacion.nombre, dbo.producto_tipo.IdTipoProducto, dbo.producto_marca.IdMarca, 
                   dbo.bodega_ubicacion.activo, dbo.bodega_ubicacion.bloqueada, dbo.bodega_ubicacion.ubicacion_merma, dbo.bodega_tramo.es_rack, dbo.bodega_ubicacion.IdArea, dbo.Nombre_Area(dbo.bodega_ubicacion.IdArea, 
                   dbo.bodega_ubicacion.IdBodega), dbo.bodega_ubicacion.IdBodega, dbo.stock.IdProductoEstado, dbo.producto.nombre
-GO
 
 
 --#EJC20240810: Modelo 1, para nueva funcionalidad de ubicación sugerida.
