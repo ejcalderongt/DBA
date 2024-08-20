@@ -1,3 +1,7 @@
+CREATE NONCLUSTERED INDEX NCLI_TRANS_MOVIMIENTOS_202408190736
+ON [dbo].[trans_movimientos] ([IdTipoTarea])
+INCLUDE ([IdProductoBodega],[fecha],[IdOperadorBodega])
+
 CREATE NONCLUSTERED INDEX INC_CKFK_20280812_TRANS_MOVIMIENTOS
 ON [dbo].[trans_movimientos] ([IdTipoTarea])
 INCLUDE ([IdPropietarioBodega],[IdProductoBodega],[IdUbicacionDestino],[IdPresentacion],[IdEstadoDestino],[IdUnidadMedida],[hora_fin])
