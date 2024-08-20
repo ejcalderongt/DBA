@@ -1,0 +1,12 @@
+CREATE VIEW [dbo].[VW_Ajustes_Det]
+AS
+SELECT dbo.trans_ajuste_enc.idbodega AS IdBodega, dbo.trans_ajuste_enc.idajusteenc AS IdAjusteEnc, dbo.trans_ajuste_enc.fecha AS Fecha, dbo.trans_ajuste_enc.referencia AS Referencia, dbo.centro_costo.Codigo AS Codigo_Centro_Costo, 
+                  dbo.centro_costo.Nombre AS Nombre_Centro_Costo, dbo.trans_ajuste_enc.ajuste_por_inventario, dbo.trans_ajuste_enc.auditado AS Auditado, dbo.ajuste_motivo.nombre AS Motivo, dbo.ajuste_tipo.nombre AS Tipo, 
+                  dbo.trans_ajuste_det.codigo_producto, dbo.trans_ajuste_det.nombre_producto, dbo.trans_ajuste_det.cantidad_original, dbo.trans_ajuste_det.cantidad_nueva, dbo.trans_ajuste_det.fecha_vence_original, 
+                  dbo.trans_ajuste_det.fecha_vence_nueva, dbo.trans_ajuste_det.lote_original, dbo.trans_ajuste_det.lote_nuevo, dbo.trans_ajuste_det.lic_plate AS Licencia, dbo.trans_ajuste_det.enviado AS Enviado
+FROM     dbo.trans_ajuste_enc INNER JOIN
+                  dbo.trans_ajuste_det ON dbo.trans_ajuste_enc.idajusteenc = dbo.trans_ajuste_det.idajusteenc INNER JOIN
+                  dbo.ajuste_motivo ON dbo.trans_ajuste_det.idmotivoajuste = dbo.ajuste_motivo.idmotivoajuste INNER JOIN
+                  dbo.ajuste_tipo ON dbo.trans_ajuste_det.idtipoajuste = dbo.ajuste_tipo.idtipoajuste LEFT OUTER JOIN
+                  dbo.centro_costo ON dbo.trans_ajuste_enc.IdCentroCosto = dbo.centro_costo.IdCentroCosto
+GO
