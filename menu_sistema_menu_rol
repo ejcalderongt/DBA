@@ -1,3 +1,19 @@
+--#EJC20240813 Reportes de control
+Insert into menu_sistema values('6.1.2.7','Distribución por tramo','mnuReporteDistribucionPorTramo',4,'6.1.2',0)
+Insert into menu_sistema values('6.1.2.8','Estacionalidad del producto','cmdEstacionalidadProducto',4,'6.1.2',0)
+Insert into menu_sistema values('6.1.2.10','Reglas de vencimiento','cmdReglasVencimiento',4,'6.1.2',0)
+Insert into menu_sistema values('6.1.2.11','KPI Tiempos de recepción','mnuTiemposRecepcion',4,'6.1.2',0)
+
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '6.1.2.7')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'6.1.2.7',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1,1,1,1)
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '6.1.2.8')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'6.1.2.8',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1,1,1,1)
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '6.1.2.10')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'6.1.2.10',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1,1,1,1)
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '6.1.2.11')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'6.1.2.11',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1,1,1,1)
+
+
 --#CKFK 20240719  Se agregó esta opción para auditar ajustes
 Insert into menu_sistema values('5.4.1.4','Auditado','chkAuditado',4,'5.4.1',0)
 IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '5.4.1.4')
