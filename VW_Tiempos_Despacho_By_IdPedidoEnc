@@ -1,0 +1,16 @@
+/****** Object:  View [dbo].[VW_Tiempos_Despacho_By_IdPedidoEnc]    Script Date: 20/08/2024 02:50:40 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE VIEW [dbo].[VW_Tiempos_Despacho_By_IdPedidoEnc]
+AS
+SELECT dbo.trans_pe_enc.IdBodega, dbo.trans_pe_enc.IdPedidoEnc, dbo.trans_pe_enc.Fecha_Pedido, MAX(dbo.trans_despacho_det.Fecha) AS Fecha_Despacho, dbo.cliente.codigo + ' ' + dbo.cliente.nombre_comercial AS Cliente, 
+                  COUNT(dbo.trans_despacho_det.IdDespachoDet) AS Lineas, DATEDIFF(SECOND, dbo.trans_pe_enc.Fecha_Pedido, MAX(dbo.trans_despacho_det.Fecha)) / 3600.0 AS Horas
+FROM     dbo.trans_despacho_det INNER JOIN
+                  dbo.trans_pe_enc ON dbo.trans_despacho_det.IdPedidoEnc = dbo.trans_pe_enc.IdPedidoEnc INNER JOIN
+                  dbo.cliente ON dbo.trans_pe_enc.IdCliente = dbo.cliente.IdCliente
+GROUP BY dbo.trans_pe_enc.IdPedidoEnc, dbo.trans_pe_enc.Fecha_Pedido, dbo.cliente.codigo, dbo.cliente.nombre_comercial, dbo.trans_pe_enc.IdBodega
+GO
