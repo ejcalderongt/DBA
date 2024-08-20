@@ -1,3 +1,12 @@
+--#EJC20240819 Reportes KPI parte 1
+Insert into menu_sistema values('6.1.2.12','KPI Tiempos de Despacho','mnuTiemposDespacho',4,'6.1.2',0)
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '6.1.2.12')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'6.1.2.12',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1,1,1,1)
+
+Insert into menu_sistema values('6.1.5.11','Ajustes de Stock','mnuRptAjustesInventario',4,'6.1.5',0)
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '6.1.5.11')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'6.1.5.11',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1,1,1,1)
+
 --#EJC20240813 Reportes de control
 Insert into menu_sistema values('6.1.2.7','Distribución por tramo','mnuReporteDistribucionPorTramo',4,'6.1.2',0)
 Insert into menu_sistema values('6.1.2.8','Estacionalidad del producto','cmdEstacionalidadProducto',4,'6.1.2',0)
