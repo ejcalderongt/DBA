@@ -1,3 +1,22 @@
+--#GT27082024: Ajuste al guardar al clientebodega en la prefactura, se hizo ajuste a la vista.
+ alter view VW_Get_Lista_PrefacturasEnc as
+ SELECT pf.IdTransPrefacturaEnc AS Codigo, prop.nombre_comercial AS Propietario, 
+ISNULL(prop2.nombre_comercial, prop.nombre_comercial) AS Facturado, 
+bd.nombre AS Bodega, pf.fec_agr AS Fecha, pf.anulada, 
+                  pf.es_consolidador AS Consolidador, usr.nombres + ' ' + usr.apellidos AS operador, pf.procesado_erp, pf.autorizacion_erp
+FROM     dbo.trans_prefactura_enc AS pf INNER JOIN
+                  dbo.bodega AS bd ON pf.IdBodega = bd.IdBodega INNER JOIN
+                  dbo.propietario_bodega AS pb ON pf.IdPropietarioBodega = pb.IdPropietarioBodega INNER JOIN
+                  dbo.propietarios AS prop ON pb.IdPropietario = prop.IdPropietario LEFT OUTER JOIN
+                  --dbo.propietarios AS prop2 ON pf.IdClienteBodega = prop2.IdPropietario INNER JOIN
+				  dbo.cliente_bodega as cb on pf.IdClienteBodega = cb.IdClienteBodega left outer join
+				  dbo.cliente cl on cb.IdCliente= cl.IdCliente left outer join
+				  dbo.propietarios as prop2 on cl.IdPropietario = prop2.IdPropietario inner join
+                  dbo.usuario AS usr ON pf.user_agr = usr.IdUsuario
+WHERE  (1 = 1)
+
+
+
 --#GT10072024: listar las prefacturas guardadas.
 
 SET ANSI_NULLS ON
