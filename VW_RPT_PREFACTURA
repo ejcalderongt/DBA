@@ -1,0 +1,29 @@
+--#GT27082024: crear vista para mostrar formato de prefactura similar a la factura Cealsa.
+
+create view VW_RPT_PREFACTURA
+as
+select 
+enc.IdTransPrefacturaEnc,
+enc.fec_agr as Fecha,
+enc.IdclienteBodega,
+enc.idPropietarioBodega,
+case when enc.IdClienteBodega is null then 
+pr.nombre_comercial 
+else 
+pr2.nombre_comercial
+end destinatario,
+enc.Tipo_Cambio,
+'del ' + convert(varchar(25), enc.fecha_desde, 105) +' al '+ convert(varchar(25), enc.fecha_hasta, 105) periodo,
+case when enc.es_consolidador=1 then 'TO ' + enc.poliza_oc_numero_orden +' - ID '+ enc.poliza_pe_numero_orden else acuerdo.descripcion  end as mercaderia,
+enc.Observacion,
+numero_unidades_acuerdo_det,servicio,valor
+from trans_prefactura_enc enc 
+inner join trans_prefactura_det det on enc.IdTransPrefacturaEnc=det.IdTransPrefacturaEnc
+inner join trans_acuerdoscomerciales_enc acuerdo on det.IdAcuerdoEnc = acuerdo.IdAcuerdoEnc 
+inner join propietario_bodega pb on enc.IdPropietarioBodega = pb.IdPropietarioBodega
+inner join propietarios pr on pb.IdPropietario=pr.IdPropietario
+--left join cliente cl on isnull(enc.IdClienteBodega,0) = cl.IdCliente
+left outer join cliente_bodega cb on enc.IdClienteBodega = cb.IdClienteBodega
+left outer join cliente cl on cb.IdCliente = cl.IdCliente
+left outer join propietarios as pr2 on cl.IdPropietario=pr2.IdPropietario
+go
