@@ -1,0 +1,7 @@
+ALTER VIEW [dbo].[VW_TiempoCliente]
+AS
+SELECT     pf.nombre AS Familia, pc.nombre AS Clasificación, cl.nombre_comercial Cliente, ct.*
+FROM         dbo.cliente_tiempos AS ct INNER JOIN cliente cl ON ct.IdCliente = cl.IdCliente LEFT OUTER JOIN
+                      dbo.producto_familia AS pf ON ct.IdFamilia = pf.IdFamilia LEFT OUTER JOIN
+                      dbo.producto_clasificacion AS pc ON ct.IdClasificacion = pc.IdClasificacion
+GO
