@@ -1,3 +1,8 @@
+--#CKFK20240621 ampliación de campo para byb.
+ALTER TABLE [dbo].[trans_pe_enc]
+ALTER COLUMN [Observacion] NVARCHAR(500) NULL;
+GO
+
 --#CKFK20240621 Campo nuevo por motivo de devolución
 ALTER TABLE trans_pe_enc ADD IdMotivoDevolucion int NULL
 GO
