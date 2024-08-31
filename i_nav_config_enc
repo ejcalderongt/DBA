@@ -1,3 +1,8 @@
+--#CKFK Agregar valores por defecto al indice de rotación del producto y días de importación
+ALTER TABLE i_nav_config_enc
+ADD IdIndiceRotacion int NULL,
+    rango_dias_importacion int NULL
+
 --#EJC20240327 Determina si los ajustes y traslados llevan autorización
 ALTER table i_nav_config_enc add 
 sap_control_draft_ajustes bit not null default 0,
