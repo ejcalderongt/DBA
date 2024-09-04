@@ -12,3 +12,9 @@ insert into sis_tipo_tarea values (26,'REEMP_ME_PICK', 0)
 insert into sis_tipo_tarea values (27,'REEMP_NE_PICK', 0)
 insert into sis_tipo_tarea values (28,'REEMP_BE_VERI', 0)
 insert into sis_tipo_tarea values (29,'REEMP_ME_VERI', 0)
+
+
+INSERT INTO sis_tipo_tarea VALUES(30,'AJLOTENI',0)
+INSERT INTO sis_tipo_tarea VALUES(31,'AJLOTEPI',0)
+INSERT INTO sis_tipo_tarea VALUES(32,'AJVENCENI',0)
+INSERT INTO sis_tipo_tarea VALUES(33,'AJVENCEPI',0)
