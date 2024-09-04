@@ -1,3 +1,7 @@
+--#EJC20240904 Agregar parametros para funcionalidad en Becofarma rechazar_bonificacion_incompleta,  inferir_bonificacion_pedido_sap
+ALTER TABLE i_nav_config_enc add inferir_bonificacion_pedido_sap bit not null default 0
+ALTER TABLE i_nav_config_enc add rechazar_bonificacion_incompleta bit not null default 0
+
 --#CKFK Agregar valores por defecto al indice de rotación del producto y días de importación
 ALTER TABLE i_nav_config_enc
 ADD IdIndiceRotacion int NULL,
