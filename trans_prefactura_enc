@@ -1,3 +1,9 @@
+--#GT06092024: se agregan campos sujetos a modificación manual del usuario cuando no existe poliza de salida.
+
+alter table trans_prefactura_enc add valor_aduana decimal(18,4)null, valor_general decimal(18,4)null
+alter table trans_prefactura_enc add valor_peso decimal(18,4)null
+
+
 --#GT18072024: campo para guardar el valor que se enviará al ERP
 alter table trans_prefactura_det add monto_erp float default 0
 
