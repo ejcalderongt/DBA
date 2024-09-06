@@ -1,0 +1,14 @@
+
+ALTER VIEW [dbo].[VW_Cliente]
+AS
+SELECT        e.nombre AS Empresa, p.nombre_comercial AS Propietario, ct.NombreTipoCliente AS [Tipo Cliente], dbo.cliente_bodega.activo AS activo_bodega, c.IdCliente, 
+                         c.IdEmpresa, c.IdPropietario, c.IdTipoCliente, c.IdUbicacionManufactura, c.codigo, c.nombre_comercial, c.nombre_contacto, c.telefono, c.nit, c.direccion, 
+                         c.correo_electronico, c.activo, c.realiza_manufactura, c.user_agr, c.fec_agr, c.user_mod, c.fec_mod, c.despachar_lotes_completos, c.sistema, 
+                         c.es_bodega_recepcion, c.es_bodega_traslado, c.idubicacionvirtual, c.referencia, 
+						 dbo.cliente_bodega.IdBodega, c.es_proveedor
+FROM            dbo.cliente AS c LEFT OUTER JOIN
+                         dbo.cliente_bodega ON c.IdCliente = dbo.cliente_bodega.IdCliente LEFT OUTER JOIN
+                         dbo.empresa AS e ON c.IdEmpresa = e.IdEmpresa LEFT OUTER JOIN
+                         dbo.propietarios AS p ON c.IdPropietario = p.IdPropietario LEFT OUTER JOIN
+                         dbo.cliente_tipo AS ct ON c.IdTipoCliente = ct.IdTipoCliente
+GO
