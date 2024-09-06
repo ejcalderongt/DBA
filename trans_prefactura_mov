@@ -1,10 +1,12 @@
---#GT09072024:campo con el valor calculado para cobrar almacenaje diario.
 
+--#GT06092024:campo que indica agrupación del producto en el cálculo.
+alter table trans_prefactura_mov add codigo_producto nvarchar(50) default null
+
+
+--#GT09072024:campo con el valor calculado para cobrar almacenaje diario.
 alter table trans_prefactura_mov add valor_total decimal(18,5) default 0.00
 
-
 --#GT09072024: campos adicionales para guardar fecha de cobro por cada linea, la orden de compra.
-
 alter table trans_prefactura_mov add unidades integer default 0
 alter table trans_prefactura_mov add IdOrdenCompraEnc integer default 0
 alter table trans_prefactura_mov add fecha_cobro date default null
