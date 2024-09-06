@@ -1,3 +1,22 @@
+/****** Object:  View [dbo].[VW_Cantidad_Ingresos_Proveedor]    Script Date: 6/09/2024 08:54:51 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER VIEW [dbo].[VW_Cantidad_Ingresos_Proveedor]
+AS
+SELECT p.nombre, COUNT(oc.IdOrdenCompraEnc) AS Ingresos, oc.IdBodega, oc.Fecha_Creacion, ti.Nombre AS TipoDocumento, p.nombre AS Proveedor, dbo.bodega.codigo AS Codigo_Bodega
+FROM     dbo.trans_oc_enc AS oc INNER JOIN
+                  dbo.proveedor_bodega AS pb ON pb.IdAsignacion = oc.IdProveedorBodega INNER JOIN
+                  dbo.proveedor AS p ON p.IdProveedor = pb.IdProveedor INNER JOIN
+                  dbo.trans_oc_ti AS ti ON oc.IdTipoIngresoOC = ti.IdTipoIngresoOC INNER JOIN
+                  dbo.bodega ON oc.IdBodega = dbo.bodega.IdBodega
+WHERE  (oc.IdEstadoOC <> 5)
+GROUP BY p.nombre, oc.IdBodega, oc.Fecha_Creacion, ti.Nombre, dbo.bodega.codigo
+GO
+
 CREATE VIEW VW_Cantidad_Ingresos_Proveedor
 AS
 SELECT   p.nombre,
