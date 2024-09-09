@@ -6,14 +6,6 @@ INSERT [dbo].[trans_manufactura_tipo] ([IdTipoManufactura], [nombre], [codigo], 
 INSERT [dbo].[trans_manufactura_tipo] ([IdTipoManufactura], [nombre], [codigo], [user_agr], [fec_agr], [user_mod], [fec_mod]) VALUES (4, N'RETIRAR STICKERS', N'4', N'1', CAST(N'2024-03-28T00:00:00.000' AS DateTime), N'1', CAST(N'2024-03-28T00:00:00.000' AS DateTime))
 INSERT [dbo].[trans_manufactura_tipo] ([IdTipoManufactura], [nombre], [codigo], [user_agr], [fec_agr], [user_mod], [fec_mod]) VALUES (5, N'VARIOS', N'5', N'1', CAST(N'2024-03-28T00:00:00.000' AS DateTime), N'1', CAST(N'2024-03-28T00:00:00.000' AS DateTime))
 
-
---#Se actualiza el campo llave al mismo nombre que en pedido y producto.
-
-/****** Object:  Table [dbo].[trans_manufactura_tipo]    Script Date: 25/03/2024 11:00:55 ******/
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[trans_manufactura_tipo]') AND type in (N'U'))
-DROP TABLE [dbo].[trans_manufactura_tipo]
-GO
-
 /****** Object:  Table [dbo].[trans_manufactura_tipo]    Script Date: 25/03/2024 11:00:55 ******/
 SET ANSI_NULLS ON
 GO
@@ -22,7 +14,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE TABLE [dbo].[trans_manufactura_tipo](
-	[idtipomanufactura] [int] NOT NULL,
+	[IdTipoManufactura] [int] NOT NULL,
 	[nombre] [nvarchar](50) NULL,
 	[codigo] [nvarchar](50) NULL,
 	[user_agr] [nvarchar](30) NULL,
@@ -32,25 +24,6 @@ CREATE TABLE [dbo].[trans_manufactura_tipo](
  CONSTRAINT [PK_trans_manufactura_tipo] PRIMARY KEY CLUSTERED 
 (
 	[idtipomanufactura] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-
-
-
-----------------------------------------------------------------------------------
-CREATE TABLE [dbo].[trans_manufactura_tipo](
-	[IdManufacturaTipo] [int] NOT NULL,
-	[nombre] [nvarchar](50) NULL,
-	[codigo] [nvarchar](50) NULL,
-	[activo] [bit] NOT NULL DEFAULT 1,
-	[user_agr] [nvarchar](30) NULL,
-	[fec_agr] [datetime] NULL,
-	[user_mod] [nvarchar](30) NULL,
-	[fec_mod] [datetime] NULL,
-CONSTRAINT [PK_trans_manufactura_tipo] PRIMARY KEY CLUSTERED 
-(
-	[IdManufacturaTipo] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
