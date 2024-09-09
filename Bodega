@@ -1,5 +1,6 @@
 --#EJC240904 Se agrega el campo despacho_automático para poder saber si en la verificación, al finalizar, se debe ejecutar el proceso de despacho de forma automática y con valores predeterminados.
-alter table bodega add despacho_automatico bit not null default 0
+alter table bodega add despacho_automatico_hh bit not null default 0
+GO
 
 --#CKFK20240703 Se agrega el campo control_pallet_mixto para poder saber si se van a utilizar pallet mixtos en la operación
 alter table bodega add control_pallet_mixto  bit default 0
