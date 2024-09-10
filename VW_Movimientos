@@ -1,4 +1,4 @@
-/****** #CKFK20240606 Agregué el campo IdDocSalida ******/
+/****** #CKFK20240910 Agregué los campos faltantes de cambios realizados por Efren el año pasado ******/
 ALTER VIEW [dbo].[VW_Movimientos]
 AS
 SELECT pr.nombre_comercial AS Propietario, u1.IdBodega, enc.codigo_poliza AS Poliza, p.nombre AS Producto, 
@@ -10,7 +10,8 @@ SELECT pr.nombre_comercial AS Propietario, u1.IdBodega, enc.codigo_poliza AS Pol
 	   m.barra_pallet, m.fecha_vence, SUM(m.cantidad)/ CASE WHEN pp.factor = 0 THEN 1 ELSE pp.factor END AS Cantidad_Presentacion, 
 	   re.IdOrdenCompraEnc IdDocIngreso, m.IdTransaccion, dbo.producto_clasificacion.nombre AS Clasificacion, 
 	   dbo.Nombre_Area(u1.IdArea, u1.IdBodega) AS Area_Origen, ISNULL(o.nombres,'') + ' ' +  ISNULL(o.apellidos,'') Operador,
-	   m.IdDespachoEnc IdDocSalida, pr.IdPropietario
+	   m.IdDespachoEnc IdDocSalida, pr.IdPropietario,re.fec_agr fecha_recepcion,m.IdTipoTarea,
+case when m.IdTipoTarea=5 then DATEDIFF(DAY, cast(re.fec_agr as date), cast(m.fecha as date))else 0 end as dias_piso
 FROM dbo.trans_movimientos AS m LEFT OUTER JOIN
 	dbo.propietario_bodega AS prb ON m.IdPropietarioBodega = prb.IdPropietarioBodega INNER JOIN
 	dbo.propietarios AS pr ON prb.IdPropietario = pr.IdPropietario LEFT OUTER JOIN
@@ -33,8 +34,9 @@ GROUP BY pr.nombre_comercial, p.nombre, pp.nombre, pe1.nombre, pe2.nombre, u.Nom
 		 p.codigo_barra, m.barra_pallet, m.fecha_vence, pp.IdPresentacion, pp.factor, 
 		 m.cantidad / pp.factor, enc.codigo_poliza, m.IdTransaccion, u1.IdUbicacion, u2.IdUbicacion, u1.IdBodega, 
 		 u2.IdBodega, dbo.producto_clasificacion.nombre, u1.IdArea, re.IdOrdenCompraEnc,
-		 o.nombres, o.apellidos,m.IdDespachoEnc, pr.IdPropietario
+		 o.nombres, o.apellidos,m.IdDespachoEnc, pr.IdPropietario,re.fec_agr, cast(m.fecha as date),m.IdTipoTarea
 GO
+
 
 ALTER VIEW [dbo].[VW_Movimientos]
 AS
