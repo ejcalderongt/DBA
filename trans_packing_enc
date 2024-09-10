@@ -1,3 +1,6 @@
+--#CKFK20240910 Cambiamos el campo no_linea a nvarchar
+alter table trans_packing_enc alter column no_linea NVARCHAR(50) not null
+
 --#EJC20210805_1544:
 
 CREATE TABLE [dbo].[trans_packing_enc](
