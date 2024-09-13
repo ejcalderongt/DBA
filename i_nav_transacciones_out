@@ -1,3 +1,7 @@
+--#EJC20240913 Agregamos funcionalidad para SAP, cuando hay desfase de lotes
+alter table i_nav_transacciones_out add cantidad_enviada float default 0, 
+cantidad_pendiente float default 0
+
 alter table i_nav_transacciones_out add IdTipoDocumento int default 0
 alter table i_nav_transacciones_out add es_servicio bit default 0
 
