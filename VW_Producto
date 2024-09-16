@@ -8,7 +8,7 @@ SELECT pd.IdProducto, pd.IdPropietario, pd.IdClasificacion, pd.IdFamilia, pd.IdM
                   pd.fec_mod, pd.imagen, pd.noserie, pd.noparte, pd.fechamanufactura, pd.capturar_aniada, pd.control_peso, pd.captura_arancel, pd.es_hardware, pd.IDPRODUCTOPARAMETROA, pd.IDPRODUCTOPARAMETROB, 
                   dbo.producto_parametro_a.Codigo AS producto_parametro_codigoA, dbo.producto_parametro_a.Nombre AS producto_parametro_nombreA, dbo.producto_parametro_b.Codigo AS producto_parametro_codigoB, 
                   dbo.producto_parametro_b.Nombre AS producto_parametro_nombreB, dbo.indice_rotacion.Descripcion AS IndiceRotacion
-FROM     dbo.producto AS pd INNER JOIN
+FROM     dbo.producto AS pd LEFT OUTER JOIN
                   dbo.indice_rotacion ON pd.IdIndiceRotacion = dbo.indice_rotacion.IdIndiceRotacion LEFT OUTER JOIN
                   dbo.producto_parametro_a ON pd.IDPRODUCTOPARAMETROA = dbo.producto_parametro_a.IdProductoParametroA LEFT OUTER JOIN
                   dbo.producto_parametro_b ON pd.IDPRODUCTOPARAMETROB = dbo.producto_parametro_b.IdProductoParametroB LEFT OUTER JOIN
