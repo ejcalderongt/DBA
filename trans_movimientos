@@ -1,3 +1,7 @@
+--#EJC20240916 Agregamos estos campos por funcionalidad para Becofarma
+alter table i_nav_transacciones_out add cantidad_enviada float default 0, 
+cantidad_pendiente float default 0
+
 --#EJC20230221 Se agregaron estas columnas para garantizar poder realizar búsquedas y reportes con mayor facilidad
 alter table trans_movimientos add IdRecepcionDet int null default 0
 alter table trans_movimientos add IdPedidoEnc int null default 0
