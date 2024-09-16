@@ -5,6 +5,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
+
 ALTER VIEW [dbo].[VW_Stock_Res]
 AS
 SELECT dbo.stock.IdBodega, dbo.bodega.nombre AS Bodega, dbo.propietarios.IdPropietario, dbo.propietario_bodega.IdPropietarioBodega, dbo.propietarios.nombre_comercial AS Propietario, dbo.producto.IdProducto, 
@@ -34,8 +35,8 @@ SELECT dbo.stock.IdBodega, dbo.bodega.nombre AS Bodega, dbo.propietarios.IdPropi
                   AS IdPedido, dbo.stock.pallet_no_estandar, ISNULL(dbo.trans_oc_embarcador.Nombre, 'N/D') AS Embarcador, ISNULL(dbo.trans_oc_enc.IdOrdenCompraEnc, 0) AS Documento_Ingreso, SUM(ISNULL(dbo.stock_res.cantidad, 0)) 
                   AS CantidadReservada, dbo.Nombre_Completo_Ubicacion(dbo.stock.IdUbicacion, dbo.bodega_ubicacion.IdBodega) AS Nombre_Completo, dbo.bodega_tramo.es_rack, ISNULL(dbo.trans_oc_enc.Referencia, '') AS ReferenciaOCEnc, 
                   dbo.producto.precio AS precio_producto, dbo.producto.costo AS costo_producto, dbo.trans_re_det.costo AS costo_ingreso, dbo.stock.IdRecepcionDet, ISNULL(dbo.trans_oc_ti.Nombre, 'ND') AS Ingreso, 
-                  ISNULL(dbo.trans_oc_ti.es_devolucion, 0) AS es_devolucion, ISNULL(dbo.trans_re_det.No_Linea, 0) AS No_Linea, ISNULL(dbo.bodega_ubicacion.IdArea, 0) AS IdArea, dbo.trans_oc_enc.Referencia, dbo.trans_re_oc.no_docto, 
-                  dbo.trans_re_enc.no_contenedor, dbo.producto.IdTipoRotacion
+                  ISNULL(dbo.trans_oc_ti.es_devolucion, 0) AS es_devolucion, ISNULL(dbo.trans_re_det.No_Linea, 0) AS No_Linea, ISNULL(dbo.bodega_ubicacion.IdArea, 0) AS IdArea, dbo.trans_oc_enc.Referencia, dbo.trans_re_oc.no_docto No_Docto, 
+                  dbo.trans_re_enc.no_contenedor No_Contenedor, dbo.producto.IdTipoRotacion			 
 FROM     dbo.p_parametro RIGHT OUTER JOIN
                   dbo.producto_parametro_a RIGHT OUTER JOIN
                   dbo.producto_parametros RIGHT OUTER JOIN
