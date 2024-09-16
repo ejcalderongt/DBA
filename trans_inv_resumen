@@ -1,3 +1,9 @@
+--#GT16092024: se incrementa nombre producto, ya que manto producto permite 100 caracteres.
+ALTER TABLE trans_inv_resumen
+ALTER COLUMN nom_producto nvarchar(100) NULL
+
+
+--***********************************************
 ALTER TABLE trans_inv_resumen ADD 
 idbodega int NOT NULL DEFAULT 0,
 idubicacion int NOT NULL DEFAULT 0
