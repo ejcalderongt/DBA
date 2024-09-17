@@ -1,0 +1,6 @@
+CREATE VIEW VW_INav_Transacciones_Out_PR
+AS
+SELECT        idbodega, idtransaccion, idpedidoenc, idproductobodega, no_pedido, no_linea, codigo_producto, nombre_producto, cantidad, lote, fecha_vence, cantidad_enviada, cantidad_pendiente, unidad_medida, enviado, fec_agr
+FROM            dbo.i_nav_transacciones_out
+WHERE cantidad_pendiente >0
+GO
