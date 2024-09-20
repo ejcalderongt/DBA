@@ -1,3 +1,7 @@
+--#GT20092024: este campo se debe agregar en bds ya instaladas, en nuevas el campo esta en el create.
+alter table [trans_picking_ubic_stock] add [cantidad_pickeada] [float] NULL
+
+
 --#CKFK202340122 Aumenté el tamaño del campo licencia a 25 a 50
 ALTER TABLE trans_picking_ubic_stock ALTER COLUMN licencia NVARCHAR(50) NULL
 GO
