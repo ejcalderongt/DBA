@@ -1,3 +1,7 @@
+--23092024 indice para reporte prefacturacion
+CREATE NONCLUSTERED INDEX NCLI_Fiscal_Historico_23092024_GT
+ON [dbo].[propietario_bodega] ([IdPropietario])
+
 CREATE NONCLUSTERED INDEX NCLI_TRANS_MOVIMIENTOS_202408190736
 ON [dbo].[trans_movimientos] ([IdTipoTarea])
 INCLUDE ([IdProductoBodega],[fecha],[IdOperadorBodega])
