@@ -1,0 +1,16 @@
+
+ALTER VIEW [dbo].[VW_Conteo_By_Operador]
+AS
+SELECT       trans_inv_ciclico.idinventarioenc, 
+	dbo.Nombre_Completo_Ubicacion(trans_inv_ciclico.IdUbicacion, trans_inv_ciclico.IdBodega) AS Ubicacion,
+	producto.codigo AS Codigo, producto.codigo_barra AS CodigoBarra, producto.nombre AS Nombre, 
+	CONCAT(operador.nombres,' ', operador.apellidos) AS Operador,
+	trans_inv_ciclico.cant_stock AS Teorico, 
+	SUM(trans_inv_ciclico.cantidad) AS Conteo						 
+FROM            trans_inv_ciclico INNER JOIN
+                         producto_bodega ON trans_inv_ciclico.IdProductoBodega = producto_bodega.IdProductoBodega INNER JOIN
+                         producto ON producto_bodega.IdProducto = producto.IdProducto LEFT OUTER JOIN
+                         operador ON trans_inv_ciclico.idoperador = operador.IdOperador
+GROUP BY trans_inv_ciclico.idinventarioenc, operador.nombres, producto.codigo, producto.codigo_barra, producto.nombre, trans_inv_ciclico.cant_stock, trans_inv_ciclico.IdUbicacion, 
+                         trans_inv_ciclico.IdBodega, operador.apellidos
+GO
