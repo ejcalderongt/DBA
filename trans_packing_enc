@@ -1,3 +1,6 @@
+--#CKFK20240923 Agregamos el campo IdPedidoEnc
+ALTER TABLE trans_packing_enc ADD IdPedidoEnc int not null default 0
+
 --#CKFK20240910 Cambiamos el campo no_linea a nvarchar
 alter table trans_packing_enc alter column no_linea NVARCHAR(50) not null
 
