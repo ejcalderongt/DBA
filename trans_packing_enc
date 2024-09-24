@@ -1,3 +1,6 @@
+--#CKFK20240923 Agregamos el campo finalizado
+ALTER TABLE trans_packing_enc ADD finalizado bit NOT NULL DEFAULT 0
+
 --#CKFK20240923 Agregamos el campo IdPedidoEnc
 ALTER TABLE trans_packing_enc ADD IdPedidoEnc int not null default 0
 
