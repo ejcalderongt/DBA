@@ -1,6 +1,3 @@
---#CKFK20240923 Parametrizar si se va a validar el packing en el despacho
-ALTER TABLE trans_pe_tipo ADD validar_packing bit not null Default 0
-
 --#CKFK20240620 Parametrizar si es de tipo devolución o no
 ALTER TABLE trans_pe_tipo ADD es_devolucion bit NOT NULL default 0
 
