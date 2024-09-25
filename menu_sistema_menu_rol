@@ -1,3 +1,8 @@
+--#EJC20240925 Opcion para cerrar pedido en SAP
+insert into menu_sistema values ('11.4.6', 'Cerrar documento SAP','mnuCerrarDocumentoSAP',3,'11.4',0)
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '11.4.6')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol), '11.4.6',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1,1,1,1)
+
 --#EJC20240916 Reporte de Interface
 insert into menu_sistema values ('11.6', 'Reportes','mnuReportesI',2,0,0)
 insert into menu_sistema values ('11.6.1', 'Existencias comparativo WMS - SAP','mnuReporteComparativoWMSvrsERP',3,'11.6',0)
