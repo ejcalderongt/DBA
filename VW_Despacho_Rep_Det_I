@@ -1,11 +1,13 @@
-/*------------- #CKFK20240926 Seeliminó error de duplicación --------------------------------------*/
+/*------------- #CKFK20240926 Se eliminó error de duplicación --------------------------------------*/
 ALTER VIEW [dbo].[VW_Despacho_Rep_Det_I] AS
 SELECT dbo.trans_despacho_enc.IdBodega, dbo.trans_picking_ubic.IdPickingUbic, dbo.trans_picking_ubic.IdStock, dbo.trans_picking_ubic.IdPedidoDet, dbo.trans_picking_ubic.IdPropietarioBodega, dbo.trans_picking_ubic.IdProductoBodega, 
                   dbo.trans_picking_ubic.IdProductoEstado, dbo.trans_picking_ubic.IdPresentacion, dbo.trans_picking_ubic.IdUnidadMedida, dbo.trans_picking_ubic.IdRecepcion, dbo.trans_despacho_enc.IdDespachoEnc, 
                   dbo.trans_despacho_det.IdDespachoDet, dbo.trans_despacho_det.IdPedidoEnc, dbo.producto.IdProducto, dbo.propietarios.nombre_comercial AS Propietario, dbo.trans_despacho_det.Codigo AS Codigo_Producto, 
                   dbo.producto.nombre AS Nombre_Producto, dbo.unidad_medida.Nombre AS UM, dbo.producto_presentacion.nombre AS Presentacion, dbo.trans_despacho_det.Fecha, dbo.trans_despacho_det.NombreEstado, 
                   dbo.producto_presentacion.factor, dbo.producto_estado.nombre AS Estado, dbo.trans_picking_ubic.lote, dbo.trans_picking_ubic.fecha_vence AS Vence, ISNULL(dbo.trans_picking_ubic.cantidad_recibida, 0) AS cantidad_pickeada, 
-                  ISNULL(dbo.trans_picking_ubic.cantidad_verificada, 0) AS cantidad_verificada, ISNULL(dbo.trans_picking_ubic.peso_recibido, 0) AS Peso_Pickeado, ISNULL(dbo.trans_picking_ubic.peso_verificado, 0) AS Peso_Verificado, 
+                  ISNULL(dbo.trans_picking_ubic.cantidad_verificada, 0) AS cantidad_verificada, 
+				  ISNULL(dbo.trans_picking_ubic.peso_recibido, 0) AS Peso_Pickeado, 
+				  ISNULL(dbo.trans_picking_ubic.peso_verificado, 0) AS Peso_Verificado, 
                   dbo.trans_despacho_det.CantidadDespachada, dbo.trans_despacho_det.PesoDespachado, ISNULL(dbo.trans_picking_ubic.encontrado, 0) AS Encontrado, ISNULL(dbo.trans_picking_ubic.acepto, 0) AS Acepto, 
                   dbo.trans_pe_enc.no_documento AS No_Documento_WMS, dbo.trans_pe_enc.referencia AS No_Referencia, dbo.cliente.codigo AS Codigo_Cliente, dbo.cliente.nombre_comercial AS Nombre_Cliente, dbo.cliente.idubicacionvirtual, 
                   dbo.trans_despacho_enc.no_pase, dbo.cliente.es_bodega_recepcion, dbo.cliente.es_bodega_traslado, dbo.trans_despacho_enc.numero, dbo.trans_despacho_enc.marchamo, dbo.trans_despacho_enc.observacion, 
@@ -19,7 +21,7 @@ FROM     dbo.trans_pe_enc INNER JOIN
                   dbo.cliente ON dbo.trans_pe_enc.IdCliente = dbo.cliente.IdCliente INNER JOIN
                   dbo.trans_despacho_enc INNER JOIN
                   dbo.trans_despacho_det ON dbo.trans_despacho_enc.IdDespachoEnc = dbo.trans_despacho_det.IdDespachoEnc INNER JOIN
-                  dbo.producto_bodega ON dbo.trans_despacho_enc.IdBodega = dbo.producto_bodega.IdBodega INNER JOIN
+                  dbo.producto_bodega ON dbo.trans_despacho_det.IdProductoBodega = dbo.producto_bodega.IdProductoBodega AND dbo.trans_despacho_enc.IdBodega = dbo.producto_bodega.IdBodega INNER JOIN
                   dbo.producto ON dbo.producto_bodega.IdProducto = dbo.producto.IdProducto INNER JOIN
                   dbo.propietario_bodega ON dbo.trans_despacho_enc.IdPropietarioBodega = dbo.propietario_bodega.IdPropietarioBodega INNER JOIN
                   dbo.propietarios ON dbo.propietario_bodega.IdPropietario = dbo.propietarios.IdPropietario ON dbo.trans_pe_enc.IdPedidoEnc = dbo.trans_despacho_det.IdPedidoEnc LEFT OUTER JOIN
@@ -34,12 +36,15 @@ FROM     dbo.trans_pe_enc INNER JOIN
                   dbo.producto_estado INNER JOIN
                   dbo.trans_picking_ubic ON dbo.producto_estado.IdEstado = dbo.trans_picking_ubic.IdProductoEstado INNER JOIN
                   dbo.bodega_ubicacion ON dbo.trans_picking_ubic.IdUbicacion = dbo.bodega_ubicacion.IdUbicacion AND dbo.trans_picking_ubic.IdBodega = dbo.bodega_ubicacion.IdBodega ON 
-                  dbo.trans_despacho_det.IdPickingUbic = dbo.trans_picking_ubic.IdPickingUbic AND dbo.producto_bodega.IdProductoBodega = dbo.trans_picking_ubic.IdProductoBodega INNER JOIN
+                  dbo.trans_despacho_det.IdUnidadMedidaBasica = dbo.trans_picking_ubic.IdUnidadMedida AND dbo.trans_despacho_det.IdPickingUbic = dbo.trans_picking_ubic.IdPickingUbic AND 
+                  dbo.producto_bodega.IdProductoBodega = dbo.trans_picking_ubic.IdProductoBodega AND dbo.trans_despacho_enc.IdPropietarioBodega = dbo.trans_picking_ubic.IdPropietarioBodega AND 
+                  dbo.trans_despacho_det.IdPresentacion = dbo.trans_picking_ubic.IdPresentacion LEFT OUTER JOIN
                   dbo.unidad_medida ON dbo.trans_despacho_det.IdUnidadMedidaBasica = dbo.unidad_medida.IdUnidadMedida LEFT OUTER JOIN
-                  dbo.producto_presentacion ON dbo.trans_despacho_det.IdPresentacion = dbo.producto_presentacion.IdPresentacion LEFT OUTER JOIN
-                  dbo.trans_pe_pol AS pe_pol ON dbo.trans_pe_enc.IdPedidoEnc = pe_pol.IdOrdenPedidoEnc AND pe_pol.IdOrdenPedidoEnc = pe_pol.IdOrdenPedidoPol INNER JOIN
-                  dbo.trans_re_oc AS re_oc ON dbo.trans_picking_ubic.IdRecepcion = re_oc.IdRecepcionEnc LEFT OUTER JOIN
-                  dbo.trans_oc_pol AS oc_pol ON re_oc.IdOrdenCompraEnc = oc_pol.IdOrdenCompraEnc
+                  dbo.producto_presentacion ON dbo.trans_despacho_det.IdPresentacion = dbo.producto_presentacion.IdPresentacion 
+				  LEFT OUTER JOIN trans_pe_pol pe_pol on trans_pe_enc.IdPedidoEnc = pe_pol.IdOrdenPedidoEnc AND 
+				  pe_pol.IdOrdenPedidoEnc = trans_picking_ubic.IdPedidoEnc INNER JOIN 
+				  trans_re_oc re_oc on dbo.trans_picking_ubic.IdRecepcion=re_oc.IdRecepcionEnc
+				  LEFT OUTER JOIN trans_oc_pol oc_pol on re_oc.IdOrdenCompraEnc=oc_pol.IdOrdenCompraEnc
 GO
 
 /------------- GT18082023: reporte de salidas muestra la poliza de ingreso y la de salida cuando es fiscal --------------------------------------/
