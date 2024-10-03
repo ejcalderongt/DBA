@@ -1,4 +1,4 @@
---#CKFK20240924 Agregué campo Bodega Destino, Referencia, Referencia_Documento_Ingreso_Bodega_Destino
+--#CKFK20241003 Agregué campo Bodega Destino, Referencia, Referencia_Documento_Ingreso_Bodega_Destino
 ALTER VIEW [dbo].[VW_Packing]
 AS
 SELECT  dbo.trans_packing_enc.idpickingenc, dbo.trans_packing_enc.idpackingenc, dbo.trans_packing_enc.no_linea, dbo.producto.codigo, dbo.producto.nombre, dbo.trans_packing_enc.lote, dbo.trans_packing_enc.fecha_vence, 
