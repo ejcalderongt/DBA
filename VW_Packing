@@ -1,3 +1,30 @@
+--#CKFK20240924 Agregué campo Bodega Destino, Referencia, Referencia_Documento_Ingreso_Bodega_Destino
+ALTER VIEW [dbo].[VW_Packing]
+AS
+SELECT  dbo.trans_packing_enc.idpickingenc, dbo.trans_packing_enc.idpackingenc, dbo.trans_packing_enc.no_linea, dbo.producto.codigo, dbo.producto.nombre, dbo.trans_packing_enc.lote, dbo.trans_packing_enc.fecha_vence, 
+        dbo.unidad_medida.Nombre AS umbas, dbo.producto_presentacion.nombre AS presentacion, dbo.producto_estado.nombre AS estado, dbo.trans_packing_enc.lic_plate AS licencia, 
+        dbo.trans_packing_enc.cantidad_bultos_packing, dbo.trans_packing_enc.cantidad_camas_packing, dbo.trans_packing_enc.fecha_packing, dbo.operador.nombres AS operador, dbo.trans_packing_enc.iddespachoenc, 
+        dbo.trans_despacho_enc.marchamo, dbo.empresa_transporte_vehiculos.placa, dbo.empresa_transporte_pilotos.nombres AS nombre_piloto, dbo.empresa_transporte_pilotos.apellidos AS apellido_piloto, 
+        dbo.empresa_transporte_pilotos.no_licencia, dbo.empresa_transporte_vehiculos.placa_comercial, dbo.empresa_transporte_vehiculos.marca, dbo.empresa_transporte_vehiculos.modelo, 
+        dbo.propietarios.nombre_comercial AS propietario, dbo.empresa.imagen, dbo.trans_packing_enc.referencia, trans_packing_enc.IdPedidoEnc,trans_packing_enc.Finalizado,
+		trans_pe_enc.no_documento_externo, ISNULL(cliente.nombre_comercial,'N\D') Bodega_Destino, trans_pe_enc.referencia RefPed, trans_pe_enc.Referencia_Documento_Ingreso_Bodega_Destino NoDoc
+FROM    dbo.producto_presentacion RIGHT OUTER JOIN
+        dbo.trans_packing_enc INNER JOIN
+        dbo.producto_bodega ON dbo.trans_packing_enc.idproductobodega = dbo.producto_bodega.IdProductoBodega INNER JOIN
+        dbo.producto ON dbo.producto_bodega.IdProducto = dbo.producto.IdProducto INNER JOIN
+        dbo.unidad_medida ON dbo.trans_packing_enc.idunidadmedida = dbo.unidad_medida.IdUnidadMedida INNER JOIN
+        dbo.operador_bodega ON dbo.trans_packing_enc.idoperadorbodega = dbo.operador_bodega.IdOperadorBodega INNER JOIN
+        dbo.operador ON dbo.operador_bodega.IdOperador = dbo.operador.IdOperador INNER JOIN
+        dbo.propietarios ON dbo.producto.IdPropietario = dbo.propietarios.IdPropietario INNER JOIN
+		dbo.trans_pe_enc ON trans_pe_enc.IdPedidoEnc = trans_packing_enc.IdPedidoEnc INNER JOIN
+        dbo.empresa ON dbo.operador.IdEmpresa = dbo.empresa.IdEmpresa AND dbo.propietarios.IdEmpresa = dbo.empresa.IdEmpresa ON 
+        dbo.producto_presentacion.IdPresentacion = dbo.trans_packing_enc.idpresentacion LEFT OUTER JOIN
+        dbo.empresa_transporte_vehiculos INNER JOIN
+        dbo.trans_despacho_enc ON dbo.empresa_transporte_vehiculos.IdVehiculo = dbo.trans_despacho_enc.IdVehiculo ON dbo.trans_packing_enc.iddespachoenc = dbo.trans_despacho_enc.IdDespachoEnc LEFT OUTER JOIN
+        dbo.producto_estado ON dbo.trans_packing_enc.idproductoestado = dbo.producto_estado.IdEstado LEFT OUTER JOIN
+        dbo.empresa_transporte_pilotos ON dbo.trans_despacho_enc.IdPiloto = dbo.empresa_transporte_pilotos.IdPiloto LEFT OUTER JOIN
+		dbo.cliente ON cliente.codigo collate Modern_Spanish_CI_AS = trans_pe_enc.bodega_destino
+GO
 --#CKFK20240924 Agregué campo IdPedidoEnc y Finalizado
 ALTER VIEW [dbo].[VW_Packing]
 AS
