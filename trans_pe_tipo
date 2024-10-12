@@ -1,4 +1,4 @@
---#CKFK20240620 Parametrizar si es de tipo devolución o no
+--#CKFK20241011 Parametrizar si requiere packing
 ALTER TABLE trans_pe_tipo ADD packing bit NOT NULL default 0
 
 --#CKFK20240620 Parametrizar si es de tipo devolución o no
