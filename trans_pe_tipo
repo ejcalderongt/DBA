@@ -1,4 +1,7 @@
 --#CKFK20240620 Parametrizar si es de tipo devolución o no
+ALTER TABLE trans_pe_tipo ADD packing bit NOT NULL default 0
+
+--#CKFK20240620 Parametrizar si es de tipo devolución o no
 ALTER TABLE trans_pe_tipo ADD es_devolucion bit NOT NULL default 0
 
 --#CKFK20231027 Parametrizar a nivel de documento si se activa o no las fotografías en la verificación
