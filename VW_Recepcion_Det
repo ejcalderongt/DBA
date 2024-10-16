@@ -10,7 +10,7 @@ SELECT pb.IdBodega, re_det.IdRecepcionEnc, pr.IdPropietario, pr.nombre_comercial
                   dbo.producto_familia.nombre AS familia, dbo.producto_parametro_a.Nombre AS parametro_a, dbo.producto_parametro_b.Nombre AS parametro_b, dbo.producto_marca.nombre AS Marca
 				  ,oc_enc.Observacion,
 				  regimen_fiscal.codigo_regimen codigo_regimen_ingreso, oc_pol.numero_orden numero_orden_ingreso,re_enc.carta_cupo, trim(re_enc.no_contenedor)no_contenedor,
-				  vehiculo.placa as placa_contenedor_ingreso,oc_pol.activo as poliza_activa
+				  vehiculo.placa as placa_contenedor_ingreso,oc_pol.activo as poliza_activa,oc_pol.dua as dua_ingreso
 FROM     dbo.bodega_ubicacion INNER JOIN
                   dbo.producto_estado AS pr_estado INNER JOIN
                   dbo.trans_oc_enc AS oc_enc INNER JOIN
