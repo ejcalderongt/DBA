@@ -19,7 +19,7 @@ SELECT dbo.trans_despacho_enc.IdBodega, dbo.trans_picking_ubic.IdPickingUbic, db
                   dbo.producto_marca.nombre AS marca, dbo.producto_clasificacion.nombre AS clasificacion, dbo.producto_familia.nombre AS familia, pe_pol.numero_orden AS numero_orden_pedido, pe_pol.codigo_poliza AS codigo_poliza_pedido, 
                   oc_pol.codigo_poliza AS codigo_poliza_ingreso, oc_pol.numero_orden AS numero_orden_ingreso,
 				   regimen_fiscal.codigo_regimen as codigo_regimen_salida, vehiculo.placa placa_contenedor_salida,oc_pol.activo as poliza_activa,
-				   pe_pol.activo as poliza_salida_activa
+				   pe_pol.activo as poliza_salida_activa, pe_pol.dua as dua_salida
 FROM     dbo.trans_pe_enc INNER JOIN
                   dbo.cliente ON dbo.trans_pe_enc.IdCliente = dbo.cliente.IdCliente INNER JOIN
                   dbo.trans_despacho_enc INNER JOIN
