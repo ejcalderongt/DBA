@@ -1,8 +1,10 @@
-CREATE TABLE [dbo].[usuario_estado](
-	[IdUsuarioEstado] [int] NOT NULL,
-	[IdUsuario] [int] NULL,
+CREATE TABLE [dbo].[rol_usuario_estado](
+	[IdRolUsuarioEstado] [int] NOT NULL,
+	[IdRolUsuario] [int] NULL,
 	[IdPropietario] [int] NULL,
-	[IdEstado] [int] NULL,
+	[IdEstadoOrigen] [int] NULL,
+	[IdEstadoDestino] [int] NULL,
+	[Permitir] [bit] NULL,
 	[user_agr] [nvarchar](50) NULL,
 	[fec_agr] [datetime] NULL,
 	[user_mod] [nvarchar](50) NULL,
@@ -10,7 +12,7 @@ CREATE TABLE [dbo].[usuario_estado](
 	[activo] [bit] NOT NULL,
  CONSTRAINT [PK_usuario_estado] PRIMARY KEY CLUSTERED 
 (
-	[IdUsuarioEstado] ASC
+	[IdRolUsuarioEstado] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
