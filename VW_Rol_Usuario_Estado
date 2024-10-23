@@ -1,0 +1,10 @@
+ALTER VIEW [dbo].[VW_Rol_Usuario_Estado]
+AS
+SELECT dbo.rol_usuario_estado.IdRolUsuarioEstado, dbo.rol_usuario_estado.IdRolUsuario, dbo.rol_usuario_estado.IdPropietario, dbo.rol_usuario_estado.IdEstadoOrigen, dbo.rol_usuario_estado.IdEstadoDestino, 
+                  dbo.rol_usuario_estado.Permitir, dbo.rol_usuario_estado.user_agr, dbo.rol_usuario_estado.fec_agr, dbo.rol_usuario_estado.user_mod, dbo.rol_usuario_estado.fec_mod, dbo.rol_usuario_estado.activo, 
+                  dbo.propietarios.nombre_comercial AS Propietario, dbo.producto_estado.nombre AS EstadoOrigen, producto_estado_1.nombre AS EstadoDestino
+FROM     dbo.propietarios INNER JOIN
+                  dbo.rol_usuario_estado ON dbo.propietarios.IdPropietario = dbo.rol_usuario_estado.IdPropietario INNER JOIN
+                  dbo.producto_estado ON dbo.rol_usuario_estado.IdEstadoOrigen = dbo.producto_estado.IdEstado INNER JOIN
+                  dbo.producto_estado AS producto_estado_1 ON dbo.rol_usuario_estado.IdEstadoDestino = producto_estado_1.IdEstado
+GO

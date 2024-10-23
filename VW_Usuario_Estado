@@ -1,7 +1,0 @@
-CREATE VIEW [dbo].[VW_Usuario_Estado]
-AS
-SELECT dbo.usuario_estado.*, dbo.propietarios.nombre_comercial AS Propietario, dbo.producto_estado.nombre AS Estado
-FROM     dbo.usuario_estado INNER JOIN
-                  dbo.propietarios ON dbo.usuario_estado.IdPropietario = dbo.propietarios.IdPropietario INNER JOIN
-                  dbo.producto_estado ON dbo.propietarios.IdPropietario = dbo.producto_estado.IdPropietario AND dbo.propietarios.IdPropietario = dbo.producto_estado.IdPropietario
-GO
