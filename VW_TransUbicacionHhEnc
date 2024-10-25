@@ -1,3 +1,18 @@
+/****** CKFK: 24-oCT-2024 Agregamos usuario y rol ******/
+ALTER VIEW [dbo].[VW_TransUbicacionHhEnc]
+AS
+SELECT dbo.trans_ubic_hh_enc.IdTareaUbicacionEnc, dbo.trans_ubic_hh_enc.IdPropietarioBodega, dbo.trans_ubic_hh_enc.IdMotivoUbicacion, dbo.motivo_ubicacion.Nombre AS DescripcionMotivo, dbo.trans_ubic_hh_enc.FechaInicio, 
+                  dbo.trans_ubic_hh_enc.HoraInicio, dbo.trans_ubic_hh_enc.FechaFin, dbo.trans_ubic_hh_enc.HoraFin, dbo.trans_ubic_hh_enc.user_agr, dbo.trans_ubic_hh_enc.fec_agr, dbo.trans_ubic_hh_enc.user_mod, dbo.trans_ubic_hh_enc.fec_mod, 
+                  dbo.trans_ubic_hh_enc.Observacion, dbo.trans_ubic_hh_enc.activo, dbo.trans_ubic_hh_enc.operador_por_linea, dbo.trans_ubic_hh_enc.ubicacion_con_hh, dbo.trans_ubic_hh_enc.estado, dbo.trans_ubic_hh_enc.cambio_estado, 
+                  dbo.trans_ubic_hh_enc.IdReabastecimientoLog, dbo.trans_ubic_hh_enc.es_traslado_sap, dbo.trans_ubic_hh_enc.no_documento, dbo.usuario.nombres AS Usuario, dbo.rol.nombre AS Rol
+FROM     dbo.trans_ubic_hh_enc INNER JOIN
+                  dbo.motivo_ubicacion ON dbo.trans_ubic_hh_enc.IdMotivoUbicacion = dbo.motivo_ubicacion.IdMotivoUbicacion INNER JOIN
+                  dbo.usuario ON dbo.trans_ubic_hh_enc.user_agr = dbo.usuario.IdUsuario INNER JOIN
+                  dbo.usuario_bodega ON dbo.usuario.IdUsuario = dbo.usuario_bodega.IdUsuario INNER JOIN
+                  dbo.rol ON dbo.usuario_bodega.IdRol = dbo.rol.IdRol INNER JOIN
+                  dbo.propietario_bodega ON dbo.trans_ubic_hh_enc.IdPropietarioBodega = dbo.propietario_bodega.IdPropietarioBodega AND dbo.usuario_bodega.IdBodega = dbo.propietario_bodega.IdBodega
+GO
+
 /****** CKFK: 29-Mar-24 12:16:10 PM Agregue los campos es_traslado_sap y no_documento******/
 ALTER VIEW [dbo].[VW_TransUbicacionHhEnc]
 AS
