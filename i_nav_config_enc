@@ -1,3 +1,8 @@
+--#CKFK20241028 Agregar parametros para Killios
+alter table i_nav_config_enc add equiparar_productos bit not null default 0
+GO
+
+
 --#EJC20240904 Agregar parametros para funcionalidad en Becofarma rechazar_bonificacion_incompleta,  inferir_bonificacion_pedido_sap
 ALTER TABLE i_nav_config_enc add inferir_bonificacion_pedido_sap bit not null default 0
 ALTER TABLE i_nav_config_enc add rechazar_bonificacion_incompleta bit not null default 0
