@@ -1,3 +1,9 @@
+--#GT28102024: opcion de menu para el reporte cambios de Estado
+insert into menu_sistema values ('6.1.5.6', 'Movimientos Estado','cmdMovimientosEstado',4,'6.1.5',0)
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '6.1.5.6')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol), '6.1.5.6',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1,1,1,1)
+
+
 --#EJC20240925 Opcion para cerrar pedido en SAP
 insert into menu_sistema values ('11.4.6', 'Cerrar documento SAP','mnuCerrarDocumentoSAP',3,'11.4',0)
 IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '11.4.6')
