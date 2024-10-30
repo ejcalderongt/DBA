@@ -1,0 +1,18 @@
+CREATE VIEW [dbo].[VW_Stock_Transito]
+AS
+SELECT        TOP (100) PERCENT enc.IdOrdenCompraEnc AS [Orden de Compra], pr.nombre_comercial AS Propietario, p.nombre AS Producto, pp.nombre AS Presentaciòn, dbo.proveedor.nombre AS Bodega_Origen, det.cantidad, 
+                         det.cantidad_recibida AS [Cantidad Recibida], det.cantidad - det.cantidad_recibida AS [Cantidad Pendiente], det.costo, det.total_linea AS Total, dbo.bodega.codigo AS BodegaDestino
+FROM            dbo.trans_oc_enc AS enc INNER JOIN
+                         dbo.propietario_bodega AS prb ON enc.IdPropietarioBodega = prb.IdPropietarioBodega INNER JOIN
+                         dbo.propietarios AS pr ON prb.IdPropietario = pr.IdPropietario INNER JOIN
+                         dbo.trans_oc_det AS det ON enc.IdOrdenCompraEnc = det.IdOrdenCompraEnc INNER JOIN
+                         dbo.producto_bodega AS pb ON det.IdProductoBodega = pb.IdProductoBodega INNER JOIN
+                         dbo.producto AS p ON pb.IdProducto = p.IdProducto INNER JOIN
+                         dbo.proveedor ON pr.IdPropietario = dbo.proveedor.IdPropietario INNER JOIN
+                         dbo.proveedor_bodega ON enc.IdProveedorBodega = dbo.proveedor_bodega.IdAsignacion AND dbo.proveedor.IdProveedor = dbo.proveedor_bodega.IdProveedor INNER JOIN
+                         dbo.bodega ON enc.IdBodega = dbo.bodega.IdBodega LEFT OUTER JOIN
+                         dbo.producto_presentacion AS pp ON det.IdPresentacion = pp.IdPresentacion AND p.IdProducto = pp.IdProducto LEFT OUTER JOIN
+                         dbo.unidad_medida AS u ON det.IdUnidadMedidaBasica = u.IdUnidadMedida
+WHERE        (det.cantidad - det.cantidad_recibida > 0)
+ORDER BY [Orden de Compra]
+GO
