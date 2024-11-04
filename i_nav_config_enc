@@ -1,4 +1,7 @@
---#CKFK20241028 Agregar parametros para Killios
+--#CKFK20241028 Agregar bodega de facturación para Killios
+ALTER TABLE i_nav_config_enc ADD bodega_facturacion NVARCHAR(50) null 
+
+--#CKFK20241028 Agregar parametros para Killios para equiparar los productos por tener dos sociedades diferentes
 alter table i_nav_config_enc add equiparar_productos bit not null default 0
 GO
 
