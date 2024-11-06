@@ -17,3 +17,4 @@ FROM     dbo.trans_oc_enc AS enc INNER JOIN
                   dbo.unidad_medida AS u ON det.IdUnidadMedidaBasica = u.IdUnidadMedida
 WHERE  (det.cantidad - det.cantidad_recibida > 0)
 ORDER BY Documento_Ingreso
+GO
