@@ -1,3 +1,7 @@
+--#GT14112024: se agrega campo para asociar el servicio a un mes especifico.
+alter table trans_oc_servicios add fecha_servicio datetime default null
+
+
 --#GT05062024: actualización para uso en cealsa
 /****** Object:  Table [dbo].[trans_oc_servicios]    Script Date: 5/06/2024 08:54:21 ******/
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[trans_oc_servicios]') AND type in (N'U'))
