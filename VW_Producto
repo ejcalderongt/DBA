@@ -1,3 +1,29 @@
+--#GT28112024: se agrega el campo genera_lp del producto
+
+ALTER VIEW [dbo].[VW_Producto]
+AS
+SELECT pd.IdProducto, pd.IdPropietario, pd.IdClasificacion, pd.IdFamilia, pd.IdMarca, pd.IdTipoProducto, pd.IdUnidadMedidaBasica, pp.nombre_comercial AS Propietario, pc.nombre AS Clasificación, pf.nombre AS Familia, pm.nombre AS Marca, 
+                  pt.NombreTipoProducto AS [Tipo Producto], u.Nombre AS [Unidad Medida], pd.codigo AS Código, pd.codigo_barra AS [Código de Barra], pd.nombre AS Producto, pd.existencia_min AS [Existencia Mínima], 
+                  pd.existencia_max AS [Existencia Máxima], pd.costo, pd.precio, pd.activo, pd.IdCamara, pd.IdTipoRotacion, pd.IdPerfilSerializado, pd.IdIndiceRotacion, pd.IdSimbologia, pd.IdArancel, pd.codigo, pd.nombre, pd.codigo_barra, 
+                  pd.precio AS Expr8, pd.existencia_min, pd.existencia_max, pd.costo AS Expr9, pd.peso_referencia, pd.peso_tolerancia, pd.temperatura_referencia, pd.temperatura_tolerancia, pd.activo AS Expr10, pd.serializado, pd.genera_lote, 
+                  pd.control_vencimiento, pd.control_lote, pd.peso_recepcion, pd.peso_despacho, pd.temperatura_recepcion, pd.temperatura_despacho, pd.materia_prima, pd.kit, pd.tolerancia, pd.ciclo_vida, pd.user_agr, pd.fec_agr, pd.user_mod, 
+                  pd.fec_mod, pd.imagen, pd.noserie, pd.noparte, pd.fechamanufactura, pd.capturar_aniada, pd.control_peso, pd.captura_arancel, pd.es_hardware, pd.IDPRODUCTOPARAMETROA, pd.IDPRODUCTOPARAMETROB, 
+                  dbo.producto_parametro_a.Codigo AS producto_parametro_codigoA, dbo.producto_parametro_a.Nombre AS producto_parametro_nombreA, dbo.producto_parametro_b.Codigo AS producto_parametro_codigoB, 
+                  dbo.producto_parametro_b.Nombre AS producto_parametro_nombreB, dbo.indice_rotacion.Descripcion AS IndiceRotacion, pd.genera_lp_old AS genera_lp
+FROM     dbo.producto AS pd LEFT OUTER JOIN
+                  dbo.indice_rotacion ON pd.IdIndiceRotacion = dbo.indice_rotacion.IdIndiceRotacion LEFT OUTER JOIN
+                  dbo.producto_parametro_a ON pd.IDPRODUCTOPARAMETROA = dbo.producto_parametro_a.IdProductoParametroA LEFT OUTER JOIN
+                  dbo.producto_parametro_b ON pd.IDPRODUCTOPARAMETROB = dbo.producto_parametro_b.IdProductoParametroB LEFT OUTER JOIN
+                  dbo.propietarios AS pp ON pd.IdPropietario = pp.IdPropietario LEFT OUTER JOIN
+                  dbo.producto_clasificacion AS pc ON pd.IdClasificacion = pc.IdClasificacion LEFT OUTER JOIN
+                  dbo.producto_familia AS pf ON pd.IdFamilia = pf.IdFamilia LEFT OUTER JOIN
+                  dbo.producto_marca AS pm ON pd.IdMarca = pm.IdMarca LEFT OUTER JOIN
+                  dbo.producto_tipo AS pt ON pd.IdTipoProducto = pt.IdTipoProducto LEFT OUTER JOIN
+                  dbo.unidad_medida AS u ON pd.IdUnidadMedidaBasica = u.IdUnidadMedida
+GO
+
+
+--
 ALTER VIEW [dbo].[VW_Producto]
 AS
 SELECT pd.IdProducto, pd.IdPropietario, pd.IdClasificacion, pd.IdFamilia, pd.IdMarca, pd.IdTipoProducto, pd.IdUnidadMedidaBasica, pp.nombre_comercial AS Propietario, pc.nombre AS Clasificación, pf.nombre AS Familia, pm.nombre AS Marca, 
