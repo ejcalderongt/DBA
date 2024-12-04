@@ -1,0 +1,8 @@
+ALTER TABLE tempcomparacioninventario ADD licencia NVARCHAR(50)
+alter table tempComparacionInventario add EstadoOrigen NVARCHAR(50)
+alter table tempComparacionInventario add EstadoDestino NVARCHAR(50)
+ 
+alter table tempComparacionInventario add UbicacionOrigen NVARCHAR(50)
+alter table tempComparacionInventario add UbicacionDestino NVARCHAR(50)
+ 
+alter table tempComparacionInventario add LoteOrigen NVARCHAR(50)
