@@ -1,3 +1,7 @@
+--#CKFK20241203
+INSERT INTO sis_tipo_tarea VALUES(34,'CESTI',1)
+INSERT INTO sis_tipo_tarea VALUES(35,'CUBII',1)
+
 INSERT INTO sis_tipo_tarea VALUES(20,'EXPLOSION',1)
 INSERT INTO sis_tipo_tarea VALUES(21,'UBIC PICKING',1)
 INSERT INTO sis_tipo_tarea values (22,'ANUL_PICK',1)
