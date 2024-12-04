@@ -1,0 +1,2 @@
+insert into ajuste_tipo
+values(6,'Ajuste Estado',0,	0,0,0,'20241203 15:17:59','Erik Calderón','20241203 15:17:59','Erik Calderón',1)
