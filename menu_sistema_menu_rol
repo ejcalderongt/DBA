@@ -1,4 +1,5 @@
 --#CKFK20241206 Se agregó opción para parametrizar el Finalizar de la recepción
+--Esto se debe aplicar a todos los roles
 Insert into menu_sistema values('2.1.1.3','Finalizar recepcion','cmdFinalizar',4,'2.1.1',0)
 GO
 IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '2.1.1.3')
