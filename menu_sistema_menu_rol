@@ -1,3 +1,10 @@
+--#CKFK20241206 Se agregó opción para parametrizar el Finalizar de la recepción
+Insert into menu_sistema values('2.1.1.3','Finalizar recepcion','cmdFinalizar',4,'2.1.1',0)
+GO
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '2.1.1.3')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'2.1.1.3',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1,1,1,1)
+GO
+
 --#GT28102024: opcion de menu para el reporte cambios de Estado
 insert into menu_sistema values ('6.1.5.8', 'Movimientos Estado','cmdMovimientosEstado',4,'6.1.5',0)
 IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '6.1.5.8')
