@@ -1,3 +1,12 @@
+--#CKFK20241206 Se agregó esta validación para el finalizar de la recepción.
+Insert into menu_sistema_op values('1.16',15,'Finalizar recepción',2,1,25)
+GO
+IF NOT EXISTS(SELECT IdMenuSistemaOP FROM menu_rol_op WHERE IdMenuSistemaOP = '1.16')
+insert into menu_rol_op 
+select '1.16', IdrolOperador, 'DTS', getdate(), 'DTS', GETDATE(), 1, 1
+from rol_operador
+GO
+
 /**********GT 10122021 Opciones para permisos en HH *******/
 
 insert into menu_sistema_op values('1.11',13,'Empaque',2,'1',13)
