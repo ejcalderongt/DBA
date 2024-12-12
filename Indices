@@ -1,3 +1,8 @@
+--20241211 Indice para inventarios
+CREATE NONCLUSTERED INDEX NCLI_EJC_241211
+ON [dbo].[trans_inv_stock] ([IdProductoBodega])
+INCLUDE ([IdProductoEstado],[IdPresentacion],[IdUnidadMedida],[IdUbicacion],[lote],[cantidad],[fecha_vence],[peso],[IdBodega])
+
 --23092024 indice para reporte prefacturacion
 CREATE NONCLUSTERED INDEX NCLI_Fiscal_Historico_23092024_GT
 ON [dbo].[propietario_bodega] ([IdPropietario])
