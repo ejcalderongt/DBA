@@ -1,4 +1,5 @@
 /*------------- #GT01102024 Se agregan campos de la poliza fiscal CLC --------------------------------------*/
+--#GT18122024:se valida que la poliza de salida tenga estado activo.
 
 ALTER VIEW [dbo].[VW_Despacho_Rep_Det_I] AS
 SELECT dbo.trans_despacho_enc.IdBodega, dbo.trans_picking_ubic.IdPickingUbic, dbo.trans_picking_ubic.IdStock, dbo.trans_picking_ubic.IdPedidoDet, dbo.trans_picking_ubic.IdPropietarioBodega, dbo.trans_picking_ubic.IdProductoBodega, 
@@ -45,7 +46,7 @@ FROM     dbo.trans_pe_enc INNER JOIN
                   dbo.unidad_medida ON dbo.trans_despacho_det.IdUnidadMedidaBasica = dbo.unidad_medida.IdUnidadMedida LEFT OUTER JOIN
                   dbo.producto_presentacion ON dbo.trans_despacho_det.IdPresentacion = dbo.producto_presentacion.IdPresentacion 
 				  LEFT OUTER JOIN trans_pe_pol pe_pol on trans_pe_enc.IdPedidoEnc = pe_pol.IdOrdenPedidoEnc AND 
-				  pe_pol.IdOrdenPedidoEnc = trans_picking_ubic.IdPedidoEnc INNER JOIN 
+				  pe_pol.IdOrdenPedidoEnc = trans_picking_ubic.IdPedidoEnc and pe_pol.activo=1 INNER JOIN 
 				  trans_re_oc re_oc on dbo.trans_picking_ubic.IdRecepcion=re_oc.IdRecepcionEnc
 				  LEFT OUTER JOIN trans_oc_pol oc_pol on re_oc.IdOrdenCompraEnc=oc_pol.IdOrdenCompraEnc
 				  LEFT OUTER JOIN dbo.regimen_fiscal on pe_pol.IdRegimen=regimen_fiscal.IdRegimen
