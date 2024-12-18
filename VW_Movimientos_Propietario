@@ -1,12 +1,12 @@
---#GT19112024: Se valida que la poliza en el pedido tenga estatus de activa (pedidos anulados compartiendo misma poliza)
+--#GT19112024: Se valida que la poliza en el pedido tenga estatus de activa (pedidos anulados compartiendo misma poliza) y se omiten duplicados con distinct
 
 ALTER VIEW [dbo].[VW_Movimientos_Propietario] AS
-SELECT					m.IdTransaccion,stt.Nombre AS TipoTarea,	
+SELECT	distinct				m.IdTransaccion,stt.Nombre AS TipoTarea,	
 						pe_det.IdPedidoEnc,despacho_det.IdDespachoEnc,despacho_det.IdDespachoDet,
 						despacho_enc.observacion,
 						isnull(enc.ticket,0) AS no_ticket_tms,
 						enc.codigo_poliza as poliza,
-					    enc.numero_orden,
+					        enc.numero_orden,
 						regimen_f.codigo_regimen as regimen_ingreso,
 						oc_enc.Referencia referencia,
 						m.IdRecepcion,
