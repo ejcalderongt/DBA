@@ -1,3 +1,31 @@
+--#GT06012024 ajuste para indicadores de otro cliente adicional a cealsa.
+
+ALTER VIEW vw_Indicador_Despachos AS
+SELECT CASE WHEN factor > 0 THEN round(SUM(CantidadDespachada) * factor, 4) 
+ELSE SUM(CantidadDespachada) END AS unidades, 
+despacho_det.Codigo codigo, prod.nombre AS producto, ISNULL(presentacion.nombre, '') AS presentacion, 
+ISNULL(presentacion.factor, 0) AS factor, 
+despacho_det.IdDespachoEnc, despacho_det.IdDespachoDet, 
+CASE WHEN factor > 0 THEN round(SUM(CantidadDespachada), 4) ELSE 0 END AS [cajas/bultos], CAST(enc.fecha AS date) 
+AS fecha, pr.nombre_comercial, cl.nombre_comercial AS cliente, bd.nombre AS bodega, pe_enc.IdTipoPedido, doc_salida.Descripcion AS tipo_salida, bd.IdBodega,
+ISNULL(cliente.nombre_comercial,'N/D') as Bodega_Destino
+FROM     dbo.trans_despacho_det AS despacho_det LEFT OUTER JOIN
+dbo.producto_presentacion AS presentacion ON despacho_det.IdPresentacion = presentacion.IdPresentacion INNER JOIN
+dbo.trans_despacho_enc AS enc ON despacho_det.IdDespachoEnc = enc.IdDespachoEnc INNER JOIN
+dbo.bodega AS bd ON enc.IdBodega = bd.IdBodega INNER JOIN
+dbo.producto AS prod ON despacho_det.Codigo = prod.codigo INNER JOIN
+dbo.propietario_bodega AS pb ON enc.IdPropietarioBodega = pb.IdPropietarioBodega INNER JOIN
+dbo.propietarios AS pr ON pb.IdPropietario = pr.IdPropietario INNER JOIN
+dbo.trans_pe_enc AS pe_enc ON despacho_det.IdPedidoEnc = pe_enc.IdPedidoEnc INNER JOIN
+dbo.cliente AS cl ON pe_enc.IdCliente = cl.IdCliente INNER JOIN
+dbo.trans_pe_tipo AS doc_salida ON pe_enc.IdTipoPedido = doc_salida.IdTipoPedido LEFT OUTER JOIN
+dbo.cliente ON pe_enc.bodega_destino COLLATE SQL_Latin1_General_CP1_CI_AS = dbo.cliente.codigo
+WHERE  (enc.activo = 1)
+GROUP BY despacho_det.CantidadDespachada, despacho_det.Codigo, presentacion.nombre, presentacion.factor, despacho_det.IdDespachoEnc, enc.fecha, prod.nombre, pr.nombre_comercial, cl.nombre_comercial, bd.nombre, 
+despacho_det.IdDespachoDet, pe_enc.IdTipoPedido, doc_salida.Descripcion, bd.IdBodega,cliente.nombre_comercial
+GO
+
+
 --#GT02062023 para indicadores
 
 alter view vw_Indicador_Despachos as
