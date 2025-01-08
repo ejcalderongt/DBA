@@ -1,0 +1,4 @@
+ALTER table tarea_hh ADD 
+IdOperadorBodega_Cerro int null,
+Host_Cerro nvarchar(50) null
+GO
