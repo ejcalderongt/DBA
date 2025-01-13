@@ -1,3 +1,32 @@
+/****** #CKFK20250113 Se agregó el rol   *****/
+ALTER VIEW [dbo].[VW_Operador]
+AS
+SELECT        o.IdOperador AS Código, e.nombre AS Empresa, r.Nombre Rol, o.nombres, o.apellidos, o.direccion AS Dirección, o.telefono AS Teléfono, o.costo_hora, o.activo, o.usa_hh, o.foto, dbo.jornada_laboral.nombre_jornada, 
+                         dbo.turno.nombre AS Turno, dbo.horario_laboral_enc.nombre AS Horario, 
+						 dbo.jornada_laboral.horas_trabajadas AS Horas_Jornada, o.recibe, o.ubica, o.transporta, 
+						 o.pickea, o.verifica, o.montacarga
+FROM            dbo.operador AS o INNER JOIN
+                         dbo.empresa AS e ON o.IdEmpresa = e.IdEmpresa INNER JOIN
+                         dbo.jornada_laboral ON o.IdJornada = dbo.jornada_laboral.IdJornada INNER JOIN
+                         dbo.horario_laboral_enc ON dbo.jornada_laboral.IdJornada = dbo.horario_laboral_enc.IdJornada AND dbo.jornada_laboral.IdBodega = dbo.horario_laboral_enc.IdBodega INNER JOIN
+                         dbo.turno ON dbo.horario_laboral_enc.IdTurno = dbo.turno.IdTurno AND dbo.horario_laboral_enc.IdBodega = dbo.turno.IdBodega INNER JOIN
+						 dbo.rol_operador r ON o.IdRolOperador = r.IdRolOperador
+GO
+
+ALTER VIEW [dbo].[VW_Operador]
+AS
+SELECT        o.IdOperador AS Código, e.nombre AS Empresa, r.Nombre Rol, o.nombres, o.apellidos, o.direccion AS Dirección, o.telefono AS Teléfono, o.costo_hora, o.activo, o.usa_hh, o.foto, dbo.jornada_laboral.nombre_jornada, 
+                         dbo.turno.nombre AS Turno, dbo.horario_laboral_enc.nombre AS Horario, 
+						 dbo.jornada_laboral.horas_trabajadas AS Horas_Jornada, o.recibe, o.ubica, o.transporta, 
+						 o.pickea, o.verifica, o.montacarga
+FROM            dbo.operador AS o INNER JOIN
+                         dbo.empresa AS e ON o.IdEmpresa = e.IdEmpresa INNER JOIN
+                         dbo.jornada_laboral ON o.IdJornada = dbo.jornada_laboral.IdJornada INNER JOIN
+                         dbo.horario_laboral_enc ON dbo.jornada_laboral.IdJornada = dbo.horario_laboral_enc.IdJornada AND dbo.jornada_laboral.IdBodega = dbo.horario_laboral_enc.IdBodega INNER JOIN
+                         dbo.turno ON dbo.horario_laboral_enc.IdTurno = dbo.turno.IdTurno AND dbo.horario_laboral_enc.IdBodega = dbo.turno.IdBodega INNER JOIN
+						 dbo.rol_operador r ON o.IdRolOperador = r.IdRolOperador
+GO
+
 /****** Object:  View [dbo].[VW_Operador]    Script Date: 13/06/2022 22:54:56 ******/
 SET ANSI_NULLS ON
 GO
