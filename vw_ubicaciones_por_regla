@@ -1,3 +1,40 @@
+--#CKFK20250118 Se agregó al query que solo sean las reglas activas
+ALTER VIEW [dbo].[vw_ubicaciones_por_regla]
+AS
+SELECT regla_ubic_enc.IdReglaUbicacionEnc, bodega_ubicacion.IdUbicacion, bodega_ubicacion.descripcion, bodega_ubicacion.ancho, bodega_ubicacion.largo, bodega_ubicacion.alto, 
+bodega_ubicacion.IdTramo, bodega_ubicacion.indice_x, bodega_ubicacion.nivel, bodega_ubicacion.IdIndiceRotacion, bodega_ubicacion.IdTipoRotacion, bodega_ubicacion.dañado, 
+bodega_ubicacion.activo, bodega_ubicacion.bloqueada, bodega_ubicacion.acepta_pallet, bodega_area.IdBodega, regla_ubic_det_prop.IdPropietarioBodega, 
+regla_ubic_det_prop.Activo AS regla_ubic_det_prop_Activo, propietario_bodega.IdPropietario, regla_ubic_det_ir.IdIndiceRotacion AS IdIndiceRotacionRegla, 
+regla_ubic_det_tr.IdTipoRotacion AS IdTipoRotacionRegla, regla_ubic_det_tp.IdTipoProducto, regla_ubic_det_tp.Activo AS regla_ubic_det_tp_Activo, regla_ubic_det_pe.IdEstado, 
+regla_ubic_det_pe.Activo AS regla_ubic_det_pe_Activo, regla_ubic_det_pp.IdPresentacion, dbo.Nombre_Completo_Ubicacion(bodega_ubicacion.IdUbicacion,bodega_ubicacion.IdBodega) as Nombre_Completo
+FROM regla_ubic_det_tp INNER JOIN
+bodega_ubicacion INNER JOIN
+bodega_tramo ON bodega_ubicacion.IdTramo = bodega_tramo.IdTramo AND bodega_ubicacion.IdSector = bodega_tramo.IdSector AND 
+bodega_ubicacion.IdBodega = bodega_tramo.IdBodega INNER JOIN
+bodega_sector ON bodega_tramo.IdSector = bodega_sector.IdSector AND bodega_tramo.IdArea = bodega_sector.IdArea AND bodega_tramo.IdBodega = bodega_sector.IdBodega INNER JOIN
+bodega_area ON bodega_sector.IdArea = bodega_area.IdArea AND bodega_sector.IdBodega = bodega_area.IdBodega INNER JOIN
+regla_ubicacion ON bodega_ubicacion.IdUbicacion = regla_ubicacion.IdUbicacion AND 
+                   bodega_ubicacion.IdBodega = regla_ubicacion.IdBodega INNER JOIN
+regla_ubic_enc ON regla_ubicacion.IdReglaUbicacionEnc = regla_ubic_enc.IdReglaUbicacionEnc AND
+                  regla_ubic_enc.Activo = 1
+               ON regla_ubic_det_tp.IdReglaUbicacionEnc = regla_ubic_enc.IdReglaUbicacionEnc  AND
+                  regla_ubic_det_tp.Activo = 1  LEFT OUTER JOIN
+regla_ubic_det_pp ON regla_ubic_enc.IdReglaUbicacionEnc = regla_ubic_det_pp.IdReglaUbicacionEnc AND
+                     regla_ubic_det_pp.Activo = 1  LEFT OUTER JOIN
+regla_ubic_det_pe ON regla_ubic_enc.IdReglaUbicacionEnc = regla_ubic_det_pe.IdReglaUbicacionEnc AND
+                     regla_ubic_det_pe.Activo = 1   LEFT OUTER JOIN
+propietario_bodega INNER JOIN
+regla_ubic_det_prop ON propietario_bodega.IdPropietarioBodega = regla_ubic_det_prop.IdPropietarioBodega  AND
+                     regla_ubic_det_prop.Activo = 1   ON 
+regla_ubic_enc.IdReglaUbicacionEnc = regla_ubic_det_prop.IdReglaUbicacionEnc LEFT OUTER JOIN
+regla_ubic_det_tr ON regla_ubic_enc.IdReglaUbicacionEnc = regla_ubic_det_tr.IdReglaUbicacionEnc AND 
+                     bodega_ubicacion.IdTipoRotacion = regla_ubic_det_tr.IdTipoRotacion AND
+                     regla_ubic_det_tr.Activo = 1   LEFT OUTER JOIN
+regla_ubic_det_ir ON regla_ubic_enc.IdReglaUbicacionEnc = regla_ubic_det_ir.IdReglaUbicacionEnc AND 
+                     bodega_ubicacion.IdIndiceRotacion = regla_ubic_det_ir.IdIndiceRotacion AND
+                     regla_ubic_det_ir.Activo = 1  
+GO
+
 ALTER VIEW [dbo].[vw_ubicaciones_por_regla]
 AS
 SELECT regla_ubic_enc.IdReglaUbicacionEnc, bodega_ubicacion.IdUbicacion, bodega_ubicacion.descripcion, bodega_ubicacion.ancho, bodega_ubicacion.largo, bodega_ubicacion.alto, 
