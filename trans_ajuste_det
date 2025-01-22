@@ -1,3 +1,7 @@
+--#CKFK20250122 Aumentamos el tamaño del campo observación
+ALTER TABLE trans_ajuste_det alter column observacion nvarchar(150) null
+GO
+
 ALTER TABLE trans_ajuste_det ADD lic_plate NVARCHAR(50) NULL
 
 ALTER TABLE trans_ajuste_det
