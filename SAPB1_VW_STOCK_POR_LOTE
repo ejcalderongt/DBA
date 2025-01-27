@@ -1,4 +1,30 @@
-VIEW [dbo].[VW_STOCK_POR_LOTE]
+--#CKFK20250126 Versión para La Cumbre
+ALTER VIEW [dbo].[VW_STOCK_POR_LOTE]
+AS
+SELECT t0.itemcode    AS Codigo_Producto,
+       t0.itemname    AS Nombre_Producto,
+    Cast(t1.OnHand    AS float) Total_Almacen, 
+	   T4.WhsCode AS Codigo_Bodega,
+	   T4.WhsName     As Nombre_Bodega,
+	   ''  AS 'Lote',
+	   0    AS 'Cantidad_Lote',
+	   '19000101' AS 'Fecha_Vence',
+	   'UND' AS UMBas
+ 
+FROM   oitm t0 (NOLOCK)
+INNER JOIN oitw t1 (NOLOCK)
+               ON t1.itemcode = t0.itemcode 
+INNER JOIN OWHS T4 (NOLOCK)
+	          on  T4.whscode = t1.whscode
+LEFT JOIN  OBTQ T5 (Nolock)
+                ON t0.ItemCode = T5.ItemCode
+LEFT join  OBTN T6 ON t5.MdAbsEntry = T6.AbsEntry AND T1.WhsCode = T5.WhsCode
+WHERE T1.OnHand > 0
+
+GO
+
+--#EJC Versión Becofarma
+CREATE VIEW [dbo].[VW_STOCK_POR_LOTE]
 AS
 SELECT 
     T0.ItemCode AS 'Codigo',
