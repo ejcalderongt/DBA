@@ -1,3 +1,13 @@
+--#GT30012025: Permiso para el reporte de packing despachado
+
+
+Insert into menu_sistema values('3.6.1.4','Packing Despachados','cmdPackingDespachados',4,'3.6.1',0)
+GO
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '3.6.1.4')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'3.6.1.4',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1,1,1,1)
+GO
+
+
 --#CKFK20241206 Se agregó opción para parametrizar el Finalizar de la recepción
 --Esto se debe aplicar a todos los roles
 Insert into menu_sistema values('2.1.1.3','Finalizar recepcion','cmdFinalizar',4,'2.1.1',0)
