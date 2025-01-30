@@ -1,0 +1,37 @@
+--#GT30012025: reporte que muestra los pedidos/despachos asociados a los packing para La Cumbre 
+create view  VW_PackingDespachado as
+select  
+packing_enc.idpackingenc Correlativo,
+packing_enc.iddespachoenc [Id_Despacho],
+packing_enc.IdPedidoEnc [Id_Pedido],
+packing_enc.fecha_packing, 
+cl.nombre_comercial [nombre_cliente],
+ CASE WHEN c1.codigo IS NULL THEN '' ELSE ISNULL(concat(cl.codigo,' - ', c1.nombre_comercial),'') END bodega_destino,
+packing_enc.no_linea [licencia_de_packing],
+packing_enc.lic_plate,
+packing_enc.idproductobodega, 
+prod.nombre [nombre_producto],
+packing_enc.idunidadmedida, 
+um.Nombre [unidad_medida],
+pp.nombre [presentacion],
+packing_enc.cantidad_bultos_packing,
+packing_enc.idproductoestado, 
+pe.nombre [producto_estado],
+packing_enc.fecha_vence,
+packing_enc.idbodega, 
+bd.nombre [bodega],
+packing_enc.idoperadorbodega, 
+op.nombres +' '+op.apellidos [operador_bodega]
+from 
+trans_packing_enc packing_enc inner join 
+trans_pe_enc pe_enc on packing_enc.IdPedidoEnc=pe_enc.IdPedidoEnc inner join
+cliente cl on pe_enc.IdCliente=cl.IdCliente inner join
+producto_bodega pb on packing_enc.idproductobodega=pb.IdProductoBodega inner join
+producto prod on pb.IdProducto=prod.IdProducto inner join 
+unidad_medida um on packing_enc.idunidadmedida=um.IdUnidadMedida inner join
+producto_estado pe on packing_enc.idproductoestado= pe.IdEstado inner join
+bodega bd on packing_enc.idbodega = bd.IdBodega inner join 
+operador_bodega ob on packing_enc.idoperadorbodega = ob.IdOperadorBodega inner join
+operador op on ob.IdOperador= op.IdOperador LEFT JOIN 
+cliente c1 ON c1.codigo COLLATE Modern_Spanish_CI_AS = pe_enc.bodega_destino left outer join
+producto_presentacion pp on pp.IdProducto= prod.IdProducto
