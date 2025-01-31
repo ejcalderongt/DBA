@@ -1,3 +1,19 @@
+--#CKFK20250131 Agregamos los campos de bitácora y modificamos la fecha de packing para que tenga hora
+ALTER TABLE [dbo].[trans_packing_enc] DROP CONSTRAINT [DF__trans_pac__fecha__1D3474BE]
+GO
+
+ALTER TABLE trans_packing_enc ALTER COLUMN fecha_packing datetime not null 
+GO
+
+ALTER TABLE [dbo].[trans_packing_enc] ADD  DEFAULT (getdate()) FOR [fecha_packing]
+GO
+
+ALTER TABLE trans_packing_enc
+ADD fec_agr datetime not null DEFAULT GETDATE(),
+usr_agr NVARCHAR(50) null,
+fec_mod datetime not null DEFAULT GETDATE(),
+usr_mod NVARCHAR(50) null
+
 --#CKFK20240923 Agregamos el campo finalizado
 ALTER TABLE trans_packing_enc ADD finalizado bit NOT NULL DEFAULT 0
 
@@ -10,7 +26,7 @@ alter table trans_packing_enc alter column no_linea NVARCHAR(50) not null
 --#EJC20210805_1544:
 
 CREATE TABLE [dbo].[trans_packing_enc](
-	[idpackingenc] [int] NOT NULL,
+	[idpackingenc] [int] NOT NULL, 
 	[idbodega] [int] NOT NULL,
 	[idpickingenc] [int] NOT NULL,
 	[iddespachoenc] [int] NULL,
