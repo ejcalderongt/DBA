@@ -7,10 +7,12 @@ SELECT pb.IdBodega, re_det.IdRecepcionEnc, pr.IdPropietario, pr.nombre_comercial
                   usr.nombres AS Usuario_Agrego, op.nombres AS Operador_HH, re_det.fec_agr AS Fecha_Agrego, prod.codigo AS CodigoProd, prod.codigo_barra AS BarraProd, prod.nombre AS NombreProd, re_det.cantidad_recibida AS Recibido, 
                   um.Nombre AS UM, pr_estado.nombre AS EstadoProd, prod_pr.nombre AS PresProd, re_det.lic_plate AS Licencia, re_det.lote, re_det.fecha_vence, oc_enc.IdPedidoEncDevolucion, oc_enc.no_documento_devolucion, 
                   dbo.cliente.nombre_comercial AS Nombre_Cliente_Devolucion, dbo.producto_clasificacion.nombre AS Clasificacion, re_enc.IdUbicacionRecepcion, dbo.Nombre_Area(dbo.bodega_ubicacion.IdArea, re_enc.IdBodega) AS Area, 
-                  dbo.producto_familia.nombre AS familia, dbo.producto_parametro_a.Nombre AS parametro_a, dbo.producto_parametro_b.Nombre AS parametro_b, dbo.producto_marca.nombre AS Marca
+                  dbo.producto_familia.nombre AS Familia, dbo.producto_parametro_a.Nombre AS Parametro_A, 
+				  dbo.producto_parametro_b.Nombre AS Parametro_B, dbo.producto_marca.nombre AS Marca
 				  ,oc_enc.Observacion,
-				  regimen_fiscal.codigo_regimen codigo_regimen_ingreso, oc_pol.numero_orden numero_orden_ingreso,re_enc.carta_cupo, trim(re_enc.no_contenedor)no_contenedor,
-				  vehiculo.placa as placa_contenedor_ingreso,oc_pol.activo as poliza_activa,oc_pol.dua as dua_ingreso
+				  regimen_fiscal.codigo_regimen Codigo_Regimen_Ingreso, oc_pol.numero_orden Numero_Orden_Ingreso,
+				  re_enc.Carta_Cupo, trim(re_enc.no_contenedor) No_Contenedor,
+				  vehiculo.placa as Placa_Contenedor_Ingreso,oc_pol.activo as Poliza_Activa,oc_pol.dua as Dua_Ingreso
 FROM     dbo.bodega_ubicacion INNER JOIN
                   dbo.producto_estado AS pr_estado INNER JOIN
                   dbo.trans_oc_enc AS oc_enc INNER JOIN
