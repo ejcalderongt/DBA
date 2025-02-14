@@ -1,3 +1,7 @@
+--#CKFK20240213 Agregamos esta variable para limpiar o no los campos de la consulta de existencias
+ALTER TABLE bodega ADD limpiar_campos bit NOT NULL default 0
+GO
+
 --#EJC240904 Se agrega el campo despacho_automático para poder saber si en la verificación, al finalizar, se debe ejecutar el proceso de despacho de forma automática y con valores predeterminados.
 alter table bodega add despacho_automatico_hh bit not null default 0
 GO
