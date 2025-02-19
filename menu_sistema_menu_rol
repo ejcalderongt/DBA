@@ -1,6 +1,18 @@
+--#GT19022025: permisos para visualizar color y talla en el producto para MAMPA
+
+Insert into menu_sistema values('1.3.1.10','Talla','mnuTalla',4,'1.3.1',0)
+GO
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '1.3.1.10')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'1.3.1.10',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1,1,1,1)
+GO
+Insert into menu_sistema values('1.3.1.11','Color','mnuColor',4,'1.3.1',0)
+GO
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '1.3.1.11')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'1.3.1.11',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1,1,1,1)
+GO
+
+
 --#GT30012025: Permiso para el reporte de packing despachado
-
-
 Insert into menu_sistema values('3.6.1.4','Packing Despachados','cmdPackingDespachados',4,'3.6.1',0)
 GO
 IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '3.6.1.4')
