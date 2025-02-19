@@ -1,0 +1,42 @@
+CREATE TABLE [dbo].[producto_talla_color_estilo](
+      [IdProductoTallaColorEstilo] [int] NOT NULL,
+      [IdProducto] [int] NOT NULL,
+      [IdTalla] [int] NOT NULL,
+      [IdColor] [int] NOT NULL,
+      [IdEstilo] [int] NOT NULL,
+      [IdCampaña] [int] NULL,
+      [CodigoSKU] [nvarchar](50) NOT NULL,
+      [fec_agr] [datetime] NOT NULL DEFAULT GETDATE(),
+      [user_agr] [nvarchar](25) NOT NULL,
+      [fec_mod] [datetime] NOT NULL DEFAULT GETDATE(),
+      [user_mod] [nvarchar](25) NULL,
+PRIMARY KEY CLUSTERED 
+(
+      [IdProductoTallaColorEstilo] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
+UNIQUE NONCLUSTERED 
+(
+      [CodigoSKU] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[producto_talla_color_estilo]  WITH CHECK ADD FOREIGN KEY([IdCampaña])
+REFERENCES [dbo].[campaña] ([IdCampaña])
+GO
+
+ALTER TABLE [dbo].[producto_talla_color_estilo]  WITH CHECK ADD FOREIGN KEY([IdColor])
+REFERENCES [dbo].[color] ([IdColor])
+GO
+
+ALTER TABLE [dbo].[producto_talla_color_estilo]  WITH CHECK ADD FOREIGN KEY([IdProducto])
+REFERENCES [dbo].[producto] ([IdProducto])
+GO
+
+ALTER TABLE [dbo].[producto_talla_color_estilo]  WITH CHECK ADD FOREIGN KEY([IdTalla])
+REFERENCES [dbo].[talla] ([IdTalla])
+GO
+
+ALTER TABLE [dbo].[producto_talla_color_estilo]  WITH CHECK ADD FOREIGN KEY([IdEstilo])
+REFERENCES [dbo].[estilo] ([IdEstilo])
+GO
