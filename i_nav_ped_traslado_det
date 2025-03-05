@@ -1,3 +1,7 @@
+--#CKFK20250304 Aumenté el tamaño del campo descripcion del producto
+alter table i_nav_ped_traslado_det 
+alter column Description nvarchar(100) null 
+
 alter table i_nav_ped_traslado_det add price float null default 0
 
 --#EJC20210707: BYB. NAV.
