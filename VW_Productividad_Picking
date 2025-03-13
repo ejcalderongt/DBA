@@ -1,6 +1,8 @@
-CREATE VIEW VW_Productividad_Picking
+--PICKING
+ALTER VIEW VW_Productividad_Picking
 AS
 SELECT
+	b.IdBodega,
 	fo.Fecha_Hora_Inicio,
 	fo.Fecha_Hora_Fin,
 	a.fecha_picking AS Fecha_Por_Línea,
@@ -59,4 +61,3 @@ LEFT JOIN (SELECT MAX(IdPresentacion) IdPresentacion, IdProducto FROM producto_p
 LEFT JOIN producto_presentacion q ON p.IdPresentacion = q.IdPresentacion 
 WHERE a.no_encontrado = 0 
 AND a.dañado_picking = 0
-ORDER BY b.IdPickingEnc
