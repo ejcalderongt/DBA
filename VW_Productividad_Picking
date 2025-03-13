@@ -1,0 +1,62 @@
+CREATE VIEW VW_Productividad_Picking
+AS
+SELECT
+	fo.Fecha_Hora_Inicio,
+	fo.Fecha_Hora_Fin,
+	a.fecha_picking AS Fecha_Por_Línea,
+	o.descripcion AS Tipo_Documento_Pedido,
+	e.nombre AS Tipo,
+	f.codigo AS Código_Departamento,
+	f.nombre AS Descripción_Departamento,
+	g.codigo AS Código_Categoría,
+	g.nombretipoproducto AS Descripción_Categoría,
+	d.codigo AS Código_Producto, 
+	d.nombre AS Nombre_Producto,
+	a.cantidad_solicitada AS Cantidad_Solicitada,
+	a.cantidad_recibida AS Cantidad_Pickeada, -- Renombrada
+	h.nombre AS Nombre_Estado_Producto,
+	(a.cantidad_solicitada - a.cantidad_recibida) AS Diferencia, -- Nueva columna agregada
+	ISNULL(q.nombre, '') AS Nombre_Presentación_MPQ,
+	CASE 
+		WHEN p.IdPresentacion > 0 AND q.factor > 0
+		THEN ROUND(a.cantidad_recibida / q.factor, 2) 
+		ELSE 0 
+	END AS Cantidad_Pickeadas_Cajas,
+	ISNULL(j.IdRecepcionEnc, 0) AS Id_Recepción,
+	b.IdPickingEnc AS Número_Picking,
+	a.fecha_vence AS Fecha_Vence,
+	a.lic_plate AS Lic_Plate,
+	ISNULL(l.codigo, 'Operador BOF') AS Código_Operador,
+	ISNULL(l.nombres, 'Operador BOF') + ' ' + ISNULL(l.apellidos, '') AS Descripción_Operador,
+	ISNULL(n.codigo, '') AS Código_Comprador,
+	ISNULL(n.nombre_comercial, '') AS Descripción_Comprador
+FROM trans_picking_ubic a
+INNER JOIN trans_picking_enc b ON b.IdPickingEnc = a.IdPickingEnc
+INNER JOIN producto_bodega c ON c.IdProductoBodega = a.IdProductoBodega
+INNER JOIN producto d ON d.IdProducto = c.IdProducto
+INNER JOIN producto_familia e ON e.IdFamilia = d.IdFamilia
+INNER JOIN producto_clasificacion f ON f.IdClasificacion = d.IdClasificacion
+INNER JOIN producto_tipo g ON g.IdTipoProducto = d.IdTipoProducto
+INNER JOIN producto_estado h ON h.IdEstado = a.IdProductoEstado
+INNER JOIN trans_pe_enc m ON m.IdPedidoEnc = a.IdPedidoEnc
+INNER JOIN trans_pe_tipo o ON o.IdTipoPedido = m.IdTipoPedido
+INNER JOIN (
+	SELECT 
+		IdOperadorBodega_Pickeo,
+		IdPickingEnc,
+		MIN(fecha_picking) AS Fecha_Hora_Inicio,
+		MAX(fecha_picking) AS Fecha_Hora_Fin 
+	FROM trans_picking_ubic
+	WHERE no_encontrado = 0 AND dañado_picking = 0
+	GROUP BY IdOperadorBodega_Pickeo, IdPickingEnc
+) fo ON fo.IdOperadorBodega_Pickeo = a.IdOperadorBodega_Pickeo AND fo.IdPickingEnc = b.IdPickingEnc 
+LEFT JOIN cliente n ON n.codigo COLLATE Modern_Spanish_CI_AS = m.bodega_destino COLLATE Modern_Spanish_CI_AS
+LEFT JOIN stock j ON j.IdStock = a.IdStock
+LEFT JOIN operador_bodega k ON k.IdOperadorBodega = a.IdOperadorBodega_Pickeo
+LEFT JOIN operador l ON l.IdOperador = k.IdOperador
+LEFT JOIN (SELECT MAX(IdPresentacion) IdPresentacion, IdProducto FROM producto_presentacion GROUP BY IdProducto) p 
+	ON c.IdProducto = p.IdProducto AND d.IdProducto = p.IdProducto 
+LEFT JOIN producto_presentacion q ON p.IdPresentacion = q.IdPresentacion 
+WHERE a.no_encontrado = 0 
+AND a.dañado_picking = 0
+ORDER BY b.IdPickingEnc
