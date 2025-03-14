@@ -1,3 +1,22 @@
+--CKFK20250314 Opcion Productividad
+insert into menu_sistema values ('3.15', 'Productividad','pgProductividad',2,3,0)
+
+insert into menu_sistema
+values ('3.15.1','Productividad','mnuProductividad',3,'3.15',0)
+
+insert into menu_sistema
+values ('3.15.1.1','Picking','mnuProductividadPicking',4,'3.15.1',0)
+
+iF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '3.15')
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'3.15',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1,1,1,1)
+
+iF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '3.15.1')
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'3.15.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1,1,1,1)
+
+iF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '3.15.1.1')
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'3.15.1.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1,1,1,1)
+
+
 --#GT19022025: permisos para visualizar color y talla en el producto para MAMPA
 
 Insert into menu_sistema values('1.3.1.10','Talla','mnuTalla',4,'1.3.1',0)
