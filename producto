@@ -1,3 +1,7 @@
+--#AT Se agregó el marge de impresion para la Sojet
+ALTER TABLE producto ADD margen_impresion float not null default 0
+
+
 ALTER TABLE producto add IdTipoManufactura int null
 GO
 
