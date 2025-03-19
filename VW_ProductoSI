@@ -1,3 +1,22 @@
+/******************** CKFK20250301 se agregan los campos p.IdProductoParametroA, p.IdProductoParametroB, p.Dias_Inventario_Promedio, margen_impresion*********/
+ALTER VIEW [dbo].[VW_ProductoSI]
+AS
+SELECT DISTINCT 
+                         pb.IdBodega, pb.IdProductoBodega, p.IdProducto, p.IdPropietario, p.IdClasificacion, p.IdFamilia, p.IdMarca, p.IdTipoProducto, p.IdUnidadMedidaBasica, p.IdCamara, p.IdTipoRotacion, p.IdPerfilSerializado, p.IdIndiceRotacion, 
+                         p.IdSimbologia, p.IdArancel, p.codigo, p.nombre, p.codigo_barra, p.precio, p.existencia_min, p.existencia_max, p.costo, p.peso_referencia, p.peso_tolerancia, p.noparte, p.noserie, p.control_peso, p.ciclo_vida, p.tolerancia, p.kit, 
+                         p.materia_prima, p.control_lote, p.control_vencimiento, p.genera_lote, p.serializado, pp.codigo_barra AS codigo_barra_presentacion, pcb.codigo_barra AS codigo_barra_pcb, pp.nombre AS NomPresentacion, 
+                         pp.activo AS activopp, pp.IdPresentacion, pp.factor, p.peso_recepcion, p.peso_despacho, p.temperatura_referencia, p.temperatura_tolerancia, p.temperatura_recepcion, p.temperatura_despacho, p.fechamanufactura, 
+                         p.capturar_aniada, a.nombre AS Arancel, p.user_agr, p.fec_agr, p.user_mod, p.fec_mod, p.captura_arancel, p.es_hardware, p.activo, NULL AS imagen, p.largo, 
+                         p.ancho, p.alto, p.genera_lp_old, p.IdUnidadMedidaCobro, p.IdTipoEtiqueta, p.IdTipoManufactura, 
+                         p.IdProductoParametroA, p.IdProductoParametroB, p.Dias_Inventario_Promedio, margen_impresion
+FROM            dbo.producto_bodega AS pb RIGHT OUTER JOIN
+                         dbo.producto AS p ON pb.IdProducto = p.IdProducto LEFT OUTER JOIN
+                         dbo.producto_codigos_barra AS pcb ON p.IdProducto = pcb.IdProducto LEFT OUTER JOIN
+                         dbo.producto_presentacion AS pp ON p.IdProducto = pp.IdProducto LEFT OUTER JOIN
+                         dbo.arancel AS a ON p.IdArancel = a.IdArancel
+WHERE        (pb.activo = 1) AND (p.activo = 1)
+GO
+
 /******************** CKFK20240401 se agrega campo IdTipoManufactura ******************************************************/
 ALTER VIEW [dbo].[VW_ProductoSI]
 AS
