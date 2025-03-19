@@ -1,3 +1,30 @@
+--#CKFK20250301 Indices varios
+
+CREATE NONCLUSTERED INDEX NCI_trans_pe_det_CKFK250309
+ON [dbo].[trans_pe_enc] ([IdTipoPedido])
+INCLUDE ([bodega_destino])
+GO
+CREATE NONCLUSTERED INDEX NCI_Cliente_Tiempos_CKFK20250303
+ON [dbo].[cliente_tiempos] ([IdCliente])
+INCLUDE ([IdFamilia],[IdClasificacion],[Dias_Local],[Dias_Exterior],[user_agr],[fec_agr],[user_mod],[fec_mod],[activo])
+GO
+
+CREATE NONCLUSTERED INDEX NCI_CKFK_20250203_DespachoDet
+ON [dbo].[trans_despacho_det] ([IdPedidoEnc])
+INCLUDE ([IdDespachoEnc],[IdPickingUbic],[user_agr],[fec_agr],[IdPedidoDet],[IdProductoBodega],[NombreEstado],[CantidadDespachada])
+GO
+
+CREATE NONCLUSTERED INDEX NCI_CKFK_20250203_DespachoDet1
+ON [dbo].[trans_packing_enc] ([iddespachoenc],[idproductobodega],[lic_plate])
+INCLUDE ([no_linea])
+GO
+
+CREATE NONCLUSTERED INDEX NCI_CKFK_20250203_Pciking_Ubic
+ON [dbo].[trans_picking_ubic] ([dañado_verificacion],[dañado_picking],[no_encontrado],[cantidad_recibida])
+INCLUDE ([IdPickingEnc],[IdProductoBodega],[IdProductoEstado],[fecha_vence],[lic_plate],[cantidad_verificada],[fecha_verificado],[IdOperadorBodega_Verifico],[IdPedidoEnc])
+GO
+
+
 --20241211 Indice para inventarios
 CREATE NONCLUSTERED INDEX NCLI_EJC_241211
 ON [dbo].[trans_inv_stock] ([IdProductoBodega])
