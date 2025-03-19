@@ -1,3 +1,6 @@
+--#AT Se agregó esta clasificación para saber cuando mostrar la pantalla de la impresión inkjet
+ALTER table tipo_etiqueta add es_inkjet bit not null default 0
+
 --#GT18092023 llave foranea de clasificacion etiqueta
 
 ALTER TABLE tipo_etiqueta ADD Idclasificacion_etiqueta int null
