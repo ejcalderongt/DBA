@@ -1,3 +1,11 @@
+--#CKFK20250301 Agregamos validación para que los picking no estén negativos
+ALTER TABLE [dbo].[trans_picking_ubic]  
+WITH CHECK ADD  CONSTRAINT [Stock_NonNegative_20250228_CKFK] CHECK  ((cantidad_solicitada>(0)))
+GO
+
+ALTER TABLE [dbo].[trans_picking_ubic] CHECK CONSTRAINT [Stock_NonNegative_20250228_CKFK]
+GO
+
 --#CKFK20240612 Agregamos el campo IdPrioridadPicking
 ALTER TABLE TRANS_PICKING_ENC ADD IdPrioridadPicking null default 0
 
