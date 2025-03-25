@@ -1,3 +1,9 @@
+--#GT25032025: campos para asociar opcionalmente, un Estado y Propietario al documento de ingreso.
+
+alter table trans_oc_ti add IdProductoEstado int null
+alter table trans_oc_ti add IdPropietario int null
+
+
 --#EJC20231023 Parámetro agregado para validar si el documento de ingreso permite producto vencido
 ALTER TABLE trans_oc_ti add permitir_vencido_ingreso bit NOT NULL DEFAULT 1
 
