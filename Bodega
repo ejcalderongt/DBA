@@ -1,3 +1,6 @@
+--#AT20250331 Campo para controlar el cambio de ubicacion desde recepción
+alter table bodega add permitir_cambio_ubic_recepcion bit not null default 0
+
 --#CKFK20240213 Agregamos esta variable para limpiar o no los campos de la consulta de existencias
 ALTER TABLE bodega ADD limpiar_campos bit NOT NULL default 0
 GO
