@@ -1,0 +1,33 @@
+CREATE TABLE [dbo].[tipo_etiqueta_detalle](
+	[IdTipoEtiquetaDetalle] [int] NOT NULL,
+	[IdTipoEtiqueta] [int] NOT NULL,
+	[orden] [int] NULL,
+	[nombre] [nvarchar](100) NULL,
+	[campo] [nvarchar](100) NULL,
+	[coor_x] [float] NULL,
+	[coor_y] [float] NULL,
+	[width] [float] NULL,
+	[height] [float] NULL
+ CONSTRAINT [PK_tipo_etiqueta_detalle] PRIMARY KEY CLUSTERED 
+(
+	[IdTipoEtiquetaDetalle] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[tipo_etiqueta_detalle]  WITH CHECK ADD  CONSTRAINT [FK_tipo_etiqueta_detalle_tipo_etiqueta] FOREIGN KEY([IdTipoEtiqueta])
+REFERENCES [dbo].[tipo_etiqueta] ([IdTipoEtiqueta])
+GO
+
+ALTER TABLE [dbo].[tipo_etiqueta_detalle] CHECK CONSTRAINT [FK_tipo_etiqueta_detalle_tipo_etiqueta]
+GO
+
+--Script para Becofarma
+INSERT [dbo].[tipo_etiqueta_detalle] ([IdTipoEtiquetaDetalle], [IdTipoEtiqueta], [orden], [nombre], [campo], [coor_x], [coor_y], [width], [height]) VALUES (1, 8, 1, N'FechaVence', N'Fecha_vence', 590, 225, 357, 31)
+INSERT [dbo].[tipo_etiqueta_detalle] ([IdTipoEtiquetaDetalle], [IdTipoEtiqueta], [orden], [nombre], [campo], [coor_x], [coor_y], [width], [height]) VALUES (2, 8, 2, N'CodigoProducto', N'Codigo_Producto', 248, 60, 139, 31)
+INSERT [dbo].[tipo_etiqueta_detalle] ([IdTipoEtiquetaDetalle], [IdTipoEtiqueta], [orden], [nombre], [campo], [coor_x], [coor_y], [width], [height]) VALUES (3, 8, 3, N'NombreProducto', N'Nombre_producto', 248, 131, 744, 31)
+INSERT [dbo].[tipo_etiqueta_detalle] ([IdTipoEtiquetaDetalle], [IdTipoEtiqueta], [orden], [nombre], [campo], [coor_x], [coor_y], [width], [height]) VALUES (4, 8, 4, N'Lote', N'Lote', 248, 225, 266, 31)
+INSERT [dbo].[tipo_etiqueta_detalle] ([IdTipoEtiquetaDetalle], [IdTipoEtiqueta], [orden], [nombre], [campo], [coor_x], [coor_y], [width], [height]) VALUES (5, 8, 5, N'Licencia', N'Lic_plate', 0, 65, 224, 224)
+INSERT [dbo].[tipo_etiqueta_detalle] ([IdTipoEtiquetaDetalle], [IdTipoEtiqueta], [orden], [nombre], [campo], [coor_x], [coor_y], [width], [height]) VALUES (6, 8, 6, N'Empresa', N'', 0, 0, 468, 31)
+INSERT [dbo].[tipo_etiqueta_detalle] ([IdTipoEtiquetaDetalle], [IdTipoEtiqueta], [orden], [nombre], [campo], [coor_x], [coor_y], [width], [height]) VALUES (7, 8, 7, N'NombreProducto2', N'', 248, 170, 744, 31)
+GO
