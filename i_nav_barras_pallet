@@ -1,0 +1,8 @@
+--#CKFK Campo nuevo para Idealsa y modificación al tipo recibido de bit a numérico
+ALTER TABLE i_nav_barras_pallet 
+ALTER COLUMN recibido int null
+GO
+
+ALTER TABLE i_nav_barras_pallet 
+ADD fecha_procesado_erp datetime not null default '19000101'
+GO
