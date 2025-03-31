@@ -4,3 +4,9 @@ alter table impresora add numero_serie nvarchar(50) null
 alter table impresora add IdImpresoraMarca int null
 alter table impresora add IdLenguaje int null
 alter table impresora add IdTipoConexion int null
+
+--#AT Campos nuevos por funcionalidad de la inkjet
+ALTER table impresora 
+ADD puerto int null, 
+es_movil bit not null default 1,
+velocidad float null
