@@ -1,3 +1,9 @@
+--#GT01042025 campos para definir un estado por defecto en el pedido
+
+alter table trans_pe_tipo add IdProductoEstado int null
+alter table trans_pe_tipo add IdPropietario int null
+
+
 --#CKFK20241011 Parametrizar si requiere empaque tarima
 ALTER TABLE trans_pe_tipo ADD empaque_tarima bit NOT NULL default 0
 
