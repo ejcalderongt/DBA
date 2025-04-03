@@ -3,7 +3,7 @@ alter table trans_pe_enc add Codigo_Empresa_ERP nvarchar(50)
 
 --#CKFK20240621 ampliación de campo para byb.
 ALTER TABLE [dbo].[trans_pe_enc]
-ALTER COLUMN [Observacion] NVARCHAR(500) NULL;
+ALTER COLUMN [Observacion] NVARCHAR(1000) NULL;
 GO
 
 --#CKFK20240621 Campo nuevo por motivo de devolución
