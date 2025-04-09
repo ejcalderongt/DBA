@@ -1,3 +1,17 @@
+--#GT09042025 mostrar menu de prefacturacion CEALSA
+INSERT INTO menu_sistema (IdMenu, titulo, nombre_lgco, nivel, padre, solicitar_clave_autorizacion)
+VALUES ('8.3.1', 'PreFacturacion', 'mnuPreFacturacion', 3, '8.3', 0);
+
+INSERT INTO menu_sistema (IdMenu, titulo, nombre_lgco, nivel, padre, solicitar_clave_autorizacion)
+VALUES ('8.3.1.1', 'PreFacturar', 'cmdPreFacturar', 4, '8.3.1', 0);
+
+iF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '8.3.1')
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'8.3.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1,1,1,1)
+
+iF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '8.3.1.1')
+insert into menu_rol  values((select Max(IdMenuRol)+1 from menu_rol),'8.3.1.1',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1,1,1,1)
+
+
 --#CKFK Agregamos opción para visualizar los packing
 Insert into menu_sistema values('3.6.1.4','Packing Despachados','cmdPackingDespachados',4,'3.6.1',0)
 GO
