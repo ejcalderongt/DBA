@@ -1,2 +1,7 @@
+--#CKFK20250415 Agregué el campo fec_mod 
+ALTER TABLE trans_inv_ciclico ADD fec_mod datetime not null default '19000101'
+GO
+
 --#EJC20211201: IdBodegaa Add
 alter table trans_inv_ciclico add IdBodega int null default 0
+
