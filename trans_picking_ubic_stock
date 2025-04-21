@@ -1,3 +1,7 @@
+--#EJC20250418 Agregó el campo IdMovimiento
+ALTER TABLE trans_picking_ubic_stock ADD IdMovimiento int
+GO
+
 --#AT202410112: Agregé el campo host
 alter table trans_picking_ubic_stock add host nvarchar(50) default null
 GO
