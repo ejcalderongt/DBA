@@ -1,3 +1,68 @@
+--#CKFK Cambios al reporte por modificación en los datos a mostrar
+ALTER VIEW VW_Tareas_Operador
+AS
+SELECT 
+	thh.IdBodega,
+    stt.Nombre AS TipoTarea,
+    thh.IdTransaccion IdTarea,
+    CONVERT(DATE, thh.FechaInicio) Fecha,
+    op.nombres + ' ' + op.apellidos AS NombreOperador
+FROM dbo.tarea_hh thh
+INNER JOIN dbo.sis_tipo_tarea stt ON thh.IdTipoTarea = stt.IdTipoTarea
+INNER JOIN dbo.trans_re_op treop ON stt.Nombre = 'RECE' AND treop.IdRecepcionEnc = thh.IdTransaccion
+INNER JOIN dbo.operador_bodega ob ON treop.IdOperadorBodega = ob.IdOperadorBodega
+INNER JOIN dbo.operador op ON ob.IdOperador = op.IdOperador
+
+UNION ALL
+
+SELECT 
+	thh.IdBodega,
+    stt.Nombre AS TipoTarea,
+    thh.IdTransaccion IdTarea,
+    CONVERT(DATE, thh.FechaInicio) Fecha,
+    op.nombres + ' ' + op.apellidos AS NombreOperador
+FROM dbo.tarea_hh thh
+INNER JOIN dbo.sis_tipo_tarea stt ON thh.IdTipoTarea = stt.IdTipoTarea
+INNER JOIN dbo.trans_picking_op tpop ON stt.Nombre = 'PIK' AND tpop.IdPickingEnc = thh.IdTransaccion
+INNER JOIN dbo.operador_bodega ob ON tpop.IdOperadorBodega = ob.IdOperadorBodega
+INNER JOIN dbo.operador op ON ob.IdOperador = op.IdOperador
+
+UNION ALL
+
+SELECT distinct
+	thh.IdBodega,
+    stt.Nombre AS TipoTarea,
+    thh.IdTransaccion IdTarea,
+    CONVERT(DATE, thh.FechaInicio) Fecha,
+    op.nombres + ' ' + op.apellidos AS NombreOperador
+FROM dbo.tarea_hh thh
+INNER JOIN dbo.sis_tipo_tarea stt ON thh.IdTipoTarea = stt.IdTipoTarea
+INNER JOIN dbo.trans_inv_enc tie ON stt.Nombre = 'INVE' AND tie.IdInventarioEnc = thh.IdTransaccion
+INNER JOIN dbo.trans_inv_operador tio ON tio.IdInventarioEnc = tie.IdInventarioEnc
+INNER JOIN dbo.operador op ON tio.IdOperador = op.IdOperador
+
+UNION ALL
+
+SELECT 
+	ob.IdBodega,
+    'VERI' AS TipoTarea,
+    tpu.IdPedidoEnc AS IdTarea,
+    CONVERT(DATE, tpu.fecha_verificado) AS Fecha,
+    op.nombres + ' ' + op.apellidos AS NombreOperador
+FROM dbo.trans_picking_op tpop
+INNER JOIN dbo.operador_bodega ob ON tpop.IdOperadorBodega = ob.IdOperadorBodega
+INNER JOIN dbo.operador op ON ob.IdOperador = op.IdOperador
+INNER JOIN dbo.menu_rol_op mro ON op.IdRolOperador = mro.IdRolOperador
+INNER JOIN dbo.menu_sistema_op mso ON mro.IdMenuSistemaOP = mso.IdMenuSistemaOP
+INNER JOIN dbo.trans_picking_ubic tpu ON tpu.IdPickingEnc = tpop.IdPickingEnc
+WHERE 
+    op.verifica = 1 
+    AND mso.IdTipoTarea = 11
+    AND tpu.fecha_verificado IS NOT NULL
+GROUP BY 
+    tpu.IdPedidoEnc, op.nombres, op.apellidos, ob.IdBodega,CONVERT(DATE, tpu.fecha_verificado)
+GO
+
 CREATE VIEW VW_Tareas_Operador
 AS
 SELECT 
