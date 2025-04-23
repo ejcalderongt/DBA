@@ -1,3 +1,75 @@
+--#CKFK Corrección a reporte por datos incorrectos
+
+--PICKING
+ALTER VIEW [dbo].[VW_Productividad_Picking]
+AS
+SELECT
+    ISNULL(fo.Fecha_Hora_Inicio, '19000101') AS Fecha_Hora_Inicio,
+    ISNULL(fo.Fecha_Hora_Fin, '19000101') AS Fecha_Hora_Fin,
+    ISNULL(a.fecha_picking, '19000101') AS Fecha_Por_Línea,
+    o.descripcion AS Tipo_Documento_Pedido,
+    ISNULL(e.nombre, 'ND') AS Tipo,
+    f.codigo AS Código_Departamento,
+    f.nombre AS Descripción_Departamento,
+    g.codigo AS Código_Categoría,
+    g.nombretipoproducto AS Descripción_Categoría,
+    d.codigo AS Código_Producto, 
+    d.nombre AS Nombre_Producto,
+    t.cantidad AS Cantidad_Solicitada,
+    ISNULL(a.cantidad_recibida, 0) AS Cantidad_Pickeada,
+    ISNULL(h.nombre, '') AS Nombre_Estado_Producto,
+    ROUND((t.cantidad - ISNULL(a.cantidad_recibida, 0)),2) AS Cantidad_Devolución_Picking, 
+	ROUND((a.cantidad_solicitada - a.cantidad_recibida),2) AS Diferencia, 
+    ISNULL(q.nombre, '') AS Nombre_Presentación_MPQ,
+    CASE 
+        WHEN p.IdPresentacion > 0 AND q.factor > 0
+        THEN ROUND(ISNULL(a.cantidad_recibida, 0) / q.factor, 2) 
+        ELSE 0 
+    END AS Cantidad_Pickeadas_Cajas,
+    ISNULL(j.IdRecepcionEnc, 0) AS Id_Recepción,
+    ISNULL(b.IdPickingEnc, 0) AS Número_Picking,
+    ISNULL(a.fecha_vence, '19000101') AS Fecha_Vence,
+    ISNULL(a.lic_plate, '') AS Lic_Plate,
+    ISNULL(l.codigo, 'Operador BOF') AS Código_Operador,
+    ISNULL(l.nombres, 'Operador BOF') + ' ' + ISNULL(l.apellidos, '') AS Descripción_Operador,
+    ISNULL(n.codigo, '') AS Código_Comprador,
+    ISNULL(n.nombre_comercial, '') AS Descripción_Comprador,
+    m.Referencia_Documento_Ingreso_Bodega_Destino AS Solicitud_SAP,
+	m.IdBodega
+FROM trans_pe_enc m WITH (NOLOCK)
+INNER JOIN trans_pe_det t WITH (NOLOCK) ON t.IdPedidoEnc = m.IdPedidoEnc
+INNER JOIN trans_pe_tipo o  WITH (NOLOCK) ON o.IdTipoPedido = m.IdTipoPedido 
+INNER JOIN producto_bodega c  WITH (NOLOCK) ON c.IdProductoBodega = t.IdProductoBodega
+INNER JOIN producto d  WITH (NOLOCK) ON d.IdProducto = c.IdProducto
+LEFT JOIN producto_familia e  WITH (NOLOCK) ON e.IdFamilia = d.IdFamilia
+LEFT JOIN producto_clasificacion f WITH (NOLOCK)  ON f.IdClasificacion = d.IdClasificacion
+LEFT JOIN producto_tipo g  WITH (NOLOCK) ON g.IdTipoProducto = d.IdTipoProducto
+LEFT JOIN trans_picking_ubic a WITH (NOLOCK)  ON t.IdPedidoDet = a.IdPedidoDet AND t.IdProductoBodega = a.IdProductoBodega
+LEFT JOIN trans_picking_enc b WITH (NOLOCK)  ON b.IdPickingEnc = a.IdPickingEnc
+LEFT JOIN producto_estado h WITH (NOLOCK)  ON h.IdEstado = a.IdProductoEstado
+LEFT JOIN (
+    SELECT 
+        IdOperadorBodega_Pickeo,
+        IdPickingEnc,
+        MIN(fecha_picking) AS Fecha_Hora_Inicio,
+        MAX(fecha_picking) AS Fecha_Hora_Fin 
+    FROM trans_picking_ubic WITH (NOLOCK) 
+    WHERE no_encontrado = 0 AND dañado_picking = 0
+    GROUP BY IdOperadorBodega_Pickeo, IdPickingEnc
+) fo ON fo.IdOperadorBodega_Pickeo = a.IdOperadorBodega_Pickeo AND fo.IdPickingEnc = a.IdPickingEnc
+LEFT JOIN cliente n  WITH (NOLOCK) ON n.codigo COLLATE Modern_Spanish_CI_AS = m.bodega_destino COLLATE Modern_Spanish_CI_AS
+LEFT JOIN stock j  WITH (NOLOCK) ON j.IdStock = a.IdStock
+LEFT JOIN operador_bodega k  WITH (NOLOCK) ON k.IdOperadorBodega = a.IdOperadorBodega_Pickeo
+LEFT JOIN operador l WITH (NOLOCK)  ON l.IdOperador = k.IdOperador
+LEFT JOIN (
+    SELECT MAX(IdPresentacion) IdPresentacion, IdProducto 
+	FROM producto_presentacion  WITH (NOLOCK) GROUP BY IdProducto) p ON c.IdProducto = p.IdProducto AND 
+	                                                                    d.IdProducto = p.IdProducto
+LEFT JOIN producto_presentacion q  WITH (NOLOCK) ON p.IdPresentacion = q.IdPresentacion  
+WHERE m.estado <> 'Anulado'
+AND m.ubicacion <> 'TMP'
+GO
+
 --PICKING
 ALTER VIEW VW_Productividad_Picking
 AS
