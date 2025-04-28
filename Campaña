@@ -1,3 +1,5 @@
+alter table campaña add codigo nvarchar(50)
+
 CREATE TABLE campaña ( 
 IdCampaña INT PRIMARY KEY, 
 Nombre NVARCHAR(100) NOT NULL, 
