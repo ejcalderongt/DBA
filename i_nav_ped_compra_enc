@@ -1,3 +1,7 @@
+--#EJC20250428 Campo campaña MAMPA
+ALTER TABLE i_nav_ped_compra_enc
+ADD Campaign_No NVARCHAR(50);
+
 alter table i_nav_ped_compra_enc add IsImport bit default 0
 
 alter table i_nav_ped_compra_enc add Document_Type int default 0
