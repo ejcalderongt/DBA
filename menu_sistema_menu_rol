@@ -1,3 +1,10 @@
+--#GT28042025: permisos para ver opcion Campaña
+Insert into menu_sistema values('1.3.1.12','Campaña','mnuCampaña',4,'1.3.1',0)
+GO
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '1.3.1.12')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'1.3.1.10',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1,1,1,1)
+GO
+
 --#AT20250423 Menú para mostrar el reporte Transacciones por Operador
 INSERT INTO menu_sistema (IdMenu, titulo, nombre_lgco, nivel, padre, solicitar_clave_autorizacion)
 VALUES ('6.1.2.13', 'Transacciones por Operador', 'mnurptTransaccionesOP', 4,'6.1.2',0)
