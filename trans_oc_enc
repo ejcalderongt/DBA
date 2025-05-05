@@ -1,3 +1,4 @@
+alter table trans_oc_enc add IdCampaña int
 alter table trans_oc_enc add no_ticket_tms int
 alter table trans_oc_enc add IdNoDocumentoRef int
 alter table trans_oc_enc add idacuerdocomercial int null 
