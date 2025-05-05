@@ -1,42 +1,18 @@
-CREATE TABLE [dbo].[producto_talla_color_estilo](
-      [IdProductoTallaColorEstilo] [int] NOT NULL,
-      [IdProducto] [int] NOT NULL,
-      [IdTalla] [int] NOT NULL,
-      [IdColor] [int] NOT NULL,
-      [IdEstilo] [int] NOT NULL,
-      [IdCampaña] [int] NULL,
-      [CodigoSKU] [nvarchar](50) NOT NULL,
-      [fec_agr] [datetime] NOT NULL DEFAULT GETDATE(),
-      [user_agr] [nvarchar](25) NOT NULL,
-      [fec_mod] [datetime] NOT NULL DEFAULT GETDATE(),
-      [user_mod] [nvarchar](25) NULL,
-PRIMARY KEY CLUSTERED 
-(
-      [IdProductoTallaColorEstilo] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
-UNIQUE NONCLUSTERED 
-(
-      [CodigoSKU] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
-GO
+--#EJC20250505: Quité estilo (ya no va)
+CREATE TABLE producto_talla_color(
+    IdProductoTallaColorEstilo INT NOT NULL PRIMARY KEY,
+    IdProducto INT NOT NULL,
+    IdTalla INT NOT NULL,
+    IdColor INT NOT NULL,    
+    IdCampaña INT NULL,
+    CodigoSKU NVARCHAR(50) NOT NULL UNIQUE,
+    fec_agr DATETIME NOT NULL DEFAULT GETDATE(),
+    user_agr NVARCHAR(25) NOT NULL,
+    fec_mod DATETIME NOT NULL DEFAULT GETDATE(),
+    user_mod NVARCHAR(25) NULL
+);
 
-ALTER TABLE [dbo].[producto_talla_color_estilo]  WITH CHECK ADD FOREIGN KEY([IdCampaña])
-REFERENCES [dbo].[campaña] ([IdCampaña])
-GO
-
-ALTER TABLE [dbo].[producto_talla_color_estilo]  WITH CHECK ADD FOREIGN KEY([IdColor])
-REFERENCES [dbo].[color] ([IdColor])
-GO
-
-ALTER TABLE [dbo].[producto_talla_color_estilo]  WITH CHECK ADD FOREIGN KEY([IdProducto])
-REFERENCES [dbo].[producto] ([IdProducto])
-GO
-
-ALTER TABLE [dbo].[producto_talla_color_estilo]  WITH CHECK ADD FOREIGN KEY([IdTalla])
-REFERENCES [dbo].[talla] ([IdTalla])
-GO
-
-ALTER TABLE [dbo].[producto_talla_color_estilo]  WITH CHECK ADD FOREIGN KEY([IdEstilo])
-REFERENCES [dbo].[estilo] ([IdEstilo])
-GO
+ALTER TABLE producto_talla_color ADD FOREIGN KEY (IdCampaña) REFERENCES campaña(IdCampaña);
+ALTER TABLE producto_talla_color ADD FOREIGN KEY (IdProducto) REFERENCES producto(IdProducto);
+ALTER TABLE producto_talla_color ADD FOREIGN KEY (IdTalla) REFERENCES talla(IdTalla);
+ALTER TABLE producto_talla_color ADD FOREIGN KEY (IdColor) REFERENCES color(IdColor);
