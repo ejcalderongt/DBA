@@ -1,3 +1,8 @@
+--#CKFK20250428 Agregué el campo fec_mod 
+alter table Trans_inv_ciclico 
+add regularizar bit not null default 1
+GO
+
 --#CKFK20250415 Agregué el campo fec_mod 
 ALTER TABLE trans_inv_ciclico ADD fec_mod datetime not null default '19000101'
 GO
