@@ -1,6 +1,10 @@
+
 --#EJC20250505: Quité estilo (ya no va)
+
+DROP TABLE producto_talla_color_estilo
+
 CREATE TABLE producto_talla_color(
-    IdProductoTallaColorEstilo INT NOT NULL PRIMARY KEY,
+    IdProductoTallaColor INT NOT NULL PRIMARY KEY,
     IdProducto INT NOT NULL,
     IdTalla INT NOT NULL,
     IdColor INT NOT NULL,    
