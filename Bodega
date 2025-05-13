@@ -1,3 +1,6 @@
+--#EJC20250513 - Mampa - Campo para guardar ruta de red de imágenes de productos.
+alter table bodega add ruta_cdn nvarchar(100)
+
 --#AT20250331 Campo para controlar el cambio de ubicacion desde recepción
 alter table bodega add permitir_cambio_ubic_recepcion bit not null default 0
 
