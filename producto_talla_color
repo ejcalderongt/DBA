@@ -1,3 +1,5 @@
+--#EJC20250515 Agregar campo activo
+alter table producto_talla_color add activo bit not null default 1
 
 --#EJC20250505: Quité estilo (ya no va)
 
