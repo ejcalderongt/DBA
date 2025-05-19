@@ -1,3 +1,7 @@
+
+--#EJC20250519-Rama: dev_2025
+alter table trans_oc_det add IdProductoTallaColor int null
+
 --#CKFK20240425
 ALTER TABLE [dbo].[trans_oc_det] ADD  DEFAULT ((0)) FOR [No_Linea]
 GO
