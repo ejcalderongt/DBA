@@ -1,3 +1,6 @@
+--#EJC20250519:
+alter table bodega add control_talla_color bit not null default 0
+
 --#EJC20250513 - Mampa - Campo para guardar ruta de red de imágenes de productos.
 alter table bodega add ruta_cdn nvarchar(100)
 
