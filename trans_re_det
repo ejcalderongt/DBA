@@ -1,3 +1,6 @@
+--#EJC20250520-Mampa, talla/color
+alter table trans_re_det add IdProductoTallaColor int null
+
 ALTER TABLE trans_re_det ADD IdOperadorBodega int NULL
 ALTER TABLE trans_re_det ADD IdOrdenCompraDet int null
 
