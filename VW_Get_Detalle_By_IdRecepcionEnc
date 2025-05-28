@@ -1,3 +1,16 @@
+--#EJC20250528: Agregué IdProductoTallaColor
+ALTER VIEW [dbo].[VW_Get_Detalle_By_IdRecepcionEnc]
+SELECT     enc.IdBodega, det.IdRecepcionEnc, det.IdRecepcionDet, det.IdJornadaSistema, enc.IdUbicacionRecepcion, prb.IdPropietarioBodega, p.IdProducto, p.control_peso, det.IdProductoBodega, det.IdPresentacion, det.IdUnidadMedida, det.IdProductoEstado, det.IdOperadorBodega, 
+                  det.IdMotivoDevolucion, det.No_Linea, det.cantidad_recibida, det.nombre_producto, det.nombre_presentacion, det.nombre_unidad_medida, det.nombre_producto_estado, det.lote, det.fecha_vence, det.fecha_ingreso, det.peso, det.peso_estadistico, det.peso_minimo, det.peso_maximo, 
+                  det.peso_unitario, det.user_agr, det.fec_agr, det.observacion, det.añada, det.costo, det.costo_oc, det.costo_estadistico, det.atributo_variante_1, det.codigo_producto, det.lic_plate, det.pallet_no_estandar, det.IdOrdenCompraEnc, det.IdOrdenCompraDet, det.host, 
+                  det.IdProductoTallaColor
+FROM        dbo.trans_re_det AS det INNER JOIN
+                  dbo.producto_bodega AS pb ON det.IdProductoBodega = pb.IdProductoBodega INNER JOIN
+                  dbo.trans_re_enc AS enc ON det.IdRecepcionEnc = enc.IdRecepcionEnc INNER JOIN
+                  dbo.bodega_ubicacion AS b ON enc.IdUbicacionRecepcion = b.IdUbicacion AND enc.IdBodega = b.IdBodega INNER JOIN
+                  dbo.propietario_bodega AS prb ON enc.IdPropietarioBodega = prb.IdPropietarioBodega INNER JOIN
+                  dbo.producto AS p ON pb.IdProducto = p.IdProducto
+
 --#EJC20230221 Agregó el campo IdJornadaSistema
 /****** Object:  View [dbo].[VW_Get_Detalle_By_IdRecepcionEnc]    Script Date: 21/02/2023 18:48:25 ******/
 SET ANSI_NULLS ON
