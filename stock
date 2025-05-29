@@ -1,3 +1,6 @@
+--#EJC20250528: rama dev_2025
+alter table stock add IdProductoTallaColor int null
+
 --#EJC202306201717:
 ALTER TABLE STOCK ADD IdPedidoDet int null 
 
