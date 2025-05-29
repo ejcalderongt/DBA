@@ -1,3 +1,6 @@
+--#EJC20250528: TallaColor
+alter table i_nav_transacciones_out add IdProductoTallaColor int null
+
 --#EJC20240913 Agregamos funcionalidad para SAP, cuando hay desfase de lotes
 alter table i_nav_transacciones_out add 
 cantidad_enviada float default 0, 
