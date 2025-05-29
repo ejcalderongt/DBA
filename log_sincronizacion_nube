@@ -1,0 +1,10 @@
+  CREATE TABLE log_sincronizacion_nube (
+    IdLog INT PRIMARY KEY NOT NULL,          
+    Fecha_sincronizacion DATETIME NOT NULL DEFAULT GETDATE(), 
+    Registros_enviados INT NOT NULL,                     
+    Estado NVARCHAR(50) NOT NULL,             
+    Mensaje_error NVARCHAR(MAX) NULL,              
+    Tiempo_de_envio INT NULL,                   
+	User_agr NVARCHAR(100) NOT NULL,            
+    Fec_agr DATETIME NOT NULL DEFAULT GETDATE()
+);
