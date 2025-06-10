@@ -1,3 +1,7 @@
+--#EJC20250609 Agregó el campo Codigo_Empresa_ERP
+alter table proveedor add Codigo_Empresa_ERP NVARCHAR(50) NULL
+GO
+
 --#EJC20241206 Agregarmos proveedor por funcionalidad en Mampa
 alter table proveedor add IdPais int null
 
