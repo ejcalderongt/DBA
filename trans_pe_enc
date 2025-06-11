@@ -1,3 +1,6 @@
+--#EJC20250611 Agregué el campo EsExportacion para saber si el pedido es de exportación
+alter table trans_pe_enc add EsExportacion bit not null default 0
+
 --#EJC20241003 Agregué el campo Codigo_Empresa_ERP
 alter table trans_pe_enc add Codigo_Empresa_ERP nvarchar(50)
 
