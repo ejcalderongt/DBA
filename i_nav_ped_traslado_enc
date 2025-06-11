@@ -1,3 +1,6 @@
+--#EJC20250611 Agregué campo EsExportacion
+alter table trans_pe_enc add EsExportacion bit not null default 0
+
 --#EJC20241004 Agregué campo Company_Code
 alter table i_nav_ped_traslado_enc add Company_Code nvarchar(50)
 
