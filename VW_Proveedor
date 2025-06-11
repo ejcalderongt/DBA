@@ -1,11 +1,12 @@
 --#09022024  CAMBIO DE ERICK EN LA VISTA POR ERIK
+--#CKFK20250611 Agregué el campo Codigo_Empresa_ERP
 
 ALTER VIEW [dbo].[VW_Proveedor]
 AS
 SELECT        e.nombre AS Empresa, pr.nombre_comercial AS Propietario, p.IdEmpresa, p.IdPropietario, p.IdProveedor, p.codigo, p.nombre, p.telefono, p.nit, p.direccion, p.email, 
                          p.contacto, p.activo, p.muestra_precio, p.user_agr, p.fec_agr, p.user_mod, p.fec_mod, p.actualiza_costo_oc, dbo.proveedor_bodega.IdBodega, 
                          dbo.proveedor_bodega.activo AS activo_proveedor_bodega, p.idubicacionvirtual, p.es_bodega_recepcion, p.es_bodega_traslado, p.referencia, p.sistema, 
-                         p.IdConfiguracionBarraPallet, es_proveedor_servicio, p.IdBodegaAreaSAP
+                         p.IdConfiguracionBarraPallet, es_proveedor_servicio, p.IdBodegaAreaSAP, p.Codigo_Empresa_ERP
 FROM            dbo.proveedor AS p INNER JOIN
                          dbo.empresa AS e ON p.IdEmpresa = e.IdEmpresa INNER JOIN
                          dbo.propietarios AS pr ON p.IdPropietario = pr.IdPropietario LEFT OUTER JOIN
