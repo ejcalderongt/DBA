@@ -1,3 +1,6 @@
+--#EJC20250617 Talla - Color - Mampa
+ALTER TABLE trans_movimientos ADD IdProductoTallaColor int default 0
+
 --#EJC20240916 Agregamos estos campos por funcionalidad para Becofarma
 alter table i_nav_transacciones_out add cantidad_enviada float default 0, 
 cantidad_pendiente float default 0
