@@ -4,5 +4,27 @@
 2. Query en SAP que retornaba duplicados los registros de traslado. - Pedro/Carlos
 3. Traslado a bodega de prorrateo no pasaba porque el producto estaba en ubicación de recepción. (Will/Francisco/Kevin)
 4. Solicitud de traslado para reempaque reserva de rack/tramo específico, el pedido está en cajas, pero el producto en rack está en unidades, WMS no hace implosión automática.
+5. Clientes duplicados por empresa (Codigo existe en Killios y tabién en Garesa).
+6. Proveedores duplicados por empresa (Codigo existe en Killios y tabién en Garesa).
+7. Documentos de ingreso duplicados (Código de documento  existe en Killios y también en Garesa).
+8. Traslado de ingreso duplicados (Código de documento  existe en Killios y también en Garesa).
+9. Crear bodega de prorrateo para Amatitlan Killio (con espejo de ubicaciones) inicialmente no se contemplo la ubicación en posiciones.
+10. Modificar proceso en WMS para que los traslados de prorrateo viajaran a las posiciones destino de la bodega final.
+11. Crear bodega de prorrateo para Amatitlan Garesa (con espejo de ubicaciones) inicialmente no se contemplo la ubicación en posiciones.
+12. Crear bodega de prorrateo para Zona 17 Killio (con espejo de ubicaciones) inicialmente no se contemplo la ubicación en posiciones.
+17. Crear bodega de prorrateo para Zona 17 Garesa (con espejo de ubicaciones) inicialmente no se contemplo la ubicación en posiciones.
+18. Crear parámetro para deterinar cuando WMS debe transferir a ubicación destino.
+19. Agregar código de empresa ERP en cliente para identificación por sociedad de sap.
+20. Agregar código de empresa ERP en proveedores para identificación por sociedad de sap.
+21. Modificar vista de cliente y mantenimiento de cliente para identificación por sociedad de sap.
+22. Modificar vista de proveedor y mantenimiento de proveedor para identificación por sociedad de sap.
+23. Agregar parámetro por bodega para definir rango de fecha para filtro de documentos de ingreso/salida por pedidos de un mes atrás y un mes adelante pej.
+24. Agregar parámetro para excluir ubicación de recepción de los procesos de reserva para evitar que se reserve producto de reciente ingreso.
+25. Se agregaron parámetros en la interface con identificación de las bodegas de prorrateo por bodega para definir las bodegas de prorrateo por sociedad a la que se debe enviar un documento.
+26. Se agregó parámetro de exportación para identificar cuando WMS debe enviar el código de producto de exportación en la entrega basado en tabla Z creada por Andrés de homologación de códigos SAP Killio y Garesa.
+
+
+
+
 
 
