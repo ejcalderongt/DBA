@@ -1,0 +1,8 @@
+-#EJC/#CKF - 24-06-2025
+
+1. Error con lote: 25086E34 (se interpretaba como notación decimal y provocó un error en despacho de prorrateo de Garesa). - Francisco
+2. Query en SAP que retornaba duplicados los registros de traslado. - Pedro/Carlos
+3. Traslado a bodega de prorrateo no pasaba porque el producto estaba en ubicación de recepción. (Will/Francisco/Kevin)
+4. Solicitud de traslado para reempaque reserva de rack/tramo específico, el pedido está en cajas, pero el producto en rack está en unidades, WMS no hace implosión automática.
+
+
