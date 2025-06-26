@@ -1,3 +1,46 @@
+#EJC - Agregué Observación y Cantidad de Pedidos
+/****** Object:  View [dbo].[VW_Picking]    Script Date: 9/06/2024 21:41:03 ******/
+ALTER VIEW [dbo].[VW_Picking]
+AS
+SELECT 
+    enc.IdPickingEnc AS Código, 
+    b.nombre AS Bodega, 
+    p.nombre_comercial AS Propietario, 
+    bu.descripcion AS [Ubicación Picking], 
+    enc.estado, 
+    enc.detalle_operador AS [Detalle Operador], 
+    CONVERT(char(5), enc.hora_ini, 108) AS [Hora Inicial], 
+    CONVERT(char(5), enc.hora_fin, 108) AS [Hora Final], 
+    CASE 
+        WHEN procesado_bof = 1 THEN '00:00' 
+        ELSE CONVERT(char(5), hora_fin - hora_ini, 108) 
+    END AS Duracion_Minutos, 
+    enc.fecha_picking AS [Fecha Picking], 
+    enc.activo, 
+    enc.IdBodega, 
+    enc.procesado_bof, 
+    dbo.bodega_muelles.codigo_barra AS Codigo_Muelle, 
+    dbo.bodega_muelles.nombre AS Muelle,
+    enc.Observacion,
+    ISNULL(pedidos.CantPedidos, 0) AS Pedidos
+FROM dbo.trans_picking_enc AS enc
+INNER JOIN dbo.propietario_bodega AS pb 
+    ON enc.IdPropietarioBodega = pb.IdPropietarioBodega 
+INNER JOIN dbo.propietarios AS p 
+    ON pb.IdPropietario = p.IdPropietario 
+INNER JOIN dbo.bodega AS b 
+    ON enc.IdBodega = b.IdBodega 
+INNER JOIN dbo.bodega_ubicacion AS bu 
+    ON enc.IdUbicacionPicking = bu.IdUbicacion AND enc.IdBodega = bu.IdBodega 
+LEFT JOIN dbo.bodega_muelles 
+    ON b.IdBodega = dbo.bodega_muelles.IdBodega AND enc.IdBodegaMuelle = dbo.bodega_muelles.IdMuelle
+LEFT JOIN (
+    SELECT IdPickingEnc, COUNT(IdPedidoEnc) AS CantPedidos
+    FROM trans_picking_det
+    GROUP BY IdPickingEnc
+) AS pedidos ON pedidos.IdPickingEnc = enc.IdPickingEnc
+
+
 --#EJC20240609 Agregamos el campo de Muelle
 ALTER VIEW [dbo].[VW_Picking]
 AS
