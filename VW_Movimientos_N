@@ -7,7 +7,7 @@ SELECT        pr.nombre_comercial AS Propietario, p.nombre AS Producto, enc.codi
                          prb.IdBodega, m.barra_pallet Licencia, dbo.producto_clasificacion.nombre AS Clasificacion, dbo.producto_familia.nombre AS Familia, m.IdBodegaOrigen, m.IdBodegaDestino, bodega_1.codigo AS Codigo_Bodega_Destino,
                          bodega_1.nombre AS Nombre_Bodega_Destino, m.IdMovimiento, dbo.bodega.codigo AS Codigo_Bodega_Origen, dbo.bodega.nombre AS Nombre_Bodega_Origen, dbo.Nombre_Area(u1.IdArea, m.IdBodegaOrigen)
                          AS NombreArea, pp.factor, enc.ticket AS IdTicketTMS, ISNULL(o.nombres,'') + ' ' +  ISNULL(o.apellidos,'') Operador,
-						  m.IdUbicacionDestino, m.IdUbicacionOrigen, pr.IdPropietario
+						  m.IdUbicacionDestino, m.IdUbicacionOrigen, m.IdEstadoDestino, m.IdTransaccion, pr.IdPropietario
 FROM            dbo.trans_movimientos AS m LEFT OUTER JOIN
                          dbo.propietario_bodega AS prb ON m.IdPropietarioBodega = prb.IdPropietarioBodega INNER JOIN
                          dbo.propietarios AS pr ON prb.IdPropietario = pr.IdPropietario LEFT OUTER JOIN
