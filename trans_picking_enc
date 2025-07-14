@@ -1,3 +1,7 @@
+--#EJC20250714 Se agregó el campo observacion en el picking
+alter table trans_picking_Enc add observacion nvarchar(3000) null 
+GO
+
 --20250422- IdTipoPicking - Cumbre
 ALTER TABLE trans_picking_enc add IdTipoPicking int
 
