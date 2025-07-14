@@ -1,6 +1,7 @@
 CREATE TABLE [dbo].[cliente_lotes](
 	[IdClienteLote] [int] NOT NULL,
 	[IdCliente] [int] NOT NULL,
+        [IdProducto] [int] NOT NULL,
 	[Lote] [nvarchar](50) NULL,
 	[IdProductoEstado] [int] NULL,
 	[user_agr] [nvarchar](25) NULL,
