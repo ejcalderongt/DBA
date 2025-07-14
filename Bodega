@@ -1,3 +1,6 @@
+--#AT20250714 Campo nuevo para incluir o no la licencia en la verificación no consolidada
+ALTER TABLE bodega ADD agrupar_sin_lic_veri_no_cons BIT NOT NULL DEFAULT 0;
+
 --#EJC20250519:
 alter table bodega add control_talla_color bit not null default 0
 
