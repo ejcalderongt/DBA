@@ -1,3 +1,5 @@
+--#CKFK20250714 Agregamos los campos trans_pe_enc.RoadDirEntrega,propietarios.IdPropietario, 
+--trans_pe_enc.fec_mod, trans_pe_enc.no_despacho as Ult_Despacho
 ALTER VIEW [dbo].[VW_Pedidos_List]
 AS
 SELECT dbo.trans_pe_enc.IdPedidoEnc AS Correlativo, dbo.trans_pe_enc.IdBodega, dbo.trans_pe_enc.no_documento, dbo.trans_pe_enc.referencia, dbo.trans_pe_enc.Referencia_Documento_Ingreso_Bodega_Destino AS Referencia2, 
