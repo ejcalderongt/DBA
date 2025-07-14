@@ -1,3 +1,7 @@
+--#CKFK20250714 Se agregó el campo nuevo_stock
+alter table trans_inv_ciclico add nuevo_stock float not null default 0
+GO
+
 --#CKFK20250428 Agregué el campo fec_mod 
 alter table Trans_inv_ciclico 
 add regularizar bit not null default 1
