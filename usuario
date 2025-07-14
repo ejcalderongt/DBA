@@ -1,0 +1,3 @@
+alter table usuario 
+add usuario_sap_b1 nvarchar(50) null, 
+    clave_sap_b1 nvarchar(50) null
