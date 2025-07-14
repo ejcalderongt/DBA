@@ -1,3 +1,14 @@
+--#CKFK20250714 Por query comparativo en el packing
+CREATE NONCLUSTERED INDEX NCL_CKFK_20250714_PickingUbic
+ON [dbo].[trans_picking_ubic] ([dañado_verificacion],[dañado_picking],[IdBodega],[IdPedidoEnc],[no_encontrado],[cantidad_verificada])
+INCLUDE ([IdProductoBodega],[cantidad_despachada])
+GO
+
+CREATE NONCLUSTERED INDEX NCL_CKFK_20250714_Packing
+ON [dbo].[trans_packing_enc] ([iddespachoenc],[IdPedidoEnc])
+INCLUDE ([idproductobodega],[cantidad_bultos_packing])
+GO
+
 --#CKFK20250301 Indices varios
 
 CREATE NONCLUSTERED INDEX NCI_trans_pe_det_CKFK250309
