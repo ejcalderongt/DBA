@@ -1,3 +1,6 @@
+--#CKFK20250415 Agregué el campo genera_guia_remision
+ALTER TABLE trans_pe_tipo ADD genera_guia_remision bit NOT NULL default 0
+
 --#CKFK20250415 Agregué los campos mover_producto_zona_muelle y  escanear_muelle_picking
 ALTER TABLE trans_pe_tipo 
 ADD mover_producto_zona_muelle bit not null DEFAULT 0,
