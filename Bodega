@@ -1,3 +1,6 @@
+--#AT20250722 Campo nuevo para indicar si la cantidad a reemplazar es o no múltiplo del factor de la presentación del producto.
+alter table bodega add advertir_mpq_umbas bit not null default 0
+
 --#AT20250714 Campo nuevo para incluir o no la licencia en la verificación no consolidada
 ALTER TABLE bodega ADD agrupar_sin_lic_veri_no_cons BIT NOT NULL DEFAULT 0;
 
