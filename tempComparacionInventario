@@ -1,3 +1,20 @@
+--#CKFK20250723 Agregamos estos campos nuevos
+ALTER TABLE tempcomparacioninventario
+ADD
+    IdUbicacion INT NOT NULL DEFAULT 0,
+    IdUbicacionDestino INT NOT NULL DEFAULT 0,
+    Fec_Mod DATETIME NOT NULL DEFAULT ('19000101'),
+    IdInvciclico INT NOT NULL DEFAULT 0,
+    FechaVenceStock DATE NULL,
+    IdProductoEstado INT NOT NULL DEFAULT 0,
+    IdProductoEst_nuevo INT NOT NULL DEFAULT 0,
+    IdPresentacion INT NOT NULL DEFAULT 0,
+    Cantidad_Reservada_UmBas FLOAT NOT NULL DEFAULT 0,
+    TieneReservaYConteoInsuficiente BIT NOT NULL DEFAULT 0,
+    Observacion NVARCHAR(500) NULL;
+GO	
+
+
 ALTER TABLE tempcomparacioninventario ADD licencia NVARCHAR(50)
 alter table tempComparacionInventario add EstadoOrigen NVARCHAR(50)
 alter table tempComparacionInventario add EstadoDestino NVARCHAR(50)
