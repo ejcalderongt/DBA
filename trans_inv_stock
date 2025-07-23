@@ -1,0 +1,2 @@
+--#EJC20250722 Agregué el campo cantidad_reservanda_umbas
+alter table trans_inv_stock  add cantidad_reservada_umbas float default 0
