@@ -1,3 +1,39 @@
+--#EJC20250724: Mostrar pedidos asociados:
+
+ALTER VIEW [dbo].[VW_Despacho]
+AS
+SELECT 
+    enc.IdDespachoEnc AS Código, 
+    b.nombre AS Bodega, 
+    pr.nombre_comercial AS Propietario, 
+    ISNULL(p.nombres, '') + ' ' + ISNULL(p.apellidos, '') AS Piloto, 
+    ISNULL(v.marca, '') + ' - ' + ISNULL(v.modelo, '') + ' - ' + ISNULL(v.tipo, '') + ' - ' + ISNULL(v.placa, '') AS Vehiculo, 
+    r.NOMBRE AS Ruta, 
+    enc.activo, 
+    enc.fecha, 
+    enc.IdBodega, 
+    enc.No_Pase,
+
+    -- Pedidos únicos por despacho (sin duplicados)
+    (
+        SELECT STRING_AGG(CAST(IdPedidoEnc AS NVARCHAR(MAX)), ', ')
+        FROM (
+            SELECT DISTINCT dd.IdPedidoEnc
+            FROM trans_despacho_det dd
+            WHERE dd.IdDespachoEnc = enc.IdDespachoEnc
+        ) AS sub
+    ) AS Pedidos
+
+FROM dbo.trans_despacho_enc AS enc 
+LEFT JOIN dbo.empresa_transporte_pilotos AS p ON enc.IdPiloto = p.IdPiloto 
+LEFT JOIN dbo.empresa_transporte_vehiculos AS v ON enc.IdVehiculo = v.IdVehiculo 
+LEFT JOIN dbo.road_ruta AS r ON enc.IdRuta = r.IdRuta 
+INNER JOIN dbo.bodega AS b ON enc.IdBodega = b.IdBodega 
+INNER JOIN dbo.propietario_bodega AS pb ON enc.IdPropietarioBodega = pb.IdPropietarioBodega 
+INNER JOIN dbo.propietarios AS pr ON pb.IdPropietario = pr.IdPropietario
+
+
+
 --#CKFK20250301 Agregamos los campos No_Documento_Externo y No_Pase
 ALTER VIEW [dbo].[VW_Despacho]
 AS
