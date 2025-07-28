@@ -1,3 +1,7 @@
+--#CKFK20250727 Se agregó el campo cantidad_reservada_umbas
+ALTER TABLE trans_inv_ciclico ADD cantidad_reservada_umbas float default 0
+GO
+
 --#CKFK20250714 Se agregó el campo nuevo_stock
 alter table trans_inv_ciclico add nuevo_stock float not null default 0
 GO
