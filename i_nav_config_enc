@@ -1,6 +1,6 @@
 --#CKFK20250714 Se agregaron los campos bodega_prorrateo, bodega_prorrateo
 ALTER TABLE i_nav_config_enc ADD bodega_prorrateo nvarchar(50) NULL
-ALTER TABLE i_nav_config_enc ADD bodega_prorrateo nvarchar(50) NULL
+ALTER TABLE i_nav_config_enc ADD bodega_prorrateo1 nvarchar(50) NULL
 GO
 
 --#CKFK20250116 Agregamos este código para en la interface solo validar por el código y no por la barra
