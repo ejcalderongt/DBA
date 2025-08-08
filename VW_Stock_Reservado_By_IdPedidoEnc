@@ -1,3 +1,34 @@
+/****** Object:  View [dbo].[VW_Stock_Reservado_By_IdPedidoEnc] Agregué talla-color   Script Date: 8/08/2025 09:06:38 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER VIEW [dbo].[VW_Stock_Reservado_By_IdPedidoEnc]
+AS
+SELECT     dbo.stock_res.IdPedido, dbo.stock_res.IdPedidoDet, dbo.stock_res.IdStockRes, dbo.producto.codigo, dbo.producto.nombre AS Producto, dbo.producto_estado.nombre AS Estado, dbo.stock_res.lote, dbo.stock_res.fecha_vence, SUM(dbo.stock_res.cantidad) AS Cantidad, 
+                  (CASE WHEN stock_res.IdPresentacion > 0 THEN SUM(stock_res.cantidad) / producto_presentacion.factor ELSE 0 END) AS Cantidad_Presentacion, SUM(dbo.stock_res.peso) AS Peso, dbo.stock_res.IdUbicacion, dbo.Nombre_Completo_Ubicacion(dbo.stock_res.IdUbicacion, 
+                  dbo.stock_res.IdBodega) AS Nombre_Completo, dbo.unidad_medida.Nombre AS UMBas, dbo.producto_presentacion.nombre AS Presentacion, dbo.stock_res.lic_plate, dbo.stock_res.IdStock, dbo.stock_res.host, dbo.trans_pe_det.no_linea, dbo.bodega_ubicacion.indice_x AS Columna, 
+                  dbo.bodega_ubicacion.nivel, dbo.bodega_tramo.descripcion AS Tramo, dbo.bodega_tramo.descripcion + ' -C' + CONVERT(NVARCHAR(50), dbo.bodega_ubicacion.indice_x) + ' -N' + CONVERT(NVARCHAR(50), dbo.bodega_ubicacion.nivel) AS Estructura, dbo.stock_res.IdProductoTallaColor, 
+                  dbo.stock_res.talla, dbo.stock_res.color
+FROM        dbo.stock_res INNER JOIN
+                  dbo.trans_pe_det ON dbo.stock_res.IdPedidoDet = dbo.trans_pe_det.IdPedidoDet AND dbo.stock_res.IdPedido = dbo.trans_pe_det.IdPedidoEnc INNER JOIN
+                  dbo.producto_bodega ON dbo.producto_bodega.IdProductoBodega = dbo.trans_pe_det.IdProductoBodega INNER JOIN
+                  dbo.producto ON dbo.producto_bodega.IdProducto = dbo.producto.IdProducto LEFT OUTER JOIN
+                  dbo.producto_presentacion ON dbo.stock_res.IdPresentacion = dbo.producto_presentacion.IdPresentacion INNER JOIN
+                  dbo.unidad_medida ON dbo.stock_res.IdUnidadMedida = dbo.unidad_medida.IdUnidadMedida INNER JOIN
+                  dbo.producto_estado ON dbo.producto_estado.IdEstado = dbo.stock_res.IdProductoEstado INNER JOIN
+                  dbo.bodega_ubicacion ON dbo.stock_res.IdUbicacion = dbo.bodega_ubicacion.IdUbicacion AND dbo.stock_res.IdBodega = dbo.bodega_ubicacion.IdBodega INNER JOIN
+                  dbo.bodega_tramo ON dbo.bodega_ubicacion.IdTramo = dbo.bodega_tramo.IdTramo AND dbo.bodega_ubicacion.IdBodega = dbo.bodega_tramo.IdBodega
+GROUP BY dbo.stock_res.IdStockRes, dbo.producto.codigo, dbo.stock_res.lote, dbo.stock_res.fecha_vence, dbo.stock_res.IdUbicacion, dbo.producto.nombre, dbo.producto_presentacion.nombre, dbo.unidad_medida.Nombre, dbo.stock_res.lic_plate, dbo.producto_estado.nombre, 
+                  dbo.producto_presentacion.factor, dbo.stock_res.IdPresentacion, dbo.stock_res.IdPedido, dbo.stock_res.IdBodega, dbo.stock_res.IdPedidoDet, dbo.stock_res.IdStock, dbo.stock_res.host, dbo.trans_pe_det.no_linea, dbo.bodega_ubicacion.indice_x, dbo.bodega_ubicacion.nivel, 
+                  dbo.bodega_tramo.descripcion, dbo.stock_res.IdProductoTallaColor, dbo.stock_res.talla, dbo.stock_res.color
+GO
+
+
+
+
 ALTER VIEW [dbo].[VW_Stock_Reservado_By_IdPedidoEnc] AS 
 
 SELECT stock_res.IdPedido, 
