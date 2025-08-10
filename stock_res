@@ -1,3 +1,10 @@
+--#EJC20250808 Agregó estos campos talla, color, IdProductoTallaColor
+ALTER TABLE stock_res 
+ADD talla nvarchar(50) null,
+    color nvarchar(50) null,
+	  IdProductoTallaColor int null   
+GO	
+
 --#CKFK 20210303
 ALTER TABLE stock_res ADD pallet_no_estandar BIT NULL
 
