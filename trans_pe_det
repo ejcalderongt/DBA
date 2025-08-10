@@ -1,3 +1,10 @@
+--#EJC20250808 Agregó los campos IdProductoTallaColor, Talla y Color
+ALTER TABLE trans_pe_det 
+ADD IdProductoTallaColor int null.
+    talla nvarchar(50) null,
+    color nvarchar(50) null
+GO
+
 --#CKFK20240122 Agregamos contraint a la unidad de medida básica
 ALTER TABLE [dbo].[trans_pe_det]  WITH NOCHECK ADD  CONSTRAINT [FK_trans_pedido_det_unidad_medida] FOREIGN KEY([IdUnidadMedidaBasica])
 REFERENCES [dbo].[unidad_medida] ([IdUnidadMedida])
