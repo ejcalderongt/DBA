@@ -1,1 +1,2 @@
 alter table estructura_tramo add orden_descendente bit null default 0
+alter table estructura_tramo add IdBodega int null default 0
