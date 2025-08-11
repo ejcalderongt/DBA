@@ -1,3 +1,9 @@
+--#EJC20250811: Los campos talla y color
+alter table i_nav_transacciones_out 
+add Talla nvarchar(50),
+    Color nvarchar(50)
+GO	
+
 --#EJC20250528: TallaColor
 alter table i_nav_transacciones_out add IdProductoTallaColor int null
 
