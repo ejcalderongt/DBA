@@ -1,0 +1,3 @@
+alter table trans_despacho_det add IdProductoTallaColor int
+alter table trans_despacho_det add Talla nvarchar(50)
+alter table trans_despacho_det add Color nvarchar(50)
