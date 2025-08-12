@@ -1,3 +1,7 @@
+--#EJC20250812 Talla - Color - Mampa
+alter table trans_movimientos add Talla nvarchar(50)
+alter table trans_movimientos add Color nvarchar(50)
+
 --#EJC20250617 Talla - Color - Mampa
 ALTER TABLE trans_movimientos ADD IdProductoTallaColor int default 0
 
