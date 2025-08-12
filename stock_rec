@@ -1,3 +1,8 @@
+ALTER TABLE stock_rec 
+ADD talla nvarchar(50),
+    color nvarchar(50)
+GO
+
 ALTER TABLE [dbo].[stock_rec]  WITH CHECK ADD  CONSTRAINT [FK_stock_rec_bodega_ubicacion] FOREIGN KEY([IdUbicacion], [IdBodega])
 REFERENCES [dbo].[bodega_ubicacion] ([IdUbicacion], [IdBodega])
 GO
