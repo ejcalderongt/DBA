@@ -1,3 +1,6 @@
+--#GT12082025: control para propietarios con exportacion hacia portal web
+alter table propietarios add controlux bit not null default 0
+
 --#GT24042024 campo para identificar a los consolidadores en bodega multipropietario
 alter table propietarios add es_consolidador bit default null
 
