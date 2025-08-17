@@ -1,3 +1,9 @@
+--#CKFK20250815 Agregamos estos campos nuevos por interface de MAMPA
+ALTER TABLE trans_oc_enc
+ADD usr_documento NVARCHAR(100) NULL,
+    comentarios NVARCHAR(2000) NULL
+GO
+
 alter table trans_oc_enc add IdCampaña int
 alter table trans_oc_enc add no_ticket_tms int
 alter table trans_oc_enc add IdNoDocumentoRef int
