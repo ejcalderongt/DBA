@@ -1,1 +1,9 @@
+--#CKFK20250815 Agregué campos nuevo para mapear documentos del ERP
+ALTER TABLE trans_re_oc
+ADD no_erp_docentry_entrega NVARCHAR(50) NULL,
+    no_erp_docnum_entrega NVARCHAR(50) NULL,
+	  no_erp_docentry_faltante NVARCHAR(50) NULL,
+    no_erp_docnum_faltante NVARCHAR(50) NULL
+GO
+
 alter table trans_re_oc alter column no_docto nvarchar(100)
