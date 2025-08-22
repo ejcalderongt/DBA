@@ -1,5 +1,4 @@
---#GT22082025: se remueve campo duplicado en el query: no_erp_docentry_entrega 
-
+--#GT22082025: se remueve campo duplicado en el query: no_erp_docentry_entrega y se agrega el dbo.trans_re_oc.no_erp_docnum_entrega
 ALTER VIEW [dbo].[VW_Recepcion]
 AS
 SELECT     dbo.trans_re_enc.IdRecepcionEnc AS Código, dbo.propietarios.nombre_comercial AS Propietario, dbo.proveedor.nombre AS Proveedor, 
@@ -7,7 +6,8 @@ SELECT     dbo.trans_re_enc.IdRecepcionEnc AS Código, dbo.propietarios.nombre_c
            + ' ' + CONVERT(NVARCHAR(50), dbo.trans_oc_enc.Referencia) AS Referencia_DI, dbo.trans_re_enc.NoGuia AS No_Contenedor, 
            dbo.trans_re_enc.fecha_recepcion AS Fecha, dbo.trans_re_enc.estado, dbo.trans_re_tr.TipoTrans, dbo.trans_re_tr.Descripcion, 
            dbo.bodega_muelles.nombre AS Muelle, dbo.trans_re_enc.activo, dbo.usuario.nombres AS Usuario_Agrego, dbo.trans_re_enc.fec_agr AS Fecha_Agrego,
-           dbo.trans_re_tr.IdTipoTransaccion, dbo.bodega.IdBodega, dbo.trans_re_oc.no_erp_docentry_entrega
+           dbo.trans_re_tr.IdTipoTransaccion, dbo.bodega.IdBodega, dbo.trans_re_oc.no_erp_docentry_entrega, 
+                  dbo.trans_re_oc.no_erp_docnum_entrega
 FROM        dbo.bodega_muelles RIGHT OUTER JOIN
                   dbo.trans_re_oc INNER JOIN
                   dbo.trans_oc_enc ON dbo.trans_re_oc.IdOrdenCompraEnc = dbo.trans_oc_enc.IdOrdenCompraEnc INNER JOIN
