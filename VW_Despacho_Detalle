@@ -1,0 +1,29 @@
+--#GT22082025: se agrega, talla, color y IdProductoTallaColor
+
+/****** Object:  View [dbo].[VW_Despacho_Detalle]    Script Date: 22/08/2025 14:09:29 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER VIEW [dbo].[VW_Despacho_Detalle]
+AS
+SELECT     ddet.IdDespachoEnc, ddet.IdDespachoDet, p.codigo, p.nombre AS Producto, pp.nombre AS Presentacion, pe.nombre AS Estado, um.Nombre AS UnidadMedida, 
+                      b.descripcion AS Ubicacion, u.activo, u.IdPickingUbic, ddet.user_agr, ddet.fec_agr, ddet.user_mod, ddet.fec_mod, ddet.Fecha, pdet.IdPedidoEnc, 
+                      pdet.IdPedidoDet,pdet.talla,pdet.color,pdet.IdProductoTallaColor
+FROM         dbo.trans_despacho_det AS ddet INNER JOIN
+                      dbo.trans_picking_ubic AS u ON ddet.IdPickingUbic = u.IdPickingUbic INNER JOIN
+                      dbo.trans_picking_det AS d ON u.IdPickingDet = d.IdPickingDet INNER JOIN
+                      dbo.bodega_ubicacion AS b ON u.IdUbicacion = b.IdUbicacion INNER JOIN
+                      dbo.trans_picking_enc AS enc ON d.IdPickingEnc = enc.IdPickingEnc INNER JOIN
+                      dbo.propietario_bodega AS prb ON enc.IdPropietarioBodega = prb.IdPropietarioBodega INNER JOIN
+                      dbo.propietarios AS pr ON prb.IdPropietario = pr.IdPropietario INNER JOIN
+                      dbo.trans_pe_det AS pdet ON d.IdPedidoDet = pdet.IdPedidoDet INNER JOIN
+                      dbo.trans_pe_enc AS penc ON pdet.IdPedidoEnc = penc.IdPedidoEnc INNER JOIN
+                      dbo.producto_bodega AS pb ON pdet.IdProductoBodega = pb.IdProductoBodega INNER JOIN
+                      dbo.producto AS p ON pb.IdProducto = p.IdProducto LEFT OUTER JOIN
+                      dbo.producto_presentacion AS pp ON pdet.IdPresentacion = pp.IdPresentacion AND p.IdProducto = pp.IdProducto LEFT OUTER JOIN
+                      dbo.producto_estado AS pe ON pdet.IdEstado = pe.IdEstado INNER JOIN
+                      dbo.unidad_medida AS um ON pdet.IdUnidadMedidaBasica = um.IdUnidadMedida
+GO
