@@ -1,3 +1,8 @@
+--#CKFK20250826 Agregue el campo para control de fecha de expiracion
+ALTER TABLE i_nav_producto 
+ADD ExpirationControl bit not null default 0
+GO
+
 Alter table i_nav_producto add Item_Category_Name nvarchar(100)
 Alter table i_nav_producto add Gen_Prod_Posting_Name nvarchar(100)
 Alter table i_nav_producto add Producto_Group_Name nvarchar(100)
