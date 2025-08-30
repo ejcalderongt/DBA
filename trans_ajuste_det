@@ -1,3 +1,11 @@
+--#GT29082025: campos para control talla y color
+Alter table trans_ajuste_det add IdProductoTallaColor integer default NULL
+
+ALTER TABLE trans_ajuste_det 
+ADD talla nvarchar(50) null,
+    color nvarchar(50) null
+
+
 --#CKFK20250122 Aumentamos el tamaño del campo observación
 ALTER TABLE trans_ajuste_det alter column observacion nvarchar(300) null
 GO
