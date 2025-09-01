@@ -1,3 +1,8 @@
+--#AT20250901 Se agregaron los campos codigo_sku y IdProductoTallaColor
+ALTER TABLE trans_oc_det_lote ADD codigo_sku NVARCHAR(50) NULL
+ALTER TABLE trans_oc_det_lote ADD IdProductoTallaColor INT NULL
+
+
 alter table trans_oc_det_lote add lic_plate nvarchar(50)
 
 --#EJC20210324: Para que NAV (BYB) Manden la ubicación en donde se debe registrar en el ERP.
