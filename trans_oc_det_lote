@@ -1,6 +1,8 @@
 --#AT20250901 Se agregaron los campos codigo_sku y IdProductoTallaColor
 ALTER TABLE trans_oc_det_lote ADD codigo_sku NVARCHAR(50) NULL
 ALTER TABLE trans_oc_det_lote ADD IdProductoTallaColor INT NULL
+ALTER TABLE trans_oc_det_lote ADD Talla NVARCHAR(50) NULL
+ALTER TABLE trans_oc_det_lote ADD Color NVARCHAR(50) NULL
 
 
 alter table trans_oc_det_lote add lic_plate nvarchar(50)
