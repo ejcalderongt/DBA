@@ -1,10 +1,23 @@
-CREATE TABLE talla ( 
-IdTalla INT PRIMARY KEY, 
-Nombre NVARCHAR(50) NOT NULL, 
-Descripcion NVARCHAR(100) NULL, 
-IdPropietario INT NOT NULL,  
-fec_agr DATETIME NOT NULL DEFAULT GETDATE(), 
-user_agr NVARCHAR(25) NOT NULL, 
-fec_mod DATETIME NOT NULL DEFAULT GETDATE(), 
-user_mod NVARCHAR(25) NULL, 
-activo bit default 0 );
+CREATE TABLE [dbo].[talla](
+	[IdTalla] [int] NOT NULL,
+	[nombre] [nvarchar](50) NOT NULL,
+	[descripcion] [nvarchar](100) NULL,
+	[IdPropietario] [int] NOT NULL,
+	[fec_agr] [date] NOT NULL,
+	[user_agr] [nvarchar](25) NOT NULL,
+	[fec_mod] [date] NULL,
+	[user_mod] [nvarchar](25) NULL,
+	[codigo] [nvarchar](50) NULL,
+	[activo] [bit] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[IdTalla] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[talla] ADD  DEFAULT (getdate()) FOR [fec_agr]
+GO
+
+ALTER TABLE [dbo].[talla] ADD  DEFAULT ((0)) FOR [activo]
+GO
