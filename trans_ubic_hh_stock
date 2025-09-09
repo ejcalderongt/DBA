@@ -1,0 +1,163 @@
+--#MECR09092025: Se agrego columas de IdProductoTallaColor, Talla y Color
+
+/****** Object:  Table [dbo].[trans_ubic_hh_stock]    Script Date: 9/09/2025 09:12:54 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[trans_ubic_hh_stock](
+	[IdStockTransUbicHHDet] [int] NOT NULL,
+	[IdTareaUbicacionEnc] [int] NOT NULL,
+	[IdTareaUbicacionDet] [int] NOT NULL,
+	[IdStock] [int] NOT NULL,
+	[IdPropietarioBodega] [int] NOT NULL,
+	[IdProductoBodega] [int] NOT NULL,
+	[IdProductoEstado] [int] NULL,
+	[IdPresentacion] [int] NULL,
+	[IdUnidadMedida] [int] NULL,
+	[IdUbicacion] [int] NULL,
+	[IdUbicacion_anterior] [int] NULL,
+	[IdRecepcionEnc] [int] NULL,
+	[IdRecepcionDet] [int] NULL,
+	[IdPedidoEnc] [int] NULL,
+	[IdPickingEnc] [int] NULL,
+	[IdDespachoEnc] [int] NULL,
+	[lote] [nvarchar](50) NULL,
+	[lic_plate] [varchar](max) NULL,
+	[serial] [nvarchar](50) NULL,
+	[cantidad] [float] NULL,
+	[fecha_ingreso] [datetime] NULL,
+	[fecha_vence] [datetime] NULL,
+	[uds_lic_plate] [varchar](max) NULL,
+	[no_bulto] [int] NULL,
+	[fecha_manufactura] [datetime] NULL,
+	[añada] [int] NULL,
+	[user_agr] [nvarchar](50) NOT NULL,
+	[fec_agr] [datetime] NOT NULL,
+	[user_mod] [nvarchar](50) NOT NULL,
+	[fec_mod] [datetime] NOT NULL,
+	[activo] [bit] NOT NULL,
+	[peso] [float] NULL,
+	[temperatura] [float] NULL,
+	[fecha_mov_hist] [datetime] NULL,
+	[atributo_variante_1] [nvarchar](25) NULL,
+	[IdProductoTallaColor] [int] NULL,
+	[Talla] [varchar](25) NULL,
+	[Color] [varchar](25) NULL,
+ CONSTRAINT [PK_trans_ubic_hh_stock] PRIMARY KEY CLUSTERED 
+(
+	[IdStockTransUbicHHDet] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock] ADD  CONSTRAINT [DF_trans_ubic_hh_stockcantidad]  DEFAULT ((0)) FOR [cantidad]
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock] ADD  CONSTRAINT [DF_trans_ubic_hh_stockfecha_ingreso]  DEFAULT (getdate()) FOR [fecha_ingreso]
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock] ADD  CONSTRAINT [DF_trans_ubic_hh_stockfecha_vence]  DEFAULT (getdate()) FOR [fecha_vence]
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock] ADD  CONSTRAINT [DF_trans_ubic_hh_stockpeso]  DEFAULT ((0)) FOR [peso]
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock] ADD  CONSTRAINT [DF_trans_ubic_hh_stocktemperatura]  DEFAULT ((0)) FOR [temperatura]
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock] ADD  CONSTRAINT [DF_fecha_mov_hist]  DEFAULT (getdate()) FOR [fecha_mov_hist]
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock]  WITH CHECK ADD  CONSTRAINT [FK_stock_ubic_hh_producto_bodega] FOREIGN KEY([IdProductoBodega])
+REFERENCES [dbo].[producto_bodega] ([IdProductoBodega])
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock] CHECK CONSTRAINT [FK_stock_ubic_hh_producto_bodega]
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock]  WITH CHECK ADD  CONSTRAINT [FK_stock_ubic_hh_producto_bodega_rec] FOREIGN KEY([IdProductoBodega])
+REFERENCES [dbo].[producto_bodega] ([IdProductoBodega])
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock] CHECK CONSTRAINT [FK_stock_ubic_hh_producto_bodega_rec]
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock]  WITH CHECK ADD  CONSTRAINT [FK_stock_ubic_hh_producto_estado] FOREIGN KEY([IdProductoEstado])
+REFERENCES [dbo].[producto_estado] ([IdEstado])
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock] CHECK CONSTRAINT [FK_stock_ubic_hh_producto_estado]
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock]  WITH CHECK ADD  CONSTRAINT [FK_stock_ubic_hh_producto_estado_rec] FOREIGN KEY([IdProductoEstado])
+REFERENCES [dbo].[producto_estado] ([IdEstado])
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock] CHECK CONSTRAINT [FK_stock_ubic_hh_producto_estado_rec]
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock]  WITH CHECK ADD  CONSTRAINT [FK_stock_ubic_hh_producto_presentacion] FOREIGN KEY([IdPresentacion])
+REFERENCES [dbo].[producto_presentacion] ([IdPresentacion])
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock] CHECK CONSTRAINT [FK_stock_ubic_hh_producto_presentacion]
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock]  WITH CHECK ADD  CONSTRAINT [FK_stock_ubic_hh_producto_presentacion_rec] FOREIGN KEY([IdPresentacion])
+REFERENCES [dbo].[producto_presentacion] ([IdPresentacion])
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock] CHECK CONSTRAINT [FK_stock_ubic_hh_producto_presentacion_rec]
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock]  WITH CHECK ADD  CONSTRAINT [FK_stock_ubic_hh_propietario_bodega] FOREIGN KEY([IdPropietarioBodega])
+REFERENCES [dbo].[propietario_bodega] ([IdPropietarioBodega])
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock] CHECK CONSTRAINT [FK_stock_ubic_hh_propietario_bodega]
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock]  WITH CHECK ADD  CONSTRAINT [FK_stock_ubic_hh_propietario_bodega_rec] FOREIGN KEY([IdPropietarioBodega])
+REFERENCES [dbo].[propietario_bodega] ([IdPropietarioBodega])
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock] CHECK CONSTRAINT [FK_stock_ubic_hh_propietario_bodega_rec]
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock]  WITH CHECK ADD  CONSTRAINT [FK_stock_ubic_hh_trans_pe_enc] FOREIGN KEY([IdPedidoEnc])
+REFERENCES [dbo].[trans_pe_enc] ([IdPedidoEnc])
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock] CHECK CONSTRAINT [FK_stock_ubic_hh_trans_pe_enc]
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock]  WITH CHECK ADD  CONSTRAINT [FK_stock_ubic_hh_trans_pe_enc_rec] FOREIGN KEY([IdPedidoEnc])
+REFERENCES [dbo].[trans_pe_enc] ([IdPedidoEnc])
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock] CHECK CONSTRAINT [FK_stock_ubic_hh_trans_pe_enc_rec]
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock]  WITH CHECK ADD  CONSTRAINT [FK_stock_ubic_hh_trans_re_det] FOREIGN KEY([IdRecepcionDet], [IdRecepcionEnc])
+REFERENCES [dbo].[trans_re_det] ([IdRecepcionDet], [IdRecepcionEnc])
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock] CHECK CONSTRAINT [FK_stock_ubic_hh_trans_re_det]
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock]  WITH CHECK ADD  CONSTRAINT [FK_stock_ubic_hh_unidad_medida] FOREIGN KEY([IdUnidadMedida])
+REFERENCES [dbo].[unidad_medida] ([IdUnidadMedida])
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock] CHECK CONSTRAINT [FK_stock_ubic_hh_unidad_medida]
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock]  WITH CHECK ADD  CONSTRAINT [FK_stock_ubic_hh_unidad_medida_rec] FOREIGN KEY([IdUnidadMedida])
+REFERENCES [dbo].[unidad_medida] ([IdUnidadMedida])
+GO
+
+ALTER TABLE [dbo].[trans_ubic_hh_stock] CHECK CONSTRAINT [FK_stock_ubic_hh_unidad_medida_rec]
+GO
