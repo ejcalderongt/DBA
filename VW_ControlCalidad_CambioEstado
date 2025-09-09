@@ -1,3 +1,50 @@
+--·MECR09092025: Se agrego campos de "IdProductoTallaColor", "Talla" y "Color"
+/****** Object:  View [dbo].[VW_ControlCalidad_CambioEstado]    Script Date: 9/09/2025 08:25:54 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER VIEW [dbo].[VW_ControlCalidad_CambioEstado]
+AS
+SELECT dbo.trans_ubic_hh_det.IdTareaUbicacionEnc, dbo.trans_ubic_hh_enc.fec_agr AS FechaTransacccion, dbo.producto.codigo AS Codigo, dbo.producto.nombre AS Producto, dbo.trans_ubic_hh_stock.lic_plate AS Licencia, 
+                  dbo.trans_ubic_hh_stock.lote AS Lote, dbo.trans_ubic_hh_stock.fecha_vence AS Vence, dbo.trans_ubic_hh_det.cantidad, dbo.Nombre_Completo_Ubicacion(dbo.trans_ubic_hh_det.IdUbicacionOrigen, dbo.trans_ubic_hh_det.IdBodega) 
+                  AS UbicaiconOrigen, dbo.Nombre_Completo_Ubicacion(dbo.trans_ubic_hh_det.IdUbicacionDestino, dbo.trans_ubic_hh_det.IdBodega) AS UbicaiconDestino, dbo.trans_ubic_hh_det.IdUbicacionDestino, 
+                  dbo.trans_ubic_hh_det.IdEstadoOrigen, dbo.trans_ubic_hh_det.IdEstadoDestino, CASE WHEN dbo.trans_ubic_hh_op.IdOperadorBodega IS NULL 
+                  THEN dbo.trans_ubic_hh_det.IdOperadorBodega ELSE dbo.trans_ubic_hh_op.IdOperadorBodega END AS IdOperadorBodega, dbo.trans_ubic_hh_det.activo, dbo.operador.nombres AS Operador, 
+                  producto_estado_1.nombre AS EstadoOrigen, dbo.producto_estado.nombre AS EstadoDestino, CONVERT(char(10), dbo.trans_ubic_hh_stock.fecha_ingreso, 120) AS fecha_ingreso, dbo.producto_presentacion.nombre AS Presentacion, 
+                  dbo.unidad_medida.Nombre AS UnidadMedida, dbo.producto.IdPropietario, dbo.propietarios.nombre_comercial AS Propietario, dbo.producto.IdProducto, dbo.producto_bodega.IdProductoBodega, dbo.producto.IdUnidadMedidaBasica, 
+                  dbo.trans_ubic_hh_det.IdUbicacionOrigen, dbo.producto_presentacion.IdPresentacion, dbo.trans_ubic_hh_det.IdBodega, dbo.usuario.nombres AS UsuarioBOF, dbo.trans_ubic_hh_stock.IdProductoTallaColor,
+                  dbo.trans_ubic_hh_stock.Talla, dbo.trans_ubic_hh_stock.Color
+FROM     dbo.producto_estado INNER JOIN
+                  dbo.producto_estado AS producto_estado_1 INNER JOIN
+                  dbo.trans_ubic_hh_det INNER JOIN
+                  dbo.trans_ubic_hh_enc ON dbo.trans_ubic_hh_det.IdTareaUbicacionEnc = dbo.trans_ubic_hh_enc.IdTareaUbicacionEnc INNER JOIN
+                  dbo.usuario ON dbo.trans_ubic_hh_enc.user_agr = dbo.usuario.IdUsuario ON producto_estado_1.IdEstado = dbo.trans_ubic_hh_det.IdEstadoOrigen ON 
+                  dbo.producto_estado.IdEstado = dbo.trans_ubic_hh_det.IdEstadoDestino LEFT OUTER JOIN
+                  dbo.unidad_medida INNER JOIN
+                  dbo.producto_bodega INNER JOIN
+                  dbo.trans_ubic_hh_stock ON dbo.producto_bodega.IdProductoBodega = dbo.trans_ubic_hh_stock.IdProductoBodega INNER JOIN
+                  dbo.producto ON dbo.producto_bodega.IdProducto = dbo.producto.IdProducto ON dbo.unidad_medida.IdUnidadMedida = dbo.trans_ubic_hh_stock.IdUnidadMedida AND 
+                  dbo.unidad_medida.IdUnidadMedida = dbo.trans_ubic_hh_stock.IdUnidadMedida INNER JOIN
+                  dbo.propietarios ON dbo.producto.IdPropietario = dbo.propietarios.IdPropietario ON dbo.trans_ubic_hh_det.IdTareaUbicacionEnc = dbo.trans_ubic_hh_stock.IdTareaUbicacionEnc AND 
+                  dbo.trans_ubic_hh_det.IdTareaUbicacionDet = dbo.trans_ubic_hh_stock.IdTareaUbicacionDet AND dbo.trans_ubic_hh_det.IdStock = dbo.trans_ubic_hh_stock.IdStock LEFT OUTER JOIN
+                  dbo.operador_bodega INNER JOIN
+                  dbo.trans_ubic_hh_op ON dbo.operador_bodega.IdOperadorBodega = dbo.trans_ubic_hh_op.IdOperadorBodega INNER JOIN
+                  dbo.operador ON dbo.operador_bodega.IdOperador = dbo.operador.IdOperador ON dbo.trans_ubic_hh_det.IdTareaUbicacionEnc = dbo.trans_ubic_hh_op.IdTareaUbicacionEnc AND 
+                  dbo.trans_ubic_hh_det.IdOperadorBodega = dbo.trans_ubic_hh_op.IdOperadorBodega LEFT OUTER JOIN
+                  dbo.producto_presentacion ON dbo.trans_ubic_hh_stock.IdPresentacion = dbo.producto_presentacion.IdPresentacion AND dbo.trans_ubic_hh_stock.IdPresentacion = dbo.producto_presentacion.IdPresentacion
+
+GROUP BY dbo.trans_ubic_hh_det.IdTareaUbicacionEnc, dbo.producto.nombre, dbo.trans_ubic_hh_det.IdUbicacionDestino, dbo.trans_ubic_hh_det.IdEstadoOrigen, dbo.trans_ubic_hh_det.IdEstadoDestino, 
+                  dbo.trans_ubic_hh_det.IdOperadorBodega, dbo.trans_ubic_hh_det.cantidad, dbo.operador.nombres, dbo.producto.codigo, producto_estado_1.nombre, dbo.trans_ubic_hh_stock.lote, CONVERT(char(10), 
+                  dbo.trans_ubic_hh_stock.fecha_ingreso, 120), dbo.producto_presentacion.nombre, dbo.unidad_medida.Nombre, dbo.trans_ubic_hh_stock.fecha_vence, dbo.producto.IdPropietario, dbo.propietarios.nombre_comercial, 
+                  dbo.producto.IdProducto, dbo.producto_bodega.IdProductoBodega, dbo.producto.IdUnidadMedidaBasica, dbo.trans_ubic_hh_det.IdUbicacionOrigen, dbo.producto_presentacion.IdPresentacion, dbo.trans_ubic_hh_det.activo, 
+                  dbo.trans_ubic_hh_stock.lic_plate, dbo.trans_ubic_hh_stock.fecha_vence, dbo.trans_ubic_hh_op.IdOperadorBodega, dbo.trans_ubic_hh_det.IdBodega, dbo.trans_ubic_hh_enc.fec_agr, dbo.usuario.nombres, dbo.producto_estado.nombre,
+                  dbo.trans_ubic_hh_stock.IdProductoTallaColor, dbo.trans_ubic_hh_stock.Talla, dbo.trans_ubic_hh_stock.Color
+GO
+
+
 ALTER VIEW [dbo].[VW_ControlCalidad_CambioEstado]
 AS
 SELECT dbo.trans_ubic_hh_det.IdTareaUbicacionEnc, dbo.trans_ubic_hh_enc.fec_agr AS FechaTransacccion, dbo.producto.codigo AS Codigo, dbo.producto.nombre AS Producto, dbo.trans_ubic_hh_stock.lic_plate AS Licencia, 
