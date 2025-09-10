@@ -1,3 +1,72 @@
+--#GT10092025: Se agrega Talla, Color y IdProductoTallaColor
+--Se mantiene la validación sobre una OC valida (estado distinto de 5)
+
+ALTER view [dbo].[VW_Stock_Jornada] as
+SELECT dbo.stock.IdBodega, dbo.stock.IdStock, dbo.stock.IdPropietarioBodega, dbo.stock.IdProductoBodega, dbo.stock.IdProductoEstado, dbo.stock.IdPresentacion, dbo.stock.IdUnidadMedida, dbo.stock.IdUbicacion, 
+                  dbo.stock.IdUbicacion_anterior, dbo.stock.IdRecepcionEnc, dbo.stock.IdRecepcionDet, dbo.stock.IdPedidoEnc, dbo.stock.IdPickingEnc, dbo.stock.IdDespachoEnc, dbo.stock.lote, dbo.stock.lic_plate, dbo.stock.serial, dbo.stock.cantidad, 
+                  dbo.stock.fecha_ingreso, dbo.stock.fecha_vence, dbo.stock.uds_lic_plate, dbo.stock.no_bulto, dbo.stock.fecha_manufactura, dbo.stock.añada, dbo.stock.user_agr, dbo.stock.fec_agr, dbo.stock.user_mod, dbo.stock.fec_mod, 
+                  dbo.stock.activo, dbo.stock.peso, dbo.stock.temperatura, dbo.stock.atributo_variante_1, dbo.stock.pallet_no_estandar, dbo.propietarios.nombre_comercial AS Propietario, dbo.proveedor.nombre AS Proveedor, 
+                  dbo.bodega.nombre AS Bodega, dbo.trans_oc_enc.IdOrdenCompraEnc, dbo.trans_oc_enc.No_Documento AS No_DocumentoOC, dbo.trans_oc_enc.Referencia AS No_DocumentoRec, dbo.trans_re_oc.no_docto AS ReferenciaOC, 
+                  dbo.trans_re_enc.fecha_recepcion, dbo.trans_re_tr.TipoTrans, dbo.unidad_medida.Nombre AS Nom_umBas, dbo.producto.codigo AS Codigo_Producto, dbo.producto.nombre AS Nombre_Producto, 
+                  dbo.producto.codigo_barra AS Codigo_Barra_Producto, CASE WHEN dbo.stock.IdPresentacion <> 0 THEN dbo.stock.cantidad / dbo.producto_presentacion.factor ELSE dbo.stock.cantidad END AS Existencia, 
+                  ISNULL(dbo.producto_presentacion.factor, 0) AS Factor, ISNULL(dbo.producto_presentacion.CamasPorTarima, 0) AS CamasPorTarima, ISNULL(dbo.producto_presentacion.CajasPorCama, 0) AS CajasPorCama, 
+                  dbo.producto_presentacion.nombre AS Presentacion_Producto, dbo.Nombre_Completo_Ubicacion(dbo.stock.IdUbicacion, dbo.stock.IdBodega) AS Ubicacion_Origen, dbo.trans_oc_pol.codigo_poliza AS No_Poliza, 
+                  dbo.trans_oc_det.valor_aduana, dbo.trans_oc_det.valor_fob, dbo.trans_oc_det.valor_iva, dbo.trans_oc_det.valor_dai, dbo.trans_oc_det.valor_seguro, dbo.trans_oc_det.valor_flete, dbo.trans_oc_det.peso_neto, 
+                  dbo.trans_oc_det.peso_bruto, dbo.trans_oc_pol.numero_orden, dbo.regimen_fiscal.codigo_regimen, dbo.regimen_fiscal.descripcion AS nombre_regimen, dbo.regimen_fiscal.dias_vencimiento AS dias_vencimiento_regimen, 
+                  dbo.tms_ticket.Fecha_Ingreso AS Fecha_Ingreso_Ticket_TMS, dbo.trans_re_enc.fec_agr AS Fecha_Agrego, dbo.producto_estado.nombre AS nom_estado_producto, dbo.trans_oc_enc.No_Ticket_TMS AS IdTicketTMS, 
+                  dbo.propietarios.IdPropietario, dbo.producto_clasificacion.IdClasificacion, dbo.producto_clasificacion.Nombre AS Clasificacion, iif(dbo.bodega.es_bodega_fiscal = 1, 'Fiscal', 'General') AS Regimen, ISNULL(dbo.stock_det.posiciones, 1) 
+                  AS Posiciones
+				  ,dbo.stock.IdProductoTallaColor,isnull (dbo.talla.codigo, null) Talla,isnull(dbo.color.Codigo, null) Color
+FROM     propietarios INNER JOIN
+                  propietario_bodega ON propietarios.IdPropietario = propietario_bodega.IdPropietario RIGHT OUTER JOIN
+                  tms_ticket RIGHT OUTER JOIN
+                  producto INNER JOIN
+                  unidad_medida INNER JOIN
+                  stock INNER JOIN
+                  bodega ON stock.IdBodega = bodega.IdBodega ON unidad_medida.IdUnidadMedida = stock.IdUnidadMedida AND unidad_medida.IdUnidadMedida = stock.IdUnidadMedida AND unidad_medida.IdUnidadMedida = stock.IdUnidadMedida AND
+                   unidad_medida.IdUnidadMedida = stock.IdUnidadMedida INNER JOIN
+                  producto_bodega ON stock.IdProductoBodega = producto_bodega.IdProductoBodega AND stock.IdProductoBodega = producto_bodega.IdProductoBodega AND stock.IdProductoBodega = producto_bodega.IdProductoBodega AND 
+                  stock.IdProductoBodega = producto_bodega.IdProductoBodega AND bodega.IdBodega = producto_bodega.IdBodega ON producto.IdProducto = producto_bodega.IdProducto INNER JOIN
+                  producto_estado ON stock.IdProductoEstado = producto_estado.IdEstado AND stock.IdProductoEstado = producto_estado.IdEstado AND stock.IdProductoEstado = producto_estado.IdEstado AND 
+                  stock.IdProductoEstado = producto_estado.IdEstado LEFT OUTER JOIN
+                  trans_re_tr RIGHT OUTER JOIN
+                  trans_re_enc ON trans_re_tr.IdTipoTransaccion = trans_re_enc.IdTipoTransaccion ON stock.IdRecepcionEnc = trans_re_enc.IdRecepcionEnc LEFT OUTER JOIN
+                  trans_oc_det INNER JOIN
+                  trans_oc_enc INNER JOIN
+                  trans_re_oc ON trans_oc_enc.IdOrdenCompraEnc = trans_re_oc.IdOrdenCompraEnc ON trans_oc_det.IdOrdenCompraEnc = trans_oc_enc.IdOrdenCompraEnc ON stock.IdProductoBodega = trans_oc_det.IdProductoBodega AND 
+                  trans_re_enc.IdRecepcionEnc = trans_re_oc.IdRecepcionEnc ON tms_ticket.IdTicket = trans_oc_enc.no_ticket_tms ON propietario_bodega.IdPropietarioBodega = stock.IdPropietarioBodega AND 
+                  propietario_bodega.IdPropietarioBodega = stock.IdPropietarioBodega AND propietario_bodega.IdPropietarioBodega = stock.IdPropietarioBodega AND 
+                  propietario_bodega.IdPropietarioBodega = stock.IdPropietarioBodega 
+				  LEFT OUTER JOIN
+                  producto_presentacion ON stock.IdPresentacion = producto_presentacion.IdPresentacion AND stock.IdPresentacion = producto_presentacion.IdPresentacion AND stock.IdPresentacion = producto_presentacion.IdPresentacion AND 
+                  stock.IdPresentacion = producto_presentacion.IdPresentacion LEFT OUTER JOIN
+                  regimen_fiscal INNER JOIN
+                  trans_oc_pol ON regimen_fiscal.IdRegimen = trans_oc_pol.IdRegimen ON trans_oc_enc.IdOrdenCompraEnc = trans_oc_pol.IdOrdenCompraEnc LEFT OUTER JOIN
+                  proveedor INNER JOIN
+                  proveedor_bodega ON proveedor.IdProveedor = proveedor_bodega.IdProveedor ON trans_oc_enc.IdProveedorBodega = proveedor_bodega.IdAsignacion LEFT OUTER JOIN
+                  producto_clasificacion ON producto.IdClasificacion = producto_clasificacion.IdClasificacion LEFT OUTER JOIN
+                  stock_det ON stock.IdStock = stock_det.IdStock 
+				  INNER JOIN trans_re_det on trans_re_enc.IdRecepcionEnc = trans_re_det.IdRecepcionEnc and stock.lic_plate = trans_re_det.lic_plate 
+				  and stock.IdRecepcionEnc = trans_re_det.IdRecepcionEnc 
+				  and trans_oc_det.IdOrdenCompraEnc = trans_re_det.IdOrdenCompraEnc and trans_oc_det.IdOrdenCompraDet = trans_re_det.IdOrdenCompraDet
+				  left outer join dbo.producto_talla_color on dbo.stock.IdProductoTallaColor = dbo.producto_talla_color.IdProductoTallaColor
+				  left outer join dbo.talla on dbo.producto_talla_color.IdTalla = dbo.talla.IdTalla
+				  left outer join dbo.Color on dbo.producto_talla_color.IdColor = dbo.Color.IdColor
+				  where trans_oc_enc.IdEstadoOC<>5
+GROUP BY stock.IdBodega, stock.IdStock, stock.IdPropietarioBodega, stock.IdProductoBodega, stock.IdProductoEstado, stock.IdPresentacion, stock.IdUnidadMedida, stock.IdUbicacion, stock.IdUbicacion_anterior, stock.IdRecepcionEnc, 
+                  stock.IdRecepcionDet, stock.IdPedidoEnc, stock.IdPickingEnc, stock.IdDespachoEnc, stock.lote, stock.lic_plate, stock.serial, stock.cantidad, stock.fecha_ingreso, stock.fecha_vence, stock.uds_lic_plate, stock.no_bulto, 
+                  stock.fecha_manufactura, stock.añada, stock.user_agr, stock.fec_agr, stock.user_mod, stock.fec_mod, stock.peso, stock.temperatura, stock.atributo_variante_1, propietarios.nombre_comercial, proveedor.nombre, bodega.nombre, 
+                  trans_oc_enc.IdOrdenCompraEnc, trans_oc_enc.No_Documento, trans_oc_enc.Referencia, trans_re_oc.no_docto, trans_re_enc.fecha_recepcion, trans_re_tr.TipoTrans, unidad_medida.Nombre, producto.codigo, producto.nombre, 
+                  producto.codigo_barra, ISNULL(producto_presentacion.factor, 0), ISNULL(producto_presentacion.CamasPorTarima, 0), ISNULL(producto_presentacion.CajasPorCama, 0), producto_presentacion.nombre, 
+                  dbo.Nombre_Completo_Ubicacion(stock.IdUbicacion, stock.IdBodega), trans_oc_pol.codigo_poliza, trans_oc_det.valor_aduana, trans_oc_det.valor_fob, trans_oc_det.valor_iva, trans_oc_det.valor_dai, trans_oc_det.valor_seguro, 
+                  trans_oc_det.valor_flete, trans_oc_det.peso_neto, trans_oc_det.peso_bruto, trans_oc_pol.numero_orden, regimen_fiscal.codigo_regimen, regimen_fiscal.descripcion, regimen_fiscal.dias_vencimiento, tms_ticket.Fecha_Ingreso, 
+                  trans_re_enc.fec_agr, producto_estado.nombre, stock.activo, stock.pallet_no_estandar, producto_presentacion.factor, trans_oc_enc.no_ticket_tms, propietarios.IdPropietario, producto_clasificacion.IdClasificacion, 
+                  producto_clasificacion.nombre, bodega.es_bodega_fiscal, stock_det.posiciones
+				  ,dbo.stock.IdProductoTallaColor,dbo.talla.Codigo,dbo.color.Codigo
+GO
+
+
+
 --#GT02052025: se valida que la OC sea valida y no anulada para generar historico.
 
 /****** Object:  View [dbo].[VW_Stock_Jornada]    Script Date: 02/05/2025 15:42:11 ******/
