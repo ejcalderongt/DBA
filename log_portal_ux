@@ -1,0 +1,25 @@
+--#GT12092025: para para gestion de sesiones en portal web (correctas y fallidas)
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[log_portal_ux](
+	[LogUxId] [int] NOT NULL,
+	[Idpropietario] [int] NULL,
+	[Usuario] [nvarchar](50) NULL,
+	[Email] [nvarchar](150) NULL,
+	[Fecha] [datetime2](7) NOT NULL,
+	[IPAddress] [nvarchar](45) NULL,
+	[UserAgent] [nvarchar](255) NULL,
+	[Acceso] [bit] NOT NULL,
+	[MensajeError] [nvarchar](255) NULL,
+	[UrlAcceso] [nvarchar](255) NULL,
+ CONSTRAINT [PK__log_ux_w__6E4898647A0BE6C7] PRIMARY KEY CLUSTERED 
+(
+	[LogUxId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[log_portal_ux] ADD  CONSTRAINT [DF__log_ux_wm__Fecha__1FF27C86]  DEFAULT (getdate()) FOR [Fecha]
+GO
