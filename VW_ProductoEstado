@@ -1,12 +1,14 @@
+--#CKFK20250909 Se agregó a la vista el campo reservar_en_umbas
+ALTER VIEW [dbo].[VW_ProductoEstado]
+AS
+SELECT p.nombre_comercial AS Propietario, e.IdEstado, e.IdPropietario, e.nombre, e.IdUbicacionDefecto, e.utilizable, e.activo, e.user_agr, e.fec_agr, e.user_mod, e.fec_mod, 
+       e.dañado, e.codigo_bodega_erp, e.sistema, e.dias_vencimiento_clasificacion,e.tolerancia_dias_vencimiento,e.reservar_en_umbas
+FROM         dbo.producto_estado AS e INNER JOIN
+                      dbo.propietarios AS p ON e.IdPropietario = p.IdPropietario
+GO
+
+
 /******#CKFK20231118 Agregué las columnas dias_vencimiento_clasificacion y tolerancia_dias_vencimiento*****/
-/****** Object:  View [dbo].[VW_ProductoEstado]    Script Date: 18/11/2023 15:40:20 ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
-
-
 ALTER VIEW [dbo].[VW_ProductoEstado]
 AS
 SELECT p.nombre_comercial AS Propietario, e.IdEstado, e.IdPropietario, e.nombre, e.IdUbicacionDefecto, e.utilizable, e.activo, e.user_agr, e.fec_agr, e.user_mod, e.fec_mod, 
