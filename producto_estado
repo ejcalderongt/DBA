@@ -1,3 +1,8 @@
+'#CKFK20250909 Campo nuevo para definir la unidad de medida a reservar
+ALTER TABLE producto_estado
+ADD reservar_en_umbas bit not null default 0
+GO
+
 '#CKFK20231118 Campos nuevos para agregar funcionalidad a los estados que manejen vencimiento
 ALTER TABLE producto_estado ADD dias_vencimiento_clasificacion int NOT NULL Default 0
 GO
