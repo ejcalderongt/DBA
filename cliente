@@ -1,3 +1,7 @@
+--#CKFK20250909 Agregamos la funcionalidad de poder definir el estado a reservar de un cliente
+ALTER TABLE cliente ADD IdProductoEstadoDefecto int null
+GO
+
 --#CKFK20250609 Agregamos la funcionalidad de que tenga su código de Empresa
 alter table cliente add Codigo_Empresa_ERP NVARCHAR(50) NULL
 
