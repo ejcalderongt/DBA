@@ -1,3 +1,7 @@
+--#GT17092025: campo para marcar linea de pedido con stock liberado.
+alter table trans_pe_det 
+	add stock_liberado bit default null
+
 --#EJC20250808 Agregó los campos IdProductoTallaColor, Talla y Color
 ALTER TABLE trans_pe_det 
 ADD IdProductoTallaColor int null.
