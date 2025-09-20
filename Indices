@@ -1,3 +1,14 @@
+--#EJC20250919 Se agregaron nuevo indices en la tabla stock
+CREATE NONCLUSTERED INDEX NCLI_Stock_Area_2_EJC20250919
+ON [dbo].[stock] ([IdBodega],[IdStock])
+INCLUDE ([IdProductoBodega],[IdUbicacion])
+
+ 
+CREATE NONCLUSTERED INDEX NCLI_Stock_Area_EJC20250919
+ON [dbo].[stock] ([IdBodega],[IdStock])
+INCLUDE ([IdProductoBodega],[IdUbicacion])
+
+
 --#CKFK20250714 Por query comparativo en el packing
 CREATE NONCLUSTERED INDEX NCL_CKFK_20250714_PickingUbic
 ON [dbo].[trans_picking_ubic] ([dañado_verificacion],[dañado_picking],[IdBodega],[IdPedidoEnc],[no_encontrado],[cantidad_verificada])
