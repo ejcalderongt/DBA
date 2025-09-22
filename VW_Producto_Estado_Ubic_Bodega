@@ -1,3 +1,24 @@
+ALTER VIEW [VW_Producto_Estado_Ubic_Bodega]
+AS
+SELECT producto_estado.IdEstado, producto_estado.IdPropietario, producto_estado.nombre, producto_estado.IdUbicacionDefecto, producto_estado.utilizable, producto_estado.activo,
+       producto_estado.user_agr, producto_estado.fec_agr, producto_estado.user_mod, producto_estado.fec_mod, producto_estado.dañado, producto_estado.codigo_bodega_erp,
+       producto_estado.sistema, producto_estado_ubic.IdUbicacionDefecto AS IdUbicacionBodegaDefecto, bodega.IdBodega, dbo.Nombre_Completo_Ubicacion(bodega_ubicacion.IdUbicacion,
+       bodega_ubicacion.IdBodega) AS NombreUbic, producto_estado.dias_vencimiento_clasificacion, 
+	   producto_estado.tolerancia_dias_vencimiento, producto_estado.reservar_en_umbas
+FROM bodega_ubicacion
+INNER JOIN producto_estado_ubic ON bodega_ubicacion.IdUbicacion = producto_estado_ubic.IdUbicacionDefecto AND bodega_ubicacion.IdBodega = producto_estado_ubic.IdBodega
+INNER JOIN bodega_tramo ON bodega_ubicacion.IdTramo = bodega_tramo.IdTramo AND bodega_ubicacion.IdBodega = bodega_tramo.IdBodega
+INNER JOIN bodega_sector ON bodega_tramo.IdSector = bodega_sector.IdSector AND bodega_tramo.IdBodega = bodega_sector.IdBodega
+INNER JOIN bodega_area ON bodega_sector.IdArea = bodega_area.IdArea AND bodega_sector.IdBodega = bodega_area.IdBodega
+INNER JOIN bodega ON bodega_area.IdBodega = bodega.IdBodega
+RIGHT OUTER JOIN producto_estado ON producto_estado_ubic.IdEstado = producto_estado.IdEstado
+GROUP BY producto_estado.IdEstado, producto_estado.IdPropietario, producto_estado.nombre, producto_estado.IdUbicacionDefecto, producto_estado.user_agr, producto_estado.fec_agr,
+         producto_estado.user_mod, producto_estado.fec_mod, producto_estado.codigo_bodega_erp, producto_estado_ubic.IdUbicacionDefecto, bodega.IdBodega,
+         bodega_ubicacion.IdUbicacion, bodega_ubicacion.IdBodega, producto_estado.utilizable, producto_estado.activo, 
+         producto_estado.dañado, producto_estado.sistema, producto_estado.dias_vencimiento_clasificacion,
+		 producto_estado.tolerancia_dias_vencimiento, producto_estado.reservar_en_umbas
+GO
+
 /****** Object: View [VW_Producto_Estado_Ubic_Bodega] Script Date: 12/5/2023 7:58:37 PM ******/
 SET ANSI_NULLS ON
 GO
