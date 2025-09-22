@@ -1,3 +1,4 @@
+--#CKFK20250922 Agregué campo reservar_en_umbas
 ALTER VIEW [VW_Producto_Estado_Ubic_Bodega]
 AS
 SELECT producto_estado.IdEstado, producto_estado.IdPropietario, producto_estado.nombre, producto_estado.IdUbicacionDefecto, producto_estado.utilizable, producto_estado.activo,
