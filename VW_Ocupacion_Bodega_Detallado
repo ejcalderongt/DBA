@@ -1,0 +1,14 @@
+CREATE VIEW [dbo].[VW_Ocupacion_Bodega_Detallado] 
+AS
+SELECT s.IdUbicacion, dbo.Nombre_Completo_Ubicacion(s.IdUbicacion, s.IdBodega) Ubicacion,
+s.codigo Código, s.nombre Nombre,s.lote Lote, s.fecha_vence Fecha, s.lic_plate, 
+CASE WHEN SUM(ISNULL(s.Cantidad_Presentacion, 0)) >0 THEN SUM(ISNULL(s.Cantidad_Presentacion, 0))
+ELSE SUM(ISNULL(s.CantidadSF, 0))END Cantidad,
+CASE WHEN SUM(ISNULL(s.Cantidad_Presentacion, 0)) >0 THEN s.Presentacion
+ELSE s.UnidadMedida END UM, s.IdBodega                                  
+FROM VW_Stock_Res s
+Group by 
+s.IdUbicacion,s.IdBodega, s.codigo, s.nombre,s.lote, s.fecha_vence, s.lic_plate, 
+s.Presentacion,s.UnidadMedida
+GO
+
