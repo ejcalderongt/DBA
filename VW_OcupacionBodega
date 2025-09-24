@@ -1,3 +1,24 @@
+--#CKFK20250923 Agregué a la vista el área 
+ALTER VIEW [dbo].[VW_OcupacionBodega]
+AS
+SELECT dbo.bodega_ubicacion.IdUbicacion, 
+       dbo.bodega_ubicacion.IdBodega, ISNULL(dbo.stock.IdStock, 0) AS IdStock,
+       dbo.Nombre_Completo_Ubicacion(bodega_ubicacion.IdUbicacion, bodega_ubicacion.idbodega) Ubicacion, 
+	   dbo.Nombre_Area(dbo.bodega_ubicacion.IdArea,dbo.bodega_ubicacion.IdBodega) Area
+FROM   dbo.stock INNER JOIN dbo.producto_bodega ON dbo.stock.IdProductoBodega = dbo.producto_bodega.IdProductoBodega AND
+	   dbo.stock.IdProductoBodega = dbo.producto_bodega.IdProductoBodega RIGHT OUTER JOIN 
+	   dbo.bodega INNER JOIN
+	   dbo.bodega_area ON dbo.bodega.IdBodega = dbo.bodega_area.IdBodega INNER JOIN
+	   dbo.bodega_sector ON dbo.bodega_area.IdArea = dbo.bodega_sector.IdArea AND 
+       dbo.bodega_area.IdBodega = dbo.bodega_sector.IdBodega INNER JOIN
+	   dbo.bodega_tramo ON dbo.bodega_sector.IdSector = dbo.bodega_tramo.IdSector AND 
+	   dbo.bodega_sector.IdBodega = dbo.bodega_tramo.IdBodega INNER JOIN
+	   dbo.bodega_ubicacion ON dbo.bodega_tramo.IdTramo = dbo.bodega_ubicacion.IdTramo AND 
+	   dbo.bodega_tramo.IdSector = dbo.bodega_ubicacion.IdSector AND dbo.bodega_tramo.IdArea = dbo.bodega_ubicacion.IdArea AND 
+	   dbo.bodega_tramo.IdBodega = dbo.bodega_ubicacion.IdBodega ON dbo.stock.IdBodega = dbo.bodega_ubicacion.IdBodega AND 
+	   dbo.stock.IdUbicacion = dbo.bodega_ubicacion.IdUbicacion AND dbo.producto_bodega.IdBodega = dbo.bodega.IdBodega
+GO
+
 --#CKFK20250201 Corrección a la ista, 
 ALTER VIEW [dbo].[VW_OcupacionBodega]
 AS
