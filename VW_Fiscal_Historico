@@ -1,3 +1,33 @@
+--#GT25092025: se valida que si existe duca, este activa, y asociada a la bodega correcta.
+
+
+
+ALTER VIEW [dbo].[VW_Fiscal_historico]
+AS
+SELECT sj.IdOrdenCompraEnc, sj.IdRecepcionEnc, sj.IdBodega, CASE WHEN bd.es_bodega_fiscal = 1 THEN 'Fiscal' WHEN bd.es_bodega_fiscal = 0 THEN 'General' END AS regimen, sj.no_poliza AS codigo_poliza, bd.es_bodega_fiscal, 
+                  pr.IdPropietario, sj.Fecha, sj.IdPropietarioBodega, sj.Propietario AS cliente, sj.Bodega AS nombre_bodega, sj.fecha_ingreso AS fecha_inventario, sj.Fecha_Recepcion, oc_pol.numero_orden, sj.nombre_producto AS producto, 
+                  sj.lic_plate AS licencia, sj.codigo_barra_producto AS codigo_barra, dbo.Nombre_Completo_Ubicacion(sj.IdUbicacion, sj.IdBodega) AS ubicacion, sj.IdUbicacion, re_det.costo, sj.cantidad, 
+                  sj.valor_aduana / oc_det.cantidad_recibida * sj.cantidad AS cif, sj.valor_dai / oc_det.cantidad_recibida * sj.cantidad AS dai, sj.valor_iva / oc_det.cantidad_recibida * sj.cantidad AS iva, 
+                  (sj.valor_aduana / oc_det.cantidad_recibida * sj.cantidad + sj.valor_dai / oc_det.cantidad_recibida * sj.cantidad) + sj.valor_iva / oc_det.cantidad_recibida * sj.cantidad AS TOTAL_VALOR, dbo.Nombre_Area(bu.IdArea, sj.IdBodega) AS area, 
+                  sj.Clasificacion, oc_enc.Referencia, embarcador.Nombre AS shipper, dbo.trans_oc_ti.Nombre AS ingreso, dbo.trans_oc_ti.es_devolucion, oc_pol.dua
+FROM     dbo.stock_jornada AS sj INNER JOIN
+                  dbo.bodega AS bd ON sj.IdBodega = bd.IdBodega INNER JOIN
+                  dbo.propietario_bodega AS pb ON sj.IdPropietarioBodega = pb.IdPropietarioBodega INNER JOIN
+                  dbo.propietarios AS pr ON pb.IdPropietario = pr.IdPropietario INNER JOIN
+                  dbo.bodega_ubicacion AS bu ON bu.IdBodega = sj.IdBodega AND sj.IdUbicacion = bu.IdUbicacion INNER JOIN
+                  dbo.trans_re_det AS re_det ON sj.IdRecepcionEnc = re_det.IdRecepcionEnc AND sj.IdRecepcionDet = re_det.IdRecepcionDet INNER JOIN
+                  dbo.trans_re_oc AS re_oc ON re_det.IdRecepcionEnc = re_oc.IdRecepcionEnc INNER JOIN
+                  dbo.trans_oc_enc AS oc_enc ON re_oc.IdOrdenCompraEnc = oc_enc.IdOrdenCompraEnc INNER JOIN
+                  dbo.trans_oc_det AS oc_det ON re_det.IdOrdenCompraEnc = oc_det.IdOrdenCompraEnc AND re_det.IdOrdenCompraDet = oc_det.IdOrdenCompraDet LEFT OUTER JOIN
+                  dbo.trans_oc_pol AS oc_pol ON oc_enc.IdOrdenCompraEnc = oc_pol.IdOrdenCompraEnc AND oc_pol.activo=1 and oc_enc.IdBodega=oc_pol.IdBodega LEFT OUTER JOIN
+                  dbo.trans_oc_embarcador AS embarcador ON oc_det.IdEmbarcador = embarcador.IdEmbarcador INNER JOIN
+                  dbo.trans_oc_ti ON oc_enc.IdTipoIngresoOC = dbo.trans_oc_ti.IdTipoIngresoOC
+				  
+GO
+
+
+
+
 /---------------#GT13112023 se agrega campo DUA  al reporte -------------------------------------/
 
 /****** Object:  View [dbo].[VW_Fiscal_historico]    Script Date: 13/11/2023 09:23:57 ******/
