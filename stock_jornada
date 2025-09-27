@@ -1,3 +1,10 @@
+--#CKFK20250926 Agregué el script con los campos talla, color y IdProductoTallaColor
+ALTER TABLE stock_jornada 
+ADD talla nvarchar(50) null,
+    color nvarchar(50) null,
+	IdProductoTallaColor int null    
+GO
+
 CREATE TABLE [dbo].[stock_jornada](
 	[IdStockJornada] [int] NOT NULL,
 	[IdJornadaSistema] [int] NULL,
