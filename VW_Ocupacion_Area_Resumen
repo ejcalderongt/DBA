@@ -1,0 +1,40 @@
+--#GT29092025: indicador de ocupación actualizado por bodega fisica (caso cealsa)
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER   VIEW [dbo].[VW_Ocupacion_Area_Resumen]
+AS
+WITH base AS (
+    SELECT
+        bu.IdBodega,
+        ISNULL(ba.Descripcion,'ND') AS Area,
+        CASE WHEN b.es_bodega_fiscal = 1 THEN 'FISCAL' ELSE 'GENERAL' END AS Tipo,
+        CASE WHEN ISNULL(s.IdStock,0) = 0 THEN 'Vacías' ELSE 'Ocupadas' END AS Estado,
+        bu.IdUbicacion
+    FROM dbo.bodega b
+    JOIN dbo.bodega_area   ba ON ba.IdBodega=b.IdBodega
+    JOIN dbo.bodega_sector bs ON bs.IdBodega=ba.IdBodega AND bs.IdArea=ba.IdArea
+    JOIN dbo.bodega_tramo  bt ON bt.IdBodega=bs.IdBodega AND bt.IdSector=bs.IdSector
+    JOIN dbo.bodega_ubicacion bu ON bu.IdBodega=bt.IdBodega AND bu.IdArea=bt.IdArea
+                                 AND bu.IdSector=bt.IdSector AND bu.IdTramo=bt.IdTramo
+    LEFT JOIN dbo.stock s ON s.IdBodega=bu.IdBodega AND s.IdUbicacion=bu.IdUbicacion
+)
+, agg AS (
+    SELECT
+        IdBodega, Area, Tipo, Estado,
+        COUNT(DISTINCT IdUbicacion) AS Cantidad
+    FROM base
+    GROUP BY IdBodega, Area, Tipo, Estado
+)
+SELECT
+    a.IdBodega, a.Area, a.Tipo, a.Estado, a.Cantidad,
+    SUM(a.Cantidad) OVER (PARTITION BY a.IdBodega, a.Area, a.Tipo)       AS TotalAreaTipo,
+    CAST(a.Cantidad AS decimal(18,6)) /
+    NULLIF(SUM(a.Cantidad) OVER (PARTITION BY a.IdBodega, a.Area, a.Tipo),0) AS PorcentajeEnAreaTipo
+FROM agg a;
+
+GO
