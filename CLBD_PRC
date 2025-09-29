@@ -1,8 +1,96 @@
+--#CKFK20250929 Agregué nuevos delete
+ALTER PROCEDURE [dbo].[CLBD_PRC]
+AS
+BEGIN
+DELETE FROM transacciones_log
+DELETE FROM trans_ubic_tarima
+DELETE FROM trans_ubic_hh_se
+DELETE FROM trans_ubic_hh_op
+DELETE FROM trans_ubic_hh_enc
+DELETE FROM trans_ubic_hh_det
+DELETE FROM trans_ubic_hh_stock
+DELETE FROM trans_tras_op
+DELETE FROM trans_tras_enc
+DELETE FROM trans_tras_det
+DELETE FROM trans_re_op
+DELETE FROM trans_re_oc
+DELETE FROM trans_re_img
+DELETE FROM trans_re_fact
+DELETE FROM producto_pallet
+DELETE FROM trans_re_enc
+DELETE FROM trans_re_det_parametros
+DELETE FROM trans_re_det_infraccion
+DELETE FROM trans_re_det
+DELETE FROM trans_picking_ubic
+DELETE FROM trans_picking_op
+DELETE FROM trans_picking_enc
+DELETE FROM trans_picking_det_parametros
+DELETE FROM trans_picking_det
+DELETE FROM trans_manufactura_picking
+DELETE FROM trans_manufactura_det
+DELETE FROM trans_manufactura_enc
+DELETE FROM trans_pe_det
+DELETE FROM trans_pe_enc
+DELETE FROM trans_oc_pol
+DELETE FROM trans_oc_imagen
+DELETE FROM trans_oc_det_lote
+DELETE FROM trans_oc_det
+DELETE FROM trans_oc_enc
+DELETE FROM trans_movimientos
+DELETE FROM trans_inventario_enc
+DELETE FROM trans_inventario_det
+DELETE FROM trans_despacho_enc
+DELETE FROM trans_despacho_det
+DELETE FROM tarea_hh
+DELETE FROM stock_se_rec
+DELETE FROM stock_se
+DELETE FROM stock_res_se
+DELETE FROM stock_res
+DELETE FROM stock_rec
+DELETE FROM stock_parametro
+DELETE FROM stock_hist
+DELETE FROM stock
+DELETE FROM trans_inv_detalle
+DELETE FROM trans_inv_resumen
+DELETE FROM trans_inv_reconteo
+DELETE FROM trans_inv_ciclico
+DELETE FROM trans_inv_ciclico_ubic
+DELETE FROM trans_inv_tramo
+DELETE FROM trans_inv_operador
+DELETE FROM trans_inv_stock
+DELETE FROM trans_inv_stock_prod
+DELETE FROM trans_inv_enc
+DELETE FROM Appointments
+DELETE FROM i_nav_ejecucion_det_error
+DELETE FROM i_nav_ejecucion_res
+DELETE FROM i_nav_ejecucion_enc
+DELETE FROM I_nav_transacciones_out
+--#CKFK20250929 Nuevos delete
+DELETE FROM trans_ajuste_det_doc
+DELETE FROM trans_ajuste_det
+DELETE FROM trans_ajuste_enc
+DELETE FROM trans_packing_enc
+DELETE FROM trans_inv_ne
+DELETE FROM configuracion_usuario_enc
+DELETE FROM i_nav_proveedor
+DELETE FROM faltantes
+DELETE FROM equiparacion_ubicaciones
+DELETE FROM resolucion_lp_operador
+DELETE FROM resolucion_lp_usuario
+DELETE FROM trans_movimiento_pallet
+DELETE FROM trans_pe_det_log_reserva
+DELETE FROM estructura_tramo
+DELETE FROM trans_log_pedido_liberacion
+DELETE FROM configuracion_usuario_det
+DELETE FROM marcaje
+DELETE FROM dh_ocupacion_bodega
+DELETE FROM trans_picking_ubic_stock
+DELETE FROM trans_re_det_lote_num
+DELETE FROM i_nav_producto
+DELETE FROM log_error_wms
+GO
+
 --#CKFK 20211108 Agregué el delete de las trans_manufactura_picking
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 ALTER PROCEDURE [dbo].[CLBD_PRC]
 AS
 BEGIN
