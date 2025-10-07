@@ -1,3 +1,61 @@
+--#CKFK20251007 Corregí esta vista porque habia perdido algunos campos agregados años anteriores
+ALTER VIEW [dbo].[VW_PickingUbic_By_IdPickingEnc]
+AS
+SELECT pu.idpickingenc, pu.IdPickingUbic, pu.IdPickingDet, pu.IdUbicacion, pu.IdStock, 
+       pu.IdPropietarioBodega, pu.IdProductoBodega, pu.IdProductoEstado, pu.IdPresentacion, 
+	   pu.IdUnidadMedida, pu.IdUbicacionAnterior, pu.IdRecepcion, pu.lote, pu.fecha_vence, 
+	   pu.fecha_minima, pu.serial, pu.lic_plate, pu.acepto, pu.peso_solicitado, pu.peso_recibido, 
+	   pu.peso_verificado, pu.peso_despachado, pu.cantidad_solicitada, pu.cantidad_recibida, 
+	   pu.cantidad_verificada, pu.encontrado,pu.dañado_verificacion, pu.fecha_real_vence, 
+	   pu.no_packing, pu.fecha_picking, pu.fecha_verificado, pu.fecha_packing, 
+	   pu.fecha_despachado, pu.cantidad_despachada, pu.user_agr, pu.fec_agr, pu.user_mod, 
+	   pu.fec_mod, pu.activo,pu.IdPedidoDet, pu.dañado_picking, pu.IdStockRes, 
+	   pu.lic_plate_reemplazo, pu.IdUbicacion_reemplazo, pu.IdStock_reemplazo, 
+	   pdet.IdPedidoEnc, pdet.IdUnidadMedidaBasica, pdet.codigo_producto, pdet.nombre_producto, 
+       ISNULL(pp.nombre, '') AS nom_presentacion, pdet.nom_unid_med, pdet.nom_estado, pdet.IdEstado,
+	   pdet.Peso, pdet.Precio, sr.IdStockRes AS Sr_IdStockRes, sr.IdStock AS Sr_IdStock, 
+	   pu.IdBodega, pu.IdOperadorBodega_Pickeo, pu.IdOperadorBodega_Verifico, 
+	   dbo.Nombre_Completo_Ubicacion(dbo.bodega_ubicacion.IdUbicacion, dbo.bodega_ubicacion.IdBodega) AS NombreUbicacion, 
+	   pkdet.IdOperadorBodega, 
+       CASE WHEN (CASE WHEN (pu.IdPresentacion IS NOT NULL AND pu.IdPresentacion <> 0 AND
+	        ISNULL(pp.CajasPorCama, 0) > 0 AND ISNULL(pp.CamasPorTarima, 0) > 0) THEN 
+			ROUND(pu.cantidad_solicitada / (ISNULL(pp.CajasPorCama, 0) * 
+			ISNULL(pp.CamasPorTarima, 0)), 2) ELSE 0 END) >= 1 THEN 
+			CASE WHEN (pdet.IdPresentacion IS NOT NULL AND pdet.IdPresentacion <> 0 AND 
+			ISNULL(pp.CajasPorCama, 0) > 0 AND ISNULL(pp.CamasPorTarima, 0) > 0) THEN 
+			ROUND(pu.cantidad_solicitada / (ISNULL(pp.CajasPorCama, 0) * 
+			ISNULL(pp.CamasPorTarima, 0)), 2) ELSE 0 END ELSE 0 END AS Tarima, 
+	   pu.no_encontrado, dbo.producto_clasificacion.nombre AS Clasificacion, 
+       dbo.producto.IdClasificacion, pu.IdUbicacionTemporal, 
+	   dbo.Nombre_Completo_Ubicacion(pu.IdUbicacionTemporal, pu.IdBodega) AS NombreUbicacionTemporal, 
+	   dbo.Nombre_Area(dbo.bodega_ubicacion.IdArea, pu.IdBodega) 
+       AS NombreArea, dbo.bodega_ubicacion.nivel, pu.IdOperadorBodega_Asignado, 
+	   dbo.bodega_ubicacion.IdTramo, dbo.bodega_tramo.descripcion AS Nombre_Tramo,
+	   pu.IdProductoTallaColor, t.Codigo as Talla, c.Codigo as Color
+FROM    dbo.producto_bodega INNER JOIN
+		dbo.trans_picking_ubic AS pu INNER JOIN
+		dbo.bodega_ubicacion ON pu.IdUbicacion = dbo.bodega_ubicacion.IdUbicacion AND 
+		                        pu.IdBodega = dbo.bodega_ubicacion.IdBodega INNER JOIN
+		dbo.trans_picking_det AS pkdet ON pkdet.IdPickingDet = pu.IdPickingDet AND 
+		                                  pkdet.IdPickingEnc = pu.idpickingenc INNER JOIN
+		dbo.trans_pe_det AS pdet ON pdet.IdPedidoDet = pkdet.IdPedidoDet INNER JOIN
+		dbo.trans_picking_enc ON pkdet.IdPickingEnc = dbo.trans_picking_enc.IdPickingEnc 
+		                      ON dbo.producto_bodega.IdProductoBodega = pu.IdProductoBodega INNER JOIN
+		dbo.producto ON dbo.producto_bodega.IdProducto = dbo.producto.IdProducto INNER JOIN
+		dbo.bodega_tramo ON dbo.bodega_ubicacion.IdTramo = dbo.bodega_tramo.IdTramo AND
+		                    dbo.bodega_ubicacion.IdBodega = dbo.bodega_tramo.IdBodega LEFT OUTER JOIN
+		dbo.stock_res AS sr ON pu.IdUbicacion = sr.IdUbicacion AND 
+		                       pu.IdStockRes = sr.IdStockRes AND 
+							   pu.IdPropietarioBodega = sr.IdPropietarioBodega AND 
+							   pu.IdProductoBodega = sr.IdProductoBodega AND
+							   pu.IdPedidoDet = sr.IdPedidoDet LEFT OUTER JOIN
+		dbo.producto_clasificacion ON dbo.producto.IdClasificacion = dbo.producto_clasificacion.IdClasificacion LEFT OUTER JOIN
+		dbo.producto_presentacion AS pp ON pp.IdPresentacion = pu.IdPresentacion LEFT OUTER JOIN 
+		dbo.producto_talla_color ptc ON pu.IdProductoTallaColor = ptc.IdProductoTallaColor LEFT OUTER JOIN
+	    dbo.talla t ON t.IdTalla = ptc.IdTalla LEFT OUTER JOIN
+	    dbo.color c ON c.IdColor = ptc.IdColor
+GO
+
 --#EJC20250815 Se corrigió la vista y se agregaron los campos de talla y color
 ALTER VIEW VW_PickingUbic_By_IdPickingEnc AS 
 SELECT
