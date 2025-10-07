@@ -1,3 +1,7 @@
+--#MECR06102025: se agregó campo de anulado porque daba error
+ALTER TABLE trans_re_oc
+ADD ANULADA BIT
+
 --#CKFK20250815 Agregué campos nuevo para mapear documentos del ERP
 ALTER TABLE trans_re_oc
 ADD no_erp_docentry_entrega NVARCHAR(50) NULL,
