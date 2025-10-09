@@ -1,0 +1,24 @@
+CREATE TABLE [dbo].[log_error_wms_rec](
+	[IdError] [int] IDENTITY(1,1) NOT NULL,
+	[IdEmpresa] [int] NULL,
+	[IdBodega] [int] NULL,
+	[Fecha] [datetime] NULL,
+	[MensajeError] [nvarchar](max) NULL,
+	[RutaError] [nvarchar](max) NULL,
+	[IdPedidoEnc] [int] NULL,
+	[IdPickingEnc] [int] NULL,
+	[IdRecepcionEnc] [int] NULL,
+	[IdUsuarioAgr] [int] NULL,
+	[Line_No] [int] NULL,
+	[Item_No] [nvarchar](50) NULL,
+	[UmBas] [nvarchar](50) NULL,
+	[Variant_Code] [nvarchar](50) NULL,
+	[Cantidad] [float] NULL,
+	[Referencia_Documento] [nvarchar](50) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[IdError] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
