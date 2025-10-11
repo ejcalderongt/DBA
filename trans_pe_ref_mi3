@@ -1,0 +1,21 @@
+CREATE TABLE [dbo].[trans_pe_ref_mi3](
+	[IdPedidoEncRefMI3] [int] NOT NULL,
+	[IdPedidoEnc] [int] NULL,
+	[IdDespachoEnc] [int] NULL,
+	[DocNumTraslado] [int] NULL,
+	[DocEntryTraslado] [int] NULL,
+	[DocNumEntrega] [int] NULL,
+	[DocEntryEntrega] [int] NULL,
+	[Referencia_Documento_Origen] [nvarchar](50) NULL,
+	[Referencia_Documento_Destino] [nvarchar](50) NULL,
+	[Observacion] [nvarchar](150) NULL,
+	[Codigo_Bodega_Origen] [nvarchar](50) NULL,
+	[Codigo_Bodega_Destino] [nvarchar](50) NULL,
+	[Codigo_Bodega_Virtual] [nvarchar](50) NULL,
+	[Fec_Agr] [datetime] NULL,
+	[Usr_Agr] [nvarchar](50) NULL,
+ CONSTRAINT [PK_trans_pe_ref_mi3] PRIMARY KEY CLUSTERED 
+(
+	[IdPedidoEncRefMI3] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
