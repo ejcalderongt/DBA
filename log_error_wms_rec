@@ -1,3 +1,9 @@
+--#MECR14102025: Agregué columna para recepcion detalle
+ALTER TABLE LOG_ERROR_WMS_REC
+ADD IDRECEPCIONDET INT
+
+GO
+
 CREATE TABLE [dbo].[log_error_wms_rec](
 	[IdError] [int] IDENTITY(1,1) NOT NULL,
 	[IdEmpresa] [int] NULL,
