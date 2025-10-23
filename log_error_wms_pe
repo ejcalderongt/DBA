@@ -1,0 +1,33 @@
+/****** Object:  Table [dbo].[LOG_ERROR_WMS_PE]    Script Date: 23/10/2025 09:19:49 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[LOG_ERROR_WMS_PE](
+	[IdError] [int] IDENTITY(1,1) NOT NULL,
+	[IdEmpresa] [int] NULL,
+	[IdBodega] [int] NULL,
+	[MensajeError] [nvarchar](max) NULL,
+	[RutaError] [nvarchar](max) NULL,
+	[IdPedidoEnc] [int] NULL,
+	[IdPedidoDet] [int] NULL,
+	[CodigoProducto] [nvarchar](50) NULL,
+	[Cantidad] [float] NULL,
+	[IdUMBas] [int] NULL,
+	[IdEstado] [int] NULL,
+	[NoLinea] [int] NULL,
+	[IdPresentacion] [int] NULL,
+	[Talla] [nvarchar](15) NULL,
+	[Color] [nvarchar](50) NULL,
+	[usr_agr] [int] NULL,
+	[fec_agr] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[IdError] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+
