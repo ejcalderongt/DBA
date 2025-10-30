@@ -1,0 +1,23 @@
+
+CREATE TABLE [dbo].[log_error_wms_pick](
+	[IdError] [int] IDENTITY(1,1) NOT NULL,
+	[IdEmpresa] [int] NULL,
+	[IdBodega] [int] NULL,
+	[MensajeError] [nvarchar](max) NULL,
+	[RutaError] [nvarchar](max) NULL,
+	[IdPickingEnc] [int] NULL,
+	[IdPickingDet] [int] NULL,
+	[IdPickingUbic] [int] NULL,
+	[IdPedidoEnc] [int] NULL,
+	[IdPedidoDet] [int] NULL,
+	[CodigoProducto] [nvarchar](100) NULL,
+	[NombreProducto] [nvarchar](500) NULL,
+	[Cantidad_Recibida] [float] NULL,
+	[User_Agr] [int] NULL,
+	[Fec_agr] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[IdError] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
