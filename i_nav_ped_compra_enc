@@ -1,3 +1,7 @@
+--#GT03112025: campo para gestionar si registra tarea recepción al provenir de una transferencia entre bodegas.
+alter table i_nav_ped_compra_enc add No_Document_Wms int null
+
+
 --#EJC20250428 Campo campaña MAMPA
 ALTER TABLE i_nav_ped_compra_enc
 ADD Campaign_No NVARCHAR(50);
