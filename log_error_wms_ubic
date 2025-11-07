@@ -1,0 +1,36 @@
+/****** Object:  Table [dbo].[log_error_wms_ubic]    Script Date: 7/11/2025 08:29:17 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[log_error_wms_ubic](
+	[IdError] [int] IDENTITY(1,1) NOT NULL,
+	[IdEmpresa] [int] NULL,
+	[IdBodega] [int] NULL,
+	[MensajeError] [nvarchar](max) NULL,
+	[RutaError] [nvarchar](max) NULL,
+	[IdTareaUbicacionEnc] [int] NULL,
+	[IdMotivoUbicacion] [int] NULL,
+	[IdTareaUbicacionDet] [int] NULL,
+	[IdUbicacionOrigen] [int] NULL,
+	[IdUbicacionDestino] [int] NULL,
+	[IdEstadoOrigen] [int] NULL,
+	[IdEstadoDestino] [int] NULL,
+	[IdStock] [int] NULL,
+	[IdUMBAs] [int] NULL,
+	[IdPresentacion] [int] NULL,
+	[Cantidad] [float] NULL,
+	[Licencia] [nvarchar](100) NULL,
+	[IdOperador] [int] NULL,
+	[UsrAgr] [int] NULL,
+	[FechaAgr] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[IdError] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+
