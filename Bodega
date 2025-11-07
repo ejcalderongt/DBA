@@ -1,3 +1,10 @@
+--#CKFK20251106 Agregué campos nuevos para manejar centro de costo
+alter table bodega 
+add centro_costo_erp nvarchar(50), 
+    centro_costo_dir_erp nvarchar(50), 
+    centro_costo_dep_erp nvarchar(50)
+GO
+
 --#AT20250722 Campo nuevo para indicar si la cantidad a reemplazar es o no múltiplo del factor de la presentación del producto.
 alter table bodega add advertir_mpq_umbas bit not null default 0
 
