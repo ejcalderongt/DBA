@@ -1,3 +1,10 @@
+--#CKFK20251107 Agregue campos nuevos para manejar centro de costo
+alter table i_nav_config_enc 
+add centro_costo_erp int default 0,
+centro_costo_dir_erp int default 0,
+centro_costo_dep_erp int default 0
+GO
+
 --#EJC202550814: Se agrega para mampa.
 alter table i_nav_config_enc add bodega_faltante nvarchar(50) null
 
