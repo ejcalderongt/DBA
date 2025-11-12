@@ -1,6 +1,6 @@
 --#MECR11112025 Cambio de nombres de columas
 EXEC sp_rename 'log_error_wms_ubic.FechaAgr', 'fec_agr', 'COLUMN';
-EXEC sp_rename 'log_error_wms_ubic.UsrAgr', 'usuario_agr', 'COLUMN';
+EXEC sp_rename 'log_error_wms_ubic.UsrAgr', 'user_agr', 'COLUMN';
 
 --#Tabla inicial.
 /****** Object:  Table [dbo].[log_error_wms_ubic]    Script Date: 7/11/2025 08:29:17 ******/
