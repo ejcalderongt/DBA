@@ -1,3 +1,8 @@
+/********************AT20251116 Campos talla color MAMPA***********************************/
+alter table trans_inv_stock_prod add codigo_talla nvarchar(50)
+alter table trans_inv_stock_prod add codigo_color nvarchar(50)
+alter table trans_inv_stock_prod add IdProductoTallaColor int
+
 /********************GT 18112021 campos para asignar ubicacion a producto que se importa desde excel ***********************************/
 
 alter table trans_inv_stock_prod
