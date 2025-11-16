@@ -1,3 +1,6 @@
+/***************AT20251116 Campo talla color MAMPA************************/
+alter table trans_inv_detalle add IdProductoTallaColor int
+
 /***************GT 02122012  para busqueda por LP en HH  ************************/
 
 alter table trans_inv_detalle
