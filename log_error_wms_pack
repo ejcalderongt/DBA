@@ -1,0 +1,32 @@
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[log_error_wms_pack](
+	[IdError] [int] IDENTITY(1,1) NOT NULL,
+	[MensajeError] [nvarchar](max) NULL,
+	[RutaError] [nvarchar](max) NULL,
+	[IdPedidoEnc] [int] NULL,
+	[IdPickingEnc] [int] NULL,
+	[IdPickingUbic] [int] NULL,
+	[IdDespachoEnc] [int] NULL,
+	[IdStock] [int] NULL,
+	[IdProductoBodega] [int] NULL,
+	[IdProductoEstado] [int] NULL,
+	[IdPresentacion] [int] NULL,
+	[IdUnidadMedida] [int] NULL,
+	[Lic_Plate] [nvarchar](100) NULL,
+	[Cantidad_Bultos_Packing] [int] NULL,
+	[IdOperador] [int] NULL,
+	[Fec_agr] [datetime] NULL,
+	[User_agr] [nvarchar](500) NULL,
+	[IdEmpresa] [int] NULL,
+	[IdBodega] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[IdError] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
