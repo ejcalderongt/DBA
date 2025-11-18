@@ -1,3 +1,8 @@
+'#CKFK20251118 Agregué el campo guia_transporte
+ALTER TABLE trans_packing_enc
+ADD guia_transporte NVARCHAR(200) null
+go
+
 --#CKFK20250131 Agregamos los campos de bitácora y modificamos la fecha de packing para que tenga hora
 ALTER TABLE [dbo].[trans_packing_enc] DROP CONSTRAINT [DF__trans_pac__fecha__1D3474BE]
 GO
