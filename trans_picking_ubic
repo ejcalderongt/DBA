@@ -1,3 +1,8 @@
+#CKFK20251118 Agregué el campo no_linea que alguien agregó antes
+ALTER TABLE trans_picking_ubic
+ADD no_linea int null
+GO
+
 --#CKFK20250301 Agregamos validación para que los picking no estén negativos
 ALTER TABLE [dbo].[trans_picking_ubic]  
 WITH CHECK ADD  CONSTRAINT [Stock_NonNegative_20250228_CKFK] CHECK  ((cantidad_solicitada>(0)))
