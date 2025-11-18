@@ -1,4 +1,4 @@
---#CKKF20251107 Agregué el campo guia_transporte
+--#CKKF20251118 Agregué los campos guia_transporte, IdEmpresaTransporte, IdPiloto
 ALTER VIEW [dbo].[VW_Get_Single_Pedido]
 AS
 SELECT     dbo.trans_pe_enc.IdPedidoEnc, dbo.trans_pe_enc.IdBodega, dbo.trans_pe_enc.IdCliente, dbo.trans_pe_enc.IdMuelle, dbo.trans_pe_enc.IdPropietarioBodega, dbo.trans_pe_enc.IdTipoPedido, dbo.trans_pe_enc.IdPickingEnc, dbo.trans_pe_enc.Fecha_Pedido, dbo.trans_pe_enc.hora_ini, 
@@ -12,7 +12,8 @@ SELECT     dbo.trans_pe_enc.IdPedidoEnc, dbo.trans_pe_enc.IdBodega, dbo.trans_pe
                   dbo.propietarios.nombre_comercial AS Nombre_Propietario, dbo.propietario_bodega.IdPropietario, dbo.cliente.codigo AS Codigo_Cliente, dbo.cliente.es_bodega_recepcion, dbo.cliente.es_bodega_traslado, dbo.cliente.idubicacionvirtual, 
                   dbo.cliente.control_ultimo_lote AS control_ultimo_lote_cliente, dbo.trans_pe_enc.No_Picking_ERP, dbo.trans_pe_enc.fecha_preparacion, dbo.trans_pe_enc.IdTipoManufactura, dbo.trans_pe_enc.bodega_origen, dbo.trans_pe_enc.IdMotivoDevolucion, CASE WHEN c1.codigo IS NULL 
                   THEN '' ELSE ISNULL(concat(c1.codigo, ' - ', c1.nombre_comercial), '') END AS bodega_destino, dbo.trans_pe_tipo.permitir_despacho_parcial, dbo.trans_pe_tipo.permitir_despacho_multiple, ISNULL(dbo.trans_pe_tipo.empaque_tarima, 0) AS empaque_tarima, 
-                  dbo.trans_pe_enc.bodega_destino AS Expr1, dbo.trans_pe_enc.no_documento_externo, dbo.trans_pe_enc.requiere_tarimas, dbo.trans_pe_enc.Codigo_Empresa_ERP,trans_pe_enc.EsExportacion, trans_pe_enc.guia_transporte
+                  dbo.trans_pe_enc.bodega_destino AS Expr1, dbo.trans_pe_enc.no_documento_externo, dbo.trans_pe_enc.requiere_tarimas, dbo.trans_pe_enc.Codigo_Empresa_ERP,trans_pe_enc.EsExportacion, trans_pe_enc.guia_transporte, 
+				  trans_pe_enc.IdEmpresaTransporte, trans_pe_enc.IdPiloto
 FROM        dbo.propietarios INNER JOIN
                   dbo.propietario_bodega ON dbo.propietarios.IdPropietario = dbo.propietario_bodega.IdPropietario RIGHT OUTER JOIN
                   dbo.trans_pe_enc ON dbo.propietario_bodega.IdPropietarioBodega = dbo.trans_pe_enc.IdPropietarioBodega LEFT OUTER JOIN
