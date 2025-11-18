@@ -1,3 +1,9 @@
+--#CKFK20251118 Agregué los campos IdEmpresaTransporte, IdPiloto
+ALTER TABLE trans_pe_enc
+ADD IdEmpresaTransporte int null,
+    IdPiloto int null
+GO
+
 --#CKFK20251107 Agregué el campo guia_transporte
 ALTER TABLE trans_pe_enc
 ADD guia_transporte NVARCHAR(200) null
