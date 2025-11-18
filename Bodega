@@ -1,3 +1,6 @@
+--#AT20251117 Campo para solicitar gondola en inventario ciclico, reportes hh y bof MAMPA
+ALTER TABLE bodega ADD control_gondola BIT NOT NULL DEFAULT 0;
+
 --#CKFK20251106 Agregué campos nuevos para manejar centro de costo
 alter table bodega 
 add centro_costo_erp nvarchar(50), 
