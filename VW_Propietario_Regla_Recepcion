@@ -1,0 +1,9 @@
+ALTER VIEW [dbo].[VW_Propietario_Regla_Recepcion]
+AS
+SELECT enc.IdReglaPropietarioEnc AS Código, rc.nombre AS Regla, pr.nombre_comercial AS Propietario, mr.Nombre AS Mensaje, enc.activo, enc.IdPropietario, 
+       enc.IdReglaRecepcion, rc.Rechazar, rc.StockNoDisponible, rc.descripcion, rc.TipoRegla, rc.es_proceso
+FROM   dbo.propietario_reglas_enc AS enc INNER JOIN
+       dbo.reglas_recepcion AS rc ON enc.IdReglaRecepcion = rc.IdReglaRecepcion INNER JOIN
+       dbo.mensaje_regla AS mr ON enc.IdMensajeRegla = mr.IdMensajeRegla INNER JOIN
+       dbo.propietarios AS pr ON enc.IdPropietario = pr.IdPropietario
+GO
