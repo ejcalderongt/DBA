@@ -1,0 +1,3 @@
+alter table mensaje_regla 
+add IdreglaRecepcion int default null
+go
