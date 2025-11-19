@@ -1,0 +1,4 @@
+ALTER TABLE reglas_recepcion 
+ADD es_proceso bit default null, 
+    TipoRegla nvarchar(50) default null
+GO
