@@ -1,3 +1,8 @@
+--#MECR21112025: Se agrego campo para validar si es Implosion.
+alter table log_error_wms_pack
+add EsImplosion BIT NULL
+
+--Tabla inicial
 SET ANSI_NULLS ON
 GO
 
