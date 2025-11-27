@@ -1,3 +1,6 @@
+--#CKFK20251121 Agregué el campo verificar_con_imagen
+alter table trans_pe_tipo add verificar_con_imagen bit not null default 0
+
 --#CKFK20250415 Agregué el campo genera_guia_remision
 ALTER TABLE trans_pe_tipo ADD genera_guia_remision bit NOT NULL default 0
 
