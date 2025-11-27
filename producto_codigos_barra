@@ -1,0 +1,4 @@
+ALTER TABLE producto_codigos_barra
+ADD IdTalla int null,
+    IdColor int null
+GO
