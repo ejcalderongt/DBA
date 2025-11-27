@@ -1,0 +1,26 @@
+--Corregir la cantidad verificada -- Debes modificar el IdPedidoEnc
+select cantidad_verificada, cantidad_recibida, cantidad_solicitada,* from trans_picking_ubic
+where IdPedidoEnc = 3216
+and cantidad_verificada =0 and
+IdStock in (select IdStock from stock_res where estado = 'VERIFICADO')
+
+select cantidad,* from stock_res where estado = 'VERIFICADO' and IdStock in (338616,336761,339043)
+
+--update trans_picking_ubic set cantidad_verificada = cantidad_recibida where IdStock =336761 and IdPedidoEnc=  3216
+--and cantidad_verificada = 0
+
+--Comparar en Excel  -- Debes modificar el IdPedidoEnc
+select k.idproductobodega,p.codigo,p.nombre, k.cantidad_bultos_packing
+from trans_packing_enc k inner join producto_bodega pb on pb.IdProductoBodega = k.idproductobodega 
+inner join producto p on p.IdProducto = pb.IdProducto
+where IdPedidoEnc = 1597
+and iddespachoenc = 0 
+--group by k.idproductobodega,p.codigo
+order by idproductobodega
+
+select k.IdProductoBodega,p.codigo,p.nombre, cantidad_verificada, cantidad_despachada
+from trans_picking_ubic  k inner join producto_bodega pb on pb.IdProductoBodega = k.idproductobodega 
+inner join producto p on p.IdProducto = pb.IdProducto
+where IdPedidoEnc = 1597 and cantidad_despachada<>cantidad_verificada and cantidad_verificada>0
+--group by k.idproductobodega,p.codigo
+order by k.IdProductoBodega   
