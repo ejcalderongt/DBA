@@ -1,3 +1,676 @@
+--#CKFK20251127 Modificación y mejora al proceso de inicialización de transacciones de una bodega
+ALTER PROCEDURE [dbo].[CLBD_PRC_BY_IDBODEGA]
+@IdBodega int
+AS
+BEGIN
+
+DECLARE @CODIGO_BODEGA NVARCHAR(25)
+DECLARE @NOMBRE_BODEGA NVARCHAR(25)
+DECLARE @REGISTROS INT
+
+BEGIN TRANSACTION
+
+	SELECT @CODIGO_BODEGA = (SELECT CODIGO FROM BODEGA WHERE IdBodega = @IdBodega)
+	SELECT @NOMBRE_BODEGA = (SELECT NOMBRE FROM BODEGA WHERE IdBodega = @IdBodega)
+
+	if (@CODIGO_BODEGA IS NULL)
+		BEGIN
+			PRINT 'El identificador de bodega no coincide con ninguna bodega existente!.'
+		END
+	ELSE 
+		BEGIN
+			
+			PRINT 'Se eliminarán registros para la bodega: ' + ISNULL(@CODIGO_BODEGA,0) + ' ' + ISNULL(@NOMBRE_BODEGA,'ND')
+
+			print GETDATE()
+
+			--BEGIN TRANSACTION																						
+
+				PRINT 'stock: ?' 
+				DELETE a
+				FROM stock a	
+				INNER JOIN producto_bodega b
+				ON a.IdProductoBodega = b.IdProductoBodega
+				AND a.IdBodega = b.IdBodega
+				WHERE b.idbodega = @IdBodega
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'stock: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE from stock_hist where IdRecepcionenc in (select IdRecepcionEnc
+				FROM trans_re_det a
+				INNER JOIN producto_bodega b
+				ON a.IdProductoBodega = b.IdProductoBodega
+				WHERE b.IdBodega = @IdBodega)
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'stock_hist1: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+				
+				DELETE from stock_hist where IdPedidoEnc in (select DISTINCT IdPedidoEnc
+				FROM trans_pe_enc a WHERE a.IdBodega = @IdBodega)
+				
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'stock_hist2: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+				
+				DELETE a
+				FROM trans_ubic_hh_stock a
+				INNER JOIN producto_bodega b
+				ON a.IdProductoBodega = b.IdProductoBodega
+				WHERE b.IdBodega = @IdBodega
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_ubic_hh_stock: ' + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE 
+				FROM stock_parametro WHERE IdStock in (
+				select idstock
+				FROM stock a
+				INNER JOIN producto_bodega b
+				ON a.IdProductoBodega = b.IdProductoBodega
+				AND a.IdBodega = b.IdBodega
+				WHERE b.idbodega = @IdBodega)
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'stock_parametro: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE a
+				FROM stock_res a	
+				INNER JOIN producto_bodega b
+				ON a.IdProductoBodega = b.IdProductoBodega
+				AND a.IdBodega = b.IdBodega
+				WHERE b.idbodega = @IdBodega
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'stock_res: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+				
+				DELETE a
+				FROM stock_se_rec a	
+				INNER JOIN producto_bodega b
+				ON a.IdProductoBodega = b.IdProductoBodega
+				WHERE b.idbodega = @IdBodega	
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'stock_se_rec: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE a
+				FROM stock_se a	
+				INNER JOIN producto_bodega b
+				ON a.IdProductoBodega = b.IdProductoBodega
+				WHERE b.idbodega = @IdBodega	
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'stock_se: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+				
+				DELETE a
+			    FROM stock_res_se a	
+				INNER JOIN stock_se b 
+				ON a.IdStockSe = b.IdStockSe
+				inner join stock c on b.IdStock = c.IdStock
+				WHERE c.IdBodega = @IdBodega
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'stock_res_se: '   + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE a
+				FROM stock_rec a	
+				INNER JOIN producto_bodega b
+				ON a.IdProductoBodega = b.IdProductoBodega
+				AND a.IdBodega = b.IdBodega
+				WHERE b.idbodega = @IdBodega
+	
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'stock_rec: '   + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE FROM trans_re_img WHERE IdRecepcionEnc IN (
+				SELECT idrecepcionenc FROM trans_re_enc a INNER JOIN propietario_bodega b
+				ON a.idpropietariobodega = b.idpropietariobodega 
+				WHERE b.idbodega = @IdBodega)
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_re_img: '   + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+				DELETE a
+				FROM producto_pallet a
+				INNER JOIN producto_bodega b
+				ON a.IdProductoBodega = b.IdProductoBodega
+				WHERE b.IdBodega = @IdBodega
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'producto_pallet: '   + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'	
+				
+				DELETE a
+				FROM trans_despacho_det a	
+				INNER JOIN producto_bodega b
+				ON a.IdProductoBodega = b.IdProductoBodega
+				WHERE b.idbodega = @IdBodega		
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_despacho_det: ' + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.' 
+
+				DELETE FROM trans_despacho_enc 
+				WHERE idbodega = @IdBodega
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_despacho_enc: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE a
+				FROM trans_picking_ubic_stock a
+				INNER JOIN producto_bodega b
+				ON a.IdProductoBodega = b.IdProductoBodega
+				WHERE b.IdBodega = @IdBodega
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_picking_ubic_stock: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+				
+				DELETE a
+				FROM trans_picking_ubic a
+				INNER JOIN producto_bodega b
+				ON a.IdProductoBodega = b.IdProductoBodega
+				WHERE b.IdBodega = @IdBodega
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_picking_ubic: '   + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+		
+				DELETE a
+				FROM trans_picking_op a
+				INNER JOIN operador_bodega b
+				ON a.IdOperadorBodega = b.IdOperadorBodega
+				WHERE b.IdBodega = @IdBodega	
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_picking_op: '   + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE FROM trans_picking_det_parametros WHERE IdPickingDet IN (
+				SELECT IdPickingDet FROM trans_picking_det a INNER JOIN trans_picking_enc b
+				ON a.IdPickingEnc = b.IdPickingEnc INNER JOIN propietario_bodega c
+				ON b.IdPropietarioBodega = c.IdPropietarioBodega
+				WHERE c.idbodega = @IdBodega)	 
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_picking_det_parametros: ' 
+
+				DELETE a
+				FROM trans_picking_det a
+				INNER JOIN trans_picking_enc b
+				ON a.IdPickingEnc = b.IdPickingEnc 
+				INNER JOIN propietario_bodega c
+				ON b.IdPropietarioBodega = c.IdPropietarioBodega
+				WHERE c.idbodega = @IdBodega
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_picking_det: '   + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE a
+				FROM trans_picking_enc a	
+				INNER JOIN propietario_bodega b
+				ON a.IdPropietarioBodega = b.IdPropietarioBodega
+				WHERE b.idbodega = @IdBodega
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_picking_enc: '   + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'	
+
+				PRINT 'stock_ref_to_det'
+
+				delete from stock 
+				where IdBodega = @IdBodega
+				PRINT 'stock'  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE a
+			    FROM trans_re_det_lote_num a
+				INNER JOIN trans_re_enc b
+				ON a.IdRecepcionEnc = b.IdRecepcionEnc
+				WHERE b.IdBodega = @IdBodega
+				PRINT 'trans_re_det: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE a
+				FROM trans_re_det a
+				INNER JOIN producto_bodega b
+				ON a.IdProductoBodega = b.IdProductoBodega
+				WHERE b.IdBodega = @IdBodega
+				PRINT 'trans_re_det: ' + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE FROM trans_re_det_infraccion WHERE IdRecepcionEnc IN (
+				SELECT idrecepcionenc FROM trans_re_enc a INNER JOIN propietario_bodega b
+				ON a.idpropietariobodega = b.idpropietariobodega 
+				WHERE b.idbodega = @IdBodega)
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_re_det_infraccion: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE from trans_re_det_parametros where IdRecepcionEnc in (
+				select idrecepcionenc from trans_re_enc a inner join propietario_bodega b
+				on a.idpropietariobodega = b.idpropietariobodega 
+				WHERE b.idbodega = @IdBodega)
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_re_det_parametros: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+				
+				DELETE a
+				FROM trans_log_pedido_liberacion a	
+				INNER JOIN trans_pe_enc b
+				ON a.IdPedidoEnc = b.IdPedidoEnc
+				WHERE b.idbodega = @IdBodega
+				
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_log_pedido_liberacion: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+				
+				DELETE a
+				FROM trans_pe_det_log_reserva a	
+				INNER JOIN trans_pe_enc b
+				ON a.IdPedidoEnc = b.IdPedidoEnc
+				WHERE b.idbodega = @IdBodega
+				
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_pe_det_log_reserva: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+				
+				DELETE a
+				FROM trans_pe_det a	
+				INNER JOIN producto_bodega b
+				ON a.IdProductoBodega = b.IdProductoBodega
+				WHERE b.idbodega = @IdBodega
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_pe_det: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE a
+				FROM trans_re_op a
+				INNER JOIN trans_re_enc b
+				ON a.IdRecepcionEnc = b.IdRecepcionEnc
+				INNER JOIN propietario_bodega c 
+				ON b.IdPropietarioBodega = c.IdPropietario
+				WHERE c.IdBodega = @IdBodega
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_re_op: ' + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE FROM trans_re_fact WHERE IdRecepcionEnc IN (
+				SELECT idrecepcionenc FROM trans_re_enc a INNER JOIN propietario_bodega b
+				ON a.idpropietariobodega = b.idpropietariobodega 
+				WHERE b.idbodega = @IdBodega)
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'transtrans_re_fact_re_img: '	 + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'						 
+				
+				DELETE FROM trans_re_oc WHERE IdRecepcionEnc IN (
+				SELECT idrecepcionenc FROM trans_re_enc a INNER JOIN propietario_bodega b
+				ON a.idpropietariobodega = b.idpropietariobodega 
+				WHERE b.idbodega = @IdBodega)
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_re_oc: ' 	 + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'		
+
+				DELETE a
+				FROM trans_re_enc a
+				INNER JOIN propietario_bodega b
+				ON a.IdPropietarioBodega = b.IdPropietarioBodega
+				WHERE b.IdBodega = @IdBodega
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_re_enc: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE a
+				FROM trans_pe_enc a	
+				WHERE IdBodega = @IdBodega	
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_pe_enc: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE a
+				FROM trans_oc_pol a	
+				INNER JOIN trans_oc_enc b
+				ON a.IdOrdenCompraEnc = b.IdOrdenCompraEnc
+				INNER JOIN propietario_bodega c
+				ON b.IdPropietarioBodega = c.IdPropietarioBodega
+				WHERE c.idbodega = @IdBodega
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_oc_pol: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+				
+				DELETE FROM transacciones_log
+					
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'transacciones_log: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+							
+                DELETE FROM trans_ubic_tarima where idtareaubicacionenc in (
+				SELECT IdTareaUbicacionEnc
+				FROM trans_ubic_hh_enc a
+				INNER JOIN propietario_bodega b
+				ON a.IdPropietarioBodega = b.IdPropietarioBodega
+				WHERE b.IdBodega = @IdBodega)
+				
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_ubic_tarima: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+					
+				DELETE FROM trans_ubic_hh_se where idtareaubicacionenc in (
+				SELECT IdTareaUbicacionEnc
+				FROM trans_ubic_hh_enc a
+				INNER JOIN propietario_bodega b
+				ON a.IdPropietarioBodega = b.IdPropietarioBodega
+				WHERE b.IdBodega = @IdBodega)
+				
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_ubic_hh_se: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+					
+				DELETE FROM trans_ubic_hh_op  where idtareaubicacionenc in (
+				SELECT IdTareaUbicacionEnc
+				FROM trans_ubic_hh_enc a
+				INNER JOIN propietario_bodega b
+				ON a.IdPropietarioBodega = b.IdPropietarioBodega
+				WHERE b.IdBodega = @IdBodega)
+				
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_ubic_hh_op: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+					
+				Delete from trans_ubic_hh_det where idtareaubicacionenc in (
+				SELECT IdTareaUbicacionEnc
+				FROM trans_ubic_hh_enc a
+				INNER JOIN propietario_bodega b
+				ON a.IdPropietarioBodega = b.IdPropietarioBodega
+				WHERE b.IdBodega = @IdBodega)
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_ubic_hh_det: ' + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE a
+				FROM trans_ubic_hh_enc a
+				INNER JOIN propietario_bodega b
+				ON a.IdPropietarioBodega = b.IdPropietarioBodega
+				WHERE b.IdBodega = @IdBodega
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_ubic_hh_enc: ' + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.' 
+
+				DELETE a
+				FROM trans_oc_imagen a	
+				INNER JOIN trans_oc_enc b
+				ON a.IdOrdenCompraEnc = b.IdOrdenCompraEnc
+				INNER JOIN propietario_bodega c
+				ON b.IdPropietarioBodega = c.IdPropietarioBodega
+				WHERE c.idbodega = @IdBodega
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_oc_imagen: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE a
+				FROM trans_oc_det_lote a	
+				INNER JOIN trans_oc_enc b
+				ON a.IdOrdenCompraEnc = b.IdOrdenCompraEnc
+				INNER JOIN propietario_bodega c
+				ON b.IdPropietarioBodega = c.IdPropietarioBodega
+				WHERE c.idbodega = @IdBodega
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_oc_det_lote: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE a
+				FROM trans_oc_det a	
+				INNER JOIN trans_oc_enc b
+				ON a.IdOrdenCompraEnc = b.IdOrdenCompraEnc
+				INNER JOIN propietario_bodega c
+				ON b.IdPropietarioBodega = c.IdPropietarioBodega
+				WHERE c.idbodega = @IdBodega
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_oc_det: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE b
+				FROM trans_oc_enc b 
+				INNER JOIN propietario_bodega c
+				ON b.IdPropietarioBodega = c.IdPropietarioBodega
+				WHERE c.idbodega = @IdBodega	
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_oc_enc: ' + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE FROM trans_movimientos 
+				WHERE IdBodegaOrigen = @IdBodega
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_movimientos: ' + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE FROM trans_inv_ciclico
+				WHERE idbodega = @IdBodega
+				
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_inv_ciclico: ' + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE FROM trans_inv_ciclico_ubic
+				WHERE idbodega = @IdBodega
+				
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_inv_ciclico_ubic: ' + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE FROM trans_inv_detalle
+				WHERE idbodega = @IdBodega
+				
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_inv_detalle: ' + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+                DELETE a
+				FROM trans_inv_enc_reconteo a	
+				INNER JOIN trans_inventario_enc b
+				ON a.IdInventarioEnc = b.IdInventarioEnc
+				WHERE b.idbodega = @IdBodega
+				
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_inv_enc_reconteo: ' + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+                DELETE a
+				FROM trans_inv_ne a	
+				INNER JOIN trans_inventario_enc b
+				ON a.IdInventarioEnc = b.IdInventarioEnc
+				WHERE b.idbodega = @IdBodega
+				
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_inv_ne: ' + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+                DELETE a
+				FROM trans_inv_reconteo a	
+				INNER JOIN trans_inventario_enc b
+				ON a.IdInventarioEnc = b.IdInventarioEnc
+				WHERE b.idbodega = @IdBodega
+				
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_inv_reconteo: ' + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE FROM trans_inv_operador
+				WHERE idbodega = @IdBodega
+				
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_inv_operador: ' + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE FROM trans_inv_resumen
+				WHERE idbodega = @IdBodega
+				
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_inv_resumen: ' + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.' 
+
+				DELETE FROM trans_inv_stock
+				WHERE idbodega = @IdBodega
+				
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_inv_stock: ' + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.' 
+
+				DELETE FROM trans_inv_stock_prod
+				WHERE idbodega = @IdBodega
+				
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_inv_stock_prod: ' + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE FROM trans_inv_teorico_erp
+				WHERE idbodega = @IdBodega
+				
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_inv_teorico_erp: ' + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.' 
+
+				DELETE a
+				FROM trans_inventario_det a	
+				INNER JOIN trans_inventario_enc b
+				ON a.IdInventarioEnc = b.IdInventarioEnc
+				WHERE b.idbodega = @IdBodega
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_inventario_det: ' + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.' 
+
+				DELETE FROM trans_inventario_enc 
+				WHERE idbodega = @IdBodega
+	
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_inventario_enc: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE FROM tarea_hh
+				WHERE idbodega = @IdBodega
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'tarea_hh: ' + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'		
+
+				DELETE a
+				FROM trans_inv_detalle a	
+				INNER JOIN trans_inv_enc b
+				ON a.idinventarioenc = b.idinventarioenc
+				WHERE b.idbodega = @IdBodega
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_inv_detalle: ' + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.' 
+
+				DELETE a
+				FROM trans_inv_resumen a	
+				INNER JOIN trans_inv_enc b
+				ON a.idinventarioenct = b.idinventarioenc
+				WHERE b.idbodega = @IdBodega
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_inv_resumen: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE a
+				FROM trans_inv_reconteo a	
+				INNER JOIN producto_bodega b
+				ON a.IdProductoBodega = b.IdProductoBodega
+				WHERE b.idbodega = @IdBodega	
+	
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_inv_reconteo: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE a
+				FROM trans_inv_ciclico a	
+				INNER JOIN producto_bodega b
+				ON a.IdProductoBodega = b.IdProductoBodega
+				WHERE b.idbodega = @IdBodega
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_inv_ciclico: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'	
+
+				DELETE a
+				FROM trans_inv_tramo a	
+				INNER JOIN trans_inv_enc b
+				ON a.idinventario = b.idinventarioenc
+				WHERE b.idbodega = @IdBodega
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_inv_tramo: ' + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.' 	
+
+				DELETE a
+				FROM trans_inv_operador a	
+				INNER JOIN trans_inv_enc b
+				ON a.idinventarioenc = b.idinventarioenc
+				WHERE b.idbodega = @IdBodega
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_inv_operador: ' + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE a
+				FROM trans_inv_stock a	
+				INNER JOIN trans_inv_enc b
+				ON a.idinventario = b.idinventarioenc
+				WHERE b.idbodega = @IdBodega
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_inv_stock: ' + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+					
+				DELETE a
+				FROM trans_inv_stock_prod a	
+				INNER JOIN trans_inv_enc b
+				ON a.idinventario = b.idinventarioenc
+				WHERE b.idbodega = @IdBodega
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_inv_stock_prod: ' + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE FROM trans_inv_enc 
+				WHERE idbodega = @IdBodega
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_inv_enc: ' + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE FROM I_nav_transacciones_out 
+				WHERE Idbodega = @idbodega
+
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'I_nav_transacciones_out: ' + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+				print GETDATE()
+				PRINT '#EJC20191219'
+
+				DELETE FROM i_nav_ejecucion_det_error
+				
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'i_nav_ejecucion_det_error: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE FROM i_nav_ejecucion_res
+				
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'i_nav_ejecucion_res: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE FROM i_nav_ejecucion_enc
+				
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'i_nav_ejecucion_enc: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+				DELETE a
+			    FROM trans_ajuste_det_doc a	
+				INNER JOIN trans_ajuste_enc b
+				ON a.idajusteenc = b.idajusteenc
+				WHERE b.idbodega = @IdBodega
+				
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_ajuste_det_doc: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+                DELETE a
+			    FROM trans_ajuste_det a	
+				INNER JOIN trans_ajuste_enc b
+				ON a.idajusteenc = b.idajusteenc
+				WHERE b.idbodega = @IdBodega
+				
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_ajuste_det: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+                DELETE FROM trans_ajuste_enc 
+				WHERE Idbodega = @idbodega
+				
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_ajuste_enc: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+                DELETE FROM trans_packing_enc
+				WHERE Idbodega = @idbodega
+				
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_packing_enc: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+                DELETE FROM marcaje
+				WHERE Idbodega = @idbodega
+				
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'marcaje: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+                DELETE FROM trans_movimiento_pallet
+				WHERE Idbodega = @idbodega
+				
+				SELECT @REGISTROS = (select @@ROWCOUNT )
+				PRINT 'trans_movimiento_pallet: '  + CONVERT(NVARCHAR(25),@REGISTROS) + ' Registros eliminados.'
+
+		END
+
+COMMIT TRANSACTION
+
+END
+
 USE [IMS4MB_IDEALSA_QA]
 GO
 
