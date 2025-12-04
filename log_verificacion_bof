@@ -1,0 +1,30 @@
+--#GT04122025: guardar log para el estado y el motivo de pausar/anular una verificación
+
+CREATE TABLE [dbo].[log_verificacion_bof](
+	[IdLogVerificacion] [int] NOT NULL,
+	[IdBodega] [int] NULL,
+	[IdPedidoEnc] [int] NULL,
+	[IdPedidoDet] [int] NULL,
+	[IdPickingUbic] [int] NULL,
+	[IdPickingEnc] [int] NULL,
+	[IdPickingDet] [int] NULL,
+	[IdProductoBodega] [int] NULL,
+	[Sku] [nvarchar](50) NULL,
+	[cantidad] [float] NULL,
+	[IdMotivo] [int] NULL,
+	[IdEstado] [int] NULL,
+	[user_agr] [nvarchar](10) NULL,
+	[fec_agr] [datetime] NULL,
+	[IdProductoTallaColor] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[IdLogVerificacion] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[log_verificacion_bof] ADD  DEFAULT (NULL) FOR [IdBodega]
+GO
+
+ALTER TABLE [dbo].[log_verificacion_bof] ADD  DEFAULT (NULL) FOR [IdProductoTallaColor]
+GO
