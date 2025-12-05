@@ -1,1 +1,5 @@
 alter table stock_hist add posiciones int null default 0 
+
+--#CKFK Agregué el campo IdProductoTallaColor
+ALTER TABLE stock_hist ADD IdProductoTallaColor INT Null
+GO
