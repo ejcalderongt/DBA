@@ -1,3 +1,34 @@
+--#GT05122005: Mostrar guia en la lista para escaneo.
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER VIEW [dbo].[VW_Pedidos_List]
+AS
+SELECT dbo.trans_pe_enc.IdPedidoEnc AS Correlativo, dbo.trans_pe_enc.guia_transporte,dbo.trans_pe_enc.IdBodega, dbo.trans_pe_enc.no_documento, dbo.trans_pe_enc.referencia, dbo.trans_pe_enc.Referencia_Documento_Ingreso_Bodega_Destino AS Referencia2, 
+                  dbo.trans_pe_enc.Fecha_Pedido, dbo.cliente.codigo + ' - ' + dbo.cliente.nombre_comercial AS Cliente, dbo.trans_pe_enc.estado, dbo.bodega.nombre AS Bodega, dbo.bodega_muelles.nombre AS Muelle, 
+                  dbo.propietarios.nombre_comercial AS Propietario, dbo.road_p_vendedor.codigo + ' - ' + dbo.road_p_vendedor.nombre AS RoadVendedor, dbo.road_ruta.CODIGO + ' - ' + dbo.road_ruta.NOMBRE AS RoadRuta, 
+                  dbo.trans_pe_enc.fec_agr AS Fecha, dbo.trans_pe_enc.anulado, dbo.trans_pe_enc.activo, dbo.trans_pe_enc.Enviado_A_ERP, dbo.trans_pe_enc.fec_agr, dbo.trans_pe_enc.IdPickingEnc, 
+                  dbo.trans_pe_tipo.Descripcion AS TipoDocumento, dbo.trans_pe_enc.no_despacho AS IdDespachoEnc, dbo.trans_pe_enc.Observacion, Roadruta1.CODIGO + ' ' + Roadruta1.NOMBRE AS RutaDespacho, 
+                  dbo.trans_pe_enc.No_Picking_ERP, dbo.trans_pe_enc.no_documento_externo, dbo.trans_pe_enc.bodega_origen, dbo.trans_pe_enc.bodega_destino, dbo.trans_picking_enc.IdPrioridadPicking, 
+                  dbo.trans_pe_enc.Codigo_Empresa_ERP, trans_pe_enc.esexportacion, trans_pe_enc.RoadDirEntrega AS Direccion, propietarios.IdPropietario,
+				  trans_pe_enc.fec_mod, trans_pe_enc.no_despacho as Ult_Despacho, trans_pe_tipo.verificar_con_imagen
+FROM     dbo.trans_pe_enc INNER JOIN
+                  dbo.trans_pe_tipo ON dbo.trans_pe_enc.IdTipoPedido = dbo.trans_pe_tipo.IdTipoPedido LEFT OUTER JOIN
+                  dbo.trans_picking_enc ON dbo.trans_pe_enc.IdPickingEnc = dbo.trans_picking_enc.IdPickingEnc AND dbo.trans_pe_enc.IdBodega = dbo.trans_picking_enc.IdBodega LEFT OUTER JOIN
+                  dbo.bodega ON dbo.trans_pe_enc.IdBodega = dbo.bodega.IdBodega LEFT OUTER JOIN
+                  dbo.propietario_bodega ON dbo.trans_pe_enc.IdPropietarioBodega = dbo.propietario_bodega.IdPropietarioBodega LEFT OUTER JOIN
+                  dbo.cliente ON dbo.trans_pe_enc.IdCliente = dbo.cliente.IdCliente LEFT OUTER JOIN
+                  dbo.propietarios ON dbo.propietario_bodega.IdPropietario = dbo.propietarios.IdPropietario LEFT OUTER JOIN
+                  dbo.bodega_muelles ON dbo.trans_pe_enc.IdMuelle = dbo.bodega_muelles.IdMuelle LEFT OUTER JOIN
+                  dbo.road_p_vendedor ON dbo.trans_pe_enc.RoadIdVendedor = dbo.road_p_vendedor.IdVendedor LEFT OUTER JOIN
+                  dbo.road_ruta ON dbo.trans_pe_enc.RoadIdRuta = dbo.road_ruta.IdRuta LEFT OUTER JOIN
+                  dbo.road_ruta AS Roadruta1 ON dbo.trans_pe_enc.RoadIdRutaDespacho = Roadruta1.IdRuta
+GO
+
+
+
+
 --#GT25112025: se agrega campo verificar_con_imagen para MAMPA
 ALTER VIEW [dbo].[VW_Pedidos_List]
 AS
