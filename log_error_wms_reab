@@ -1,0 +1,22 @@
+CREATE TABLE [dbo].[log_error_wms_reab](
+	[IdError] [int] IDENTITY(1,1) NOT NULL,
+	[IdBodega] [int] NULL,
+	[MensajeError] [nvarchar](max) NULL,
+	[RutaError] [nvarchar](max) NULL,
+	[IdStock] [int] NULL,
+	[IdMovimiento] [int] NULL,
+	[Lic_Plate_Anterior] [nvarchar](100) NULL,
+	[Lic_Plate] [nvarchar](100) NULL,
+	[IdResolucion] [int] NULL,
+	[IdProductoBodega] [int] NULL,
+	[Cantidad] [float] NULL,
+	[User_agr] [int] NULL,
+	[Fec_agr] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[IdError] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+
