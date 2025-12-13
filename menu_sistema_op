@@ -1,3 +1,10 @@
+--#CKFK20251212 Se agregaron estas opciones en menu_sistema_op para el control del reemplazo con permiso en la HH
+INSERT INTO menu_sistema_op VALUES (2.0, NULL,'Reemplazo', 1, 0,0) 
+INSERT INTO menu_sistema_op VALUES (2.1, NULL,'Reemplazo Picking', 2, 2,1) 
+INSERT INTO menu_sistema_op VALUES (2.2, NULL,'Reemplazo Picking NE', 2, 2,2) 
+INSERT INTO menu_sistema_op VALUES (2.3, NULL,'Reemplazo Verificacion', 2, 2,3) 
+GO
+
 --#CKFK20241206 Se agregó esta validación para el finalizar de la recepción.
 Insert into menu_sistema_op values('1.16',15,'Finalizar recepción',2,1,25)
 GO
