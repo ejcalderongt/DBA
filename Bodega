@@ -1,3 +1,8 @@
+--#CKFK20251212 Se agregó el campo IdTipoEtiquetaVerificacion para el manejo de la etiqueta de la verificación y que se pueda manejar el zpl
+ALTER TABLE bodega 
+ADD IdTipoEtiquetaVerificacion int NULL
+GO
+
 --#AT20251118 Campo para packing consolidado por guia de transporte
 ALTER TABLE bodega ADD packing_consolidado_guia BIT NOT NULL DEFAULT 0;
 
