@@ -1,3 +1,6 @@
+--#CKFK20251212 Se agregó el tipo Verificaion
+INSERT INTO producto_clasificacion_etiqueta VALUES (3, 'Verificacion')
+
 --#GT22112023: tipos de etiqueta para producto
 insert into producto_clasificacion_etiqueta values (1,'SKU')
 insert into producto_clasificacion_etiqueta values (2,'LP')
