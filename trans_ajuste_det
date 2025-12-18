@@ -1,3 +1,21 @@
+--#GT17122025: para ajustes de stock por talla y color debe exitir un origen y un destino.
+
+alter table trans_ajuste_det 
+add IdProductoTallaColor_destino int default null, talla_destino int default null, color_destino int default null
+
+
+EXEC sp_rename 
+    'dbo.trans_ajuste_det.IdProductoTallaColor',
+    'IdProductoTallaColor_origen','COLUMN';
+
+EXEC sp_rename 
+    'dbo.trans_ajuste_det.talla',
+    'talla_origen','COLUMN';
+
+EXEC sp_rename 
+    'dbo.trans_ajuste_det.color',
+    'color_origen','COLUMN';
+
 --#GT29082025: campos para control talla y color
 Alter table trans_ajuste_det add IdProductoTallaColor integer default NULL
 
