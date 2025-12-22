@@ -1,3 +1,9 @@
+--#CKFK20251222 Agregamos un nuevo tipo de etiqueta
+INSERT [dbo].[tipo_etiqueta] ([IdTipoEtiqueta], [Nombre], [Alto], [Ancho], [MargenIzq], [MagenDer], [MargenSup], [MargenInf], [user_agr], [fec_agr], 
+[user_mod], [fec_mod], [activo], [dpi], [codigo_zpl], [Idclasificacion_etiqueta], [es_inkjet]) 
+VALUES (11, N'V2X3', 3, 2, 0, 0, 0, 0, N'1', CAST(N'2025-12-12' AS Date), N'1', CAST(N'2025-12-12' AS Date), 1, 8,
+N'^XA ^MMT ^PW609 ^LL0406 ^LS0 ^FT430,21^A0I,20,14^FH^FD%5$s^FS ^FO2,40^GB560,5,5^FS ^FT220,61^A0I,30,20^FH^FD%1$s^FS ^FT470,61^A0I,30,20^FH^FD%2$s^FS ^FT560,306^A0I,30,24^FH^FD%3$s^FS ^FT110,145^A0I,40,20^FH^FD%8$s^FS ^FT110,200^A0I,40,20^FH^FDV.%7$s^FS ^FT110,255^A0I,40,18^FH^FDL.%6$s^FS ^FT300,61^A0I,30,24^FH^FDBodega:^FS ^FT560,61^A0I,30,24^FH^FDEmpresa:^FS ^FT560,367^A0I,25,24^FH^FDTOMWMS No. Licencia^FS ^FO2,340^GB560,14,14^FS ^BY3,3,160^FT560,131^BCI,,Y,N ^FD%4$s^FS ^PQ1,0,1,Y ^XZ', 3, 0)
+
 --#AT Se agregó esta clasificación para saber cuando mostrar la pantalla de la impresión inkjet
 ALTER table tipo_etiqueta add es_inkjet bit not null default 0
 
