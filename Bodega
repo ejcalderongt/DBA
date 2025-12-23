@@ -1,7 +1,7 @@
 --#CKFK20251222 Agregamos los campos IdTipoEtiquetaVerificacion, imprimir_verificacion
 ALTER TABLE bodega 
 ADD IdTipoEtiquetaVerificacion int NULL,
-imprimir_verificacion int NULL
+impresion_verificacion int NULL
 GO
 
 --#EJC20251217: No recuerdo que hace, pero me faltaba en Killios así que lo dejo aquí.
