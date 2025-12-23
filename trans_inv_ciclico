@@ -1,3 +1,9 @@
+ALTER TABLE trans_inv_ciclico ADD gondola nvarchar(150)
+GO
+
+ALTER TABLE trans_inv_ciclico ADD IdProductoTallaColor int
+GO
+
 --#CKFK20250727 Se agregó el campo cantidad_reservada_umbas
 ALTER TABLE trans_inv_ciclico ADD cantidad_reservada_umbas float default 0
 GO
