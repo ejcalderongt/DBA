@@ -1,13 +1,5 @@
---#MECR12122025: Se agrego campos para error y ruta de error
-ALTER TABLE log_verificacion_bof
-ADD 
-    MensajeError NVARCHAR(MAX) NULL,
-    RutaError NVARCHAR(MAX) NULL;
-
---#GT04122025: guardar log para el estado y el motivo de pausar/anular una verificación
-
 CREATE TABLE [dbo].[log_verificacion_bof](
-	[IdLogVerificacion] [int] NOT NULL,
+	[IdLogVerificacion] [int] identity NOT NULL,
 	[IdBodega] [int] NULL,
 	[IdPedidoEnc] [int] NULL,
 	[IdPedidoDet] [int] NULL,
@@ -19,6 +11,8 @@ CREATE TABLE [dbo].[log_verificacion_bof](
 	[cantidad] [float] NULL,
 	[IdMotivo] [int] NULL,
 	[IdEstado] [int] NULL,
+	[MensajeError] NVARCHAR(MAX) NULL,
+    [RutaError] NVARCHAR(MAX) NULL,
 	[user_agr] [nvarchar](10) NULL,
 	[fec_agr] [datetime] NULL,
 	[IdProductoTallaColor] [int] NULL,
