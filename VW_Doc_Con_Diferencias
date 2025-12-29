@@ -1,3 +1,26 @@
+--#CKFK20251229 Agregué el campo Observación
+ALTER view [dbo].[VW_Doc_Con_Diferencias] AS
+SELECT       enc.IdOrdenCompraEnc, ENC.No_Documento AS ORDENCOMPRA, DET.codigo_producto, DET.nombre_producto, DET.cantidad, DET.cantidad_recibida, CASE WHEN ISNULL(DET.IdPresentacion, 0) 
+                         = 0 THEN um.Nombre ELSE pr.nombre END AS PRESENTACION, DET.cantidad_recibida - DET.cantidad AS DIFERENCIA, ENC.IdPropietarioBodega,dbo.bodega.codigo as CodigoBodega, dbo.bodega.nombre_comercial AS BODEGA, 
+                         PROP.nombre_comercial AS PROPIETARIO, oc_pol.codigo_poliza as Poliza,ENC.IdProveedorBodega, ENC.IdTipoIngresoOC, TIPO.Nombre AS NOMBRE_INGRESOOC, DET.IdProductoBodega, DET.IdPresentacion, DET.IdUnidadMedidaBasica, 
+                         um.Nombre AS UMBas, ESTADO.Nombre AS ESTADO, DET.activo, ENC.Fecha_Creacion, PROP.IdPropietario, dbo.bodega.IdBodega, enc.No_Documento, 
+                         enc.referencia, ENC.Enviado_A_ERP, enc.Observacion, t.Codigo as Talla , c.Codigo as Color
+FROM            dbo.trans_oc_enc AS ENC INNER JOIN
+                         dbo.trans_oc_det AS DET ON ENC.IdOrdenCompraEnc = DET.IdOrdenCompraEnc INNER JOIN
+                         dbo.trans_oc_ti AS TIPO ON ENC.IdTipoIngresoOC = TIPO.IdTipoIngresoOC INNER JOIN
+                         dbo.propietario_bodega AS PROP_BD ON ENC.IdPropietarioBodega = PROP_BD.IdPropietarioBodega INNER JOIN
+                         dbo.trans_oc_estado AS ESTADO ON ENC.IdEstadoOC = ESTADO.IdEstadoOC INNER JOIN
+                         dbo.bodega ON PROP_BD.IdBodega = dbo.bodega.IdBodega INNER JOIN
+                         dbo.propietarios AS PROP ON PROP_BD.IdPropietario = PROP.IdPropietario INNER JOIN
+                         dbo.unidad_medida AS um ON um.IdUnidadMedida = DET.IdUnidadMedidaBasica LEFT OUTER JOIN
+                         dbo.producto_presentacion AS pr ON DET.IdPresentacion = pr.IdPresentacion LEFT OUTER JOIN
+						 dbo.trans_oc_pol oc_pol on ENC.IdOrdenCompraEnc = oc_pol.IdOrdenCompraEnc  LEFT OUTER JOIN
+						 dbo.producto_talla_color ptc ON DET.IdProductoTallaColor = ptc.IdProductoTallaColor LEFT OUTER JOIN
+						 dbo.talla t ON t.IdTalla = ptc.IdTalla LEFT OUTER JOIN
+						 dbo.color c ON c.IdColor = ptc.IdColor
+WHERE        (TIPO.activo = 1) AND (ESTADO.IdEstadoOC <> 5)
+GO
+
 --#EJC20250815 Se agregaron los campos de talla y color
 ALTER view [dbo].[VW_Doc_Con_Diferencias] AS
 
