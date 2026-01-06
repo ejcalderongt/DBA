@@ -1,0 +1,12 @@
+CREATE VIEW [dbo].[VW_Ajustes_List]
+AS
+SELECT dbo.trans_ajuste_enc.idajusteenc AS Correlativo, dbo.trans_ajuste_enc.fecha AS Fecha, dbo.usuario.nombres AS Usuario, dbo.trans_ajuste_enc.referencia AS Referencia, dbo.bodega.codigo AS Bodega, 
+                  dbo.trans_ajuste_enc.Enviado_A_ERP, dbo.producto_familia.nombre AS Sección, dbo.propietarios.nombre_comercial AS Propietario, dbo.centro_costo.Codigo AS Centro_Costo, dbo.trans_ajuste_enc.auditado AS Auditado
+FROM     dbo.trans_ajuste_enc INNER JOIN
+                  dbo.bodega ON dbo.trans_ajuste_enc.idbodega = dbo.bodega.IdBodega INNER JOIN
+                  dbo.propietarios INNER JOIN
+                  dbo.propietario_bodega ON dbo.propietarios.IdPropietario = dbo.propietario_bodega.IdPropietario ON dbo.trans_ajuste_enc.IdPropietarioBodega = dbo.propietario_bodega.IdPropietarioBodega LEFT OUTER JOIN
+                  dbo.centro_costo ON dbo.trans_ajuste_enc.IdCentroCosto = dbo.centro_costo.IdCentroCosto LEFT OUTER JOIN
+                  dbo.producto_familia ON dbo.trans_ajuste_enc.IdProductoFamilia = dbo.producto_familia.IdFamilia LEFT OUTER JOIN
+                  dbo.usuario ON dbo.trans_ajuste_enc.idusuario = dbo.usuario.IdUsuario
+GO
