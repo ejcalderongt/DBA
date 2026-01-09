@@ -1,3 +1,6 @@
+-- #AT20260109 se agro el campo IdProductoTallaColor_nuevo
+alter table trans_inv_ciclico add IdProductoTallaColor_nuevo int default 0
+
 ALTER TABLE trans_inv_ciclico ADD gondola nvarchar(150)
 GO
 
