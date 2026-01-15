@@ -65,29 +65,39 @@ DELETE FROM i_nav_ejecucion_det_error
 DELETE FROM i_nav_ejecucion_res
 DELETE FROM i_nav_ejecucion_enc
 DELETE FROM I_nav_transacciones_out
+
 --#CKFK20250929 Nuevos delete
 DELETE FROM trans_ajuste_det_doc
-DELETE FROM trans_ajuste_det
-DELETE FROM trans_ajuste_enc
 DELETE FROM trans_packing_enc
 DELETE FROM trans_inv_ne
-DELETE FROM configuracion_usuario_enc
-DELETE FROM i_nav_proveedor
-DELETE FROM faltantes
 DELETE FROM equiparacion_ubicaciones
-DELETE FROM resolucion_lp_operador
-DELETE FROM resolucion_lp_usuario
+DELETE FROM faltantes
 DELETE FROM trans_movimiento_pallet
-DELETE FROM trans_pe_det_log_reserva
 DELETE FROM estructura_tramo
-DELETE FROM trans_log_pedido_liberacion
-DELETE FROM configuracion_usuario_det
-DELETE FROM marcaje
 DELETE FROM dh_ocupacion_bodega
-DELETE FROM trans_picking_ubic_stock
-DELETE FROM trans_re_det_lote_num
-DELETE FROM i_nav_producto
+
+--#CKFK20251020 Nuevos delete
 DELETE FROM log_error_wms
+DELETE FROM trans_log_pedido_liberacion
+DELETE FROM trans_pe_det_log_reserva
+DELETE FROM trans_picking_ubic_stock
+DELETE FROM i_nav_ped_traslado_det
+DELETE FROM trans_re_det_lote_num
+DELETE FROM i_nav_ped_traslado_enc
+DELETE FROM from marcaje
+DELETE FROM trans_inv_teorico_erp
+DELETE FROM i_nav_proveedor	
+DELETE FROM i_nav_acuerdo
+DELETE FROM pedidos_no_despachados
+DELETE FROM trans_ajuste_det
+DELETE FROM trans_ajuste_enc
+DELETE FROM i_nav_bodega
+DELETE FROM i_nav_acuerdo_det
+DELETE FROM log_importacion_excel
+DELETE FROM TempComparacionInventario
+DELETE FROM TempComparativoInventario
+DELETE FROM i_nav_producto
+
 GO
 
 --#CKFK 20211108 Agregué el delete de las trans_manufactura_picking
