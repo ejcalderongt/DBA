@@ -1,0 +1,20 @@
+CREATE TABLE [dbo].[TempComparativoInventario](
+	[IdInventario] [int] NULL,
+	[IdProductoBodega] [int] NULL,
+	[IdProducto] [int] NULL,
+	[IdUnidadMedida] [int] NULL,
+	[Codigo] [nvarchar](150) NULL,
+	[Producto] [nvarchar](250) NULL,
+	[Cantidad_Stock] [float] NULL,
+	[Cantidad] [float] NULL,
+	[Peso_Stock] [float] NULL,
+	[Peso] [float] NULL,
+	[Entradas_Salidas] [float] NULL,
+	[Entradas] [float] NULL,
+	[Salidas] [float] NULL,
+	[Lote] [nvarchar](200) NULL,
+	[FechaVence] [date] NULL
+) ON [PRIMARY]
+GO
+
+
