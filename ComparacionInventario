@@ -1,0 +1,64 @@
+CREATE TABLE [dbo].[ComparacionInventario](
+	[IdInventario] [int] NULL,
+	[IdProductoBodega] [int] NULL,
+	[IdProducto] [int] NULL,
+	[IdUnidadMedida] [int] NULL,
+	[Codigo] [nvarchar](150) NULL,
+	[Producto] [nvarchar](250) NULL,
+	[Cantidad_Stock] [float] NULL,
+	[Cantidad] [float] NULL,
+	[Peso_Stock] [float] NULL,
+	[Peso] [float] NULL,
+	[Entradas_Salidas] [float] NULL,
+	[Entradas] [float] NULL,
+	[Salidas] [float] NULL,
+	[Lote] [nvarchar](50) NULL,
+	[FechaVence] [date] NULL,
+	[licencia] [nvarchar](50) NULL,
+	[EstadoOrigen] [nvarchar](50) NULL,
+	[EstadoDestino] [nvarchar](50) NULL,
+	[UbicacionOrigen] [nvarchar](50) NULL,
+	[UbicacionDestino] [nvarchar](50) NULL,
+	[LoteOrigen] [nvarchar](50) NULL,
+	[IdUbicacion] [int] NOT NULL,
+	[IdUbicacionDestino] [int] NOT NULL,
+	[Fec_Mod] [datetime] NOT NULL,
+	[IdInvciclico] [int] NOT NULL,
+	[FechaVenceStock] [date] NULL,
+	[IdProductoEstado] [int] NOT NULL,
+	[IdProductoEst_nuevo] [int] NOT NULL,
+	[IdPresentacion] [int] NOT NULL,
+	[Cantidad_Reservada_UmBas] [float] NOT NULL,
+	[TieneReservaYConteoInsuficiente] [bit] NOT NULL,
+	[Observacion] [nvarchar](500) NULL
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[ComparacionInventario] ADD  DEFAULT ((0)) FOR [IdUbicacion]
+GO
+
+ALTER TABLE [dbo].[ComparacionInventario] ADD  DEFAULT ((0)) FOR [IdUbicacionDestino]
+GO
+
+ALTER TABLE [dbo].[ComparacionInventario] ADD  DEFAULT ('19000101') FOR [Fec_Mod]
+GO
+
+ALTER TABLE [dbo].[ComparacionInventario] ADD  DEFAULT ((0)) FOR [IdInvciclico]
+GO
+
+ALTER TABLE [dbo].[ComparacionInventario] ADD  DEFAULT ((0)) FOR [IdProductoEstado]
+GO
+
+ALTER TABLE [dbo].[ComparacionInventario] ADD  DEFAULT ((0)) FOR [IdProductoEst_nuevo]
+GO
+
+ALTER TABLE [dbo].[ComparacionInventario] ADD  DEFAULT ((0)) FOR [IdPresentacion]
+GO
+
+ALTER TABLE [dbo].[ComparacionInventario] ADD  DEFAULT ((0)) FOR [Cantidad_Reservada_UmBas]
+GO
+
+ALTER TABLE [dbo].[ComparacionInventario] ADD  DEFAULT ((0)) FOR [TieneReservaYConteoInsuficiente]
+GO
+
+
