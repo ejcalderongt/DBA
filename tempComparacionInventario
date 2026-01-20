@@ -1,3 +1,14 @@
+--#AT20260119 Campos Talla, color 
+ALTER TABLE TempComparacionInventario
+ADD
+    TallaStock NVARCHAR(50),
+    ColorStock NVARCHAR(50),
+    TallaNueva NVARCHAR(50),
+    ColorNuevo NVARCHAR(50),
+    IdProductoTallaColor INT DEFAULT 0,
+    IdProductoTallaColor_nuevo INT DEFAULT 0;
+
+
 --#CKFK20250723 Agregamos estos campos nuevos
 ALTER TABLE tempcomparacioninventario
 ADD
