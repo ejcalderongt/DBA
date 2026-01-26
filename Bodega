@@ -1,3 +1,6 @@
+--#EJC20260126 Se agregó esta funcionalidad para saber que priorizo si picking o almacenamiento
+alter table bodega add reservar_primero_almacenaje bit not null default 0
+
 --#CKFK20251222 Agregamos los campos IdTipoEtiquetaVerificacion, imprimir_verificacion
 ALTER TABLE bodega 
 ADD IdTipoEtiquetaVerificacion int NULL,
