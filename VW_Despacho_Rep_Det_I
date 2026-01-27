@@ -1,3 +1,4 @@
+--#GT26012025: se valida que la poliza de ingreso este activa
 --#EJC20250815 Se agregaron los campos Talla y Color
 ALTER VIEW [dbo].[VW_Despacho_Rep_Det_I] AS
 SELECT dbo.trans_despacho_enc.IdBodega, dbo.trans_picking_ubic.IdPickingUbic, dbo.trans_picking_ubic.IdStock, dbo.trans_picking_ubic.IdPedidoDet, dbo.trans_picking_ubic.IdPropietarioBodega, dbo.trans_picking_ubic.IdProductoBodega, 
@@ -46,7 +47,7 @@ FROM     dbo.trans_pe_enc INNER JOIN
 				  LEFT OUTER JOIN trans_pe_pol pe_pol on trans_pe_enc.IdPedidoEnc = pe_pol.IdOrdenPedidoEnc AND 
 				  pe_pol.IdOrdenPedidoEnc = trans_picking_ubic.IdPedidoEnc INNER JOIN 
 				  trans_re_oc re_oc on dbo.trans_picking_ubic.IdRecepcion=re_oc.IdRecepcionEnc
-				  LEFT OUTER JOIN trans_oc_pol oc_pol on re_oc.IdOrdenCompraEnc=oc_pol.IdOrdenCompraEnc
+				  LEFT OUTER JOIN trans_oc_pol oc_pol on re_oc.IdOrdenCompraEnc=oc_pol.IdOrdenCompraEnc and oc_pol.activo=1
 				  LEFT OUTER JOIN dbo.regimen_fiscal on pe_pol.IdRegimen=regimen_fiscal.IdRegimen
 				  LEFT OUTER JOIN dbo.empresa_transporte_vehiculos vehiculo on  dbo.trans_despacho_enc.Idvehiculo=vehiculo.Idvehiculo
 GO
