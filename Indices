@@ -1,3 +1,8 @@
+--#EJC20260126 Migración a Identity en stock_res por collisión y rendimiento:
+ALTER TABLE stock_res DROP CONSTRAINT PK_stock_pe;
+ALTER TABLE stock_res DROP COLUMN IdStockRes;
+ALTER TABLE stock_res ADD IdStockRes INT IDENTITY(1,1) PRIMARY KEY;
+
 --#EJC20250919 Se agregaron nuevo indices en la tabla stock
 CREATE NONCLUSTERED INDEX NCLI_Stock_Area_2_EJC20250919
 ON [dbo].[stock] ([IdBodega],[IdStock])
