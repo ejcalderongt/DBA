@@ -1,7 +1,3 @@
-ALTER TABLE trans_picking_ubic 
-ADD IdProductoTallaColor int null
-GO
-
 --#EJC20260126 Se agregó esta funcionalidad para saber que priorizo si picking o almacenamiento
 alter table bodega add reservar_primero_almacenaje bit not null default 0
 
