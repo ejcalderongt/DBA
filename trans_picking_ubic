@@ -1,3 +1,7 @@
+ALTER TABLE trans_picking_ubic 
+ADD IdProductoTallaColor int null
+GO
+
 #CKFK20251118 Agregué el campo no_linea que alguien agregó antes
 ALTER TABLE trans_picking_ubic
 ADD no_linea int null
