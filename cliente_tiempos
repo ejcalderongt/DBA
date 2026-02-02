@@ -1,0 +1,3 @@
+--#GT02022026: es manufactura para tiempos aceptacion
+
+alter table cliente_tiempos add es_manufactura bit not null default 0
