@@ -1,3 +1,26 @@
+--#GT02022026: mostrar es_manufactura en tiempos
+
+
+ALTER VIEW [dbo].[VW_TiempoCliente]
+AS
+SELECT     pf.nombre AS Familia, pc.nombre AS Clasificación, ct.IdTiempoCliente,
+ct.IdCliente,
+ct.IdFamilia,
+ct.IdClasificacion,
+ct.Dias_Local,
+ct.Dias_Exterior,
+ct.user_agr,
+ct.fec_agr,
+ct.user_mod,
+ct.fec_mod,
+ct.activo,
+ct.es_manufactura
+FROM         dbo.cliente_tiempos AS ct LEFT OUTER JOIN
+                      dbo.producto_familia AS pf ON ct.IdFamilia = pf.IdFamilia LEFT OUTER JOIN
+                      dbo.producto_clasificacion AS pc ON ct.IdClasificacion = pc.IdClasificacion
+GO
+
+
 ALTER VIEW [dbo].[VW_TiempoCliente]
 AS
 SELECT     pf.nombre AS Familia, pc.nombre AS Clasificación, cl.nombre_comercial Cliente, ct.*
