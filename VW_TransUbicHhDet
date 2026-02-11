@@ -1,3 +1,190 @@
+/****** #EJC20260211 Agregué BODEGA estados origen y destino ******/
+
+ALTER VIEW [dbo].[VW_TransUbicHhDet]
+AS
+SELECT
+    d.IdTareaUbicacionEnc,
+    d.IdTareaUbicacionDet,
+    d.IdStock,
+
+    b.Codigo AS CodigoBodega,
+
+    p.nombre,
+    s.lic_plate,
+    s.lote,
+    s.fecha_vence,
+
+    d.IdUbicacionDestino,
+    ubDest.descripcion,
+
+    d.IdEstadoOrigen,
+    d.IdEstadoDestino,
+
+    pe_origen.IdEstado AS IdEstado_Origen,
+    pe_origen.nombre  AS NomEstado_Origen,
+
+    pe_destino.IdEstado AS IdEstado_Destino,
+    pe_destino.nombre  AS NomEstado_Destino,
+
+    CASE
+        WHEN op.IdOperadorBodega IS NULL THEN d.IdOperadorBodega
+        ELSE op.IdOperadorBodega
+    END AS IdOperadorBodega,
+
+    d.HoraInicio,
+    d.HoraFin,
+    d.Realizado,
+    d.cantidad,
+    d.activo,
+
+    o.nombres,
+
+    p.codigo,
+    p.serializado,
+
+    s.añada,
+    CONVERT(char(10), s.fecha_ingreso, 120) AS fecha_ingreso,
+
+    pp.nombre AS Presentacion,
+    um.Nombre AS UnidadMedida,
+
+    s.serial,
+
+    p.IdPropietario,
+    pr.nombre_comercial,
+
+    d.recibido,
+    p.IdProducto,
+    pb.IdProductoBodega,
+    p.IdUnidadMedidaBasica,
+
+    d.estado,
+    d.IdUbicacionOrigen,
+
+    pp.IdPresentacion,
+    ubDest.nivel,
+    ubDest.indice_x,
+
+    d.IdBodega,
+    t.descripcion AS Tramo,
+
+    dbo.Nombre_Completo_Ubicacion(d.IdUbicacionOrigen, d.IdBodega)  AS NombreCompletoUbicaiconOrigen,
+    dbo.Nombre_Completo_Ubicacion(d.IdUbicacionDestino, d.IdBodega) AS NombreCompletoUbicaiconDestino,
+
+    d.No_Linea
+FROM dbo.bodega_tramo t
+INNER JOIN dbo.bodega_ubicacion AS ubDest
+INNER JOIN dbo.trans_ubic_hh_det d
+    ON ubDest.IdUbicacion = d.IdUbicacionDestino
+   AND ubDest.IdBodega    = d.IdBodega
+
+LEFT OUTER JOIN dbo.producto_bodega pb
+INNER JOIN dbo.trans_ubic_hh_stock s
+    ON pb.IdProductoBodega = s.IdProductoBodega
+INNER JOIN dbo.producto p
+    ON pb.IdProducto = p.IdProducto
+INNER JOIN dbo.unidad_medida um
+    ON s.IdUnidadMedida = um.IdUnidadMedida
+INNER JOIN dbo.propietarios pr
+    ON p.IdPropietario = pr.IdPropietario
+    ON d.IdTareaUbicacionEnc = s.IdTareaUbicacionEnc
+   AND d.IdTareaUbicacionDet = s.IdTareaUbicacionDet
+   AND d.IdStock             = s.IdStock
+
+INNER JOIN dbo.bodega_ubicacion ubOri
+    ON ubOri.IdUbicacion = d.IdUbicacionOrigen
+   AND ubOri.IdBodega    = d.IdBodega
+    ON t.IdTramo  = ubOri.IdTramo
+   AND t.IdBodega = ubOri.IdBodega
+
+LEFT OUTER JOIN dbo.operador_bodega ob
+INNER JOIN dbo.trans_ubic_hh_op op
+    ON ob.IdOperadorBodega = op.IdOperadorBodega
+INNER JOIN dbo.operador o
+    ON ob.IdOperador = o.IdOperador
+    ON d.IdTareaUbicacionEnc = op.IdTareaUbicacionEnc
+   AND d.IdOperadorBodega    = op.IdOperadorBodega
+
+LEFT OUTER JOIN dbo.producto_presentacion pp
+    ON s.IdPresentacion = pp.IdPresentacion
+   AND s.IdPresentacion = pp.IdPresentacion
+
+LEFT OUTER JOIN dbo.producto_estado AS pe_origen
+    ON pe_origen.IdEstado = d.IdEstadoOrigen
+
+LEFT OUTER JOIN dbo.producto_estado AS pe_destino
+    ON pe_destino.IdEstado = d.IdEstadoDestino
+
+LEFT OUTER JOIN dbo.bodega b
+    ON b.IdBodega = d.IdBodega
+
+GROUP BY
+    d.IdTareaUbicacionEnc,
+    d.IdTareaUbicacionDet,
+    d.IdStock,
+
+    b.Codigo,
+
+    p.nombre,
+    s.lic_plate,
+    s.lote,
+    s.fecha_vence,
+
+    d.IdUbicacionDestino,
+    ubDest.descripcion,
+
+    d.IdEstadoOrigen,
+    d.IdEstadoDestino,
+
+    pe_origen.IdEstado,
+    pe_origen.nombre,
+    pe_destino.IdEstado,
+    pe_destino.nombre,
+
+    d.IdOperadorBodega,
+    op.IdOperadorBodega,
+
+    d.HoraInicio,
+    d.HoraFin,
+    d.Realizado,
+    d.cantidad,
+    d.activo,
+
+    o.nombres,
+
+    p.codigo,
+    p.serializado,
+
+    s.añada,
+    CONVERT(char(10), s.fecha_ingreso, 120),
+
+    pp.nombre,
+    um.Nombre,
+
+    s.serial,
+
+    p.IdPropietario,
+    pr.nombre_comercial,
+
+    d.recibido,
+    p.IdProducto,
+    pb.IdProductoBodega,
+    p.IdUnidadMedidaBasica,
+
+    d.estado,
+    d.IdUbicacionOrigen,
+
+    pp.IdPresentacion,
+    ubDest.nivel,
+    ubDest.indice_x,
+
+    d.IdBodega,
+    t.descripcion,
+
+    d.No_Linea;
+GO
+
+
 --#EJC20260211 Cambio a vista por MHS
 ALTER VIEW [dbo].[VW_TransUbicHhDet]
 AS
