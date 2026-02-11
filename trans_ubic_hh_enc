@@ -1,3 +1,6 @@
+--#EJC20260211 Se agregó este campo para envío de correo
+alter table trans_ubic_hh_enc add sync_mi3 bit not null default 0
+
 alter table trans_ubic_hh_enc add IdReabastecimientoLog int null
 
 alter table trans_ubic_hh_enc add es_traslado_sap bit not null default 0
