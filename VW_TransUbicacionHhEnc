@@ -1,17 +1,47 @@
 --#EJC20260211 Agregué sync_mi3 e IdBodega
 ALTER VIEW [dbo].[VW_TransUbicacionHhEnc]
 AS
-SELECT dbo.trans_ubic_hh_enc.IdTareaUbicacionEnc, dbo.trans_ubic_hh_enc.IdPropietarioBodega, dbo.trans_ubic_hh_enc.IdMotivoUbicacion, dbo.motivo_ubicacion.Nombre AS DescripcionMotivo, dbo.trans_ubic_hh_enc.FechaInicio, 
-                  dbo.trans_ubic_hh_enc.HoraInicio, dbo.trans_ubic_hh_enc.FechaFin, dbo.trans_ubic_hh_enc.HoraFin, dbo.trans_ubic_hh_enc.user_agr, dbo.trans_ubic_hh_enc.fec_agr, dbo.trans_ubic_hh_enc.user_mod, dbo.trans_ubic_hh_enc.fec_mod, 
-                  dbo.trans_ubic_hh_enc.Observacion, dbo.trans_ubic_hh_enc.activo, dbo.trans_ubic_hh_enc.operador_por_linea, dbo.trans_ubic_hh_enc.ubicacion_con_hh, dbo.trans_ubic_hh_enc.estado, dbo.trans_ubic_hh_enc.cambio_estado, 
-                  dbo.trans_ubic_hh_enc.IdReabastecimientoLog, dbo.trans_ubic_hh_enc.es_traslado_sap, dbo.trans_ubic_hh_enc.no_documento, dbo.usuario.nombres AS Usuario, dbo.rol.nombre AS Rol, dbo.trans_ubic_hh_enc.sync_mi3, 
-                  dbo.propietario_bodega.IdBodega
-FROM     dbo.trans_ubic_hh_enc INNER JOIN
-                  dbo.motivo_ubicacion ON dbo.trans_ubic_hh_enc.IdMotivoUbicacion = dbo.motivo_ubicacion.IdMotivoUbicacion INNER JOIN
-                  dbo.usuario ON dbo.trans_ubic_hh_enc.user_agr = dbo.usuario.IdUsuario INNER JOIN
-                  dbo.usuario_bodega ON dbo.usuario.IdUsuario = dbo.usuario_bodega.IdUsuario INNER JOIN
-                  dbo.rol ON dbo.usuario_bodega.IdRol = dbo.rol.IdRol INNER JOIN
-                  dbo.propietario_bodega ON dbo.trans_ubic_hh_enc.IdPropietarioBodega = dbo.propietario_bodega.IdPropietarioBodega AND dbo.usuario_bodega.IdBodega = dbo.propietario_bodega.IdBodega
+SELECT
+    e.IdTareaUbicacionEnc,
+    e.IdPropietarioBodega,
+    e.IdMotivoUbicacion,
+    mu.Nombre AS DescripcionMotivo,
+    e.FechaInicio,
+    e.HoraInicio,
+    e.FechaFin,
+    e.HoraFin,
+    e.user_agr,
+    e.fec_agr,
+    e.user_mod,
+    e.fec_mod,
+    e.Observacion,
+    e.activo,
+    e.operador_por_linea,
+    e.ubicacion_con_hh,
+    e.estado,
+    e.cambio_estado,
+    e.IdReabastecimientoLog,
+    e.es_traslado_sap,
+    e.no_documento,
+    u.nombres AS Usuario,
+    r.nombre AS Rol,
+    e.sync_mi3,
+    pb.IdBodega,
+    b.Codigo AS CodigoBodega
+FROM dbo.trans_ubic_hh_enc e
+INNER JOIN dbo.motivo_ubicacion mu
+    ON e.IdMotivoUbicacion = mu.IdMotivoUbicacion
+INNER JOIN dbo.usuario u
+    ON e.user_agr = u.IdUsuario
+INNER JOIN dbo.usuario_bodega ub
+    ON u.IdUsuario = ub.IdUsuario
+INNER JOIN dbo.rol r
+    ON ub.IdRol = r.IdRol
+INNER JOIN dbo.propietario_bodega pb
+    ON e.IdPropietarioBodega = pb.IdPropietarioBodega
+   AND ub.IdBodega = pb.IdBodega
+INNER JOIN dbo.bodega b
+    ON b.IdBodega = pb.IdBodega;
 GO
 
 --#AT20260106 Mostrar tareas de HH
