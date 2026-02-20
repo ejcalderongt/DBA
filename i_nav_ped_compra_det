@@ -1,1 +1,5 @@
+--#EJC20260220 CAmpos nuevo por paletizado por ensacadora
+alter table i_nav_ped_compra_det add LayersPallet int not null default 0
+alter table i_nav_ped_compra_det add BoxesLayer int not null default 0
+
 alter table i_nav_ped_compra_det add fec_agr datetime default getdate()
