@@ -59,6 +59,10 @@ FROM     propietarios INNER JOIN
 				  left outer join dbo.talla on dbo.producto_talla_color.IdTalla = dbo.talla.IdTalla
 				  left outer join dbo.Color on dbo.producto_talla_color.IdColor = dbo.Color.IdColor
 
+  				   left outer join dbo.trans_re_det  on
+				   trans_oc_det.IdOrdenCompraEnc = trans_oc_enc.IdOrdenCompraEnc
+				  AND trans_re_det.IdRecepcionDet = stock.IdRecepcionDet and trans_re_det.IdProductoBodega=stock.IdProductoBodega
+
 				  where trans_oc_enc.IdEstadoOC<>5
 GROUP BY stock.IdBodega, stock.IdStock, stock.IdPropietarioBodega, stock.IdProductoBodega, stock.IdProductoEstado, stock.IdPresentacion, stock.IdUnidadMedida, stock.IdUbicacion, stock.IdUbicacion_anterior, stock.IdRecepcionEnc, 
                   stock.IdRecepcionDet, stock.IdPedidoEnc, stock.IdPickingEnc, stock.IdDespachoEnc, stock.lote, stock.lic_plate, stock.serial, stock.cantidad, stock.fecha_ingreso, stock.fecha_vence, stock.uds_lic_plate, stock.no_bulto, 
