@@ -1,0 +1,283 @@
+SET NOCOUNT ON;
+SET XACT_ABORT ON;
+
+BEGIN TRY
+    BEGIN TRAN;
+
+    DECLARE
+        @Schema sysname = N'dbo',
+        @Table  sysname = N'trans_re_det',
+        @IdCol  sysname = N'IdRecepcionDet',
+        @NewTable sysname = N'trans_re_det__new',
+        @Full nvarchar(300) = QUOTENAME(N'dbo') + N'.' + QUOTENAME(N'trans_re_det'),
+        @FullNew nvarchar(300) = QUOTENAME(N'dbo') + N'.' + QUOTENAME(N'trans_re_det__new');
+
+    IF OBJECT_ID(@Full, 'U') IS NULL
+        THROW 50000, 'Tabla dbo.trans_re_det no existe.', 1;
+
+    IF COL_LENGTH(@Full, @IdCol) IS NULL
+        THROW 50000, 'Columna IdRecepcionDet no existe en dbo.trans_re_det.', 1;
+
+    IF OBJECT_ID(@FullNew, 'U') IS NOT NULL
+        EXEC(N'DROP TABLE ' + @FullNew + N';');
+
+    DECLARE @FKS_Ref_Drop TABLE (Seq int IDENTITY(1,1), SqlText nvarchar(max));
+    DECLARE @FKS_Ref_Create TABLE (Seq int IDENTITY(1,1), SqlText nvarchar(max));
+    DECLARE @FKS_Out_Drop TABLE (Seq int IDENTITY(1,1), SqlText nvarchar(max));
+    DECLARE @FKS_Out_Create TABLE (Seq int IDENTITY(1,1), SqlText nvarchar(max));
+    DECLARE @IDX_Drop TABLE (Seq int IDENTITY(1,1), SqlText nvarchar(max));
+    DECLARE @IDX_Create TABLE (Seq int IDENTITY(1,1), SqlText nvarchar(max));
+
+    DECLARE @PK_Drop nvarchar(max) = NULL;
+    DECLARE @PK_Create nvarchar(max) = NULL;
+    DECLARE @pkCurrent sysname = NULL;
+
+    SELECT @pkCurrent = kc.name
+    FROM sys.key_constraints kc
+    WHERE kc.parent_object_id = OBJECT_ID(@Full)
+      AND kc.type = 'PK';
+
+    IF @pkCurrent IS NULL
+        THROW 50000, 'No se encontró PK en dbo.trans_re_det.', 1;
+
+    SET @PK_Drop = N'ALTER TABLE ' + @Full + N' DROP CONSTRAINT ' + QUOTENAME(@pkCurrent) + N';';
+
+    DECLARE @PKCols nvarchar(max);
+
+    SELECT @PKCols =
+        STRING_AGG(QUOTENAME(c.name) + CASE WHEN ic.is_descending_key = 1 THEN N' DESC' ELSE N' ASC' END, N', ')
+        WITHIN GROUP (ORDER BY ic.key_ordinal)
+    FROM sys.key_constraints kc
+    JOIN sys.index_columns ic
+      ON ic.object_id = kc.parent_object_id
+     AND ic.index_id = kc.unique_index_id
+    JOIN sys.columns c
+      ON c.object_id = ic.object_id
+     AND c.column_id = ic.column_id
+    WHERE kc.parent_object_id = OBJECT_ID(@Full)
+      AND kc.type = 'PK';
+
+    SET @PK_Create =
+        N'ALTER TABLE ' + @FullNew + N' ADD CONSTRAINT ' + QUOTENAME(@pkCurrent) +
+        N' PRIMARY KEY CLUSTERED (' + @PKCols + N');';
+
+    INSERT @FKS_Ref_Drop(SqlText)
+    SELECT
+        N'ALTER TABLE ' + QUOTENAME(ps.name) + N'.' + QUOTENAME(pt.name) +
+        N' DROP CONSTRAINT ' + QUOTENAME(fk.name) + N';'
+    FROM sys.foreign_keys fk
+    JOIN sys.tables pt ON pt.object_id = fk.parent_object_id
+    JOIN sys.schemas ps ON ps.schema_id = pt.schema_id
+    WHERE fk.referenced_object_id = OBJECT_ID(@Full)
+    ORDER BY fk.name;
+
+    INSERT @FKS_Ref_Create(SqlText)
+    SELECT
+        N'ALTER TABLE ' + QUOTENAME(ps.name) + N'.' + QUOTENAME(pt.name) + N' WITH CHECK ADD CONSTRAINT ' + QUOTENAME(fk.name) +
+        N' FOREIGN KEY(' +
+        (
+            SELECT STRING_AGG(QUOTENAME(pc.name), N', ') WITHIN GROUP (ORDER BY fkc.constraint_column_id)
+            FROM sys.foreign_key_columns fkc
+            JOIN sys.columns pc ON pc.object_id = fkc.parent_object_id AND pc.column_id = fkc.parent_column_id
+            WHERE fkc.constraint_object_id = fk.object_id
+        ) +
+        N') REFERENCES ' + QUOTENAME(rs.name) + N'.' + QUOTENAME(rt.name) + N'(' +
+        (
+            SELECT STRING_AGG(QUOTENAME(rc.name), N', ') WITHIN GROUP (ORDER BY fkc.constraint_column_id)
+            FROM sys.foreign_key_columns fkc
+            JOIN sys.columns rc ON rc.object_id = fkc.referenced_object_id AND rc.column_id = fkc.referenced_column_id
+            WHERE fkc.constraint_object_id = fk.object_id
+        ) +
+        N')' +
+        CASE WHEN fk.delete_referential_action_desc <> 'NO_ACTION'
+             THEN N' ON DELETE ' + REPLACE(fk.delete_referential_action_desc, '_', ' ')
+             ELSE N'' END +
+        CASE WHEN fk.update_referential_action_desc <> 'NO_ACTION'
+             THEN N' ON UPDATE ' + REPLACE(fk.update_referential_action_desc, '_', ' ')
+             ELSE N'' END +
+        CASE WHEN fk.is_not_for_replication = 1 THEN N' NOT FOR REPLICATION' ELSE N'' END +
+        N';' +
+        CASE WHEN fk.is_disabled = 1 OR fk.is_not_trusted = 1
+             THEN N' ALTER TABLE ' + QUOTENAME(ps.name) + N'.' + QUOTENAME(pt.name) + N' NOCHECK CONSTRAINT ' + QUOTENAME(fk.name) + N';'
+             ELSE N'' END
+    FROM sys.foreign_keys fk
+    JOIN sys.tables pt ON pt.object_id = fk.parent_object_id
+    JOIN sys.schemas ps ON ps.schema_id = pt.schema_id
+    JOIN sys.tables rt ON rt.object_id = fk.referenced_object_id
+    JOIN sys.schemas rs ON rs.schema_id = rt.schema_id
+    WHERE fk.referenced_object_id = OBJECT_ID(@Full)
+    ORDER BY fk.name;
+
+    INSERT @FKS_Out_Drop(SqlText)
+    SELECT
+        N'ALTER TABLE ' + QUOTENAME(ps.name) + N'.' + QUOTENAME(pt.name) +
+        N' DROP CONSTRAINT ' + QUOTENAME(fk.name) + N';'
+    FROM sys.foreign_keys fk
+    JOIN sys.tables pt ON pt.object_id = fk.parent_object_id
+    JOIN sys.schemas ps ON ps.schema_id = pt.schema_id
+    WHERE fk.parent_object_id = OBJECT_ID(@Full)
+    ORDER BY fk.name;
+
+    INSERT @FKS_Out_Create(SqlText)
+    SELECT
+        N'ALTER TABLE ' + QUOTENAME(ps.name) + N'.' + QUOTENAME(pt.name) + N' WITH CHECK ADD CONSTRAINT ' + QUOTENAME(fk.name) +
+        N' FOREIGN KEY(' +
+        (
+            SELECT STRING_AGG(QUOTENAME(pc.name), N', ') WITHIN GROUP (ORDER BY fkc.constraint_column_id)
+            FROM sys.foreign_key_columns fkc
+            JOIN sys.columns pc ON pc.object_id = fkc.parent_object_id AND pc.column_id = fkc.parent_column_id
+            WHERE fkc.constraint_object_id = fk.object_id
+        ) +
+        N') REFERENCES ' + QUOTENAME(rs.name) + N'.' + QUOTENAME(rt.name) + N'(' +
+        (
+            SELECT STRING_AGG(QUOTENAME(rc.name), N', ') WITHIN GROUP (ORDER BY fkc.constraint_column_id)
+            FROM sys.foreign_key_columns fkc
+            JOIN sys.columns rc ON rc.object_id = fkc.referenced_object_id AND rc.column_id = fkc.referenced_column_id
+            WHERE fkc.constraint_object_id = fk.object_id
+        ) +
+        N')' +
+        CASE WHEN fk.delete_referential_action_desc <> 'NO_ACTION'
+             THEN N' ON DELETE ' + REPLACE(fk.delete_referential_action_desc, '_', ' ')
+             ELSE N'' END +
+        CASE WHEN fk.update_referential_action_desc <> 'NO_ACTION'
+             THEN N' ON UPDATE ' + REPLACE(fk.update_referential_action_desc, '_', ' ')
+             ELSE N'' END +
+        CASE WHEN fk.is_not_for_replication = 1 THEN N' NOT FOR REPLICATION' ELSE N'' END +
+        N';' +
+        CASE WHEN fk.is_disabled = 1 OR fk.is_not_trusted = 1
+             THEN N' ALTER TABLE ' + QUOTENAME(ps.name) + N'.' + QUOTENAME(pt.name) + N' NOCHECK CONSTRAINT ' + QUOTENAME(fk.name) + N';'
+             ELSE N'' END
+    FROM sys.foreign_keys fk
+    JOIN sys.tables pt ON pt.object_id = fk.parent_object_id
+    JOIN sys.schemas ps ON ps.schema_id = pt.schema_id
+    JOIN sys.tables rt ON rt.object_id = fk.referenced_object_id
+    JOIN sys.schemas rs ON rs.schema_id = rt.schema_id
+    WHERE fk.parent_object_id = OBJECT_ID(@Full)
+    ORDER BY fk.name;
+
+    INSERT @IDX_Drop(SqlText)
+    SELECT
+        N'DROP INDEX ' + QUOTENAME(i.name) + N' ON ' + @Full + N';'
+    FROM sys.indexes i
+    WHERE i.object_id = OBJECT_ID(@Full)
+      AND i.is_primary_key = 0
+      AND i.is_unique_constraint = 0
+      AND i.name IS NOT NULL
+      AND i.type_desc IN ('CLUSTERED', 'NONCLUSTERED')
+    ORDER BY i.name;
+
+    INSERT @IDX_Create(SqlText)
+    SELECT
+        N'CREATE ' + CASE WHEN i.is_unique = 1 THEN N'UNIQUE ' ELSE N'' END
+        + i.type_desc + N' INDEX ' + QUOTENAME(i.name) + N' ON ' + @FullNew
+        + N' (' +
+            (
+                SELECT STRING_AGG(
+                           QUOTENAME(c.name) + CASE WHEN ic.is_descending_key = 1 THEN N' DESC' ELSE N' ASC' END
+                       , N', ') WITHIN GROUP (ORDER BY ic.key_ordinal)
+                FROM sys.index_columns ic
+                JOIN sys.columns c ON c.object_id = ic.object_id AND c.column_id = ic.column_id
+                WHERE ic.object_id = i.object_id
+                  AND ic.index_id = i.index_id
+                  AND ic.is_included_column = 0
+                  AND ic.key_ordinal > 0
+            )
+        + N')'
+        + COALESCE(
+            N' INCLUDE (' +
+            (
+                SELECT STRING_AGG(QUOTENAME(c.name), N', ') WITHIN GROUP (ORDER BY ic.index_column_id)
+                FROM sys.index_columns ic
+                JOIN sys.columns c ON c.object_id = ic.object_id AND c.column_id = ic.column_id
+                WHERE ic.object_id = i.object_id
+                  AND ic.index_id = i.index_id
+                  AND ic.is_included_column = 1
+            ) + N')'
+        , N'')
+        + CASE WHEN i.has_filter = 1 THEN N' WHERE ' + i.filter_definition ELSE N'' END
+        + N';'
+        + CASE WHEN i.is_disabled = 1 THEN N' ALTER INDEX ' + QUOTENAME(i.name) + N' ON ' + @FullNew + N' DISABLE;' ELSE N'' END
+    FROM sys.indexes i
+    WHERE i.object_id = OBJECT_ID(@Full)
+      AND i.is_primary_key = 0
+      AND i.is_unique_constraint = 0
+      AND i.name IS NOT NULL
+      AND i.type_desc IN ('CLUSTERED', 'NONCLUSTERED')
+    ORDER BY i.name;
+
+    DECLARE @CreateTable nvarchar(max);
+
+    SELECT @CreateTable =
+        N'CREATE TABLE ' + @FullNew + N'(' + CHAR(10) +
+        STRING_AGG(
+            CASE
+                WHEN c.is_computed = 1 THEN
+                    N'    ' + QUOTENAME(c.name) + N' AS ' + cc.definition + CASE WHEN cc.is_persisted = 1 THEN N' PERSISTED' ELSE N'' END
+                ELSE
+                    N'    ' + QUOTENAME(c.name) + N' ' +
+                    CASE
+                        WHEN ty.name IN (N'varchar',N'char',N'varbinary',N'binary') THEN ty.name + N'(' + CASE WHEN c.max_length = -1 THEN N'MAX' ELSE CAST(c.max_length AS nvarchar(10)) END + N')'
+                        WHEN ty.name IN (N'nvarchar',N'nchar') THEN ty.name + N'(' + CASE WHEN c.max_length = -1 THEN N'MAX' ELSE CAST(c.max_length/2 AS nvarchar(10)) END + N')'
+                        WHEN ty.name IN (N'decimal',N'numeric') THEN ty.name + N'(' + CAST(c.precision AS nvarchar(10)) + N',' + CAST(c.scale AS nvarchar(10)) + N')'
+                        WHEN ty.name IN (N'datetime2',N'datetimeoffset',N'time') THEN ty.name + N'(' + CAST(c.scale AS nvarchar(10)) + N')'
+                        ELSE ty.name
+                    END
+                    + CASE WHEN c.name = @IdCol THEN N' IDENTITY(1,1)' ELSE N'' END
+                    + CASE WHEN c.collation_name IS NOT NULL AND ty.name IN (N'varchar',N'char',N'nvarchar',N'nchar',N'text',N'ntext')
+                           THEN N' COLLATE ' + c.collation_name ELSE N'' END
+                    + CASE WHEN c.is_nullable = 1 THEN N' NULL' ELSE N' NOT NULL' END
+            END
+        , N',' + CHAR(10)) WITHIN GROUP (ORDER BY c.column_id)
+        + CHAR(10) + N');'
+    FROM sys.columns c
+    JOIN sys.types ty ON ty.user_type_id = c.user_type_id
+    LEFT JOIN sys.computed_columns cc ON cc.object_id = c.object_id AND cc.column_id = c.column_id
+    WHERE c.object_id = OBJECT_ID(@Full);
+
+    DECLARE @ColsAllNoComputed nvarchar(max);
+    SELECT @ColsAllNoComputed =
+        STRING_AGG(QUOTENAME(c.name), N', ') WITHIN GROUP (ORDER BY c.column_id)
+    FROM sys.columns c
+    WHERE c.object_id = OBJECT_ID(@Full)
+      AND c.is_computed = 0;
+
+    DECLARE @sql nvarchar(max) = N'';
+
+    SELECT @sql = @sql + SqlText + CHAR(10) FROM @FKS_Out_Drop ORDER BY Seq;
+    SELECT @sql = @sql + SqlText + CHAR(10) FROM @FKS_Ref_Drop ORDER BY Seq;
+
+    SET @sql = @sql + @PK_Drop + CHAR(10);
+
+    SELECT @sql = @sql + SqlText + CHAR(10) FROM @IDX_Drop ORDER BY Seq;
+
+    SET @sql = @sql + @CreateTable + CHAR(10);
+
+    SET @sql = @sql +
+        N'SET IDENTITY_INSERT ' + @FullNew + N' ON;' + CHAR(10) +
+        N'INSERT INTO ' + @FullNew + N' (' + @ColsAllNoComputed + N')' + CHAR(10) +
+        N'SELECT ' + @ColsAllNoComputed + N' FROM ' + @Full + N';' + CHAR(10) +
+        N'SET IDENTITY_INSERT ' + @FullNew + N' OFF;' + CHAR(10);
+
+    SET @sql = @sql + @PK_Create + CHAR(10);
+
+    SELECT @sql = @sql + SqlText + CHAR(10) FROM @IDX_Create ORDER BY Seq;
+
+    SET @sql = @sql +
+        N'DROP TABLE ' + @Full + N';' + CHAR(10) +
+        N'EXEC sp_rename ''dbo.' + @NewTable + N''', ''' + @Table + N''';' + CHAR(10);
+
+    SELECT @sql = @sql + SqlText + CHAR(10) FROM @FKS_Out_Create ORDER BY Seq;
+    SELECT @sql = @sql + SqlText + CHAR(10) FROM @FKS_Ref_Create ORDER BY Seq;
+
+    EXEC sp_executesql @sql;
+
+    DECLARE @maxId int;
+    SELECT @maxId = MAX(CONVERT(int, IdRecepcionDet)) FROM dbo.trans_re_det;
+    DBCC CHECKIDENT ('dbo.trans_re_det', RESEED, @maxId);
+
+    COMMIT;
+END TRY
+BEGIN CATCH
+    IF XACT_STATE() <> 0 ROLLBACK;
+    THROW;
+END CATCH;
