@@ -1,3 +1,23 @@
+#EJC20260226: Convertir I_nav_transacciones_Out.IdTransaccion a identity
+ALTER TABLE i_nav_transacciones_out
+DROP CONSTRAINT PK_i_nav_transacciones_out;
+
+ALTER TABLE i_nav_transacciones_out
+ADD idtransaccion_tmp INT IDENTITY(1,1);
+
+ALTER TABLE i_nav_transacciones_out
+DROP COLUMN idtransaccion;
+
+EXEC sp_rename 
+    'i_nav_transacciones_out.idtransaccion_tmp', 
+    'idtransaccion', 
+    'COLUMN';
+
+ TABLE i_nav_transacciones_out
+ADD CONSTRAINT PK_i_nav_transacciones_out
+PRIMARY KEY (idtransaccion);
+
+
 --#EJC20250811: Los campos talla y color
 alter table i_nav_transacciones_out 
 add Talla nvarchar(50),
