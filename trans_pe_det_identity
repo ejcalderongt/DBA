@@ -1,0 +1,154 @@
+SET NOCOUNT ON;
+SET XACT_ABORT ON;
+
+BEGIN TRY
+    BEGIN TRAN;
+
+    -- Validaciones iniciales
+    IF OBJECT_ID('dbo.trans_pe_det', 'U') IS NULL
+        THROW 50000, 'No existe dbo.trans_pe_det', 1;
+
+    IF COL_LENGTH('dbo.trans_pe_det', 'IdPedidoDet') IS NULL
+        THROW 50000, 'No existe columna IdPedidoDet', 1;
+
+    IF OBJECT_ID('dbo.trans_pe_det__new', 'U') IS NOT NULL
+        DROP TABLE dbo.trans_pe_det__new;
+
+    DECLARE @PKName sysname;
+    SELECT @PKName = kc.name
+    FROM sys.key_constraints kc
+    WHERE kc.parent_object_id = OBJECT_ID('dbo.trans_pe_det')
+      AND kc.type = 'PK';
+
+    IF @PKName IS NULL
+        THROW 50000, 'No se encontró PK en trans_pe_det', 1;
+
+    -- 1. Eliminar FKs que referencian la PK
+    DECLARE @FKDrop NVARCHAR(MAX) = '';
+    DECLARE @FKCreate NVARCHAR(MAX) = '';
+
+    ;WITH fk AS (
+        SELECT fk.name, ps.name parent_schema, pt.name parent_table,
+               rs.name ref_schema, rt.name ref_table,
+               fk.delete_referential_action_desc del_action,
+               fk.update_referential_action_desc upd_action
+        FROM sys.foreign_keys fk
+        JOIN sys.tables pt ON pt.object_id = fk.parent_object_id
+        JOIN sys.schemas ps ON ps.schema_id = pt.schema_id
+        JOIN sys.tables rt ON rt.object_id = fk.referenced_object_id
+        JOIN sys.schemas rs ON rs.schema_id = rt.schema_id
+        WHERE fk.referenced_object_id = OBJECT_ID('dbo.trans_pe_det')
+    )
+    SELECT 
+        @FKDrop = @FKDrop +
+            'ALTER TABLE ' + QUOTENAME(parent_schema) + '.' + QUOTENAME(parent_table) +
+            ' DROP CONSTRAINT ' + QUOTENAME(name) + ';' + CHAR(10),
+        @FKCreate = @FKCreate +
+            'ALTER TABLE ' + QUOTENAME(parent_schema) + '.' + QUOTENAME(parent_table) +
+            ' WITH CHECK ADD CONSTRAINT ' + QUOTENAME(name) +
+            ' FOREIGN KEY (IdPedidoDet) REFERENCES dbo.trans_pe_det(IdPedidoDet)' +
+            CASE WHEN del_action <> 'NO_ACTION' THEN ' ON DELETE ' + REPLACE(del_action,'_',' ') ELSE '' END +
+            CASE WHEN upd_action <> 'NO_ACTION' THEN ' ON UPDATE ' + REPLACE(upd_action,'_',' ') ELSE '' END +
+            ';' + CHAR(10)
+    FROM fk;
+
+    IF LEN(@FKDrop) > 0 EXEC sp_executesql @FKDrop;
+
+    -- 2. Eliminar PK original
+    DECLARE @DropPK NVARCHAR(MAX) = 'ALTER TABLE dbo.trans_pe_det DROP CONSTRAINT ' + QUOTENAME(@PKName) + ';';
+    EXEC sp_executesql @DropPK;
+
+    -- 3. Preparar índices
+    DECLARE @IdxDrop NVARCHAR(MAX) = '';
+    DECLARE @IdxCreate NVARCHAR(MAX) = '';
+
+    SELECT 
+        @IdxDrop = @IdxDrop +
+            'DROP INDEX ' + QUOTENAME(i.name) + ' ON dbo.trans_pe_det;' + CHAR(10),
+        @IdxCreate = @IdxCreate +
+            'CREATE ' + CASE WHEN i.is_unique = 1 THEN 'UNIQUE ' ELSE '' END +
+            i.type_desc + ' INDEX ' + QUOTENAME(i.name) +
+            ' ON dbo.trans_pe_det__new (' +
+            STRING_AGG(QUOTENAME(c.name), ', ') WITHIN GROUP (ORDER BY ic.key_ordinal)
+            + ');' + CHAR(10)
+    FROM sys.indexes i
+    JOIN sys.index_columns ic ON ic.object_id = i.object_id AND ic.index_id = i.index_id
+    JOIN sys.columns c ON c.object_id = ic.object_id AND c.column_id = ic.column_id
+    WHERE i.object_id = OBJECT_ID('dbo.trans_pe_det')
+      AND i.is_primary_key = 0
+      AND i.is_unique_constraint = 0
+      AND ic.key_ordinal > 0
+    GROUP BY i.name, i.is_unique, i.type_desc;
+
+    IF LEN(@IdxDrop) > 0 EXEC sp_executesql @IdxDrop;
+
+    -- 4. Crear tabla nueva con IdPedidoDet como IDENTITY
+    DECLARE @CreateTable NVARCHAR(MAX);
+
+    SELECT @CreateTable =
+        'CREATE TABLE dbo.trans_pe_det__new (' + CHAR(10) +
+        STRING_AGG(
+            CASE 
+                WHEN c.name = 'IdPedidoDet' THEN
+                    '[IdPedidoDet] INT IDENTITY(1,1) NOT NULL'
+                ELSE
+                    QUOTENAME(c.name) + ' ' +
+                    TYPE_NAME(c.user_type_id) +
+                    CASE 
+                        WHEN c.max_length > 0 AND TYPE_NAME(c.user_type_id) IN ('varchar','nvarchar','char','nchar')
+                        THEN '(' + CASE WHEN c.max_length = -1 THEN 'MAX' 
+                                        WHEN TYPE_NAME(c.user_type_id) LIKE 'n%' THEN CAST(c.max_length/2 AS VARCHAR)
+                                        ELSE CAST(c.max_length AS VARCHAR) END + ')'
+                        ELSE ''
+                    END +
+                    CASE WHEN c.is_nullable = 1 THEN ' NULL' ELSE ' NOT NULL' END
+            END
+        , ',' + CHAR(10))
+        + CHAR(10) + ');'
+    FROM sys.columns c
+    WHERE c.object_id = OBJECT_ID('dbo.trans_pe_det');
+
+    EXEC sp_executesql @CreateTable;
+
+    -- 5. Insertar datos con lista de columnas
+    DECLARE @cols NVARCHAR(MAX);
+    SELECT @cols = STRING_AGG(QUOTENAME(name), ', ')
+    FROM sys.columns
+    WHERE object_id = OBJECT_ID('dbo.trans_pe_det');
+
+    DECLARE @InsertSql NVARCHAR(MAX) =
+        'SET IDENTITY_INSERT dbo.trans_pe_det__new ON;
+         INSERT INTO dbo.trans_pe_det__new (' + @cols + ')
+         SELECT ' + @cols + ' FROM dbo.trans_pe_det;
+         SET IDENTITY_INSERT dbo.trans_pe_det__new OFF;';
+
+    EXEC sp_executesql @InsertSql;
+
+    -- 6. Recrear PK
+    DECLARE @sql NVARCHAR(MAX);
+    SET @sql = 'ALTER TABLE dbo.trans_pe_det__new ADD CONSTRAINT ' 
+               + QUOTENAME(@PKName) 
+               + ' PRIMARY KEY CLUSTERED (IdPedidoDet);';
+    EXEC sp_executesql @sql;
+
+    -- 7. Recrear índices
+    IF LEN(@IdxCreate) > 0 EXEC sp_executesql @IdxCreate;
+
+    -- 8. Reemplazar tabla
+    DROP TABLE dbo.trans_pe_det;
+    EXEC sp_rename 'dbo.trans_pe_det__new', 'trans_pe_det';
+
+    -- 9. Recrear FKs
+    IF LEN(@FKCreate) > 0 EXEC sp_executesql @FKCreate;
+
+    -- 10. Reseed del identity
+    DECLARE @MaxId INT;
+    SELECT @MaxId = MAX(IdPedidoDet) FROM dbo.trans_pe_det;
+    DBCC CHECKIDENT ('dbo.trans_pe_det', RESEED, @MaxId);
+
+    COMMIT;
+END TRY
+BEGIN CATCH
+    IF XACT_STATE() <> 0 ROLLBACK;
+    THROW;
+END CATCH;
