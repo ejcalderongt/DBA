@@ -1,3 +1,6 @@
+--#MA20260227 Se agregó el campo estado_defecto_rack
+Alter table Bodega add estado_defecto_rack int null
+
 --#MA20260224 Se agregó el campo reemplazo_opcional
 ALTER TABLE bodega ADD reemplazo_opcional BIT NOT NULL DEFAULT(0)
 
