@@ -407,3 +407,70 @@ CREATE NONCLUSTERED INDEX [NCLI_Trans_Picking_Ubic_IdPickingDet_EJC] ON [dbo].[t
     [IdPickingDet] ASC
 );
 GO
+
+
+--#EJC20260226: Ejecutar si quedó la columna old
+
+SET NOCOUNT ON;
+
+DECLARE @tbl sysname = N'dbo.trans_picking_ubic';
+DECLARE @col sysname = N'IdPickingUbic_old';
+
+IF COL_LENGTH(@tbl, @col) IS NULL
+BEGIN
+    SELECT 'La columna no existe.' AS Resultado;
+    RETURN;
+END
+
+DECLARE @sql nvarchar(max) = N'';
+
+;WITH DC AS (
+    SELECT dc.name AS constraint_name
+    FROM sys.default_constraints dc
+    JOIN sys.columns c
+      ON c.object_id = dc.parent_object_id AND c.column_id = dc.parent_column_id
+    WHERE dc.parent_object_id = OBJECT_ID(@tbl)
+      AND c.name = @col
+)
+SELECT @sql = @sql + N'ALTER TABLE ' + @tbl + N' DROP CONSTRAINT ' + QUOTENAME(constraint_name) + N';' + CHAR(10)
+FROM DC;
+
+;WITH IX AS (
+    SELECT DISTINCT i.name AS index_name
+    FROM sys.indexes i
+    JOIN sys.index_columns ic ON ic.object_id = i.object_id AND ic.index_id = i.index_id
+    JOIN sys.columns c ON c.object_id = ic.object_id AND c.column_id = ic.column_id
+    WHERE i.object_id = OBJECT_ID(@tbl)
+      AND i.is_primary_key = 0
+      AND i.is_unique_constraint = 0
+      AND i.name IS NOT NULL
+      AND c.name = @col
+)
+SELECT @sql = @sql + N'DROP INDEX ' + QUOTENAME(index_name) + N' ON ' + @tbl + N';' + CHAR(10)
+FROM IX;
+
+;WITH KC AS (
+    SELECT kc.name AS constraint_name
+    FROM sys.key_constraints kc
+    JOIN sys.index_columns ic ON ic.object_id = kc.parent_object_id AND ic.index_id = kc.unique_index_id
+    JOIN sys.columns c ON c.object_id = ic.object_id AND c.column_id = ic.column_id
+    WHERE kc.parent_object_id = OBJECT_ID(@tbl)
+      AND c.name = @col
+)
+SELECT @sql = @sql + N'ALTER TABLE ' + @tbl + N' DROP CONSTRAINT ' + QUOTENAME(constraint_name) + N';' + CHAR(10)
+FROM KC;
+
+;WITH CC AS (
+    SELECT cc.name AS constraint_name
+    FROM sys.check_constraints cc
+    WHERE cc.parent_object_id = OBJECT_ID(@tbl)
+      AND (cc.definition LIKE '%' + @col + '%')
+)
+SELECT @sql = @sql + N'ALTER TABLE ' + @tbl + N' DROP CONSTRAINT ' + QUOTENAME(constraint_name) + N';' + CHAR(10)
+FROM CC;
+
+SET @sql = @sql + N'ALTER TABLE ' + @tbl + N' DROP COLUMN ' + QUOTENAME(@col) + N';' + CHAR(10);
+
+EXEC sp_executesql @sql, N'@tbl sysname, @col sysname', @tbl=@tbl, @col=@col;
+
+SELECT 'Columna eliminada (si no hubo errores).' AS Resultado;
