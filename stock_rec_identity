@@ -1,0 +1,226 @@
+SET NOCOUNT ON;
+SET XACT_ABORT ON;
+ 
+BEGIN TRY
+    BEGIN TRAN;
+ 
+    IF OBJECT_ID('dbo.stock_rec', 'U') IS NULL
+        THROW 50000, 'No existe dbo.stock_rec', 1;
+ 
+    IF COL_LENGTH('dbo.stock_rec', 'IdStockRec') IS NULL
+        THROW 50000, 'No existe columna IdStockRec en dbo.stock_rec', 1;
+ 
+    IF OBJECT_ID('dbo.stock_rec__new', 'U') IS NOT NULL
+        DROP TABLE dbo.stock_rec__new;
+ 
+    DECLARE @PKName sysname;
+    SELECT @PKName = kc.name
+    FROM sys.key_constraints kc
+    WHERE kc.parent_object_id = OBJECT_ID('dbo.stock_rec')
+      AND kc.type = 'PK';
+ 
+    IF @PKName IS NULL
+        THROW 50000, 'No se encontró PK en dbo.stock_rec', 1;
+ 
+    DECLARE @PKCols nvarchar(max);
+    SELECT @PKCols =
+        STUFF((
+            SELECT N', [' + c.name + N']'
+            FROM sys.key_constraints kc
+            JOIN sys.index_columns ic
+                ON ic.object_id = kc.parent_object_id
+               AND ic.index_id = kc.unique_index_id
+            JOIN sys.columns c
+                ON c.object_id = ic.object_id
+               AND c.column_id = ic.column_id
+            WHERE kc.parent_object_id = OBJECT_ID('dbo.stock_rec')
+              AND kc.type = 'PK'
+            ORDER BY ic.key_ordinal
+            FOR XML PATH(''), TYPE
+        ).value('.','nvarchar(max)'), 1, 2, N'');
+ 
+    IF @PKCols IS NULL OR LEN(@PKCols) = 0
+        THROW 50000, 'No se pudieron obtener columnas de la PK de dbo.stock_rec', 1;
+ 
+    DECLARE @FKDrop nvarchar(max) = N'';
+    DECLARE @FKCreate nvarchar(max) = N'';
+ 
+    ;WITH F AS (
+        SELECT fk.object_id, fk.name,
+               SCHEMA_NAME(pt.schema_id) AS parent_schema,
+               pt.name AS parent_table,
+               fk.delete_referential_action_desc AS del_action,
+               fk.update_referential_action_desc AS upd_action,
+               fk.is_not_for_replication
+        FROM sys.foreign_keys fk
+        JOIN sys.tables pt ON pt.object_id = fk.parent_object_id
+        WHERE fk.referenced_object_id = OBJECT_ID('dbo.stock_rec')
+    )
+    SELECT @FKDrop = @FKDrop +
+        N'ALTER TABLE [' + parent_schema + N'].[' + parent_table + N'] DROP CONSTRAINT [' + name + N'];' + CHAR(10)
+    FROM F;
+ 
+    IF LEN(@FKDrop) > 0 EXEC(@FKDrop);
+ 
+    DECLARE @IdxDrop nvarchar(max) = N'';
+    DECLARE @IdxCreate nvarchar(max) = N'';
+ 
+    SELECT @IdxDrop = @IdxDrop +
+        N'DROP INDEX [' + i.name + N'] ON [dbo].[stock_rec];' + CHAR(10)
+    FROM sys.indexes i
+    WHERE i.object_id = OBJECT_ID('dbo.stock_rec')
+      AND i.is_primary_key = 0
+      AND i.is_unique_constraint = 0
+      AND i.name IS NOT NULL
+      AND i.type_desc IN ('CLUSTERED','NONCLUSTERED');
+ 
+    IF LEN(@IdxDrop) > 0 EXEC(@IdxDrop);
+ 
+    EXEC(N'ALTER TABLE [dbo].[stock_rec] DROP CONSTRAINT [' + @PKName + N'];');
+ 
+    DECLARE @CreateNew nvarchar(max);
+ 
+    SELECT @CreateNew =
+        N'CREATE TABLE [dbo].[stock_rec__new](' + CHAR(10) +
+        STUFF((
+            SELECT
+                N',' + CHAR(10) +
+                N'    [' + c.name + N'] ' +
+                CASE
+                    WHEN c.name = 'IdStockRec' THEN N'INT IDENTITY(1,1)'
+                    ELSE
+                        CASE
+                            WHEN t.name IN ('varchar','char','varbinary','binary') THEN t.name + N'(' + CASE WHEN c.max_length = -1 THEN N'MAX' ELSE CAST(c.max_length AS nvarchar(10)) END + N')'
+                            WHEN t.name IN ('nvarchar','nchar') THEN t.name + N'(' + CASE WHEN c.max_length = -1 THEN N'MAX' ELSE CAST(c.max_length/2 AS nvarchar(10)) END + N')'
+                            WHEN t.name IN ('decimal','numeric') THEN t.name + N'(' + CAST(c.precision AS nvarchar(10)) + N',' + CAST(c.scale AS nvarchar(10)) + N')'
+                            WHEN t.name IN ('datetime2','datetimeoffset','time') THEN t.name + N'(' + CAST(c.scale AS nvarchar(10)) + N')'
+                            ELSE t.name
+                        END
+                END +
+                CASE WHEN c.is_nullable = 1 THEN N' NULL' ELSE N' NOT NULL' END
+            FROM sys.columns c
+            JOIN sys.types t ON t.user_type_id = c.user_type_id
+            WHERE c.object_id = OBJECT_ID('dbo.stock_rec')
+              AND c.is_computed = 0
+            ORDER BY c.column_id
+            FOR XML PATH(''), TYPE
+        ).value('.','nvarchar(max)'), 1, 1, N'') +
+        CHAR(10) + N');';
+ 
+    EXEC(@CreateNew);
+ 
+    DECLARE @Cols nvarchar(max);
+    SELECT @Cols =
+        STUFF((
+            SELECT N', [' + c.name + N']'
+            FROM sys.columns c
+            WHERE c.object_id = OBJECT_ID('dbo.stock_rec')
+              AND c.is_computed = 0
+            ORDER BY c.column_id
+            FOR XML PATH(''), TYPE
+        ).value('.','nvarchar(max)'), 1, 2, N'');
+ 
+    DECLARE @CopyBatch nvarchar(max) =
+        N'SET IDENTITY_INSERT [dbo].[stock_rec__new] ON;' + CHAR(10) +
+        N'INSERT INTO [dbo].[stock_rec__new](' + @Cols + N')' + CHAR(10) +
+        N'SELECT ' + @Cols + N' FROM [dbo].[stock_rec];' + CHAR(10) +
+        N'SET IDENTITY_INSERT [dbo].[stock_rec__new] OFF;';
+ 
+    EXEC(@CopyBatch);
+ 
+    DECLARE @PKNameNew sysname = @PKName;
+    IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'PK' AND name = @PKNameNew)
+        SET @PKNameNew = @PKNameNew + '_' + REPLACE(CONVERT(varchar(36), NEWID()), '-', '');
+ 
+    EXEC(N'ALTER TABLE [dbo].[stock_rec__new] ADD CONSTRAINT [' + @PKNameNew + N'] PRIMARY KEY CLUSTERED (' + @PKCols + N');');
+ 
+    DROP TABLE dbo.stock_rec;
+    EXEC sp_rename 'dbo.stock_rec__new', 'stock_rec';
+ 
+    DECLARE @NL nchar(1) = NCHAR(10);
+
+	DECLARE @RenamePK nvarchar(max) =
+	N'DECLARE @old sysname = N''' + @PKNameNew + N''', @new sysname = N''' + @PKName + N''';' + @NL +
+	N'IF EXISTS (SELECT 1 FROM sys.key_constraints WHERE name = @old AND parent_object_id = OBJECT_ID(''dbo.stock_rec''))' + @NL +
+	N'BEGIN EXEC sp_rename @old, @new, ''OBJECT''; END;';
+	EXEC(@RenamePK);
+ 
+    ;WITH I AS (
+        SELECT i.name, i.is_unique, i.type_desc, i.index_id
+        FROM sys.indexes i
+        WHERE i.object_id = OBJECT_ID('dbo.stock_rec')
+          AND i.is_primary_key = 0
+          AND i.is_unique_constraint = 0
+          AND i.name IS NOT NULL
+          AND i.type_desc IN ('CLUSTERED','NONCLUSTERED')
+    )
+    SELECT @IdxCreate = @IdxCreate +
+        N'CREATE ' + CASE WHEN I.is_unique = 1 THEN N'UNIQUE ' ELSE N'' END +
+        I.type_desc + N' INDEX [' + I.name + N'] ON [dbo].[stock_rec](' +
+        STUFF((
+            SELECT N', [' + c.name + N']' + CASE WHEN ic.is_descending_key = 1 THEN N' DESC' ELSE N' ASC' END
+            FROM sys.index_columns ic
+            JOIN sys.columns c ON c.object_id = ic.object_id AND c.column_id = ic.column_id
+            WHERE ic.object_id = OBJECT_ID('dbo.stock_rec')
+              AND ic.index_id = I.index_id
+              AND ic.is_included_column = 0
+              AND ic.key_ordinal > 0
+            ORDER BY ic.key_ordinal
+            FOR XML PATH(''), TYPE
+        ).value('.','nvarchar(max)'), 1, 2, N'') +
+        N');' + CHAR(10)
+    FROM I;
+ 
+    IF LEN(@IdxCreate) > 0 EXEC(@IdxCreate);
+ 
+    ;WITH F AS (
+        SELECT fk.object_id, fk.name,
+               SCHEMA_NAME(pt.schema_id) AS parent_schema,
+               pt.name AS parent_table,
+               fk.delete_referential_action_desc AS del_action,
+               fk.update_referential_action_desc AS upd_action,
+               fk.is_not_for_replication
+        FROM sys.foreign_keys fk
+        JOIN sys.tables pt ON pt.object_id = fk.parent_object_id
+        WHERE fk.referenced_object_id = OBJECT_ID('dbo.stock_rec')
+    )
+    SELECT @FKCreate = @FKCreate +
+        N'ALTER TABLE [' + parent_schema + N'].[' + parent_table + N'] WITH CHECK ADD CONSTRAINT [' + name + N'] FOREIGN KEY(' +
+        STUFF((
+            SELECT N', [' + pc.name + N']'
+            FROM sys.foreign_key_columns fkc
+            JOIN sys.columns pc ON pc.object_id = fkc.parent_object_id AND pc.column_id = fkc.parent_column_id
+            WHERE fkc.constraint_object_id = F.object_id
+            ORDER BY fkc.constraint_column_id
+            FOR XML PATH(''), TYPE
+        ).value('.','nvarchar(max)'), 1, 2, N'') +
+        N') REFERENCES [dbo].[stock_rec](' +
+        STUFF((
+            SELECT N', [' + rc.name + N']'
+            FROM sys.foreign_key_columns fkc
+            JOIN sys.columns rc ON rc.object_id = fkc.referenced_object_id AND rc.column_id = fkc.referenced_column_id
+            WHERE fkc.constraint_object_id = F.object_id
+            ORDER BY fkc.constraint_column_id
+            FOR XML PATH(''), TYPE
+        ).value('.','nvarchar(max)'), 1, 2, N'') +
+        N')' +
+        CASE WHEN del_action <> 'NO_ACTION' THEN N' ON DELETE ' + REPLACE(del_action,'_',' ') ELSE N'' END +
+        CASE WHEN upd_action <> 'NO_ACTION' THEN N' ON UPDATE ' + REPLACE(upd_action,'_',' ') ELSE N'' END +
+        CASE WHEN is_not_for_replication = 1 THEN N' NOT FOR REPLICATION' ELSE N'' END +
+        N';' + CHAR(10) +
+        N'ALTER TABLE [' + parent_schema + N'].[' + parent_table + N'] CHECK CONSTRAINT [' + name + N'];' + CHAR(10)
+    FROM F;
+ 
+    IF LEN(@FKCreate) > 0 EXEC(@FKCreate);
+ 
+    DECLARE @MaxId int;
+    SELECT @MaxId = MAX(IdStockRec) FROM dbo.stock_rec;
+    IF @MaxId IS NOT NULL
+        DBCC CHECKIDENT ('dbo.stock_rec', RESEED, @MaxId);
+ 
+    COMMIT;
+END TRY
+BEGIN CATCH
+    IF XACT_STATE() <> 0 ROLLBACK;
+    THROW;
+END CATCH;
