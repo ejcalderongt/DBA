@@ -1,3 +1,28 @@
+--#EJC20260304 - Identity IdError
+SET NOCOUNT ON;
+SET XACT_ABORT ON;
+
+BEGIN TRY
+    BEGIN TRAN;
+
+    IF COL_LENGTH('dbo.log_error_wms', 'IdError_new') IS NULL
+        ALTER TABLE dbo.log_error_wms ADD IdError_new INT IDENTITY(1,1) NOT NULL;
+
+    IF EXISTS (SELECT 1 FROM sys.key_constraints WHERE name = 'PK_log_error_wms' AND parent_object_id = OBJECT_ID('dbo.log_error_wms'))
+        ALTER TABLE dbo.log_error_wms DROP CONSTRAINT PK_log_error_wms;
+
+    EXEC sp_rename 'dbo.log_error_wms.IdError', 'IdError_old', 'COLUMN';
+    EXEC sp_rename 'dbo.log_error_wms.IdError_new', 'IdError', 'COLUMN';
+
+    ALTER TABLE dbo.log_error_wms ADD CONSTRAINT PK_log_error_wms PRIMARY KEY CLUSTERED (IdError);
+
+    COMMIT;
+END TRY
+BEGIN CATCH
+    IF XACT_STATE() <> 0 ROLLBACK;
+    THROW;
+END CATCH;
+
 --#EJC20230301 Se agregaron campos nuevos
 alter table log_error_wms add Line_No int, Item_No nvarchar(50), UmBas nvarchar(50), Variant_Code nvarchar(50), Cantidad float, Referencia_Documento nvarchar(50)
 
