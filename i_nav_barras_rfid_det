@@ -1,0 +1,11 @@
+--#GT 10032026: detalle de ingresos/salidas con tag
+
+CREATE TABLE [dbo].[i_nav_barras_rfid_det](
+	[IdRFIDEnc] [int] NOT NULL,
+	[barra_epc] [nvarchar](50) NOT NULL,
+	[tagid] [nvarchar](50) NOT NULL,
+	[IdDispositivo] [datetime] NULL,
+	[IdOperador] [int] NULL
+) ON [PRIMARY]
+GO
+
