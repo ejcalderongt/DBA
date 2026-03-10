@@ -1,0 +1,30 @@
+--#GT 10032026: se añade encabezado para recibir tags
+
+CREATE TABLE [dbo].[i_nav_barras_rfid_enc](
+	[IdRFIDEnc] [int] IDENTITY(1,1) NOT NULL,
+	[IdOrdenCompraEnc] [int] NULL,
+	[IdRecepcionEnc] [int] NULL,
+	[IdBodega] [int] NULL,
+	[fec_agr] [datetime] NULL,
+	[fec_mod] [datetime] NULL,
+	[Estado] [nvarchar](1) NULL,
+	[Tipo] [nvarchar](1) NULL,
+	[IdProveedor] [int] NULL,
+	[IdCliente] [int] NULL,
+	[IdPedidoEnc] [int] NULL,
+ CONSTRAINT [PK_i_nav_barras_rfid_enc] PRIMARY KEY CLUSTERED 
+(
+	[IdRFIDEnc] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[i_nav_barras_rfid_enc] ADD  DEFAULT (NULL) FOR [IdProveedor]
+GO
+
+ALTER TABLE [dbo].[i_nav_barras_rfid_enc] ADD  DEFAULT (NULL) FOR [IdCliente]
+GO
+
+ALTER TABLE [dbo].[i_nav_barras_rfid_enc] ADD  DEFAULT (NULL) FOR [IdPedidoEnc]
+GO
+
