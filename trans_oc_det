@@ -1,3 +1,8 @@
+--#CKFK Colocar el campo no_linea not null
+ALTER TABLE trans_oc_det 
+alter column no_linea  int not null
+GO
+
 --#EJC20260220-Rama: dev_2028 CAmpos nuevos de entarimado
 alter table trans_oc_det add camas_tarima int not null default 0
 alter table trans_oc_det add cajas_cama int not null default 0
