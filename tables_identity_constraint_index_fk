@@ -1,0 +1,414 @@
+
+
+ALTER TABLE [dbo].[i_nav_transacciones_out] ADD  DEFAULT ((0)) FOR [es_servicio]
+GO
+ALTER TABLE [dbo].[i_nav_transacciones_out] ADD  DEFAULT ('') FOR [no_documento_salida_ref_devol]
+GO
+ALTER TABLE [dbo].[i_nav_transacciones_out] ADD  DEFAULT ((0)) FOR [IdPedidoEncDevol]
+GO
+ALTER TABLE [dbo].[i_nav_transacciones_out] ADD  DEFAULT ((0)) FOR [cantidad_enviada]
+GO
+ALTER TABLE [dbo].[i_nav_transacciones_out] ADD  DEFAULT ((0)) FOR [cantidad_pendiente]
+GO
+ALTER TABLE [dbo].[i_nav_transacciones_out] ADD  DEFAULT ((0)) FOR [auditar]
+GO
+ALTER TABLE [dbo].[stock] ADD  CONSTRAINT [DF_stock_lote]  DEFAULT ('') FOR [lote]
+GO
+ALTER TABLE [dbo].[stock] ADD  CONSTRAINT [DF_stock_cantidad]  DEFAULT ((0)) FOR [cantidad]
+GO
+ALTER TABLE [dbo].[stock] ADD  CONSTRAINT [DF_stock_fecha_ingreso]  DEFAULT (getdate()) FOR [fecha_ingreso]
+GO
+ALTER TABLE [dbo].[stock] ADD  CONSTRAINT [DF_stock_fecha_vence]  DEFAULT (getdate()) FOR [fecha_vence]
+GO
+ALTER TABLE [dbo].[stock] ADD  CONSTRAINT [DF_stock_peso]  DEFAULT ((0)) FOR [peso]
+GO
+ALTER TABLE [dbo].[stock] ADD  CONSTRAINT [DF_stock_temperatura]  DEFAULT ((0)) FOR [temperatura]
+GO
+ALTER TABLE [dbo].[stock] ADD  DEFAULT ((0)) FOR [pallet_no_estandar]
+GO
+ALTER TABLE [dbo].[stock_rec] ADD  CONSTRAINT [DF_stock_rec_lote]  DEFAULT ('') FOR [lote]
+GO
+ALTER TABLE [dbo].[stock_rec] ADD  CONSTRAINT [DF_stock_rec_peso]  DEFAULT ((0)) FOR [peso]
+GO
+ALTER TABLE [dbo].[stock_rec] ADD  CONSTRAINT [DF_stock_rec_temperatura]  DEFAULT ((0)) FOR [temperatura]
+GO
+ALTER TABLE [dbo].[stock_rec] ADD  CONSTRAINT [DF_stock_rec_regularizado]  DEFAULT ((0)) FOR [regularizado]
+GO
+ALTER TABLE [dbo].[stock_rec] ADD  CONSTRAINT [DF__stock_rec__impre__44AC9DE4]  DEFAULT ((0)) FOR [impreso]
+GO
+ALTER TABLE [dbo].[stock_rec] ADD  CONSTRAINT [DF__stock_rec__palle__4F400647]  DEFAULT ((0)) FOR [pallet_no_estandar]
+GO
+ALTER TABLE [dbo].[stock_res] ADD  DEFAULT ((0)) FOR [IdBodega]
+GO
+ALTER TABLE [dbo].[trans_pe_det] ADD  DEFAULT ((0)) FOR [EsPadre]
+GO
+ALTER TABLE [dbo].[trans_pe_det] ADD  DEFAULT ((0)) FOR [Peso_Bruto]
+GO
+ALTER TABLE [dbo].[trans_pe_det] ADD  DEFAULT ((0)) FOR [Peso_Neto]
+GO
+ALTER TABLE [dbo].[trans_pe_det] ADD  DEFAULT ((0)) FOR [Costo]
+GO
+ALTER TABLE [dbo].[trans_pe_det] ADD  DEFAULT ((0)) FOR [valor_aduana]
+GO
+ALTER TABLE [dbo].[trans_pe_det] ADD  DEFAULT ((0)) FOR [valor_fob]
+GO
+ALTER TABLE [dbo].[trans_pe_det] ADD  DEFAULT ((0)) FOR [valor_iva]
+GO
+ALTER TABLE [dbo].[trans_pe_det] ADD  DEFAULT ((0)) FOR [valor_dai]
+GO
+ALTER TABLE [dbo].[trans_pe_det] ADD  DEFAULT ((0)) FOR [valor_seguro]
+GO
+ALTER TABLE [dbo].[trans_pe_det] ADD  DEFAULT ((0)) FOR [valor_flete]
+GO
+ALTER TABLE [dbo].[trans_pe_det] ADD  DEFAULT ((0)) FOR [Total_linea]
+GO
+ALTER TABLE [dbo].[trans_pe_det] ADD  DEFAULT (NULL) FOR [stock_liberado]
+GO
+ALTER TABLE [dbo].[trans_picking_ubic] ADD  CONSTRAINT [DF__trans_pic__idpic__668D7FF3]  DEFAULT ((0)) FOR [IdPickingEnc]
+GO
+ALTER TABLE [dbo].[trans_picking_ubic] ADD  CONSTRAINT [DF_picking_ubic_cant_veri]  DEFAULT ((0)) FOR [cantidad_verificada]
+GO
+ALTER TABLE [dbo].[trans_picking_ubic] ADD  CONSTRAINT [DF_picking_ubic_encontrado]  DEFAULT ((1)) FOR [encontrado]
+GO
+ALTER TABLE [dbo].[trans_picking_ubic] ADD  CONSTRAINT [DF_picking_ubic_dañado_verificacion]  DEFAULT ((0)) FOR [dañado_verificacion]
+GO
+ALTER TABLE [dbo].[trans_picking_ubic] ADD  DEFAULT ((0)) FOR [no_encontrado]
+GO
+ALTER TABLE [dbo].[trans_picking_ubic] ADD  DEFAULT ((0)) FOR [IdOperadorBodega_Asignado]
+GO
+ALTER TABLE [dbo].[trans_re_det] ADD  CONSTRAINT [DF_trans_re_det_peso_unitario]  DEFAULT ((0)) FOR [peso_unitario]
+GO
+ALTER TABLE [dbo].[trans_re_det] ADD  DEFAULT ((0)) FOR [pallet_no_estandar]
+GO
+ALTER TABLE [dbo].[trans_re_det] ADD  DEFAULT ((0)) FOR [IdJornadaSistema]
+GO
+ALTER TABLE [dbo].[trans_re_det] ADD  DEFAULT (NULL) FOR [host]
+GO
+ALTER TABLE [dbo].[stock]  WITH CHECK ADD  CONSTRAINT [FK_stock_bodega_ubicacion] FOREIGN KEY([IdUbicacion], [IdBodega])
+REFERENCES [dbo].[bodega_ubicacion] ([IdUbicacion], [IdBodega])
+GO
+ALTER TABLE [dbo].[stock] CHECK CONSTRAINT [FK_stock_bodega_ubicacion]
+GO
+ALTER TABLE [dbo].[stock]  WITH CHECK ADD  CONSTRAINT [FK_stock_bodega_ubicacion1] FOREIGN KEY([IdUbicacion_anterior], [IdBodega])
+REFERENCES [dbo].[bodega_ubicacion] ([IdUbicacion], [IdBodega])
+GO
+ALTER TABLE [dbo].[stock] CHECK CONSTRAINT [FK_stock_bodega_ubicacion1]
+GO
+ALTER TABLE [dbo].[stock]  WITH CHECK ADD  CONSTRAINT [FK_stock_producto_bodega] FOREIGN KEY([IdProductoBodega])
+REFERENCES [dbo].[producto_bodega] ([IdProductoBodega])
+GO
+ALTER TABLE [dbo].[stock] CHECK CONSTRAINT [FK_stock_producto_bodega]
+GO
+ALTER TABLE [dbo].[stock]  WITH CHECK ADD  CONSTRAINT [FK_stock_producto_bodega_rec] FOREIGN KEY([IdProductoBodega])
+REFERENCES [dbo].[producto_bodega] ([IdProductoBodega])
+GO
+ALTER TABLE [dbo].[stock] CHECK CONSTRAINT [FK_stock_producto_bodega_rec]
+GO
+ALTER TABLE [dbo].[stock]  WITH CHECK ADD  CONSTRAINT [FK_stock_producto_estado] FOREIGN KEY([IdProductoEstado])
+REFERENCES [dbo].[producto_estado] ([IdEstado])
+GO
+ALTER TABLE [dbo].[stock] CHECK CONSTRAINT [FK_stock_producto_estado]
+GO
+ALTER TABLE [dbo].[stock]  WITH CHECK ADD  CONSTRAINT [FK_stock_producto_estado_rec] FOREIGN KEY([IdProductoEstado])
+REFERENCES [dbo].[producto_estado] ([IdEstado])
+GO
+ALTER TABLE [dbo].[stock] CHECK CONSTRAINT [FK_stock_producto_estado_rec]
+GO
+ALTER TABLE [dbo].[stock]  WITH CHECK ADD  CONSTRAINT [FK_stock_producto_presentacion] FOREIGN KEY([IdPresentacion])
+REFERENCES [dbo].[producto_presentacion] ([IdPresentacion])
+GO
+ALTER TABLE [dbo].[stock] CHECK CONSTRAINT [FK_stock_producto_presentacion]
+GO
+ALTER TABLE [dbo].[stock]  WITH CHECK ADD  CONSTRAINT [FK_stock_producto_presentacion_rec] FOREIGN KEY([IdPresentacion])
+REFERENCES [dbo].[producto_presentacion] ([IdPresentacion])
+GO
+ALTER TABLE [dbo].[stock] CHECK CONSTRAINT [FK_stock_producto_presentacion_rec]
+GO
+ALTER TABLE [dbo].[stock]  WITH CHECK ADD  CONSTRAINT [FK_stock_propietario_bodega] FOREIGN KEY([IdPropietarioBodega])
+REFERENCES [dbo].[propietario_bodega] ([IdPropietarioBodega])
+GO
+ALTER TABLE [dbo].[stock] CHECK CONSTRAINT [FK_stock_propietario_bodega]
+GO
+ALTER TABLE [dbo].[stock]  WITH CHECK ADD  CONSTRAINT [FK_stock_propietario_bodega_rec] FOREIGN KEY([IdPropietarioBodega])
+REFERENCES [dbo].[propietario_bodega] ([IdPropietarioBodega])
+GO
+ALTER TABLE [dbo].[stock] CHECK CONSTRAINT [FK_stock_propietario_bodega_rec]
+GO
+ALTER TABLE [dbo].[stock]  WITH CHECK ADD  CONSTRAINT [FK_stock_trans_pe_enc] FOREIGN KEY([IdPedidoEnc])
+REFERENCES [dbo].[trans_pe_enc] ([IdPedidoEnc])
+GO
+ALTER TABLE [dbo].[stock] CHECK CONSTRAINT [FK_stock_trans_pe_enc]
+GO
+ALTER TABLE [dbo].[stock]  WITH CHECK ADD  CONSTRAINT [FK_stock_trans_pe_enc_rec] FOREIGN KEY([IdPedidoEnc])
+REFERENCES [dbo].[trans_pe_enc] ([IdPedidoEnc])
+GO
+ALTER TABLE [dbo].[stock] CHECK CONSTRAINT [FK_stock_trans_pe_enc_rec]
+GO
+ALTER TABLE [dbo].[stock]  WITH CHECK ADD  CONSTRAINT [FK_stock_trans_re_det] FOREIGN KEY([IdRecepcionDet], [IdRecepcionEnc])
+REFERENCES [dbo].[trans_re_det] ([IdRecepcionDet], [IdRecepcionEnc])
+GO
+ALTER TABLE [dbo].[stock] CHECK CONSTRAINT [FK_stock_trans_re_det]
+GO
+ALTER TABLE [dbo].[stock]  WITH NOCHECK ADD  CONSTRAINT [FK_stock_unidad_medida] FOREIGN KEY([IdUnidadMedida])
+REFERENCES [dbo].[unidad_medida] ([IdUnidadMedida])
+GO
+ALTER TABLE [dbo].[stock] NOCHECK CONSTRAINT [FK_stock_unidad_medida]
+GO
+ALTER TABLE [dbo].[stock]  WITH NOCHECK ADD  CONSTRAINT [FK_stock_unidad_medida_rec] FOREIGN KEY([IdUnidadMedida])
+REFERENCES [dbo].[unidad_medida] ([IdUnidadMedida])
+GO
+ALTER TABLE [dbo].[stock] NOCHECK CONSTRAINT [FK_stock_unidad_medida_rec]
+GO
+ALTER TABLE [dbo].[stock_rec]  WITH CHECK ADD  CONSTRAINT [FK_stock_rec_producto_bodega] FOREIGN KEY([IdProductoBodega])
+REFERENCES [dbo].[producto_bodega] ([IdProductoBodega])
+GO
+ALTER TABLE [dbo].[stock_rec] CHECK CONSTRAINT [FK_stock_rec_producto_bodega]
+GO
+ALTER TABLE [dbo].[stock_rec]  WITH CHECK ADD  CONSTRAINT [FK_stock_rec_producto_estado] FOREIGN KEY([IdProductoEstado])
+REFERENCES [dbo].[producto_estado] ([IdEstado])
+GO
+ALTER TABLE [dbo].[stock_rec] CHECK CONSTRAINT [FK_stock_rec_producto_estado]
+GO
+ALTER TABLE [dbo].[stock_rec]  WITH CHECK ADD  CONSTRAINT [FK_stock_rec_producto_presentacion] FOREIGN KEY([IdPresentacion])
+REFERENCES [dbo].[producto_presentacion] ([IdPresentacion])
+GO
+ALTER TABLE [dbo].[stock_rec] CHECK CONSTRAINT [FK_stock_rec_producto_presentacion]
+GO
+ALTER TABLE [dbo].[stock_rec]  WITH CHECK ADD  CONSTRAINT [FK_stock_rec_propietario_bodega] FOREIGN KEY([IdPropietarioBodega])
+REFERENCES [dbo].[propietario_bodega] ([IdPropietarioBodega])
+GO
+ALTER TABLE [dbo].[stock_rec] CHECK CONSTRAINT [FK_stock_rec_propietario_bodega]
+GO
+ALTER TABLE [dbo].[stock_rec]  WITH CHECK ADD  CONSTRAINT [FK_stock_rec_trans_re_det] FOREIGN KEY([IdRecepcionDet], [IdRecepcionEnc])
+REFERENCES [dbo].[trans_re_det] ([IdRecepcionDet], [IdRecepcionEnc])
+GO
+ALTER TABLE [dbo].[stock_rec] CHECK CONSTRAINT [FK_stock_rec_trans_re_det]
+GO
+ALTER TABLE [dbo].[stock_rec]  WITH NOCHECK ADD  CONSTRAINT [FK_stock_rec_unidad_medida] FOREIGN KEY([IdUnidadMedida])
+REFERENCES [dbo].[unidad_medida] ([IdUnidadMedida])
+GO
+ALTER TABLE [dbo].[stock_rec] NOCHECK CONSTRAINT [FK_stock_rec_unidad_medida]
+GO
+ALTER TABLE [dbo].[trans_pe_det]  WITH CHECK ADD  CONSTRAINT [FK_trans_pedido_det_producto_bodega] FOREIGN KEY([IdProductoBodega])
+REFERENCES [dbo].[producto_bodega] ([IdProductoBodega])
+GO
+ALTER TABLE [dbo].[trans_pe_det] CHECK CONSTRAINT [FK_trans_pedido_det_producto_bodega]
+GO
+ALTER TABLE [dbo].[trans_pe_det]  WITH CHECK ADD  CONSTRAINT [FK_trans_pedido_det_producto_presentacion] FOREIGN KEY([IdPresentacion])
+REFERENCES [dbo].[producto_presentacion] ([IdPresentacion])
+GO
+ALTER TABLE [dbo].[trans_pe_det] CHECK CONSTRAINT [FK_trans_pedido_det_producto_presentacion]
+GO
+ALTER TABLE [dbo].[trans_pe_det]  WITH CHECK ADD  CONSTRAINT [FK_trans_pedido_det_trans_pedido_enc] FOREIGN KEY([IdPedidoEnc])
+REFERENCES [dbo].[trans_pe_enc] ([IdPedidoEnc])
+GO
+ALTER TABLE [dbo].[trans_pe_det] CHECK CONSTRAINT [FK_trans_pedido_det_trans_pedido_enc]
+GO
+ALTER TABLE [dbo].[trans_pe_det]  WITH NOCHECK ADD  CONSTRAINT [FK_trans_pedido_det_unidad_medida] FOREIGN KEY([IdUnidadMedidaBasica])
+REFERENCES [dbo].[unidad_medida] ([IdUnidadMedida])
+GO
+ALTER TABLE [dbo].[trans_pe_det] NOCHECK CONSTRAINT [FK_trans_pedido_det_unidad_medida]
+GO
+ALTER TABLE [dbo].[trans_picking_ubic]  WITH CHECK ADD  CONSTRAINT [FK_trans_picking_ubic_trans_picking_det] FOREIGN KEY([IdPickingDet])
+REFERENCES [dbo].[trans_picking_det] ([IdPickingDet])
+GO
+ALTER TABLE [dbo].[trans_picking_ubic] CHECK CONSTRAINT [FK_trans_picking_ubic_trans_picking_det]
+GO
+ALTER TABLE [dbo].[trans_picking_ubic]  WITH CHECK ADD  CONSTRAINT [FK_trans_picking_ubic_unidad_medida] FOREIGN KEY([IdUnidadMedida])
+REFERENCES [dbo].[unidad_medida] ([IdUnidadMedida])
+GO
+ALTER TABLE [dbo].[trans_picking_ubic] CHECK CONSTRAINT [FK_trans_picking_ubic_unidad_medida]
+GO
+ALTER TABLE [dbo].[trans_re_det]  WITH CHECK ADD  CONSTRAINT [FK_trans_re_det_motivo_devolucion] FOREIGN KEY([IdMotivoDevolucion])
+REFERENCES [dbo].[motivo_devolucion] ([IdMotivoDevolucion])
+GO
+ALTER TABLE [dbo].[trans_re_det] CHECK CONSTRAINT [FK_trans_re_det_motivo_devolucion]
+GO
+ALTER TABLE [dbo].[trans_re_det]  WITH CHECK ADD  CONSTRAINT [FK_trans_re_det_operador_bodega] FOREIGN KEY([IdOperadorBodega])
+REFERENCES [dbo].[operador_bodega] ([IdOperadorBodega])
+GO
+ALTER TABLE [dbo].[trans_re_det] CHECK CONSTRAINT [FK_trans_re_det_operador_bodega]
+GO
+ALTER TABLE [dbo].[trans_re_det]  WITH CHECK ADD  CONSTRAINT [FK_trans_re_det_producto_bodega] FOREIGN KEY([IdProductoBodega])
+REFERENCES [dbo].[producto_bodega] ([IdProductoBodega])
+GO
+ALTER TABLE [dbo].[trans_re_det] CHECK CONSTRAINT [FK_trans_re_det_producto_bodega]
+GO
+ALTER TABLE [dbo].[trans_re_det]  WITH NOCHECK ADD  CONSTRAINT [FK_trans_re_det_unidad_medida] FOREIGN KEY([IdUnidadMedida])
+REFERENCES [dbo].[unidad_medida] ([IdUnidadMedida])
+GO
+ALTER TABLE [dbo].[trans_re_det] NOCHECK CONSTRAINT [FK_trans_re_det_unidad_medida]
+GO
+ALTER TABLE [dbo].[trans_re_det]  WITH CHECK ADD  CONSTRAINT [FK_trans_recepcion_det_producto_estado] FOREIGN KEY([IdProductoEstado])
+REFERENCES [dbo].[producto_estado] ([IdEstado])
+GO
+ALTER TABLE [dbo].[trans_re_det] CHECK CONSTRAINT [FK_trans_recepcion_det_producto_estado]
+GO
+ALTER TABLE [dbo].[trans_re_det]  WITH CHECK ADD  CONSTRAINT [FK_trans_recepcion_det_producto_presentacion] FOREIGN KEY([IdPresentacion])
+REFERENCES [dbo].[producto_presentacion] ([IdPresentacion])
+GO
+ALTER TABLE [dbo].[trans_re_det] CHECK CONSTRAINT [FK_trans_recepcion_det_producto_presentacion]
+GO
+ALTER TABLE [dbo].[trans_re_det]  WITH CHECK ADD  CONSTRAINT [FK_trans_recepcion_det_trans_recepcion_enc] FOREIGN KEY([IdRecepcionEnc])
+REFERENCES [dbo].[trans_re_enc] ([IdRecepcionEnc])
+GO
+ALTER TABLE [dbo].[trans_re_det] CHECK CONSTRAINT [FK_trans_recepcion_det_trans_recepcion_enc]
+GO
+ALTER TABLE [dbo].[stock]  WITH CHECK ADD  CONSTRAINT [Stock_NonNegative_20200115_EJC] CHECK  (([Cantidad]>(0)))
+GO
+ALTER TABLE [dbo].[stock] CHECK CONSTRAINT [Stock_NonNegative_20200115_EJC]
+GO
+ALTER TABLE [dbo].[stock_res]  WITH CHECK ADD  CONSTRAINT [Cons_restriccion] CHECK  (([cantidad]>(0)))
+GO
+ALTER TABLE [dbo].[stock_res] CHECK CONSTRAINT [Cons_restriccion]
+GO
+ALTER TABLE [dbo].[trans_picking_ubic]  WITH CHECK ADD  CONSTRAINT [Stock_NonNegative_20250228_CKFK] CHECK  (([cantidad_solicitada]>(0)))
+GO
+ALTER TABLE [dbo].[trans_picking_ubic] CHECK CONSTRAINT [Stock_NonNegative_20250228_CKFK]
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Debe indicar el tipo de transacción que reserva el stock PE,UB,CE,TR' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'stock_res', @level2type=N'COLUMN',@level2name=N'Indicador'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Ubicación en la bodega de donde será tomado el producto al momento del picking' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic', @level2type=N'COLUMN',@level2name=N'IdUbicacion'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Lote de producto a pickear' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic', @level2type=N'COLUMN',@level2name=N'lote'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'fecha de vencimiento del producto' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic', @level2type=N'COLUMN',@level2name=N'fecha_vence'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'fecha mínima de vencimiento que puede ser despachada (sirve para reemplazar el producto por otra fecha de vencimiento)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic', @level2type=N'COLUMN',@level2name=N'fecha_minima'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'número de serie, aplica para equipos con serie, no serializados ej: linea blanca, motores, etc.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic', @level2type=N'COLUMN',@level2name=N'serial'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'código único de pallet' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic', @level2type=N'COLUMN',@level2name=N'lic_plate'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Indica si el operador escaneó o no esta linea, se utiliza para saber si una línea del picking fue reemplazada por otra' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic', @level2type=N'COLUMN',@level2name=N'acepto'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Peso solicitado en el pedido' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic', @level2type=N'COLUMN',@level2name=N'peso_solicitado'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Peso recibido en el picking' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic', @level2type=N'COLUMN',@level2name=N'peso_recibido'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Peso verificado en el picking' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic', @level2type=N'COLUMN',@level2name=N'peso_verificado'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Peso despachado' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic', @level2type=N'COLUMN',@level2name=N'peso_despachado'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'cantidad solicitada en pedido' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic', @level2type=N'COLUMN',@level2name=N'cantidad_solicitada'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'cantidad recibida en línea de picking en ubicación de bodega' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic', @level2type=N'COLUMN',@level2name=N'cantidad_recibida'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'cantidad verificada' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic', @level2type=N'COLUMN',@level2name=N'cantidad_verificada'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Si el producto fue encontrado en el picking ' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic', @level2type=N'COLUMN',@level2name=N'encontrado'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'si el producto en la línea de picking estaba dañado, se marca como dañado con este campo' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic', @level2type=N'COLUMN',@level2name=N'dañado_verificacion'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Código del paquete en el que se almaceno x producto de la línea del picking' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic', @level2type=N'COLUMN',@level2name=N'no_packing'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'fecha y hora en la que se proceso la línea de picking' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic', @level2type=N'COLUMN',@level2name=N'fecha_picking'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'fecha y hora en la que se proceso la verificación de la línea de picking' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic', @level2type=N'COLUMN',@level2name=N'fecha_verificado'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'fecha y hora en la que se registró el packing de la línea del picking' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic', @level2type=N'COLUMN',@level2name=N'fecha_packing'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'fecha en la que se realizó el despacho del producto' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic', @level2type=N'COLUMN',@level2name=N'fecha_despachado'
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'cantidad despachada' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'trans_picking_ubic', @level2type=N'COLUMN',@level2name=N'cantidad_despachada'
+GO
+
+
+CREATE NONCLUSTERED INDEX [NCLI_BODEGA_UBICACION_20210217_EJC] ON [stock] (IdStock, IdProductoBodega, IdProductoEstado, IdPresentacion, IdUnidadMedida, IdUbicacion, IdUbicacion_anterior, IdRecepcionEnc, lote, lic_plate, serial, cantidad, fecha_ingreso, fecha_vence, añada, peso, IdBodega, IdPropietarioBodega);
+GO
+CREATE NONCLUSTERED INDEX [NCLI_STOCK_20191205_EJC] ON [stock] (IdProductoBodega, IdProductoEstado, IdPresentacion, IdUnidadMedida, IdUbicacion, lote, lic_plate, cantidad, fecha_ingreso, fecha_vence, IdPropietarioBodega);
+GO
+CREATE NONCLUSTERED INDEX [NCLI_Stock_20191210_EJC] ON [stock] (IdUbicacion);
+GO
+CREATE NONCLUSTERED INDEX [NCLI_Stock_20200112_EJC] ON [stock] (IdBodega, IdProductoBodega, IdProductoEstado, IdPresentacion, IdUnidadMedida, IdUbicacion, IdUbicacion_anterior, IdRecepcionEnc, lote, lic_plate, serial, cantidad, fecha_ingreso, fecha_vence, añada, peso, atributo_variante_1, IdPropietarioBodega);
+GO
+CREATE NONCLUSTERED INDEX [NCLI_Stock_20200115_EJC] ON [stock] (IdBodega, IdPresentacion, IdRecepcionEnc, IdRecepcionDet, lote, cantidad, fecha_vence, IdProductoBodega);
+GO
+CREATE NONCLUSTERED INDEX [NCLI_Stock_20210304_EJC] ON [stock] (cantidad, IdBodega, IdProductoBodega, IdProductoEstado, IdUnidadMedida);
+GO
+CREATE NONCLUSTERED INDEX [NCLI_STOCK_202210270100_EJC] ON [stock] (IdBodega, IdUbicacion);
+GO
+CREATE NONCLUSTERED INDEX [NCLI_STOCK_202302211402_EJC] ON [stock] (IdBodega, IdProductoBodega, IdProductoEstado, IdPresentacion, IdUnidadMedida, IdUbicacion, IdUbicacion_anterior, IdRecepcionEnc, IdRecepcionDet, lote, lic_plate, serial, cantidad, fecha_ingreso, fecha_vence, añada, peso, atributo_variante_1, pallet_no_estandar, IdPropietarioBodega);
+GO
+CREATE NONCLUSTERED INDEX [NCLI_Stock_20230522_EJC] ON [stock] (IdBodega, IdPropietarioBodega, IdProductoBodega, IdProductoEstado, IdPresentacion, IdUnidadMedida, IdUbicacion, IdUbicacion_anterior, IdRecepcionDet, lote, lic_plate, serial, cantidad, fecha_ingreso, fecha_vence, añada, peso, atributo_variante_1, pallet_no_estandar, IdRecepcionEnc);
+GO
+CREATE NONCLUSTERED INDEX [NCLI_Stock_202308081128_EJC] ON [stock] (IdBodega, IdUbicacion, lote, lic_plate, cantidad, IdPresentacion);
+GO
+CREATE NONCLUSTERED INDEX [NCLI_Stock_EJC20210217] ON [stock] (IdStock, IdPropietarioBodega, IdProductoBodega, IdProductoEstado, IdPresentacion, IdUbicacion, IdUbicacion_anterior, IdRecepcionEnc, lote, lic_plate, serial, cantidad, fecha_ingreso, fecha_vence, añada, peso, atributo_variante_1, IdBodega, IdUnidadMedida);
+GO
+CREATE NONCLUSTERED INDEX [NCLI_STOCK_LICPLATE_202217120405AM_EJC] ON [stock] (IdBodega, lic_plate);
+GO
+CREATE NONCLUSTERED INDEX [NCLI_STOCK_MERCOPAN_20220503_EJC] ON [stock] (IdBodega, IdProductoBodega, IdProductoEstado, IdPresentacion, IdUnidadMedida, IdUbicacion, IdUbicacion_anterior, IdRecepcionEnc, lote, lic_plate, serial, cantidad, fecha_ingreso, fecha_vence, añada, peso, atributo_variante_1, IdPropietarioBodega);
+GO
+CREATE UNIQUE CLUSTERED INDEX [PK_stock] ON [stock] (IdStock);
+GO
+
+CREATE NONCLUSTERED INDEX [NCLI_STOCK_REC_LICPLATE_EJC20221712] ON [stock_rec] (lic_plate, IdBodega);
+GO
+CREATE UNIQUE CLUSTERED INDEX [PK_stock_rec] ON [stock_rec] (IdStockRec);
+GO
+
+CREATE NONCLUSTERED INDEX [IX_STOCK_RES_20220619] ON [stock_res] (IdTransaccion, IdPedidoDet, IdStock, IdPropietarioBodega, IdProductoBodega, IdProductoEstado, IdPresentacion, IdUnidadMedida, IdUbicacion, ubicacion_ant, IdRecepcion, lote, lic_plate, serial, cantidad, peso, estado, fecha_ingreso, fecha_vence, uds_lic_plate, no_bulto, IdPicking, IdDespacho, user_agr, fec_agr, user_mod, fec_mod, host, añada, fecha_manufactura, pallet_no_estandar, Indicador, IdBodega, IdPedido);
+GO
+CREATE NONCLUSTERED INDEX [NCLI_stock_res_EJC20220510] ON [stock_res] (IdPedidoDet, IdStock, IdProductoEstado, IdPresentacion, IdUbicacion, lote, lic_plate, cantidad, peso, fecha_vence, IdPedido, host, IdBodega, IdUnidadMedida);
+GO
+CREATE UNIQUE CLUSTERED INDEX [PK_stock_pe] ON [stock_res] (IdStockRes);
+GO
+
+CREATE NONCLUSTERED INDEX [NCI_CKFK_20250203_Pciking_Ubic] ON [trans_picking_ubic] (IdPickingEnc, IdProductoBodega, IdProductoEstado, fecha_vence, lic_plate, cantidad_verificada, fecha_verificado, IdOperadorBodega_Verifico, IdPedidoEnc, dañado_verificacion, dañado_picking, no_encontrado, cantidad_recibida);
+GO
+CREATE NONCLUSTERED INDEX [NCL_CKFK_20250324_PICKING] ON [trans_picking_ubic] (IdPickingEnc, IdStock, IdProductoBodega, IdProductoEstado, fecha_vence, lic_plate, cantidad_recibida, fecha_picking, IdPedidoDet, IdOperadorBodega_Pickeo, IdPedidoEnc, dañado_verificacion, dañado_picking, no_encontrado);
+GO
+CREATE NONCLUSTERED INDEX [NCL_CKFK_20250324_PICKING2] ON [trans_picking_ubic] (IdPickingEnc, IdStock, IdProductoBodega, IdProductoEstado, fecha_vence, lic_plate, cantidad_recibida, fecha_picking, IdPedidoDet, IdOperadorBodega_Pickeo, dañado_verificacion, dañado_picking, IdPedidoEnc, no_encontrado);
+GO
+CREATE NONCLUSTERED INDEX [NCL_CKFK_20250714_PickingUbic] ON [trans_picking_ubic] (IdProductoBodega, cantidad_despachada, dañado_verificacion, dañado_picking, IdBodega, IdPedidoEnc, no_encontrado, cantidad_verificada);
+GO
+CREATE NONCLUSTERED INDEX [NCLI_2401221558_VW_Tbleron] ON [trans_picking_ubic] (IdPickingEnc, IdPropietarioBodega, IdProductoBodega, IdPresentacion, IdUnidadMedida, lic_plate, cantidad_recibida, cantidad_despachada, IdBodega, IdOperadorBodega_Pickeo, IdOperadorBodega_Verifico, IdPedidoEnc, activo);
+GO
+CREATE NONCLUSTERED INDEX [NCLI_trans_picking_ubic_20210908_EJC] ON [trans_picking_ubic] (IdPickingUbic, IdPickingDet, IdUbicacion, IdStock, IdPropietarioBodega, IdPresentacion, IdUnidadMedida, IdRecepcion, lote, fecha_vence, acepto, peso_recibido, peso_verificado, cantidad_recibida, cantidad_verificada, encontrado, IdPedidoDet, IdProductoBodega, IdProductoEstado);
+GO
+CREATE NONCLUSTERED INDEX [NCLI_Trans_Picking_ubic_202210051625_EJC] ON [trans_picking_ubic] (IdPickingDet, IdUbicacion, IdStock, IdPropietarioBodega, IdProductoBodega, IdProductoEstado, IdPresentacion, IdUnidadMedida, lote, fecha_vence, lic_plate, cantidad_recibida, cantidad_verificada, fecha_picking, cantidad_despachada, IdBodega, dañado_verificacion, dañado_picking, no_encontrado);
+GO
+CREATE NONCLUSTERED INDEX [NCLI_trans_picking_ubic_202210051634] ON [trans_picking_ubic] (IdPickingDet, IdUbicacion, cantidad_solicitada, cantidad_recibida, cantidad_verificada, cantidad_despachada, IdStockRes, dañado_verificacion, dañado_picking, no_encontrado);
+GO
+CREATE NONCLUSTERED INDEX [NCLI_trans_picking_ubic_202210051635_EJC] ON [trans_picking_ubic] (IdPickingDet, cantidad_solicitada, cantidad_recibida, cantidad_verificada, cantidad_despachada, IdUbicacion, dañado_verificacion, dañado_picking, IdStockRes, no_encontrado);
+GO
+CREATE NONCLUSTERED INDEX [NCLI_Trans_Picking_Ubic_202308081128_EJC] ON [trans_picking_ubic] (IdPickingDet, IdUbicacion, IdStock, IdPropietarioBodega, IdProductoBodega, IdProductoEstado, IdPresentacion, IdUnidadMedida, IdUbicacionAnterior, IdRecepcion, lote, fecha_vence, fecha_minima, serial, lic_plate, acepto, peso_solicitado, peso_recibido, peso_verificado, peso_despachado, cantidad_solicitada, cantidad_recibida, cantidad_verificada, encontrado, dañado_verificacion, fecha_real_vence, no_packing, fecha_picking, fecha_verificado, fecha_packing, fecha_despachado, cantidad_despachada, user_agr, fec_agr, user_mod, fec_mod, activo, IdPedidoDet, dañado_picking, IdStockRes, lic_plate_reemplazo, IdUbicacion_reemplazo, IdStock_reemplazo, IdBodega, IdOperadorBodega_Pickeo, IdOperadorBodega_Verifico, IdPedidoEnc, no_encontrado, IdUbicacionTemporal, IdOperadorBodega_Asignado, IdPickingEnc);
+GO
+CREATE NONCLUSTERED INDEX [NCLI_Trans_Picking_Ubic_20240122_EJC] ON [trans_picking_ubic] (IdPickingEnc, IdPropietarioBodega, IdProductoBodega, IdPresentacion, IdUnidadMedida, lic_plate, cantidad_recibida, cantidad_despachada, IdBodega, IdOperadorBodega_Verifico, activo, IdOperadorBodega_Pickeo, IdPedidoEnc);
+GO
+CREATE NONCLUSTERED INDEX [NCLI_Trans_Picking_Ubic_EJC_20220403] ON [trans_picking_ubic] (IdPickingEnc, IdPickingDet, IdPropietarioBodega, IdProductoBodega, IdProductoEstado, IdPresentacion, IdUnidadMedida, IdRecepcion, lote, fecha_vence, fecha_minima, lic_plate, peso_solicitado, peso_recibido, peso_verificado, peso_despachado, cantidad_solicitada, cantidad_recibida, cantidad_verificada, encontrado, dañado_verificacion, fecha_real_vence, no_packing, fecha_picking, fecha_verificado, fecha_packing, fecha_despachado, cantidad_despachada, user_agr, fec_agr, user_mod, fec_mod, activo, dañado_picking, lic_plate_reemplazo, IdUbicacion_reemplazo, IdStock_reemplazo, IdBodega, IdOperadorBodega_Pickeo, no_encontrado, IdUbicacionTemporal, IdUbicacion, IdStockRes);
+GO
+CREATE NONCLUSTERED INDEX [NCLI_Trans_Picking_Ubic_IdPickingDet_EJC] ON [trans_picking_ubic] (IdPickingDet);
+GO
+CREATE UNIQUE CLUSTERED INDEX [PK_trans_picking_ubic] ON [trans_picking_ubic] (IdPickingUbic);
+GO
+
+CREATE NONCLUSTERED INDEX [NCLI_Trans_Pe_Det_20210923_EJC] ON [trans_pe_det] (IdPedidoDet, IdPedidoEnc);
+GO
+CREATE NONCLUSTERED INDEX [NCLI_VW_PickingUbic_20220411_EJC] ON [trans_pe_det] (IdPedidoEnc, IdProductoBodega, IdEstado, IdPresentacion, IdUnidadMedidaBasica);
+GO
+CREATE NONCLUSTERED INDEX [noncltrans_pe_det] ON [trans_pe_det] (IdPedidoDet, IdPedidoEnc, IdProductoBodega, IdPresentacion, IdUnidadMedidaBasica, Cantidad, IdEstado);
+GO
+CREATE NONCLUSTERED INDEX [NonClusteredIndex-20190903-100646] ON [trans_pe_det] (IdPedidoDet, IdPedidoEnc, IdProductoBodega, IdEstado, IdPresentacion, IdUnidadMedidaBasica, Cantidad);
+GO
+CREATE UNIQUE CLUSTERED INDEX [PK_trans_pedido_det] ON [trans_pe_det] (IdPedidoDet);
+GO
+
+CREATE NONCLUSTERED INDEX [IX_trans_re_det_20230126] ON [trans_re_det] (IdOrdenCompraEnc);
+GO
+CREATE NONCLUSTERED INDEX [IX_trans_re_det_20230126_2] ON [trans_re_det] (IdProductoBodega, IdPresentacion, IdUnidadMedida, IdProductoEstado, IdOperadorBodega, IdMotivoDevolucion, No_Linea, cantidad_recibida, nombre_producto, nombre_presentacion, nombre_unidad_medida, nombre_producto_estado, lote, fecha_vence, fecha_ingreso, peso, peso_estadistico, peso_minimo, peso_maximo, peso_unitario, user_agr, fec_agr, observacion, añada, costo, costo_oc, costo_estadistico, atributo_variante_1, codigo_producto, lic_plate, pallet_no_estandar, IdOrdenCompraEnc, IdOrdenCompraDet);
+GO
+CREATE NONCLUSTERED INDEX [NCL_Trans_re_Det_20200115_EJC] ON [trans_re_det] (IdPresentacion, IdUnidadMedida, IdProductoEstado, cantidad_recibida, lic_plate, IdProductoBodega);
+GO
+CREATE NONCLUSTERED INDEX [NCL_trans_re_det_20240306] ON [trans_re_det] (IdProductoEstado, cantidad_recibida, codigo_producto, IdPresentacion);
+GO
+CREATE NONCLUSTERED INDEX [NCL_trans_re_det_rep_20200115_ejc] ON [trans_re_det] (No_Linea, nombre_producto, nombre_presentacion, nombre_unidad_medida, nombre_producto_estado, lote, fecha_vence, fec_agr, observacion, codigo_producto, lic_plate, IdRecepcionEnc);
+GO
+CREATE UNIQUE CLUSTERED INDEX [PK_trans_recepcion_det] ON [trans_re_det] (IdRecepcionDet, IdRecepcionEnc);
+GO
+
+CREATE NONCLUSTERED INDEX [NCLI_I_NAV_TRANSACCIONES_OUT_20230221_EJC] ON [i_nav_transacciones_out] (idpedidoenc, IdDespachoDet, iddespachoenc, lic_plate);
+GO
+CREATE UNIQUE CLUSTERED INDEX [PK_i_nav_transacciones_out] ON [i_nav_transacciones_out] (idtransaccion);
+GO
