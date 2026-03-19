@@ -1,0 +1,37 @@
+IF OBJECT_ID('dbo.NotificacionPlantilla', 'U') IS NOT NULL
+    DROP TABLE dbo.NotificacionPlantilla;
+GO
+
+CREATE TABLE dbo.NotificacionPlantilla
+(
+    IdPlantilla             INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    IdEvento                INT NOT NULL,
+    IdLayout                INT NULL,
+    CodigoPlantilla         VARCHAR(100) NOT NULL,
+    NombrePlantilla         VARCHAR(150) NOT NULL,
+    Canal                   VARCHAR(20) NOT NULL CONSTRAINT DF_NotificacionPlantilla_Canal DEFAULT ('EMAIL'),
+    AsuntoTemplate          NVARCHAR(500) NOT NULL,
+    BodyHtmlTemplate        NVARCHAR(MAX) NOT NULL,
+    UsaLayoutComun          BIT NOT NULL CONSTRAINT DF_NotificacionPlantilla_UsaLayoutComun DEFAULT (1),
+    VersionPlantilla        INT NOT NULL CONSTRAINT DF_NotificacionPlantilla_Version DEFAULT (1),
+    Activo                  BIT NOT NULL CONSTRAINT DF_NotificacionPlantilla_Activo DEFAULT (1),
+    FechaCreacion           DATETIME2(0) NOT NULL CONSTRAINT DF_NotificacionPlantilla_FechaCreacion DEFAULT (SYSDATETIME()),
+    UsuarioCreacion         VARCHAR(100) NULL,
+    FechaModificacion       DATETIME2(0) NULL,
+    UsuarioModificacion     VARCHAR(100) NULL,
+    CONSTRAINT FK_NotificacionPlantilla_Evento
+        FOREIGN KEY (IdEvento) REFERENCES dbo.NotificacionEvento(IdEvento),
+    CONSTRAINT FK_NotificacionPlantilla_Layout
+        FOREIGN KEY (IdLayout) REFERENCES dbo.NotificacionLayout(IdLayout),
+    CONSTRAINT CK_NotificacionPlantilla_Canal
+        CHECK (Canal IN ('EMAIL'))
+);
+GO
+
+CREATE UNIQUE INDEX UX_NotificacionPlantilla_CodigoPlantilla
+ON dbo.NotificacionPlantilla (CodigoPlantilla);
+GO
+
+CREATE INDEX IX_NotificacionPlantilla_IdEvento
+ON dbo.NotificacionPlantilla (IdEvento, Activo);
+GO
