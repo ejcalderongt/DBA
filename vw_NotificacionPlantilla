@@ -1,0 +1,35 @@
+IF OBJECT_ID('dbo.vw_NotificacionPlantilla', 'V') IS NOT NULL
+    DROP VIEW dbo.vw_NotificacionPlantilla;
+GO
+
+CREATE VIEW dbo.vw_NotificacionPlantilla
+AS
+SELECT
+    p.IdPlantilla,
+    p.IdEvento,
+    e.CodigoEvento,
+    e.NombreEvento,
+    e.Modulo,
+    p.IdLayout,
+    l.CodigoLayout,
+    l.NombreLayout,
+    p.CodigoPlantilla,
+    p.NombrePlantilla,
+    p.Canal,
+    p.AsuntoTemplate,
+    p.BodyHtmlTemplate,
+    p.UsaLayoutComun,
+    CASE WHEN p.UsaLayoutComun = 1 THEN 'SI' ELSE 'NO' END AS UsaLayoutComunDesc,
+    p.VersionPlantilla,
+    p.Activo,
+    CASE WHEN p.Activo = 1 THEN 'ACTIVA' ELSE 'INACTIVA' END AS EstadoPlantilla,
+    p.FechaCreacion,
+    p.UsuarioCreacion,
+    p.FechaModificacion,
+    p.UsuarioModificacion
+FROM dbo.NotificacionPlantilla p
+INNER JOIN dbo.NotificacionEvento e
+    ON p.IdEvento = e.IdEvento
+LEFT JOIN dbo.NotificacionLayout l
+    ON p.IdLayout = l.IdLayout;
+GO
