@@ -1,0 +1,22 @@
+IF OBJECT_ID('dbo.NotificacionEvento', 'U') IS NOT NULL
+    DROP TABLE dbo.NotificacionEvento;
+GO
+
+CREATE TABLE dbo.NotificacionEvento
+(
+    IdEvento                INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    CodigoEvento            VARCHAR(100) NOT NULL,
+    NombreEvento            VARCHAR(150) NOT NULL,
+    Modulo                  VARCHAR(100) NULL,
+    Descripcion             VARCHAR(500) NULL,
+    Activo                  BIT NOT NULL CONSTRAINT DF_NotificacionEvento_Activo DEFAULT (1),
+    FechaCreacion           DATETIME2(0) NOT NULL CONSTRAINT DF_NotificacionEvento_FechaCreacion DEFAULT (SYSDATETIME()),
+    UsuarioCreacion         VARCHAR(100) NULL,
+    FechaModificacion       DATETIME2(0) NULL,
+    UsuarioModificacion     VARCHAR(100) NULL
+);
+GO
+
+CREATE UNIQUE INDEX UX_NotificacionEvento_CodigoEvento
+ON dbo.NotificacionEvento (CodigoEvento);
+GO
