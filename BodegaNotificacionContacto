@@ -1,16 +1,29 @@
+IF OBJECT_ID('dbo.BodegaNotificacionContacto', 'U') IS NOT NULL
+    DROP TABLE dbo.BodegaNotificacionContacto;
+GO
+
 CREATE TABLE dbo.BodegaNotificacionContacto
 (
-    IdBodegaContacto        INT IDENTITY(1,1) PRIMARY KEY,
-    EmpresaCodigo           VARCHAR(20) NOT NULL,
-    BodegaCodigo            VARCHAR(20) NOT NULL,
-    TipoContacto            VARCHAR(30) NOT NULL,  -- OPERATIVO, SUPERVISOR, JEFE, AUDITORIA
-    NombreContacto          VARCHAR(150) NULL,
-    Correo                  VARCHAR(320) NOT NULL,
-    Activo                  BIT NOT NULL DEFAULT (1),
-    FechaCreacion           DATETIME2(0) NOT NULL DEFAULT (SYSDATETIME())
+    IdBodegaContacto            INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    EmpresaCodigo               VARCHAR(20) NOT NULL,
+    SucursalCodigo              VARCHAR(20) NULL,
+    BodegaCodigo                VARCHAR(20) NOT NULL,
+    TipoContacto                VARCHAR(30) NOT NULL, -- OPERATIVO, SUPERVISOR, JEFE, AUDITORIA, DESPACHO, RECEPCION
+    NombreContacto              VARCHAR(150) NULL,
+    Correo                      VARCHAR(320) NOT NULL,
+    PermiteTo                   BIT NOT NULL CONSTRAINT DF_BodegaNotifContacto_PermiteTo DEFAULT (1),
+    PermiteCc                   BIT NOT NULL CONSTRAINT DF_BodegaNotifContacto_PermiteCc DEFAULT (1),
+    PermiteBcc                  BIT NOT NULL CONSTRAINT DF_BodegaNotifContacto_PermiteBcc DEFAULT (0),
+    EsPrincipal                 BIT NOT NULL CONSTRAINT DF_BodegaNotifContacto_EsPrincipal DEFAULT (0),
+    Activo                      BIT NOT NULL CONSTRAINT DF_BodegaNotifContacto_Activo DEFAULT (1),
+    Observaciones               VARCHAR(300) NULL,
+    FechaCreacion               DATETIME2(0) NOT NULL CONSTRAINT DF_BodegaNotifContacto_FechaCreacion DEFAULT (SYSDATETIME()),
+    UsuarioCreacion             VARCHAR(100) NULL,
+    FechaModificacion           DATETIME2(0) NULL,
+    UsuarioModificacion         VARCHAR(100) NULL
 );
 GO
 
-CREATE INDEX IX_BodegaNotificacionContacto
-ON dbo.BodegaNotificacionContacto (EmpresaCodigo, BodegaCodigo, TipoContacto, Activo);
+CREATE INDEX IX_BodegaNotificacionContacto_Busqueda
+ON dbo.BodegaNotificacionContacto (EmpresaCodigo, SucursalCodigo, BodegaCodigo, TipoContacto, Activo);
 GO
