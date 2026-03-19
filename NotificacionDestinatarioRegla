@@ -1,0 +1,76 @@
+IF OBJECT_ID('dbo.NotificacionDestinatarioRegla', 'U') IS NOT NULL
+    DROP TABLE dbo.NotificacionDestinatarioRegla;
+GO
+
+CREATE TABLE dbo.NotificacionDestinatarioRegla
+(
+    IdReglaDestinatario         INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    IdEvento                    INT NOT NULL,
+
+    TipoDestinatario            VARCHAR(10) NOT NULL,   -- TO, CC, BCC
+    OrigenDestinatario          VARCHAR(30) NOT NULL,   -- FIJO, CLIENTE, BODEGA, USUARIO, ROL, QUERY
+    ValorOrigen                 NVARCHAR(500) NOT NULL, -- correo fijo o tipo de contacto cuando es BODEGA
+
+    EmpresaCodigo               VARCHAR(20) NULL,
+    SucursalCodigo              VARCHAR(20) NULL,
+    TipoDocumento               VARCHAR(20) NULL,
+
+    ContextoBodega              VARCHAR(20) NULL,       -- ORIGEN, DESTINO, AMBAS
+    CodigoBodegaFiltro          VARCHAR(20) NULL,       -- opcional: aplica solo a una bodega específica
+
+    Prioridad                   INT NOT NULL
+        CONSTRAINT DF_NotificacionDestinatarioRegla_Prioridad DEFAULT (1),
+
+    RequiereCoincidenciaExacta  BIT NOT NULL
+        CONSTRAINT DF_NotificacionDestinatarioRegla_Exacta DEFAULT (0),
+
+    Activo                      BIT NOT NULL
+        CONSTRAINT DF_NotificacionDestinatarioRegla_Activo DEFAULT (1),
+
+    Observaciones               VARCHAR(300) NULL,
+
+    FechaCreacion               DATETIME2(0) NOT NULL
+        CONSTRAINT DF_NotificacionDestinatarioRegla_FechaCreacion DEFAULT (SYSDATETIME()),
+
+    UsuarioCreacion             VARCHAR(100) NULL,
+    FechaModificacion           DATETIME2(0) NULL,
+    UsuarioModificacion         VARCHAR(100) NULL,
+
+    CONSTRAINT FK_NotificacionDestinatarioRegla_Evento
+        FOREIGN KEY (IdEvento)
+        REFERENCES dbo.NotificacionEvento (IdEvento),
+
+    CONSTRAINT CK_NotificacionDestinatarioRegla_TipoDestinatario
+        CHECK (TipoDestinatario IN ('TO', 'CC', 'BCC')),
+
+    CONSTRAINT CK_NotificacionDestinatarioRegla_OrigenDestinatario
+        CHECK (OrigenDestinatario IN ('FIJO', 'CLIENTE', 'BODEGA', 'USUARIO', 'ROL', 'QUERY')),
+
+    CONSTRAINT CK_NotificacionDestinatarioRegla_ContextoBodega
+        CHECK (ContextoBodega IN ('ORIGEN', 'DESTINO', 'AMBAS') OR ContextoBodega IS NULL),
+
+    CONSTRAINT CK_NotificacionDestinatarioRegla_ContextoBodega_BODEGA
+        CHECK (
+            (OrigenDestinatario = 'BODEGA' AND ContextoBodega IS NOT NULL)
+            OR
+            (OrigenDestinatario <> 'BODEGA')
+        )
+);
+GO
+
+CREATE INDEX IX_NotificacionDestinatarioRegla_Evento
+ON dbo.NotificacionDestinatarioRegla (IdEvento, Activo, Prioridad);
+GO
+
+CREATE INDEX IX_NotificacionDestinatarioRegla_Busqueda
+ON dbo.NotificacionDestinatarioRegla
+(
+    IdEvento,
+    EmpresaCodigo,
+    SucursalCodigo,
+    TipoDocumento,
+    ContextoBodega,
+    CodigoBodegaFiltro,
+    Activo
+);
+GO
