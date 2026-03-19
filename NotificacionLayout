@@ -1,0 +1,24 @@
+IF OBJECT_ID('dbo.NotificacionLayout', 'U') IS NOT NULL
+    DROP TABLE dbo.NotificacionLayout;
+GO
+
+CREATE TABLE dbo.NotificacionLayout
+(
+    IdLayout                INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    CodigoLayout            VARCHAR(50) NOT NULL,
+    NombreLayout            VARCHAR(150) NOT NULL,
+    HeaderHtml              NVARCHAR(MAX) NULL,
+    FooterHtml              NVARCHAR(MAX) NULL,
+    CssInline               NVARCHAR(MAX) NULL,
+    Activo                  BIT NOT NULL CONSTRAINT DF_NotificacionLayout_Activo DEFAULT (1),
+    EsDefault               BIT NOT NULL CONSTRAINT DF_NotificacionLayout_EsDefault DEFAULT (0),
+    FechaCreacion           DATETIME2(0) NOT NULL CONSTRAINT DF_NotificacionLayout_FechaCreacion DEFAULT (SYSDATETIME()),
+    UsuarioCreacion         VARCHAR(100) NULL,
+    FechaModificacion       DATETIME2(0) NULL,
+    UsuarioModificacion     VARCHAR(100) NULL
+);
+GO
+
+CREATE UNIQUE INDEX UX_NotificacionLayout_CodigoLayout
+ON dbo.NotificacionLayout (CodigoLayout);
+GO
