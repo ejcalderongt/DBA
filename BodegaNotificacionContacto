@@ -8,22 +8,58 @@ CREATE TABLE dbo.BodegaNotificacionContacto
     EmpresaCodigo               VARCHAR(20) NOT NULL,
     SucursalCodigo              VARCHAR(20) NULL,
     BodegaCodigo                VARCHAR(20) NOT NULL,
+
     TipoContacto                VARCHAR(30) NOT NULL, -- OPERATIVO, SUPERVISOR, JEFE, AUDITORIA, DESPACHO, RECEPCION
     NombreContacto              VARCHAR(150) NULL,
     Correo                      VARCHAR(320) NOT NULL,
-    PermiteTo                   BIT NOT NULL CONSTRAINT DF_BodegaNotifContacto_PermiteTo DEFAULT (1),
-    PermiteCc                   BIT NOT NULL CONSTRAINT DF_BodegaNotifContacto_PermiteCc DEFAULT (1),
-    PermiteBcc                  BIT NOT NULL CONSTRAINT DF_BodegaNotifContacto_PermiteBcc DEFAULT (0),
-    EsPrincipal                 BIT NOT NULL CONSTRAINT DF_BodegaNotifContacto_EsPrincipal DEFAULT (0),
-    Activo                      BIT NOT NULL CONSTRAINT DF_BodegaNotifContacto_Activo DEFAULT (1),
+
+    PermiteTo                   BIT NOT NULL
+        CONSTRAINT DF_BodegaNotificacionContacto_PermiteTo DEFAULT (1),
+
+    PermiteCc                   BIT NOT NULL
+        CONSTRAINT DF_BodegaNotificacionContacto_PermiteCc DEFAULT (1),
+
+    PermiteBcc                  BIT NOT NULL
+        CONSTRAINT DF_BodegaNotificacionContacto_PermiteBcc DEFAULT (0),
+
+    EsPrincipal                 BIT NOT NULL
+        CONSTRAINT DF_BodegaNotificacionContacto_EsPrincipal DEFAULT (0),
+
+    Activo                      BIT NOT NULL
+        CONSTRAINT DF_BodegaNotificacionContacto_Activo DEFAULT (1),
+
     Observaciones               VARCHAR(300) NULL,
-    FechaCreacion               DATETIME2(0) NOT NULL CONSTRAINT DF_BodegaNotifContacto_FechaCreacion DEFAULT (SYSDATETIME()),
+
+    FechaCreacion               DATETIME2(0) NOT NULL
+        CONSTRAINT DF_BodegaNotificacionContacto_FechaCreacion DEFAULT (SYSDATETIME()),
+
     UsuarioCreacion             VARCHAR(100) NULL,
     FechaModificacion           DATETIME2(0) NULL,
-    UsuarioModificacion         VARCHAR(100) NULL
+    UsuarioModificacion         VARCHAR(100) NULL,
+
+    CONSTRAINT CK_BodegaNotificacionContacto_TipoContacto
+        CHECK (TipoContacto IN ('OPERATIVO', 'SUPERVISOR', 'JEFE', 'AUDITORIA', 'DESPACHO', 'RECEPCION'))
+);
+GO
+
+CREATE UNIQUE INDEX UX_BodegaNotificacionContacto_Unico
+ON dbo.BodegaNotificacionContacto
+(
+    EmpresaCodigo,
+    SucursalCodigo,
+    BodegaCodigo,
+    TipoContacto,
+    Correo
 );
 GO
 
 CREATE INDEX IX_BodegaNotificacionContacto_Busqueda
-ON dbo.BodegaNotificacionContacto (EmpresaCodigo, SucursalCodigo, BodegaCodigo, TipoContacto, Activo);
+ON dbo.BodegaNotificacionContacto
+(
+    EmpresaCodigo,
+    SucursalCodigo,
+    BodegaCodigo,
+    TipoContacto,
+    Activo
+);
 GO
