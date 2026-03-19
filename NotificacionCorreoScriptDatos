@@ -1,0 +1,758 @@
+BEGIN TRY
+    BEGIN TRANSACTION;
+
+    /* =========================================================
+       1. TABLAS
+       ========================================================= */
+
+    IF OBJECT_ID('dbo.NotificacionAdjunto', 'U') IS NOT NULL
+        DROP TABLE dbo.NotificacionAdjunto;
+
+    IF OBJECT_ID('dbo.NotificacionLog', 'U') IS NOT NULL
+        DROP TABLE dbo.NotificacionLog;
+
+    IF OBJECT_ID('dbo.NotificacionCola', 'U') IS NOT NULL
+        DROP TABLE dbo.NotificacionCola;
+
+    IF OBJECT_ID('dbo.BodegaNotificacionContacto', 'U') IS NOT NULL
+        DROP TABLE dbo.BodegaNotificacionContacto;
+
+    IF OBJECT_ID('dbo.NotificacionDestinatarioRegla', 'U') IS NOT NULL
+        DROP TABLE dbo.NotificacionDestinatarioRegla;
+
+    IF OBJECT_ID('dbo.NotificacionEventoVariable', 'U') IS NOT NULL
+        DROP TABLE dbo.NotificacionEventoVariable;
+
+    IF OBJECT_ID('dbo.NotificacionPlantilla', 'U') IS NOT NULL
+        DROP TABLE dbo.NotificacionPlantilla;
+
+    IF OBJECT_ID('dbo.NotificacionLayout', 'U') IS NOT NULL
+        DROP TABLE dbo.NotificacionLayout;
+
+    IF OBJECT_ID('dbo.NotificacionEvento', 'U') IS NOT NULL
+        DROP TABLE dbo.NotificacionEvento;
+
+    IF OBJECT_ID('dbo.vw_NotificacionPlantilla', 'V') IS NOT NULL
+        DROP VIEW dbo.vw_NotificacionPlantilla;
+
+    /* =========================================================
+       2. CATALOGO DE EVENTOS
+       ========================================================= */
+
+    CREATE TABLE dbo.NotificacionEvento
+    (
+        IdEvento                INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+        CodigoEvento            VARCHAR(100) NOT NULL,
+        NombreEvento            VARCHAR(150) NOT NULL,
+        Modulo                  VARCHAR(100) NULL,
+        Descripcion             VARCHAR(500) NULL,
+        Activo                  BIT NOT NULL CONSTRAINT DF_NotificacionEvento_Activo DEFAULT (1),
+        FechaCreacion           DATETIME2(0) NOT NULL CONSTRAINT DF_NotificacionEvento_FechaCreacion DEFAULT (SYSDATETIME()),
+        UsuarioCreacion         VARCHAR(100) NULL,
+        FechaModificacion       DATETIME2(0) NULL,
+        UsuarioModificacion     VARCHAR(100) NULL
+    );
+
+    CREATE UNIQUE INDEX UX_NotificacionEvento_CodigoEvento
+    ON dbo.NotificacionEvento (CodigoEvento);
+
+    /* =========================================================
+       3. LAYOUT DE CORREO
+       ========================================================= */
+
+    CREATE TABLE dbo.NotificacionLayout
+    (
+        IdLayout                INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+        CodigoLayout            VARCHAR(50) NOT NULL,
+        NombreLayout            VARCHAR(150) NOT NULL,
+        HeaderHtml              NVARCHAR(MAX) NULL,
+        FooterHtml              NVARCHAR(MAX) NULL,
+        CssInline               NVARCHAR(MAX) NULL,
+        Activo                  BIT NOT NULL CONSTRAINT DF_NotificacionLayout_Activo DEFAULT (1),
+        EsDefault               BIT NOT NULL CONSTRAINT DF_NotificacionLayout_EsDefault DEFAULT (0),
+        FechaCreacion           DATETIME2(0) NOT NULL CONSTRAINT DF_NotificacionLayout_FechaCreacion DEFAULT (SYSDATETIME()),
+        UsuarioCreacion         VARCHAR(100) NULL,
+        FechaModificacion       DATETIME2(0) NULL,
+        UsuarioModificacion     VARCHAR(100) NULL
+    );
+
+    CREATE UNIQUE INDEX UX_NotificacionLayout_CodigoLayout
+    ON dbo.NotificacionLayout (CodigoLayout);
+
+    /* =========================================================
+       4. PLANTILLAS
+       ========================================================= */
+
+    CREATE TABLE dbo.NotificacionPlantilla
+    (
+        IdPlantilla             INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+        IdEvento                INT NOT NULL,
+        IdLayout                INT NULL,
+        CodigoPlantilla         VARCHAR(100) NOT NULL,
+        NombrePlantilla         VARCHAR(150) NOT NULL,
+        Canal                   VARCHAR(20) NOT NULL CONSTRAINT DF_NotificacionPlantilla_Canal DEFAULT ('EMAIL'),
+        AsuntoTemplate          NVARCHAR(500) NOT NULL,
+        BodyHtmlTemplate        NVARCHAR(MAX) NOT NULL,
+        UsaLayoutComun          BIT NOT NULL CONSTRAINT DF_NotificacionPlantilla_UsaLayoutComun DEFAULT (1),
+        VersionPlantilla        INT NOT NULL CONSTRAINT DF_NotificacionPlantilla_Version DEFAULT (1),
+        Activo                  BIT NOT NULL CONSTRAINT DF_NotificacionPlantilla_Activo DEFAULT (1),
+        FechaCreacion           DATETIME2(0) NOT NULL CONSTRAINT DF_NotificacionPlantilla_FechaCreacion DEFAULT (SYSDATETIME()),
+        UsuarioCreacion         VARCHAR(100) NULL,
+        FechaModificacion       DATETIME2(0) NULL,
+        UsuarioModificacion     VARCHAR(100) NULL,
+        CONSTRAINT FK_NotificacionPlantilla_Evento
+            FOREIGN KEY (IdEvento) REFERENCES dbo.NotificacionEvento(IdEvento),
+        CONSTRAINT FK_NotificacionPlantilla_Layout
+            FOREIGN KEY (IdLayout) REFERENCES dbo.NotificacionLayout(IdLayout),
+        CONSTRAINT CK_NotificacionPlantilla_Canal
+            CHECK (Canal IN ('EMAIL'))
+    );
+
+    CREATE UNIQUE INDEX UX_NotificacionPlantilla_CodigoPlantilla
+    ON dbo.NotificacionPlantilla (CodigoPlantilla);
+
+    CREATE INDEX IX_NotificacionPlantilla_IdEvento
+    ON dbo.NotificacionPlantilla (IdEvento, Activo);
+
+    /* =========================================================
+       5. VARIABLES DEL EVENTO
+       ========================================================= */
+
+    CREATE TABLE dbo.NotificacionEventoVariable
+    (
+        IdEventoVariable        INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+        IdEvento                INT NOT NULL,
+        NombreVariable          VARCHAR(100) NOT NULL,
+        Descripcion             VARCHAR(300) NULL,
+        EjemploValor            VARCHAR(300) NULL,
+        Obligatoria             BIT NOT NULL CONSTRAINT DF_NotificacionEventoVariable_Obligatoria DEFAULT (0),
+        Activo                  BIT NOT NULL CONSTRAINT DF_NotificacionEventoVariable_Activo DEFAULT (1),
+        CONSTRAINT FK_NotificacionEventoVariable_Evento
+            FOREIGN KEY (IdEvento) REFERENCES dbo.NotificacionEvento(IdEvento)
+    );
+
+    CREATE UNIQUE INDEX UX_NotificacionEventoVariable_EventoVariable
+    ON dbo.NotificacionEventoVariable (IdEvento, NombreVariable);
+
+    /* =========================================================
+       6. REGLAS DE DESTINATARIOS
+       ========================================================= */
+
+    CREATE TABLE dbo.NotificacionDestinatarioRegla
+    (
+        IdReglaDestinatario         INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+        IdEvento                    INT NOT NULL,
+
+        TipoDestinatario            VARCHAR(10) NOT NULL,
+        OrigenDestinatario          VARCHAR(30) NOT NULL,
+        ValorOrigen                 NVARCHAR(500) NOT NULL,
+
+        EmpresaCodigo               VARCHAR(20) NULL,
+        SucursalCodigo              VARCHAR(20) NULL,
+        TipoDocumento               VARCHAR(20) NULL,
+
+        ContextoBodega              VARCHAR(20) NULL,
+        CodigoBodegaFiltro          VARCHAR(20) NULL,
+
+        Prioridad                   INT NOT NULL
+            CONSTRAINT DF_NotificacionDestinatarioRegla_Prioridad DEFAULT (1),
+
+        RequiereCoincidenciaExacta  BIT NOT NULL
+            CONSTRAINT DF_NotificacionDestinatarioRegla_Exacta DEFAULT (0),
+
+        Activo                      BIT NOT NULL
+            CONSTRAINT DF_NotificacionDestinatarioRegla_Activo DEFAULT (1),
+
+        Observaciones               VARCHAR(300) NULL,
+
+        FechaCreacion               DATETIME2(0) NOT NULL
+            CONSTRAINT DF_NotificacionDestinatarioRegla_FechaCreacion DEFAULT (SYSDATETIME()),
+
+        UsuarioCreacion             VARCHAR(100) NULL,
+        FechaModificacion           DATETIME2(0) NULL,
+        UsuarioModificacion         VARCHAR(100) NULL,
+
+        CONSTRAINT FK_NotificacionDestinatarioRegla_Evento
+            FOREIGN KEY (IdEvento)
+            REFERENCES dbo.NotificacionEvento (IdEvento),
+
+        CONSTRAINT CK_NotificacionDestinatarioRegla_TipoDestinatario
+            CHECK (TipoDestinatario IN ('TO', 'CC', 'BCC')),
+
+        CONSTRAINT CK_NotificacionDestinatarioRegla_OrigenDestinatario
+            CHECK (OrigenDestinatario IN ('FIJO', 'CLIENTE', 'BODEGA', 'USUARIO', 'ROL', 'QUERY')),
+
+        CONSTRAINT CK_NotificacionDestinatarioRegla_ContextoBodega
+            CHECK (ContextoBodega IN ('ORIGEN', 'DESTINO', 'AMBAS') OR ContextoBodega IS NULL),
+
+        CONSTRAINT CK_NotificacionDestinatarioRegla_ContextoBodega_BODEGA
+            CHECK (
+                (OrigenDestinatario = 'BODEGA' AND ContextoBodega IS NOT NULL)
+                OR
+                (OrigenDestinatario <> 'BODEGA')
+            )
+    );
+
+    CREATE INDEX IX_NotificacionDestinatarioRegla_Evento
+    ON dbo.NotificacionDestinatarioRegla (IdEvento, Activo, Prioridad);
+
+    CREATE INDEX IX_NotificacionDestinatarioRegla_Busqueda
+    ON dbo.NotificacionDestinatarioRegla
+    (
+        IdEvento,
+        EmpresaCodigo,
+        SucursalCodigo,
+        TipoDocumento,
+        ContextoBodega,
+        CodigoBodegaFiltro,
+        Activo
+    );
+
+    /* =========================================================
+       7. CONTACTOS POR BODEGA
+       ========================================================= */
+
+    CREATE TABLE dbo.BodegaNotificacionContacto
+    (
+        IdBodegaContacto            INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+        EmpresaCodigo               VARCHAR(20) NOT NULL,
+        SucursalCodigo              VARCHAR(20) NULL,
+        BodegaCodigo                VARCHAR(20) NOT NULL,
+
+        TipoContacto                VARCHAR(30) NOT NULL,
+        NombreContacto              VARCHAR(150) NULL,
+        Correo                      VARCHAR(320) NOT NULL,
+
+        PermiteTo                   BIT NOT NULL
+            CONSTRAINT DF_BodegaNotificacionContacto_PermiteTo DEFAULT (1),
+
+        PermiteCc                   BIT NOT NULL
+            CONSTRAINT DF_BodegaNotificacionContacto_PermiteCc DEFAULT (1),
+
+        PermiteBcc                  BIT NOT NULL
+            CONSTRAINT DF_BodegaNotificacionContacto_PermiteBcc DEFAULT (0),
+
+        EsPrincipal                 BIT NOT NULL
+            CONSTRAINT DF_BodegaNotificacionContacto_EsPrincipal DEFAULT (0),
+
+        Activo                      BIT NOT NULL
+            CONSTRAINT DF_BodegaNotificacionContacto_Activo DEFAULT (1),
+
+        Observaciones               VARCHAR(300) NULL,
+
+        FechaCreacion               DATETIME2(0) NOT NULL
+            CONSTRAINT DF_BodegaNotificacionContacto_FechaCreacion DEFAULT (SYSDATETIME()),
+
+        UsuarioCreacion             VARCHAR(100) NULL,
+        FechaModificacion           DATETIME2(0) NULL,
+        UsuarioModificacion         VARCHAR(100) NULL,
+
+        CONSTRAINT CK_BodegaNotificacionContacto_TipoContacto
+            CHECK (TipoContacto IN ('OPERATIVO', 'SUPERVISOR', 'JEFE', 'AUDITORIA', 'DESPACHO', 'RECEPCION'))
+    );
+
+    CREATE UNIQUE INDEX UX_BodegaNotificacionContacto_Unico
+    ON dbo.BodegaNotificacionContacto
+    (
+        EmpresaCodigo,
+        SucursalCodigo,
+        BodegaCodigo,
+        TipoContacto,
+        Correo
+    );
+
+    CREATE INDEX IX_BodegaNotificacionContacto_Busqueda
+    ON dbo.BodegaNotificacionContacto
+    (
+        EmpresaCodigo,
+        SucursalCodigo,
+        BodegaCodigo,
+        TipoContacto,
+        Activo
+    );
+
+    /* =========================================================
+       8. COLA DE NOTIFICACIONES
+       ========================================================= */
+
+    CREATE TABLE dbo.NotificacionCola
+    (
+        IdColaNotificacion      BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+        IdEvento                INT NOT NULL,
+        IdPlantilla             INT NULL,
+        OrigenSistema           VARCHAR(50) NOT NULL CONSTRAINT DF_NotificacionCola_OrigenSistema DEFAULT ('TOMWMS'),
+        LlaveNegocio            VARCHAR(200) NULL,
+        EmpresaCodigo           VARCHAR(20) NULL,
+        SucursalCodigo          VARCHAR(20) NULL,
+        BodegaCodigo            VARCHAR(20) NULL,
+        TipoDocumento           VARCHAR(20) NULL,
+        Referencia1             VARCHAR(100) NULL,
+        Referencia2             VARCHAR(100) NULL,
+        DataJson                NVARCHAR(MAX) NOT NULL,
+        Estado                  VARCHAR(20) NOT NULL CONSTRAINT DF_NotificacionCola_Estado DEFAULT ('PENDIENTE'),
+        Intentos                INT NOT NULL CONSTRAINT DF_NotificacionCola_Intentos DEFAULT (0),
+        MaxIntentos             INT NOT NULL CONSTRAINT DF_NotificacionCola_MaxIntentos DEFAULT (5),
+        FechaProgramada         DATETIME2(0) NOT NULL CONSTRAINT DF_NotificacionCola_FechaProgramada DEFAULT (SYSDATETIME()),
+        FechaUltimoIntento      DATETIME2(0) NULL,
+        FechaProcesado          DATETIME2(0) NULL,
+        ErrorUltimo             NVARCHAR(2000) NULL,
+        UsuarioCreacion         VARCHAR(100) NULL,
+        FechaCreacion           DATETIME2(0) NOT NULL CONSTRAINT DF_NotificacionCola_FechaCreacion DEFAULT (SYSDATETIME()),
+        CONSTRAINT FK_NotificacionCola_Evento
+            FOREIGN KEY (IdEvento) REFERENCES dbo.NotificacionEvento(IdEvento),
+        CONSTRAINT FK_NotificacionCola_Plantilla
+            FOREIGN KEY (IdPlantilla) REFERENCES dbo.NotificacionPlantilla(IdPlantilla),
+        CONSTRAINT CK_NotificacionCola_Estado
+            CHECK (Estado IN ('PENDIENTE', 'PROCESANDO', 'ENVIADO', 'ERROR', 'CANCELADO'))
+    );
+
+    CREATE INDEX IX_NotificacionCola_Estado_FechaProgramada
+    ON dbo.NotificacionCola (Estado, FechaProgramada);
+
+    CREATE INDEX IX_NotificacionCola_LlaveNegocio
+    ON dbo.NotificacionCola (LlaveNegocio);
+
+    /* =========================================================
+       9. LOG DE NOTIFICACIONES
+       ========================================================= */
+
+    CREATE TABLE dbo.NotificacionLog
+    (
+        IdLogNotificacion       BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+        IdColaNotificacion      BIGINT NULL,
+        IdEvento                INT NOT NULL,
+        IdPlantilla             INT NULL,
+        EstadoEnvio             VARCHAR(20) NOT NULL,
+        AsuntoGenerado          NVARCHAR(500) NULL,
+        BodyGenerado            NVARCHAR(MAX) NULL,
+        DestinatariosTo         NVARCHAR(MAX) NULL,
+        DestinatariosCc         NVARCHAR(MAX) NULL,
+        DestinatariosBcc        NVARCHAR(MAX) NULL,
+        Remitente               VARCHAR(320) NULL,
+        ProveedorEnvio          VARCHAR(50) NULL,
+        MessageIdExterno        VARCHAR(500) NULL,
+        ErrorTecnico            NVARCHAR(3000) NULL,
+        DataJson                NVARCHAR(MAX) NULL,
+        FechaEnvio              DATETIME2(0) NOT NULL CONSTRAINT DF_NotificacionLog_FechaEnvio DEFAULT (SYSDATETIME()),
+        UsuarioProceso          VARCHAR(100) NULL,
+        CONSTRAINT FK_NotificacionLog_Cola
+            FOREIGN KEY (IdColaNotificacion) REFERENCES dbo.NotificacionCola(IdColaNotificacion),
+        CONSTRAINT FK_NotificacionLog_Evento
+            FOREIGN KEY (IdEvento) REFERENCES dbo.NotificacionEvento(IdEvento),
+        CONSTRAINT FK_NotificacionLog_Plantilla
+            FOREIGN KEY (IdPlantilla) REFERENCES dbo.NotificacionPlantilla(IdPlantilla),
+        CONSTRAINT CK_NotificacionLog_EstadoEnvio
+            CHECK (EstadoEnvio IN ('ENVIADO', 'ERROR', 'OMITIDO'))
+    );
+
+    CREATE INDEX IX_NotificacionLog_IdCola
+    ON dbo.NotificacionLog (IdColaNotificacion);
+
+    CREATE INDEX IX_NotificacionLog_FechaEnvio
+    ON dbo.NotificacionLog (FechaEnvio DESC);
+
+    /* =========================================================
+       10. ADJUNTOS
+       ========================================================= */
+
+    CREATE TABLE dbo.NotificacionAdjunto
+    (
+        IdAdjunto               BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+        IdColaNotificacion      BIGINT NOT NULL,
+        NombreArchivo           VARCHAR(255) NOT NULL,
+        RutaArchivo             NVARCHAR(1000) NULL,
+        MimeType                VARCHAR(100) NULL,
+        EsGeneradoDinamico      BIT NOT NULL CONSTRAINT DF_NotificacionAdjunto_Dinamico DEFAULT (0),
+        ReporteCodigo           VARCHAR(100) NULL,
+        Activo                  BIT NOT NULL CONSTRAINT DF_NotificacionAdjunto_Activo DEFAULT (1),
+        FechaCreacion           DATETIME2(0) NOT NULL CONSTRAINT DF_NotificacionAdjunto_FechaCreacion DEFAULT (SYSDATETIME()),
+        CONSTRAINT FK_NotificacionAdjunto_Cola
+            FOREIGN KEY (IdColaNotificacion) REFERENCES dbo.NotificacionCola(IdColaNotificacion)
+    );
+
+    CREATE INDEX IX_NotificacionAdjunto_IdCola
+    ON dbo.NotificacionAdjunto (IdColaNotificacion);
+
+    /* =========================================================
+       11. DATOS MINIMOS DE EJEMPLO
+       ========================================================= */
+
+    INSERT INTO dbo.NotificacionEvento
+    (
+        CodigoEvento,
+        NombreEvento,
+        Modulo,
+        Descripcion,
+        UsuarioCreacion
+    )
+    VALUES
+    (
+        'TRANSFERENCIA_REVERSADA',
+        'Transferencia reversada',
+        'INVENTARIO',
+        'Notificacion cuando una transferencia es reversada.',
+        'admin'
+    ),
+    (
+        'DESPACHO_CONFIRMADO',
+        'Despacho confirmado',
+        'DESPACHOS',
+        'Notificacion cuando un despacho fue confirmado.',
+        'admin'
+    );
+
+    INSERT INTO dbo.NotificacionLayout
+    (
+        CodigoLayout,
+        NombreLayout,
+        HeaderHtml,
+        FooterHtml,
+        CssInline,
+        Activo,
+        EsDefault,
+        UsuarioCreacion
+    )
+    VALUES
+    (
+        'LAYOUT_CORREO_GENERAL',
+        'Layout general de correos TOMWMS',
+        N'<div style="font-family:Segoe UI,Arial,sans-serif;font-size:14px;color:#222;"><div style="padding:12px 0;"><strong>TOMWMS</strong></div>',
+        N'<br><hr><div style="font-size:12px;color:#666;">Nota: Este correo es informativo, generado automaticamente por TOMWMS. Favor no responder directamente a esta direccion.</div></div>',
+        N'',
+        1,
+        1,
+        'admin'
+    );
+
+    DECLARE @IdEventoTransferencia INT;
+    DECLARE @IdEventoDespacho INT;
+    DECLARE @IdLayoutGeneral INT;
+
+    SELECT @IdEventoTransferencia = IdEvento
+    FROM dbo.NotificacionEvento
+    WHERE CodigoEvento = 'TRANSFERENCIA_REVERSADA';
+
+    SELECT @IdEventoDespacho = IdEvento
+    FROM dbo.NotificacionEvento
+    WHERE CodigoEvento = 'DESPACHO_CONFIRMADO';
+
+    SELECT @IdLayoutGeneral = IdLayout
+    FROM dbo.NotificacionLayout
+    WHERE CodigoLayout = 'LAYOUT_CORREO_GENERAL';
+
+    INSERT INTO dbo.NotificacionPlantilla
+    (
+        IdEvento,
+        IdLayout,
+        CodigoPlantilla,
+        NombrePlantilla,
+        Canal,
+        AsuntoTemplate,
+        BodyHtmlTemplate,
+        UsaLayoutComun,
+        VersionPlantilla,
+        Activo,
+        UsuarioCreacion
+    )
+    VALUES
+    (
+        @IdEventoTransferencia,
+        @IdLayoutGeneral,
+        'TPL_TRANSFERENCIA_REVERSADA_V1',
+        'Plantilla transferencia reversada',
+        'EMAIL',
+        N'Transferencia reversada {{Prefijo}}-{{Numero}}',
+        N'
+		<p>Buen dia estimados,</p>
+		<p>Se informa que se ha reversado una transferencia en <strong>{Empresa}</strong>.</p>
+		<h3>Datos generales</h3>
+		<table border="1" cellpadding="4" cellspacing="0" style="border-collapse:collapse;">
+			<tr><td><strong>Prefijo</strong></td><td>{Prefijo}</td></tr>
+			<tr><td><strong>Numero</strong></td><td>{Numero}</td></tr>
+			<tr><td><strong>Estatus</strong></td><td>{Estatus}</td></tr>
+			<tr><td><strong>Fecha Entrega</strong></td><td>{FechaEntrega}</td></tr>
+			<tr><td><strong>Fecha Recepcion</strong></td><td>{FechaRecepcion}</td></tr>
+			<tr><td><strong>Bodega Origen</strong></td><td>{BodegaOrigen}</td></tr>
+			<tr><td><strong>Bodega Destino</strong></td><td>{BodegaDestino}</td></tr>
+			<tr><td><strong>Usuario</strong></td><td>{Usuario}</td></tr>
+		</table>
+		<br>
+		<h3>Detalle</h3>
+		{TablaDetalleHtml}
+		<br>
+		<p>Saludos cordiales,<br>Equipo Administrador del Sistema.</p>',
+        1,
+        1,
+        1,
+        'admin'
+    ),
+    (
+        @IdEventoDespacho,
+        @IdLayoutGeneral,
+        'TPL_DESPACHO_CONFIRMADO_V1',
+        'Plantilla despacho confirmado',
+        'EMAIL',
+        N'Despacho confirmado {{Prefijo}}-{{Numero}}',
+        N'
+        <p>Buen dia estimados,</p>
+        <p>Se confirma el despacho <strong>{{Prefijo}}-{{Numero}}</strong>.</p>
+        <p>Cliente: <strong>{{ClienteNombre}}</strong></p>
+        <p>Fecha: <strong>{{FechaDocumento}}</strong></p>
+        <p>Bodega origen: <strong>{{BodegaOrigen}}</strong></p>
+        <br>
+        {{TablaDetalleHtml}}
+        <br>
+        <p>Saludos cordiales,<br>Equipo Administrador del Sistema.</p>',
+        1,
+        1,
+        1,
+        'admin'
+    );
+
+    INSERT INTO dbo.NotificacionEventoVariable
+    (
+        IdEvento,
+        NombreVariable,
+        Descripcion,
+        EjemploValor,
+        Obligatoria,
+        Activo
+    )
+    VALUES
+    (@IdEventoTransferencia, 'Empresa', 'Nombre de la empresa', 'MHS', 1, 1),
+    (@IdEventoTransferencia, 'Prefijo', 'Prefijo del documento', 'TRF', 1, 1),
+    (@IdEventoTransferencia, 'Numero', 'Numero del documento', '12345', 1, 1),
+    (@IdEventoTransferencia, 'Estatus', 'Estatus descriptivo', 'Despachada', 1, 1),
+    (@IdEventoTransferencia, 'FechaEntrega', 'Fecha de entrega', '19/03/2026', 0, 1),
+    (@IdEventoTransferencia, 'FechaRecepcion', 'Fecha de recepcion', '19/03/2026', 0, 1),
+    (@IdEventoTransferencia, 'BodegaOrigen', 'Bodega origen', 'BOD-01', 0, 1),
+    (@IdEventoTransferencia, 'BodegaDestino', 'Bodega destino', 'BOD-09', 0, 1),
+    (@IdEventoTransferencia, 'Usuario', 'Usuario que ejecuto la accion', 'ecalderon', 0, 1),
+    (@IdEventoTransferencia, 'TablaDetalleHtml', 'Tabla HTML con detalle', '<table>...</table>', 0, 1),
+
+    (@IdEventoDespacho, 'Prefijo', 'Prefijo del documento', 'DSP', 1, 1),
+    (@IdEventoDespacho, 'Numero', 'Numero del documento', '5001', 1, 1),
+    (@IdEventoDespacho, 'ClienteNombre', 'Nombre del cliente', 'CLIENTE DEMO', 0, 1),
+    (@IdEventoDespacho, 'FechaDocumento', 'Fecha del documento', '19/03/2026', 0, 1),
+    (@IdEventoDespacho, 'BodegaOrigen', 'Bodega origen', 'BOD-01', 0, 1),
+    (@IdEventoDespacho, 'TablaDetalleHtml', 'Tabla HTML con detalle', '<table>...</table>', 0, 1);
+
+    INSERT INTO dbo.BodegaNotificacionContacto
+    (
+        EmpresaCodigo,
+        SucursalCodigo,
+        BodegaCodigo,
+        TipoContacto,
+        NombreContacto,
+        Correo,
+        PermiteTo,
+        PermiteCc,
+        PermiteBcc,
+        EsPrincipal,
+        Activo,
+        Observaciones,
+        UsuarioCreacion
+    )
+    VALUES
+    ('MHS', 'SPS', 'BOD-01', 'SUPERVISOR', 'Supervisor Bodega 01', 'supervisor.bod01@empresa.com', 1, 1, 0, 1, 1, 'Supervisor principal bodega origen', 'admin'),
+    ('MHS', 'SPS', 'BOD-01', 'OPERATIVO',  'Operaciones Bodega 01', 'operaciones.bod01@empresa.com', 1, 1, 0, 1, 1, 'Correo operativo bodega origen', 'admin'),
+    ('MHS', 'SPS', 'BOD-09', 'SUPERVISOR', 'Supervisor Bodega 09', 'supervisor.bod09@empresa.com', 1, 1, 0, 1, 1, 'Supervisor principal bodega destino', 'admin'),
+    ('MHS', 'SPS', 'BOD-09', 'RECEPCION',  'Recepcion Bodega 09', 'recepcion.bod09@empresa.com', 1, 1, 0, 1, 1, 'Correo recepcion bodega destino', 'admin');
+
+    INSERT INTO dbo.NotificacionDestinatarioRegla
+    (
+        IdEvento,
+        TipoDestinatario,
+        OrigenDestinatario,
+        ValorOrigen,
+        EmpresaCodigo,
+        SucursalCodigo,
+        TipoDocumento,
+        ContextoBodega,
+        CodigoBodegaFiltro,
+        Prioridad,
+        RequiereCoincidenciaExacta,
+        Activo,
+        Observaciones,
+        UsuarioCreacion
+    )
+    VALUES
+    (
+        @IdEventoTransferencia,
+        'TO',
+        'BODEGA',
+        'SUPERVISOR',
+        'MHS',
+        'SPS',
+        NULL,
+        'ORIGEN',
+        NULL,
+        1,
+        0,
+        1,
+        'Enviar al supervisor de la bodega origen',
+        'admin'
+    ),
+    (
+        @IdEventoTransferencia,
+        'CC',
+        'BODEGA',
+        'SUPERVISOR',
+        'MHS',
+        'SPS',
+        NULL,
+        'DESTINO',
+        NULL,
+        2,
+        0,
+        1,
+        'Copiar al supervisor de la bodega destino',
+        'admin'
+    ),
+    (
+        @IdEventoTransferencia,
+        'CC',
+        'FIJO',
+        'ti@empresa.com',
+        'MHS',
+        'SPS',
+        NULL,
+        NULL,
+        NULL,
+        3,
+        0,
+        1,
+        'Copia fija a TI',
+        'admin'
+    ),
+    (
+        @IdEventoDespacho,
+        'CC',
+        'BODEGA',
+        'OPERATIVO',
+        'MHS',
+        'SPS',
+        NULL,
+        'ORIGEN',
+        NULL,
+        1,
+        0,
+        1,
+        'Copiar a operaciones de bodega origen',
+        'admin'
+    ),
+    (
+        @IdEventoDespacho,
+        'CC',
+        'FIJO',
+        'logistica@empresa.com',
+        'MHS',
+        'SPS',
+        NULL,
+        NULL,
+        NULL,
+        2,
+        0,
+        1,
+        'Copia fija a logistica',
+        'admin'
+    );
+
+    INSERT INTO dbo.NotificacionCola
+    (
+        IdEvento,
+        IdPlantilla,
+        OrigenSistema,
+        LlaveNegocio,
+        EmpresaCodigo,
+        SucursalCodigo,
+        BodegaCodigo,
+        TipoDocumento,
+        Referencia1,
+        Referencia2,
+        DataJson,
+        Estado,
+        Intentos,
+        MaxIntentos,
+        UsuarioCreacion
+    )
+    SELECT
+        e.IdEvento,
+        p.IdPlantilla,
+        'TOMWMS',
+        'TRANSFERENCIA|TRF|12345',
+        'MHS',
+        'SPS',
+        'BOD-01',
+        'TRANSFERENCIA',
+        'TRF',
+        '12345',
+        N'{
+            "Empresa":"MHS",
+            "Prefijo":"TRF",
+            "Numero":"12345",
+            "Estatus":"Despachada",
+            "FechaEntrega":"19/03/2026",
+            "FechaRecepcion":"19/03/2026",
+            "BodegaOrigen":"BOD-01",
+            "BodegaDestino":"BOD-09",
+            "Usuario":"admin",
+            "TablaDetalleHtml":"<table border=''1''><tr><td>ART-001</td><td>Harina</td><td>10</td></tr></table>"
+        }',
+        'PENDIENTE',
+        0,
+        5,
+        'admin'
+    FROM dbo.NotificacionEvento e
+    INNER JOIN dbo.NotificacionPlantilla p
+        ON p.IdEvento = e.IdEvento
+       AND p.CodigoPlantilla = 'TPL_TRANSFERENCIA_REVERSADA_V1'
+    WHERE e.CodigoEvento = 'TRANSFERENCIA_REVERSADA';
+
+    /* =========================================================
+       12. VISTA DE APOYO
+       ========================================================= */
+
+    EXEC('
+    CREATE VIEW dbo.vw_NotificacionPlantilla
+    AS
+    SELECT
+        p.IdPlantilla,
+        e.CodigoEvento,
+        e.NombreEvento,
+        p.CodigoPlantilla,
+        p.NombrePlantilla,
+        p.Canal,
+        p.AsuntoTemplate,
+        p.UsaLayoutComun,
+        p.VersionPlantilla,
+        p.Activo,
+        l.CodigoLayout,
+        l.NombreLayout
+    FROM dbo.NotificacionPlantilla p
+    INNER JOIN dbo.NotificacionEvento e
+        ON p.IdEvento = e.IdEvento
+    LEFT JOIN dbo.NotificacionLayout l
+        ON p.IdLayout = l.IdLayout;
+    ');
+
+    COMMIT TRANSACTION;
+END TRY
+BEGIN CATCH
+    IF @@TRANCOUNT > 0
+        ROLLBACK TRANSACTION;
+
+    DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();
+    DECLARE @ErrorLine INT = ERROR_LINE();
+    DECLARE @ErrorNumber INT = ERROR_NUMBER();
+
+    RAISERROR(
+        'Error creando esquema de notificaciones. Numero: %d, Linea: %d, Mensaje: %s',
+        16,
+        1,
+        @ErrorNumber,
+        @ErrorLine,
+        @ErrorMessage
+    );
+END CATCH;
+GO
