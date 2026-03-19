@@ -1,0 +1,16 @@
+CREATE TABLE dbo.BodegaNotificacionContacto
+(
+    IdBodegaContacto        INT IDENTITY(1,1) PRIMARY KEY,
+    EmpresaCodigo           VARCHAR(20) NOT NULL,
+    BodegaCodigo            VARCHAR(20) NOT NULL,
+    TipoContacto            VARCHAR(30) NOT NULL,  -- OPERATIVO, SUPERVISOR, JEFE, AUDITORIA
+    NombreContacto          VARCHAR(150) NULL,
+    Correo                  VARCHAR(320) NOT NULL,
+    Activo                  BIT NOT NULL DEFAULT (1),
+    FechaCreacion           DATETIME2(0) NOT NULL DEFAULT (SYSDATETIME())
+);
+GO
+
+CREATE INDEX IX_BodegaNotificacionContacto
+ON dbo.BodegaNotificacionContacto (EmpresaCodigo, BodegaCodigo, TipoContacto, Activo);
+GO
