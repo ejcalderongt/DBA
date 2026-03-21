@@ -1,7 +1,11 @@
 --#GT09032026: propiedades para manejo de rfid.
-
 alter table i_nav_barras_pallet add sscc nvarchar(48) default null, gtin nvarchar(48) default null, Impreso bit default null
 
+ALTER TABLE i_nav_barras_pallet ALTER COLUMN recibido int null
+
+ALTER TABLE i_nav_barras_pallet ADD fecha_procesado_erp datetime not null default '19000101'
+
+ALTER TABLE i_nav_barras_pallet ADD Impreso bit  default null, sscc nvarchar(48) default null, gtin nvarchar(48) default null
 
 Para que funcione la recepción de pallets es necesario configurar lo siguiente:
 1. En la tabla producto_presentacion la presentación del pallet debe tener como codigo de barra el codigo del producto
