@@ -1,0 +1,62 @@
+CREATE TABLE [dbo].[trans_ajuste_det_borrador]
+(
+    [idajustedet_borrador] INT IDENTITY(1,1) NOT NULL,
+    [idajusteenc] INT NOT NULL,
+    [idajustedet] INT NULL,
+    [IdStock] INT NULL,
+    [IdPropietarioBodega] INT NULL,
+    [IdProductoBodega] INT NULL,
+    [IdProductoEstado] INT NULL,
+    [IdPresentacion] INT NULL,
+    [IdUnidadMedida] INT NULL,
+    [IdUbicacion] INT NULL,
+    [lote_original] NVARCHAR(50) NULL,
+    [lote_nuevo] NVARCHAR(50) NULL,
+    [fecha_vence_original] DATETIME NULL,
+    [fecha_vence_nueva] DATETIME NULL,
+    [peso_original] FLOAT NULL,
+    [peso_nuevo] FLOAT NULL,
+    [cantidad_original] FLOAT NULL,
+    [cantidad_nueva] FLOAT NULL CONSTRAINT [DF_trans_ajuste_det_borrador_cantidad_nueva] DEFAULT ((0)),
+    [codigo_producto] NVARCHAR(50) NULL,
+    [nombre_producto] NVARCHAR(200) NULL,
+    [idtipoajuste] INT NULL,
+    [idmotivoajuste] INT NULL,
+    [observacion] NVARCHAR(250) NULL,
+    [codigo_ajuste] NVARCHAR(50) NULL,
+    [enviado] BIT NULL CONSTRAINT [DF_trans_ajuste_det_borrador_enviado] DEFAULT ((0)),
+    [IdBodegaERP] INT NULL,
+    [lic_plate] NVARCHAR(50) NULL,
+    [referencia_ajuste_erp] NVARCHAR(50) NOT NULL CONSTRAINT [DF_trans_ajuste_det_borrador_referencia_ajuste_erp] DEFAULT (''),
+    [estado_ajuste_erp] BIT NOT NULL CONSTRAINT [DF_trans_ajuste_det_borrador_estado_ajuste_erp] DEFAULT ((0)),
+    [estado_borrador] NVARCHAR(20) NOT NULL CONSTRAINT [DF_trans_ajuste_det_borrador_estado_borrador] DEFAULT ('BORRADOR'),
+    [confirmado] BIT NOT NULL CONSTRAINT [DF_trans_ajuste_det_borrador_confirmado] DEFAULT ((0)),
+    [procesado] BIT NOT NULL CONSTRAINT [DF_trans_ajuste_det_borrador_procesado] DEFAULT ((0)),
+    [fecha_creacion] DATETIME NOT NULL CONSTRAINT [DF_trans_ajuste_det_borrador_fecha_creacion] DEFAULT (GETDATE()),
+    [usuario_creacion] NVARCHAR(50) NULL,
+    [fecha_modificacion] DATETIME NULL,
+    [usuario_modificacion] NVARCHAR(50) NULL,
+
+    CONSTRAINT [PK_trans_ajuste_det_borrador]
+        PRIMARY KEY CLUSTERED ([idajustedet_borrador] ASC),
+
+    CONSTRAINT [CK_trans_ajuste_det_borrador_estado_borrador]
+        CHECK ([estado_borrador] IN ('BORRADOR', 'CONFIRMADO', 'ANULADO', 'PROCESADO')),
+
+    CONSTRAINT [FK_trans_ajuste_enc_trans_ajuste_det_borrador]
+        FOREIGN KEY ([idajusteenc])
+        REFERENCES [dbo].[trans_ajuste_enc]([idajusteenc])
+);
+GO
+
+CREATE NONCLUSTERED INDEX [IX_trans_ajuste_det_borrador_idajusteenc]
+    ON [dbo].[trans_ajuste_det_borrador]([idajusteenc]);
+GO
+
+CREATE NONCLUSTERED INDEX [IX_trans_ajuste_det_borrador_IdStock]
+    ON [dbo].[trans_ajuste_det_borrador]([IdStock]);
+GO
+
+CREATE NONCLUSTERED INDEX [IX_trans_ajuste_det_borrador_estado]
+    ON [dbo].[trans_ajuste_det_borrador]([estado_borrador], [confirmado], [procesado]);
+GO
