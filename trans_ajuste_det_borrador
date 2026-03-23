@@ -1,6 +1,6 @@
 CREATE TABLE [dbo].[trans_ajuste_det_borrador]
 (
-    [idajustedet_borrador] INT IDENTITY(1,1) NOT NULL,
+    [idajustedetborrador] INT IDENTITY(1,1) NOT NULL,
     [idajusteenc] INT NOT NULL,
     [idajustedet] INT NULL,
     [IdStock] INT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE [dbo].[trans_ajuste_det_borrador]
     [usuario_modificacion] NVARCHAR(50) NULL,
 
     CONSTRAINT [PK_trans_ajuste_det_borrador]
-        PRIMARY KEY CLUSTERED ([idajustedet_borrador] ASC),
+        PRIMARY KEY CLUSTERED ([idajustedetborrador] ASC),
 
     CONSTRAINT [CK_trans_ajuste_det_borrador_estado_borrador]
         CHECK ([estado_borrador] IN ('BORRADOR', 'CONFIRMADO', 'ANULADO', 'PROCESADO')),
