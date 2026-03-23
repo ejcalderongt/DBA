@@ -1,3 +1,6 @@
+--#EJC20260323: Se agrega para manejo de ajustes tipo borrador en la cumbre.
+alter table trans_ajuste_enc add borrador bit not null default 0 
+
 --#CKFK20251106 Agregué campos nuevos para manejar el centro de costo
 alter table trans_ajuste_enc 
 add centro_costo_erp nvarchar(50), 
