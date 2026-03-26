@@ -1,4 +1,4 @@
---#CKFK20251107 Agregué campo requerir_centro_costo_obligatorio para saber cuando exigir los campos de centro de costo
+--#CKFK20260326 Agregué campo requerir_centro_costo_obligatorio para saber cuando exigir los campos de centro de costo
 ALTER TABLE i_nav_config_enc
 ADD requerir_centro_costo_obligatorio bit not null default 0 
 GO
