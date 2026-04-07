@@ -1,3 +1,10 @@
+--#AG20260407 Se agregaron campos nuevos bodega para requerimiento de Idealsa
+ALTER TABLE bodega ADD 
+cambio_ubicacion_restrictivo BIT NOT NULL DEFAULT 0,
+permitir_cambio_ubic_indice_menor BIT NOT NULL DEFAULT 0,
+requerir_mismo_producto_posiciones BIT NOT NULL DEFAULT 0;
+GO
+
 --#CKFK20260326 Agregué campo bodega_cliente_ajuste_byb para controlar cuando se muestra el campo de bodega en los ajustes
 ALTER TABLE bodega
 ADD bodega_cliente_ajuste_byb bit not null default 0 
