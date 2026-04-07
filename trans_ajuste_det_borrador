@@ -1,3 +1,13 @@
+
+alter table trans_ajuste_det_borrador 
+add IdProductoTallaColor_origen int default null, 
+    talla_origen int default null, 
+	color_origen int default null,
+	IdProductoTallaColor_destino int default null, 
+    talla_destino int default null, 
+	color_destino int default null
+GO
+
 CREATE TABLE [dbo].[trans_ajuste_det_borrador]
 (
     [idajustedetborrador] INT IDENTITY(1,1) NOT NULL,
