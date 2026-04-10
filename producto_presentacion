@@ -1,1 +1,4 @@
+--#EJC20260409 Por funcionalidad para MHS
+ALTER TABLE producto_presentacion add IdTipoEtiqueta int null
+
 ALTER TABLE producto_presentacion ADD codigo NVARCHAR(50) NULL
