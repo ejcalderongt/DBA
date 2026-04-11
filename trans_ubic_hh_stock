@@ -1,3 +1,10 @@
+--#CKFK20260510 Hice el alter para las empresas que ya tienen la tabla creada
+alter table trans_ubic_hh_stock
+add [IdProductoTallaColor] [int] NULL,
+	[Talla] [varchar](25) NULL,
+	[Color] [varchar](25) NULL
+GO
+
 --#MECR09092025: Se agrego columas de IdProductoTallaColor, Talla y Color
 
 /****** Object:  Table [dbo].[trans_ubic_hh_stock]    Script Date: 9/09/2025 09:12:54 ******/
