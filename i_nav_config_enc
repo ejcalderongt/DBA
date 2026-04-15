@@ -1,4 +1,4 @@
---#AG20260413 Agregué campo para saber si se debe enviar la información en presentacion
+--#AG20260413 Agregué campo para saber si se debe enviar la información en presentacion.. 
 ALTER TABLE i_nav_config_enc
 ADD cantidad_en_presentacion_transacciones_out bit not null default 1
 GO
