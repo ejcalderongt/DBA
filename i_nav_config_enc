@@ -1,3 +1,8 @@
+--#AG20260413 Agregué campo para saber si se debe enviar la información en presentacion
+ALTER TABLE i_nav_config_enc
+ADD cantidad_en_presentacion_transacciones_out bit not null default 1
+GO
+
 --#CKFK20260326 Agregué campo requerir_centro_costo_obligatorio para saber cuando exigir los campos de centro de costo
 ALTER TABLE i_nav_config_enc
 ADD requerir_centro_costo_obligatorio bit not null default 0 
