@@ -1,0 +1,53 @@
+DECLARE @IdBodega INT;
+DECLARE @MaxIdClienteBodega INT;
+
+DECLARE cur_bodegas CURSOR FOR
+SELECT IdBodega
+FROM bodega
+WHERE activo = 1; -- opcional, quítalo si quieres todas
+
+OPEN cur_bodegas;
+
+FETCH NEXT FROM cur_bodegas INTO @IdBodega;
+
+WHILE @@FETCH_STATUS = 0
+BEGIN
+    -- Tomar el máximo actual para evitar que el ROW_NUMBER empiece sobre el mismo valor en cada vuelta
+    SET @MaxIdClienteBodega = ISNULL((SELECT MAX(IdClienteBodega) FROM cliente_bodega), 0);
+
+    INSERT INTO cliente_bodega
+    (
+        IdClienteBodega,
+        IdBodega,
+        IdCliente,
+        user_agr,
+        fec_agr,
+        user_mod,
+        fec_mod,
+        activo,
+        IdAreaDestino
+    )
+    SELECT 
+        ROW_NUMBER() OVER (ORDER BY IdCliente ASC) + @MaxIdClienteBodega AS IdClienteBodega,
+        @IdBodega AS IdBodega,
+        IdCliente,
+        1 AS user_agr,
+        GETDATE() AS fec_agr,
+        1 AS user_mod,
+        GETDATE() AS fec_mod,
+        activo,
+        NULL AS IdAreaDestino
+    FROM cliente
+    WHERE IdCliente NOT IN
+    (
+        SELECT pb.IdCliente
+        FROM cliente_bodega pb
+        WHERE pb.IdBodega = @IdBodega
+    )
+    AND activo = 1;
+
+    FETCH NEXT FROM cur_bodegas INTO @IdBodega;
+END
+
+CLOSE cur_bodegas;
+DEALLOCATE cur_bodegas;
