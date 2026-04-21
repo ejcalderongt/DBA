@@ -1,3 +1,4 @@
+-- #EJCRP feat(VW_Stock_Res): merge versiones Proveedor (#EJC20260323) + Talla/Color/SKU (#AT20260129)
 SET ANSI_NULLS ON
 GO
 
