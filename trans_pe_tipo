@@ -1,3 +1,6 @@
+'#CKFK2026
+ALTER TABLE trans_pe_tipo ADD asignar_todos_operadores bit not null Default 0 GO
+
 --#CKFK20251121 Agregué el campo verificar_con_imagen
 alter table trans_pe_tipo add verificar_con_imagen bit not null default 0
 
