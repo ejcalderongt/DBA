@@ -1,3 +1,8 @@
+alter table trans_ajuste_det_borrador 
+add idproveedor INT NULL,
+codigo_proveedor NVARCHAR(50) NULL,
+nombre_proveedor NVARCHAR(200) NULL
+GO
 
 alter table trans_ajuste_det_borrador 
 add IdProductoTallaColor_origen int default null, 
