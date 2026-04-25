@@ -1,3 +1,10 @@
+#EJC20260425 Agregué los campos del proveedor 
+alter table trans_ajuste_det
+add idproveedor INT NULL,
+codigo_proveedor NVARCHAR(50) NULL,
+nombre_proveedor NVARCHAR(200) NULL
+GO
+
 --#GT17122025: para ajustes de stock por talla y color debe exitir un origen y un destino.
 
 alter table trans_ajuste_det 
