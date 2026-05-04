@@ -1,3 +1,7 @@
+--#EJC20260504 Campo nuevo MHS
+ALTER TABLE trans_oc_det_lote 
+ADD peso_licencia float default 0
+
 --#AT20250901 Se agregaron los campos codigo_sku y IdProductoTallaColor
 ALTER TABLE trans_oc_det_lote ADD codigo_sku NVARCHAR(50) NULL
 ALTER TABLE trans_oc_det_lote ADD IdProductoTallaColor INT NULL
