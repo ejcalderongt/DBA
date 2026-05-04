@@ -1,1 +1,7 @@
+--#EJC campos nuevos MHS
+ALTER TABLE [dbo].[i_nav_ped_compra_det_lote]
+ADD 
+    [Pallet_Weight] FLOAT NULL,
+    [Pallet_License_No] NVARCHAR(50) NULL;
+
 alter table i_nav_ped_compra_det_lote add fec_agr datetime default getdate()
