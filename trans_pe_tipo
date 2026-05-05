@@ -1,4 +1,8 @@
-'#CKFK2026
+'#CKFK20260505 Agregué campo para generar el picking automáticamente en MAMPA
+ALTER TABLE trans_pe_tipo 
+ADD generar_picking_auto bit not null default 0
+
+'#CKFK20260430 Campo para asignar picking a todos los operadores
 ALTER TABLE trans_pe_tipo ADD asignar_todos_operadores bit not null Default 0 GO
 
 --#CKFK20251121 Agregué el campo verificar_con_imagen
