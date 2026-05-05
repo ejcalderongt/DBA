@@ -1,0 +1,4 @@
+--#GT20260504 Campo nuevo para identificar si el inventario es RFID
+ALTER TABLE TipoInventario
+ADD es_rfid bit not null default 0
+GO
