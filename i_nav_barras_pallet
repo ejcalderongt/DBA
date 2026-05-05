@@ -1,3 +1,9 @@
+--#EJC20250505 Campos nuevos para MHS
+alter table i_nav_barras_pallet 
+add IdOrdenCompraEnc int null,
+IdOrdenCompraDet int null,
+GO
+
 --#EJC20250504 Campo nuevo para MHS
 alter table i_nav_barras_pallet add Peso float default 0
 GO
