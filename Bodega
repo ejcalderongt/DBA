@@ -1,3 +1,8 @@
+--#CKFK20260505 Se agregó campo nuevo para saber si hay control de guías
+ALTER TABLE bodega
+ADD control_guia bit not null default 0
+GO
+
 --#AG20260407 Se agregaron campos nuevos bodega para requerimiento de Idealsa
 ALTER TABLE bodega ADD 
 cambio_ubicacion_restrictivo BIT NOT NULL DEFAULT 0,
