@@ -1,3 +1,7 @@
+--#EJC20250504 Campo nuevo para MHS
+alter table i_nav_barras_pallet add Peso float default 0
+GO
+
 --#CKFK Campo nuevo para Idealsa y modificación al tipo recibido de bit a numérico
 ALTER TABLE i_nav_barras_pallet 
 ALTER COLUMN recibido int null
