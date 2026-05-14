@@ -1,3 +1,8 @@
+#EJC20260425 Agregué el campo IdRecepcionEnc
+alter table trans_ajuste_det 
+add IdRecepcionEnc int null
+GO
+
 #EJC20260425 Agregué los campos del proveedor 
 alter table trans_ajuste_det
 add idproveedor INT NULL,
