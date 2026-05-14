@@ -1,3 +1,7 @@
+--#EJC20260513 Menu de Ajustes
+insert into menu_sistema values ('5.5', 'Ajuste - Indicadores', 'pgAjusteInventarioIndicadores', 2,5,0)
+insert into menu_sistema values ('5.5.1', 'Ajuste - Indicadores - mnuIndicadores', 'mnuIndicadoresAjustes', 3,'5.5',0)
+insert into menu_sistema values ('5.5.1.1', 'Ajuste - Indicadores - opcProveedor', 'mnurptIndicadorAjusteProveedor', 4,'5.5.1',0)
 
 --#GT 10032026: menu para ver impresion tag barras e ingresos/salidas con tag.
 
