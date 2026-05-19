@@ -21,3 +21,12 @@ CREATE TABLE i_nav_barras_pallet_reimpresion_log
         CONSTRAINT DF_i_nav_barras_pallet_reimpresion_log_Activo 
         DEFAULT (1)
 );
+
+CREATE INDEX IX_i_nav_barras_pallet_reimpresion_log_CodigoBarra
+ON dbo.i_nav_barras_pallet_reimpresion_log (CodigoBarra);
+
+CREATE INDEX IX_i_nav_barras_pallet_reimpresion_log_IdPallet
+ON dbo.i_nav_barras_pallet_reimpresion_log (IdPallet);
+
+CREATE INDEX IX_i_nav_barras_pallet_reimpresion_log_FechaReimpresion
+ON dbo.i_nav_barras_pallet_reimpresion_log (FechaReimpresion DESC);
