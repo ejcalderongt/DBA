@@ -1,0 +1,23 @@
+CREATE TABLE i_nav_barras_pallet_reimpresion_log
+(
+    IdReimpresionLog INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+
+    IdPallet INT NULL,
+    CodigoBarra NVARCHAR(50) NOT NULL,
+    Lote NVARCHAR(100) NULL,
+
+    IdUsuario INT NOT NULL,
+    Usuario NVARCHAR(150) NULL,
+
+    Impresora NVARCHAR(250) NOT NULL,
+    Motivo VARCHAR(500) NULL,
+
+    FechaReimpresion DATETIME NOT NULL 
+        CONSTRAINT DF_i_nav_barras_pallet_reimpresion_log_FechaReimpresion 
+        DEFAULT (GETDATE()),
+
+    Equipo NVARCHAR(150) NULL,
+    Activo BIT NOT NULL 
+        CONSTRAINT DF_i_nav_barras_pallet_reimpresion_log_Activo 
+        DEFAULT (1)
+);
