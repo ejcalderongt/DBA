@@ -1,3 +1,12 @@
+--#EJC20260518
+CREATE INDEX IX_i_nav_barras_pallet
+ON dbo.i_nav_barras_pallet (Codigo_Barra);
+GO
+ 
+CREATE INDEX IX_i_nav_barras_pallet_IdPallet
+ON dbo.i_nav_barras_pallet (IdPallet);
+GO
+
 --#EJC20260126 Migración a Identity en stock_res por collisión y rendimiento:
 ALTER TABLE stock_res DROP CONSTRAINT PK_stock_pe;
 ALTER TABLE stock_res DROP COLUMN IdStockRes;
