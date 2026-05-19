@@ -1,3 +1,8 @@
+--#CKFK20260518 Se agregó el campo nuevo para saber si se hace el proceso automático
+ALTER TABLE bodega
+ADD ubic_implosion_auto bit NOT NULL DEFAULT 0
+GO
+
 --#CKFK20260505 Se agregó campo nuevo para saber si hay control de guías
 ALTER TABLE bodega
 ADD control_guia bit not null default 0
