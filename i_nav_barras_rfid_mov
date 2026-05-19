@@ -1,0 +1,171 @@
+-- =============================================================================
+-- MODULO RFID — extensiones sobre i_nav_barras_rfid_enc/det (GT 10032026)
+-- Convencion: prefijo i_nav_barras_rfid_* (interfaz NAV, alineado con GT).
+-- Sin FKs hacia el core WMS (producto_bodega, trans_oc_enc, etc.) para
+-- permitir release independiente; los IDs se guardan igual.
+-- FKs SI entre tablas internas del modulo RFID (cohesion).
+-- =============================================================================
+
+-- -----------------------------------------------------------------------------
+-- Catalogo: tipo de movimiento RFID (ING / SAL / MOV / INV / DEV / MERMA)
+-- -----------------------------------------------------------------------------
+CREATE TABLE [dbo].[i_nav_barras_rfid_tipo_mov](
+    [IdRfidTipoMov]   [int] IDENTITY(1,1) NOT NULL,
+    [codigo]          [nvarchar](10) NOT NULL,   -- ING/SAL/MOV/INV/DEV/MERMA
+    [nombre]          [nvarchar](50) NOT NULL,
+    [signo]           [smallint]     NOT NULL CONSTRAINT DF_rfidtm_signo  DEFAULT(1),  -- +1 suma, -1 resta, 0 informativo
+    [afecta_stock]    [bit]          NOT NULL CONSTRAINT DF_rfidtm_afst   DEFAULT(1),
+    [activo]          [bit]          NOT NULL CONSTRAINT DF_rfidtm_act    DEFAULT(1),
+    [user_agr]        [int]          NULL,
+    [fec_agr]         [datetime]     NOT NULL CONSTRAINT DF_rfidtm_fecagr DEFAULT(GETDATE()),
+    [user_mod]        [int]          NULL,
+    [fec_mod]         [datetime]     NULL,
+ CONSTRAINT [PK_i_nav_barras_rfid_tipo_mov] PRIMARY KEY CLUSTERED ([IdRfidTipoMov] ASC),
+ CONSTRAINT [UQ_i_nav_barras_rfid_tipo_mov_codigo] UNIQUE ([codigo])
+) ON [PRIMARY]
+GO
+
+-- Semilla minima
+INSERT INTO [dbo].[i_nav_barras_rfid_tipo_mov] (codigo, nombre, signo, afecta_stock) VALUES
+ (N'ING',   N'Ingreso por RFID',                  1, 1),
+ (N'SAL',   N'Salida por RFID',                  -1, 1),
+ (N'MOV',   N'Movimiento interno por RFID',       0, 0),
+ (N'INV',   N'Conteo de inventario por RFID',     0, 0),
+ (N'DEV',   N'Devolucion por RFID',               1, 1),
+ (N'MERMA', N'Merma detectada por RFID',         -1, 1);
+GO
+
+-- -----------------------------------------------------------------------------
+-- Stock RFID (snapshot vivo: que tags estan en bodega segun ultimas lecturas)
+-- Se da de alta en la lectura tipo ING/DEV y se da de Salida (activo=0) en SAL/MERMA.
+-- -----------------------------------------------------------------------------
+CREATE TABLE [dbo].[i_nav_barras_rfid_stock](
+    [IdRfidStock]            [int] IDENTITY(1,1) NOT NULL,
+    -- Identificacion fisica del tag (alineado a nombres del det de GT)
+    [barra_epc]              [nvarchar](50) NULL,
+    [tagid]                  [nvarchar](50) NULL,
+    -- Que contiene (denormalizado; FK logica, sin constraint)
+    [IdBodega]               [int]          NULL,
+    [IdProductoBodega]       [int]          NULL,
+    [lote]                   [nvarchar](50) NULL,
+    [cantidad]               [int]          NOT NULL CONSTRAINT DF_rfidst_cant DEFAULT(1),
+    -- Ubicacion implicita (ultima detectada por RFID, opcional)
+    [IdUbicacion]            [int]          NULL,
+    -- Origen del tag (FK fisica al modulo, FK logica al core)
+    [IdRFIDEncOrigen]        [int]          NULL,    -- lectura ING/DEV que lo creo
+    [IdOrdenCompraEnc]       [int]          NULL,
+    [IdPedidoEnc]            [int]          NULL,
+    -- Salida
+    [IdRFIDEncSalida]          [int]          NULL,    -- lectura SAL/MERMA que lo bajo
+    [fec_Salida]               [datetime]     NULL,
+    -- Auditoria
+    [activo]                 [bit]          NOT NULL CONSTRAINT DF_rfidst_act    DEFAULT(1),
+    [user_agr]               [int]          NULL,
+    [fec_agr]                [datetime]     NOT NULL CONSTRAINT DF_rfidst_fecagr DEFAULT(GETDATE()),
+    [user_mod]               [int]          NULL,
+    [fec_mod]                [datetime]     NULL,
+ CONSTRAINT [PK_i_nav_barras_rfid_stock] PRIMARY KEY CLUSTERED ([IdRfidStock] ASC),
+ CONSTRAINT [FK_rfidst_enc_origen] FOREIGN KEY ([IdRFIDEncOrigen])
+    REFERENCES [dbo].[i_nav_barras_rfid_enc] ([IdRFIDEnc]),
+ CONSTRAINT [FK_rfidst_enc_Salida] FOREIGN KEY ([IdRFIDEncSalida])
+    REFERENCES [dbo].[i_nav_barras_rfid_enc] ([IdRFIDEnc]),
+ CONSTRAINT [CK_rfidst_tag] CHECK ([barra_epc] IS NOT NULL OR [tagid] IS NOT NULL)
+) ON [PRIMARY]
+GO
+
+-- Un EPC / tagid vivo solo puede existir una vez (regla fisica de RFID).
+-- Si necesitas permitir duplicados temporales por error de lectura, sacas estos.
+CREATE UNIQUE INDEX [UX_rfidst_epc_activo]
+    ON [dbo].[i_nav_barras_rfid_stock]([barra_epc])
+    WHERE [activo] = 1 AND [barra_epc] IS NOT NULL;
+GO
+CREATE UNIQUE INDEX [UX_rfidst_tagid_activo]
+    ON [dbo].[i_nav_barras_rfid_stock]([tagid])
+    WHERE [activo] = 1 AND [tagid] IS NOT NULL;
+GO
+
+CREATE INDEX [IX_rfidst_prodbod] ON [dbo].[i_nav_barras_rfid_stock]([IdProductoBodega], [activo]);
+CREATE INDEX [IX_rfidst_bodega]  ON [dbo].[i_nav_barras_rfid_stock]([IdBodega], [activo]);
+CREATE INDEX [IX_rfidst_ubic]    ON [dbo].[i_nav_barras_rfid_stock]([IdUbicacion], [activo]);
+CREATE INDEX [IX_rfidst_oc]      ON [dbo].[i_nav_barras_rfid_stock]([IdOrdenCompraEnc]);
+CREATE INDEX [IX_rfidst_pedido]  ON [dbo].[i_nav_barras_rfid_stock]([IdPedidoEnc]);
+GO
+
+-- -----------------------------------------------------------------------------
+-- Movimientos RFID (transaccional: cada efecto sobre stock_rfid se loguea aca)
+-- Alineado a tu prototipo trans_movimientos_rfid pero con FK al catalogo,
+-- FK al enc, y nombres consistentes con el det de GT (barra_epc/tagid).
+-- -----------------------------------------------------------------------------
+CREATE TABLE [dbo].[i_nav_barras_rfid_mov](
+    [IdRfidMovimiento]       [int] IDENTITY(1,1) NOT NULL,
+    [IdRFIDEnc]              [int]          NULL,    -- FK fisica
+    [IdRfidTipoMov]          [int]          NULL,    -- FK fisica al catalogo
+    [IdRfidStock]            [int]          NULL,    -- FK fisica al stock afectado (NULL en INV puro)
+    -- Identificacion fisica del tag (denormalizado para que el row se baste solo)
+    [barra_epc]              [nvarchar](50) NULL,
+    [tagid]                  [nvarchar](50) NULL,
+    -- Contexto del movimiento (FK logica al core)
+    [IdBodega]               [int]          NULL,
+    [IdProductoBodega]       [int]          NULL,
+    [lote]                   [nvarchar](50) NULL,
+    [IdOrdenCompraEnc]       [int]          NULL,
+    [IdPedidoEnc]            [int]          NULL,
+    [IdUbicacion]            [int]          NULL,
+    -- Cuanto se afecto
+    [cantidad]               [int]          NOT NULL CONSTRAINT DF_rfidmv_cant DEFAULT(1),
+    -- Fechas (igual patron que trans_ajuste_enc del core: fecha logica + fec_agr)
+    [fecha]                  [date]         NOT NULL CONSTRAINT DF_rfidmv_fec  DEFAULT(CAST(GETDATE() AS date)),
+    [user_agr]               [int]          NULL,
+    [fec_agr]                [datetime]     NOT NULL CONSTRAINT DF_rfidmv_fecagr DEFAULT(GETDATE()),
+ CONSTRAINT [PK_i_nav_barras_rfid_mov] PRIMARY KEY CLUSTERED ([IdRfidMovimiento] ASC),
+ CONSTRAINT [FK_rfidmv_enc]      FOREIGN KEY ([IdRFIDEnc])
+    REFERENCES [dbo].[i_nav_barras_rfid_enc] ([IdRFIDEnc]),
+ CONSTRAINT [FK_rfidmv_tipomov]  FOREIGN KEY ([IdRfidTipoMov])
+    REFERENCES [dbo].[i_nav_barras_rfid_tipo_mov] ([IdRfidTipoMov]),
+ CONSTRAINT [FK_rfidmv_stock]    FOREIGN KEY ([IdRfidStock])
+    REFERENCES [dbo].[i_nav_barras_rfid_stock] ([IdRfidStock])
+) ON [PRIMARY]
+GO
+
+CREATE INDEX [IX_rfidmv_enc]     ON [dbo].[i_nav_barras_rfid_mov]([IdRFIDEnc]);
+CREATE INDEX [IX_rfidmv_stock]   ON [dbo].[i_nav_barras_rfid_mov]([IdRfidStock]);
+CREATE INDEX [IX_rfidmv_tipo]    ON [dbo].[i_nav_barras_rfid_mov]([IdRfidTipoMov], [fecha]);
+CREATE INDEX [IX_rfidmv_prodbod] ON [dbo].[i_nav_barras_rfid_mov]([IdProductoBodega], [fecha]);
+CREATE INDEX [IX_rfidmv_bodega]  ON [dbo].[i_nav_barras_rfid_mov]([IdBodega], [fecha]);
+CREATE INDEX [IX_rfidmv_epc]     ON [dbo].[i_nav_barras_rfid_mov]([barra_epc]) WHERE [barra_epc] IS NOT NULL;
+CREATE INDEX [IX_rfidmv_tagid]   ON [dbo].[i_nav_barras_rfid_mov]([tagid])     WHERE [tagid]     IS NOT NULL;
+GO
+
+-- -----------------------------------------------------------------------------
+-- (Opcional, recomendado) ALTERs idempotentes a las tablas GT 10032026
+-- -----------------------------------------------------------------------------
+
+-- 1) Fix tipo IdDispositivo (datetime -> int)
+IF EXISTS (SELECT 1 FROM sys.columns
+           WHERE object_id = OBJECT_ID('dbo.i_nav_barras_rfid_det')
+             AND name = 'IdDispositivo'
+             AND system_type_id = TYPE_ID('datetime'))
+BEGIN
+    ALTER TABLE [dbo].[i_nav_barras_rfid_det] DROP COLUMN [IdDispositivo];
+    ALTER TABLE [dbo].[i_nav_barras_rfid_det] ADD  [IdDispositivo] [int] NULL;
+END
+GO
+
+-- 2) UQ en det para que un EPC no se duplique dentro de la misma lectura
+IF NOT EXISTS (SELECT 1 FROM sys.indexes
+               WHERE object_id = OBJECT_ID('dbo.i_nav_barras_rfid_det')
+                 AND name = 'UQ_i_nav_barras_rfid_det')
+BEGIN
+    CREATE UNIQUE INDEX [UQ_i_nav_barras_rfid_det]
+        ON [dbo].[i_nav_barras_rfid_det]([IdRFIDEnc], [barra_epc]);
+END
+GO
+
+-- 3) FK opcional del det al enc (si no existe ya)
+IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = 'FK_rfid_det_enc')
+BEGIN
+    ALTER TABLE [dbo].[i_nav_barras_rfid_det]
+      ADD CONSTRAINT [FK_rfid_det_enc] FOREIGN KEY ([IdRFIDEnc])
+          REFERENCES [dbo].[i_nav_barras_rfid_enc] ([IdRFIDEnc]);
+END
+GO
