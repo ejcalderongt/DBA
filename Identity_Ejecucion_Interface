@@ -1,0 +1,103 @@
+BEGIN TRANSACTION;
+
+------------------------------------------------------------
+-- 1. CREAR TABLAS NUEVAS CON IDENTITY
+------------------------------------------------------------
+
+-- ENC
+CREATE TABLE dbo.i_nav_ejecucion_enc_new(
+	idejecucionenc INT IDENTITY(1,1) NOT NULL,
+	idnavconfigenc INT NULL,
+	fecha DATETIME NULL,
+	exitosa BIT NULL,
+	CONSTRAINT PK_i_nav_ejecucion_enc_new PRIMARY KEY CLUSTERED (idejecucionenc)
+);
+
+-- RES
+CREATE TABLE dbo.i_nav_ejecucion_res_new(
+	idejecucionres INT IDENTITY(1,1) NOT NULL,
+	idejecucionenc INT NULL,
+	idnavconfigdet INT NULL,
+	registros_ws INT NULL,
+	registros_ti INT NULL,
+	registros_wms INT NULL,
+	exitosa BIT NULL,
+	CONSTRAINT PK_i_nav_ejecucion_res_new PRIMARY KEY CLUSTERED (idejecucionres)
+);
+
+-- DET ERROR
+CREATE TABLE dbo.i_nav_ejecucion_det_error_new(
+	idejecuciondet INT IDENTITY(1,1) NOT NULL,
+	idejecucionenc INT NULL,
+	idnavconfigdet INT NULL,
+	error NVARCHAR(1000) NULL,
+	fecha DATETIME NULL,
+	referencia NVARCHAR(1000) NULL,
+	es_bodega_recepcion BIT NULL CONSTRAINT DF_i_nav_det_error_esbodega DEFAULT (0),
+	fec_agr DATETIME NULL CONSTRAINT DF_i_nav_det_error_fecagr DEFAULT (GETDATE()),
+	no_linea INT NULL,
+	codigo_producto NVARCHAR(50) NULL,
+	umbas NVARCHAR(50) NULL,
+	codigo_presentacion NVARCHAR(50) NULL,
+	CONSTRAINT PK_i_nav_ejecucion_det_error_new PRIMARY KEY CLUSTERED (idejecuciondet)
+);
+
+------------------------------------------------------------
+-- 2. COPIAR DATOS CONSERVANDO IDS
+------------------------------------------------------------
+
+-- ENC
+SET IDENTITY_INSERT dbo.i_nav_ejecucion_enc_new ON;
+
+INSERT INTO dbo.i_nav_ejecucion_enc_new
+(idejecucionenc, idnavconfigenc, fecha, exitosa)
+SELECT idejecucionenc, idnavconfigenc, fecha, exitosa
+FROM dbo.i_nav_ejecucion_enc;
+
+SET IDENTITY_INSERT dbo.i_nav_ejecucion_enc_new OFF;
+
+-- RES
+SET IDENTITY_INSERT dbo.i_nav_ejecucion_res_new ON;
+
+INSERT INTO dbo.i_nav_ejecucion_res_new
+(idejecucionres, idejecucionenc, idnavconfigdet, registros_ws, registros_ti, registros_wms, exitosa)
+SELECT idejecucionres, idejecucionenc, idnavconfigdet, registros_ws, registros_ti, registros_wms, exitosa
+FROM dbo.i_nav_ejecucion_res;
+
+SET IDENTITY_INSERT dbo.i_nav_ejecucion_res_new OFF;
+
+-- DET ERROR
+SET IDENTITY_INSERT dbo.i_nav_ejecucion_det_error_new ON;
+
+INSERT INTO dbo.i_nav_ejecucion_det_error_new
+(idejecuciondet, idejecucionenc, idnavconfigdet, error, fecha, referencia, es_bodega_recepcion, fec_agr, no_linea, codigo_producto, umbas, codigo_presentacion)
+SELECT idejecuciondet, idejecucionenc, idnavconfigdet, error, fecha, referencia, es_bodega_recepcion, fec_agr, no_linea, codigo_producto, umbas, codigo_presentacion
+FROM dbo.i_nav_ejecucion_det_error;
+
+SET IDENTITY_INSERT dbo.i_nav_ejecucion_det_error_new OFF;
+
+------------------------------------------------------------
+-- 3. ELIMINAR TABLAS ORIGINALES
+------------------------------------------------------------
+
+DROP TABLE dbo.i_nav_ejecucion_res;
+DROP TABLE dbo.i_nav_ejecucion_det_error;
+DROP TABLE dbo.i_nav_ejecucion_enc;
+
+------------------------------------------------------------
+-- 4. RENOMBRAR TABLAS NUEVAS
+------------------------------------------------------------
+
+EXEC sp_rename 'dbo.i_nav_ejecucion_enc_new', 'i_nav_ejecucion_enc';
+EXEC sp_rename 'dbo.i_nav_ejecucion_res_new', 'i_nav_ejecucion_res';
+EXEC sp_rename 'dbo.i_nav_ejecucion_det_error_new', 'i_nav_ejecucion_det_error';
+
+------------------------------------------------------------
+-- 5. RENOMBRAR CONSTRAINTS (OPCIONAL)
+------------------------------------------------------------
+
+EXEC sp_rename 'PK_i_nav_ejecucion_enc_new', 'PK_i_nav_ejecucion_enc', 'OBJECT';
+EXEC sp_rename 'PK_i_nav_ejecucion_res_new', 'PK_i_nav_ejecucion_res', 'OBJECT';
+EXEC sp_rename 'PK_i_nav_ejecucion_det_error_new', 'PK_i_nav_ejecucion_det_error', 'OBJECT';
+
+COMMIT TRANSACTION;
