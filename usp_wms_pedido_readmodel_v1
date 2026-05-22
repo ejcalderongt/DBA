@@ -1,3 +1,4 @@
+
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -268,3 +269,302 @@ BEGIN
      ORDER BY d.IdProducto;
 END
 GO
+
+SET ANSI_NULLS ON GO SET QUOTED_IDENTIF... by Erik Calderon
+Erik Calderon
+3:30 PM
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ 
+
+/*
+    #EJC20260522_PEDIDO_READMODEL
+    SP: dbo.usp_wms_pedido_readmodel_v1
+
+ 
+
+    Objetivo:
+      Reducir roundtrips de frmPedido al abrir documentos grandes sobre enlaces
+      con latencia. Este SP no modifica datos: entrega en lote lecturas que hoy
+      se ejecutan repetidamente desde la forma.
+
+ 
+
+    Resultsets:
+      1. ProductoBodega por producto del documento y bodega activa.
+      2. Presentaciones por producto-bodega, respetando la logica Nuevo/Editar.
+      3. Estados disponibles por producto-bodega.
+      4. Clientes usados en el detalle.
+      5. Cantidad/Peso reservado por linea con los mismos filtros de la forma.
+      6. Datos de producto usados por hoja de verificacion.
+      7. Talla/color usados en el detalle.
+
+ 
+
+    Compatibilidad:
+      Se crea con stub y luego ALTER para no hacer DROP ni perder permisos.
+*/
+
+ 
+
+IF OBJECT_ID(N'dbo.usp_wms_pedido_readmodel_v1', N'P') IS NULL
+BEGIN
+    EXEC(N'CREATE PROCEDURE dbo.usp_wms_pedido_readmodel_v1 AS BEGIN SET NOCOUNT ON; END');
+END
+GO
+
+ 
+
+ALTER PROCEDURE dbo.usp_wms_pedido_readmodel_v1
+    @IdPedidoEnc INT,
+    @IdBodega INT,
+    @Modo INT = 2
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+
+ 
+
+    IF OBJECT_ID('tempdb..#DetallePedido') IS NOT NULL DROP TABLE #DetallePedido;
+    IF OBJECT_ID('tempdb..#ProductoBodega') IS NOT NULL DROP TABLE #ProductoBodega;
+
+ 
+
+    SELECT DISTINCT
+           d.IdPedidoDet,
+           d.IdProductoBodega AS IdProductoBodegaDetalle,
+           pbDet.IdProducto,
+            d.IdEstado,
+            d.IdPresentacion,
+            d.IdUnidadMedidaBasica,
+            ISNULL(d.IdProductoTallaColor, 0) AS IdProductoTallaColor,
+            ISNULL(d.IdCliente, 0) AS IdCliente
+      INTO #DetallePedido
+      FROM dbo.trans_pe_det AS d
+      INNER JOIN dbo.producto_bodega AS pbDet
+              ON pbDet.IdProductoBodega = d.IdProductoBodega
+     WHERE d.IdPedidoEnc = @IdPedidoEnc;
+
+ 
+
+    SELECT DISTINCT
+           pb.IdProducto,
+           pb.IdBodega,
+           pb.IdProductoBodega
+      INTO #ProductoBodega
+      FROM dbo.producto_bodega AS pb
+      INNER JOIN #DetallePedido AS d
+              ON d.IdProducto = pb.IdProducto
+     WHERE pb.IdBodega = @IdBodega;
+
+ 
+
+    SELECT IdProducto,
+           IdBodega,
+           IdProductoBodega
+      FROM #ProductoBodega
+     ORDER BY IdProducto;
+
+ 
+
+    IF @Modo = 1
+    BEGIN
+        SELECT DISTINCT
+               p.IdProductoBodega,
+               pp.IdPresentacion,
+               pp.IdProducto,
+               pp.codigo_barra,
+               pp.nombre AS Nombre,
+               pp.imprime_barra AS Imprime_Barra,
+               pp.peso AS Peso,
+               pp.alto AS Alto,
+               pp.largo AS Largo,
+               pp.ancho AS Ancho,
+               pp.factor AS Factor,
+               pp.MinimoExistencia,
+               pp.MaximoExistencia,
+               pp.activo,
+               pp.EsPallet,
+               pp.Precio,
+               pp.MinimoPeso,
+               pp.MaximoPeso,
+               pp.Costo,
+               pp.CamasPorTarima,
+               pp.CajasPorCama,
+               pp.genera_lp_auto,
+               pp.permitir_paletizar,
+               pp.sistema,
+               pp.IdPresentacionPallet,
+               pp.codigo AS Codigo
+          FROM #ProductoBodega AS p
+          INNER JOIN dbo.VW_StockPresentaciones AS v
+                  ON v.IdProductoBodega = p.IdProductoBodega
+          INNER JOIN dbo.producto_presentacion AS pp
+                  ON pp.IdPresentacion = v.IdPresentacion
+         ORDER BY p.IdProductoBodega, pp.Nombre;
+    END
+    ELSE
+    BEGIN
+        SELECT DISTINCT
+               p.IdProductoBodega,
+               pp.IdPresentacion,
+               pp.IdProducto,
+               pp.codigo_barra,
+               pp.nombre AS Nombre,
+               pp.imprime_barra AS Imprime_Barra,
+               pp.peso AS Peso,
+               pp.alto AS Alto,
+               pp.largo AS Largo,
+               pp.ancho AS Ancho,
+               pp.factor AS Factor,
+               pp.MinimoExistencia,
+               pp.MaximoExistencia,
+               pp.activo,
+               pp.EsPallet,
+               pp.Precio,
+               pp.MinimoPeso,
+               pp.MaximoPeso,
+               pp.Costo,
+               pp.CamasPorTarima,
+               pp.CajasPorCama,
+               pp.genera_lp_auto,
+               pp.permitir_paletizar,
+               pp.sistema,
+               pp.IdPresentacionPallet,
+               pp.codigo AS Codigo
+          FROM #ProductoBodega AS p
+          INNER JOIN dbo.VW_ProductoPresentacion AS v
+                  ON v.IdProductoBodega = p.IdProductoBodega
+          INNER JOIN dbo.producto_presentacion AS pp
+                  ON pp.IdPresentacion = v.IdPresentacion
+         WHERE v.activo = 1
+         ORDER BY p.IdProductoBodega, pp.Nombre;
+    END
+
+ 
+
+    SELECT DISTINCT
+           p.IdProductoBodega,
+           v.IdProductoEstado AS IdEstado,
+           v.IdPropietario,
+           v.nombre AS Nombre,
+           v.IdUbicacionDefecto,
+           v.Utilizable,
+           v.activo,
+           CAST(0 AS bit) AS Daniado
+      FROM #ProductoBodega AS p
+      INNER JOIN dbo.VW_StockEstadosProducto AS v
+              ON v.IdProductoBodega = p.IdProductoBodega
+     ORDER BY p.IdProductoBodega, v.nombre;
+
+ 
+
+    SELECT DISTINCT
+           c.IdCliente,
+           c.IdEmpresa,
+           c.IdPropietario,
+           c.IdTipoCliente,
+           c.codigo,
+           c.nombre_comercial,
+           c.nombre_contacto,
+           c.telefono,
+           c.nit,
+           c.direccion,
+           c.correo_electronico,
+           c.activo,
+           c.realiza_manufactura,
+           c.despachar_lotes_completos,
+           c.sistema,
+           c.Control_Ultimo_Lote,
+           c.Control_Calidad,
+           c.IdUbicacionVirtual
+      FROM dbo.cliente AS c
+      INNER JOIN (SELECT DISTINCT IdCliente FROM #DetallePedido WHERE IdCliente <> 0) AS d
+              ON d.IdCliente = c.IdCliente
+     ORDER BY c.nombre_comercial;
+
+ 
+
+    SELECT d.IdPedidoDet,
+           SUM(ISNULL(sr.cantidad, 0)) AS CantidadReservada,
+           SUM(ISNULL(sr.peso, 0)) AS PesoReservado
+      FROM #DetallePedido AS d
+      LEFT JOIN dbo.stock_res AS sr
+             ON sr.IdPedidoDet = d.IdPedidoDet
+            AND sr.IdProductoBodega = d.IdProductoBodegaDetalle
+            AND (sr.IdPresentacion IS NULL OR sr.IdPresentacion = d.IdPresentacion)
+            AND sr.IdUnidadMedida = d.IdUnidadMedidaBasica
+            AND sr.IdProductoEstado = d.IdEstado
+            AND (sr.Lote IS NULL OR sr.Lote = '')
+     GROUP BY d.IdPedidoDet
+     ORDER BY d.IdPedidoDet;
+
+ 
+
+    SELECT DISTINCT
+           d.IdProducto,
+           p.peso_referencia AS PesoReferencia,
+           CAST(CASE WHEN ISNULL(p.IdTipoManufactura, 0) = 1 THEN 1 ELSE 0 END AS bit) AS TieneBono,
+           pp.IdPresentacion,
+           pp.IdProducto AS IdProductoPresentacion,
+           pp.codigo_barra,
+           pp.nombre AS Nombre,
+           pp.imprime_barra AS Imprime_Barra,
+           pp.peso AS Peso,
+           pp.alto AS Alto,
+           pp.largo AS Largo,
+           pp.ancho AS Ancho,
+           pp.factor AS Factor,
+           pp.MinimoExistencia,
+           pp.MaximoExistencia,
+           pp.activo,
+           pp.EsPallet,
+           pp.Precio,
+           pp.MinimoPeso,
+           pp.MaximoPeso,
+           pp.Costo,
+           pp.CamasPorTarima,
+           pp.CajasPorCama,
+           pp.genera_lp_auto,
+           pp.permitir_paletizar,
+           pp.sistema,
+           pp.IdPresentacionPallet,
+           pp.codigo AS Codigo
+      FROM (SELECT DISTINCT IdProducto FROM #DetallePedido) AS d
+      INNER JOIN dbo.producto AS p
+              ON p.IdProducto = d.IdProducto
+      OUTER APPLY (
+            SELECT TOP (1) ppDef.*
+              FROM dbo.producto_presentacion AS ppDef
+             WHERE ppDef.IdProducto = d.IdProducto
+      ) AS pp
+     ORDER BY d.IdProducto;
+
+ 
+
+    SELECT DISTINCT
+           ptc.IdProductoTallaColor,
+           ptc.IdProducto,
+           ptc.IdTalla,
+           ptc.IdColor,
+           ptc.CodigoSKU,
+           ptc.IdCampaña,
+           ptc.fec_agr,
+           ptc.user_agr,
+           ptc.fec_mod,
+           ptc.user_mod,
+           ptc.activo
+      FROM dbo.producto_talla_color AS ptc
+      INNER JOIN (SELECT DISTINCT IdProductoTallaColor
+                    FROM #DetallePedido
+                   WHERE IdProductoTallaColor <> 0) AS d
+              ON d.IdProductoTallaColor = ptc.IdProductoTallaColor
+     ORDER BY ptc.IdProductoTallaColor;
+END
+GO
+
