@@ -1,0 +1,108 @@
+/*
+    #EJC20260522_RECEPCION_READMODEL
+    SP: dbo.usp_wms_recepcion_getsingle_readmodel_v1
+    Objetivo: consolidar lecturas iniciales de clsLnTrans_re_enc.GetSingle para
+    reducir roundtrips en enlaces con latencia, preservando fallback legacy.
+*/
+
+ 
+
+CREATE OR ALTER PROCEDURE dbo.usp_wms_recepcion_getsingle_readmodel_v1
+    @IdRecepcionEnc INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+ 
+
+    SELECT
+        b.descripcion AS UbicacionRecepcion,
+        tr.Descripcion,
+        enc.IdRecepcionEnc,
+        enc.IdPropietarioBodega,
+        enc.IdMuelle,
+        enc.IdUbicacionRecepcion,
+        enc.IdTipoTransaccion,
+        enc.fecha_recepcion,
+        enc.hora_ini_pc,
+        enc.hora_fin_pc,
+        enc.muestra_precio,
+        enc.estado,
+        enc.user_agr,
+        enc.fec_agr,
+        enc.user_mod,
+        enc.fec_mod,
+        enc.fecha_tarea,
+        enc.tomar_fotos,
+        enc.escanear_rec_ubic,
+        enc.para_por_codigo,
+        enc.observacion,
+        enc.firma_piloto,
+        enc.activo,
+        enc.NoGuia,
+        enc.CorreoEnviado,
+        enc.Revision_Inconsistencia,
+        enc.bloqueada,
+        enc.bloqueada_por,
+        enc.idusuariobloqueo,
+        enc.idmotivoanulacionbodega,
+        enc.Habilitar_Stock,
+        enc.idvehiculo,
+        enc.idpiloto,
+        enc.No_Marchamo,
+        enc.mostrar_cantidad_esperada,
+        enc.IdBodega,
+        enc.carta_cupo,
+        enc.no_contenedor,
+        enc.IdEstado_Defecto_Recepcion
+    FROM dbo.trans_re_enc AS enc
+        INNER JOIN dbo.trans_re_tr AS tr
+            ON enc.IdTipoTransaccion = tr.IdTipoTransaccion
+        LEFT JOIN dbo.bodega_ubicacion AS b
+            ON enc.IdUbicacionRecepcion = b.IdUbicacion
+        LEFT JOIN dbo.propietario_bodega
+            ON enc.IdPropietarioBodega = propietario_bodega.IdPropietarioBodega
+            AND b.IdBodega = propietario_bodega.IdBodega
+    WHERE enc.IdRecepcionEnc = @IdRecepcionEnc;
+
+ 
+
+    SELECT TOP (1)
+        *
+    FROM dbo.Trans_re_oc
+    WHERE IdRecepcionEnc = @IdRecepcionEnc;
+
+ 
+
+    SELECT
+        oc.*,
+        ti.es_devolucion,
+        ti.nombre AS TipoIngreso
+    FROM dbo.Trans_re_oc AS roc
+        INNER JOIN dbo.Trans_oc_enc AS oc
+            ON roc.IdOrdenCompraEnc = oc.IdOrdenCompraEnc
+        INNER JOIN dbo.propietario_bodega AS pb
+            ON oc.IdPropietarioBodega = pb.IdPropietarioBodega
+        INNER JOIN dbo.trans_oc_ti AS ti
+            ON oc.IdTipoIngresoOC = ti.IdtipoIngresoOC
+    WHERE roc.IdRecepcionEnc = @IdRecepcionEnc;
+
+ 
+
+    SELECT TOP (1)
+        ti.*
+    FROM dbo.Trans_re_oc AS roc
+        INNER JOIN dbo.Trans_oc_enc AS oc
+            ON roc.IdOrdenCompraEnc = oc.IdOrdenCompraEnc
+        INNER JOIN dbo.trans_oc_ti AS ti
+            ON oc.IdTipoIngresoOC = ti.IdtipoIngresoOC
+    WHERE roc.IdRecepcionEnc = @IdRecepcionEnc;
+
+ 
+
+    SELECT TOP (1)
+        *
+    FROM dbo.tarea_hh
+    WHERE IdTipoTarea = 1
+        AND IdTransaccion = @IdRecepcionEnc;
+END;
