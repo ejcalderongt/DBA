@@ -118,6 +118,6 @@ BEGIN
    
     SELECT
         *
-    ROM dbo.Trans_re_fact
+    FROM dbo.Trans_re_fact
     WHERE IdRecepcionEnc = @IdRecepcionEnc;
 END;
