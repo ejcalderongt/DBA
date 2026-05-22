@@ -1,0 +1,184 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ 
+/*
+    #EJC20260522_INV_IMPORT_READMODEL
+    SP: dbo.usp_wms_inventario_import_preload_readmodel_v1
+ 
+    Objetivo:
+      Precargar en una sola llamada la data que la carga Excel de inventario
+      necesita para validar/mapear productos, talla/color y catalogos asociados.
+ 
+    Entrada:
+      XML simple con codigos leidos del archivo:
+<root><i v="CODIGO" /></root>
+ 
+    Resultsets:
+      1. Productos light por codigo/codigo_barra.
+      2. Tallas solicitadas por codigo.
+      3. Colores solicitados por codigo.
+      4. Producto_talla_color existente para combinaciones solicitadas.
+      5. Presentaciones de los productos solicitados en la bodega.
+      6. Unidades de medida de propietarios involucrados.
+ 
+    Contrato:
+      Solo lectura. No crea producto_talla_color; esa escritura se mantiene en
+      VB por compatibilidad con el flujo actual.
+*/
+ 
+CREATE OR ALTER PROCEDURE dbo.usp_wms_inventario_import_preload_readmodel_v1
+    @CodigosXml XML,
+    @TallasXml XML = NULL,
+    @ColoresXml XML = NULL,
+    @IdBodega INT = 0,
+    @IdPropietarioBodega INT = 0
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+ 
+    IF OBJECT_ID('tempdb..#Codigos') IS NOT NULL DROP TABLE #Codigos;
+    IF OBJECT_ID('tempdb..#Tallas') IS NOT NULL DROP TABLE #Tallas;
+    IF OBJECT_ID('tempdb..#Colores') IS NOT NULL DROP TABLE #Colores;
+    IF OBJECT_ID('tempdb..#Productos') IS NOT NULL DROP TABLE #Productos;
+ 
+    CREATE TABLE #Codigos (Codigo NVARCHAR(100) NOT NULL PRIMARY KEY);
+    CREATE TABLE #Tallas (Codigo NVARCHAR(100) NOT NULL PRIMARY KEY);
+    CREATE TABLE #Colores (Codigo NVARCHAR(100) NOT NULL PRIMARY KEY);
+ 
+    INSERT INTO #Codigos (Codigo)
+    SELECT DISTINCT LTRIM(RTRIM(T.N.value('@v', 'nvarchar(100)')))
+      FROM @CodigosXml.nodes('/root/i') AS T(N)
+     WHERE LTRIM(RTRIM(T.N.value('@v', 'nvarchar(100)'))) <> '';
+ 
+    IF @TallasXml IS NOT NULL
+    BEGIN
+        INSERT INTO #Tallas (Codigo)
+        SELECT DISTINCT LTRIM(RTRIM(T.N.value('@v', 'nvarchar(100)')))
+          FROM @TallasXml.nodes('/root/i') AS T(N)
+         WHERE LTRIM(RTRIM(T.N.value('@v', 'nvarchar(100)'))) <> '';
+    END
+ 
+    IF @ColoresXml IS NOT NULL
+    BEGIN
+        INSERT INTO #Colores (Codigo)
+        SELECT DISTINCT LTRIM(RTRIM(T.N.value('@v', 'nvarchar(100)')))
+          FROM @ColoresXml.nodes('/root/i') AS T(N)
+         WHERE LTRIM(RTRIM(T.N.value('@v', 'nvarchar(100)'))) <> '';
+    END
+ 
+    SELECT DISTINCT
+           p.IdProducto,
+           p.IdPropietario,
+           prop.nombre_comercial AS PropietarioNombre,
+           p.IdUnidadMedidaBasica,
+           um.Nombre AS UnidadMedidaNombre,
+           p.IdProductoParametroA,
+           pa.Nombre AS ParametroANombre,
+           p.IdProductoParametroB,
+           pbp.Nombre AS ParametroBNombre,
+           p.codigo,
+           p.codigo_barra,
+           p.nombre,
+           p.control_lote,
+           p.control_vencimiento,
+           p.costo,
+           p.precio,
+           pb.IdProductoBodega
+      INTO #Productos
+      FROM dbo.producto AS p
+      LEFT JOIN dbo.producto_bodega AS pb
+             ON pb.IdProducto = p.IdProducto
+            AND (@IdBodega = 0 OR pb.IdBodega = @IdBodega)
+      LEFT JOIN dbo.propietarios AS prop
+             ON prop.IdPropietario = p.IdPropietario
+      LEFT JOIN dbo.unidad_medida AS um
+             ON um.IdUnidadMedida = p.IdUnidadMedidaBasica
+      LEFT JOIN dbo.producto_parametro_a AS pa
+             ON pa.IdProductoParametroA = p.IdProductoParametroA
+      LEFT JOIN dbo.producto_parametro_b AS pbp
+             ON pbp.IdProductoParametroB = p.IdProductoParametroB
+     WHERE EXISTS (SELECT 1
+                     FROM #Codigos AS c
+                    WHERE c.Codigo = p.codigo
+                       OR c.Codigo = p.codigo_barra);
+ 
+    SELECT IdProducto,
+           IdPropietario,
+           PropietarioNombre,
+           IdUnidadMedidaBasica,
+           UnidadMedidaNombre,
+           IdProductoParametroA,
+           ParametroANombre,
+           IdProductoParametroB,
+           ParametroBNombre,
+           codigo,
+           codigo_barra,
+           nombre,
+           control_lote,
+           control_vencimiento,
+           costo,
+           precio,
+           IdProductoBodega
+      FROM #Productos
+     ORDER BY codigo;
+ 
+    SELECT t.IdTalla,
+           t.Codigo,
+           t.Nombre
+      FROM dbo.talla AS t
+     WHERE EXISTS (SELECT 1 FROM #Tallas AS x WHERE x.Codigo = t.Codigo)
+     ORDER BY t.Codigo;
+ 
+    SELECT c.IdColor,
+           c.Codigo,
+           c.Nombre
+      FROM dbo.color AS c
+     WHERE EXISTS (SELECT 1 FROM #Colores AS x WHERE x.Codigo = c.Codigo)
+     ORDER BY c.Codigo;
+ 
+    SELECT ptc.IdProductoTallaColor,
+           ptc.IdProducto,
+           ptc.IdTalla,
+           ptc.IdColor,
+           ptc.CodigoSKU,
+           ptc.IdCampaña,
+           ptc.Activo
+      FROM dbo.producto_talla_color AS ptc
+     WHERE EXISTS (SELECT 1 FROM #Productos AS p WHERE p.IdProducto = ptc.IdProducto)
+       AND EXISTS (SELECT 1 FROM dbo.talla AS t INNER JOIN #Tallas AS x ON x.Codigo = t.Codigo WHERE t.IdTalla = ptc.IdTalla)
+       AND EXISTS (SELECT 1 FROM dbo.color AS c INNER JOIN #Colores AS x ON x.Codigo = c.Codigo WHERE c.IdColor = ptc.IdColor)
+     ORDER BY ptc.IdProducto, ptc.IdTalla, ptc.IdColor;
+ 
+    SELECT pp.IdPresentacion,
+           pp.IdProducto,
+           pp.nombre,
+           pp.factor,
+           pp.codigo_barra,
+           pp.peso,
+           pp.activo
+      FROM dbo.producto_presentacion AS pp
+     WHERE EXISTS (SELECT 1 FROM #Productos AS p WHERE p.IdProducto = pp.IdProducto)
+       AND (
+            @IdBodega = 0
+            OR EXISTS (SELECT 1
+                         FROM dbo.producto_bodega AS pb
+                        WHERE pb.IdProducto = pp.IdProducto
+                          AND pb.IdBodega = @IdBodega)
+           )
+     ORDER BY pp.IdProducto, pp.nombre;
+ 
+    SELECT DISTINCT
+           um.IdUnidadMedida,
+           um.Nombre,
+           um.IdPropietario
+      FROM dbo.unidad_medida AS um
+     WHERE EXISTS (SELECT 1
+                     FROM #Productos AS p
+                    WHERE p.IdPropietario = um.IdPropietario)
+        OR @IdPropietarioBodega = 0
+     ORDER BY um.Nombre;
+END
+GO
