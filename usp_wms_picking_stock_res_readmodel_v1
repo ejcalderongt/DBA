@@ -1,0 +1,160 @@
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ 
+CREATE OR ALTER   PROCEDURE [dbo].[usp_wms_picking_stock_res_readmodel_v1]
+    @IdPickingEnc INT,
+    @PendientesDeDespacho BIT = 0,
+    @EsPickingNuevo BIT = 0,
+    @EsPicking BIT = 1
+AS
+BEGIN
+    SET NOCOUNT ON;
+ 
+    /* #EJC20260522_PICKING_READMODEL:
+       Read-model para cargar todas las lineas de stock reservado de un picking
+       en una sola llamada y evitar roundtrips por pedido/fila desde frmPicking. */
+    SELECT p.codigo,
+           p.nombre,
+           pp.nombre AS presentacion,
+           pe.nombre AS NomEstado,
+           um.Nombre AS unidadmedida,
+           pr.nombre_comercial AS propietario,
+           bu.descripcion AS bodegaubicacion,
+           ISNULL(s.cantidad, 0) AS CantidadSF,
+           pp.factor,
+           ISNULL(ISNULL(s.cantidad, 0) / NULLIF(pp.factor, 0), 0) AS Cantidad,
+           res.IdStockRes,
+           res.IdTransaccion,
+           res.Indicador,
+           res.IdPedidoDet,
+           res.IdStock,
+           res.IdPropietarioBodega,
+           res.IdProductoBodega,
+           res.IdUbicacion,
+           res.IdProductoEstado,
+           res.IdPresentacion,
+           res.IdUnidadMedida,
+           res.lote,
+           res.lic_plate,
+           res.serial,
+           CASE
+               WHEN @EsPickingNuevo = 1 THEN MAX(res.Cantidad)
+               ELSE SUM(ISNULL(trans_picking_ubic.cantidad_solicitada, 0))
+           END AS CantidadReservada,
+           res.peso,
+           res.estado,
+           res.fecha_vence,
+           res.uds_lic_plate,
+           res.ubicacion_ant AS IdUbicacion_anterior,
+           res.no_bulto,
+           res.IdRecepcion AS IdRecepcionEnc,
+           res.IdPicking,
+           res.IdPedido,
+           res.IdDespacho,
+           res.añada,
+           res.fecha_manufactura,
+           SUM(ISNULL(dbo.trans_picking_ubic.peso_recibido, 0)) AS Peso_Recibido,
+           SUM(ISNULL(dbo.trans_picking_ubic.peso_verificado, 0)) AS Peso_Verificado,
+           ISNULL(dbo.trans_picking_ubic.acepto, 0) AS Acepto,
+           SUM(ISNULL(dbo.trans_picking_ubic.cantidad_recibida, 0)) AS cantidad_recibida,
+           SUM(ISNULL(dbo.trans_picking_ubic.cantidad_verificada, 0)) AS cantidad_verificada,
+           SUM(ISNULL(dbo.trans_picking_ubic.cantidad_despachada, 0)) AS Cantidad_Despachada,
+           ISNULL(dbo.trans_picking_ubic.encontrado, 0) AS Encontrado,
+           dbo.Nombre_Completo_Ubicacion(res.IdUbicacion, res.IDBODEGA) AS NomUbic,
+           res.IDBODEGA,
+           res.fecha_ingreso,
+           s.IdRecepcionEnc,
+           s.IdRecepcionDet,
+           res.IdProductoTallaColor,
+           col.Codigo AS Color,
+           tal.Codigo AS Talla
+    FROM stock_res AS res
+         INNER JOIN propietario_bodega AS prb ON res.IdPropietarioBodega = prb.IdPropietarioBodega
+         INNER JOIN producto_bodega AS pb ON pb.IdProductoBodega = res.IdProductoBodega
+         INNER JOIN producto_estado AS pe ON res.IdProductoEstado = pe.IdEstado
+         INNER JOIN unidad_medida AS um ON res.IdUnidadMedida = um.IdUnidadMedida
+         INNER JOIN propietarios AS pr ON prb.IdPropietario = pr.IdPropietario
+         INNER JOIN producto AS p ON pb.IdProducto = p.IdProducto
+         LEFT OUTER JOIN bodega_ubicacion AS bu
+         RIGHT OUTER JOIN trans_picking_det
+         INNER JOIN trans_picking_ubic ON trans_picking_det.IdPickingDet = trans_picking_ubic.IdPickingDet
+            ON bu.IdBodega = trans_picking_ubic.IdBodega
+           AND bu.IdUbicacion = trans_picking_ubic.IdUbicacion
+            ON res.IDBODEGA = trans_picking_ubic.IdBodega
+           AND res.IdPedidoDet = trans_picking_det.IdPedidoDet
+           AND res.IdStock = trans_picking_ubic.IdStock
+           AND res.IdStockRes = trans_picking_ubic.IdStockRes
+         LEFT OUTER JOIN stock AS s ON res.IdStock = s.IdStock
+         LEFT OUTER JOIN producto_presentacion AS pp ON res.IdPresentacion = pp.IdPresentacion
+         LEFT JOIN producto_talla_color AS ptc ON ptc.IdProductoTallaColor = res.IdProductoTallaColor
+         LEFT JOIN color AS col ON col.IdColor = ptc.IdColor
+         LEFT JOIN talla AS tal ON tal.IdTalla = ptc.IdTalla
+    WHERE trans_picking_ubic.IdPickingEnc = @IdPickingEnc
+      AND ISNULL(trans_picking_ubic.dañado_verificacion, 0) = 0
+      AND ISNULL(trans_picking_ubic.dañado_picking, 0) = 0
+      AND ISNULL(trans_picking_ubic.no_encontrado, 0) = 0
+      AND (@PendientesDeDespacho = 0 OR trans_picking_ubic.cantidad_despachada < trans_picking_ubic.cantidad_verificada)
+      AND (@EsPicking = 1 OR trans_picking_ubic.cantidad_verificada > 0)
+    GROUP BY p.codigo,
+             p.nombre,
+             pp.nombre,
+             pe.nombre,
+             um.Nombre,
+             pr.nombre_comercial,
+             bu.descripcion,
+             s.cantidad,
+             pp.factor,
+             s.cantidad / NULLIF(pp.factor, 0),
+             res.IdStockRes,
+             res.IdTransaccion,
+             res.Indicador,
+             res.IdPedidoDet,
+             res.IdStock,
+             res.IdPropietarioBodega,
+             res.IdProductoBodega,
+             res.IdUbicacion,
+             res.IdProductoEstado,
+             res.IdPresentacion,
+             res.IdUnidadMedida,
+             res.lote,
+             res.lic_plate,
+             res.serial,
+             res.cantidad,
+             res.peso,
+             res.estado,
+             res.fecha_vence,
+             res.uds_lic_plate,
+             res.ubicacion_ant,
+             res.no_bulto,
+             res.IdRecepcion,
+             res.IdPicking,
+             res.IdPedido,
+             res.IdDespacho,
+             res.añada,
+             res.fecha_manufactura,
+             ISNULL(trans_picking_ubic.acepto, 0),
+             ISNULL(trans_picking_ubic.encontrado, 0),
+             bu.IdTramo,
+             bu.Indice_x,
+             bu.Nivel,
+             bu.IdUbicacion,
+             res.IdBodega,
+             res.fecha_ingreso,
+             s.IdRecepcionEnc,
+             s.IdRecepcionDet,
+             res.IdProductoTallaColor,
+             col.Codigo,
+             tal.Codigo
+    ORDER BY bu.IdTramo,
+             bu.Indice_x,
+             bu.Nivel,
+             bu.IdUbicacion;
+END;
+
+GO
+
+
