@@ -1,0 +1,297 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ 
+
+/*
+    #EJC20260523_INV_COMPARACION_READMODEL
+    SP: dbo.usp_wms_inventario_comparacion_readmodel_v1
+
+ 
+
+    Objetivo:
+      Resolver la comparacion de inventario en una sola lectura SQL y evitar
+      roundtrips por fila desde clsLnTrans_inv_enc.Get_All_By_Comparacion_Inventario.
+
+ 
+
+    Contrato:
+      Devuelve las mismas columnas consumidas por frmInventario.Cargar_Datos_Comparativos.
+      Solo lectura.
+*/
+
+ 
+
+CREATE OR ALTER PROCEDURE dbo.usp_wms_inventario_comparacion_readmodel_v1
+    @IdInventario INT,
+    @ConUbicacion BIT = 0
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+
+ 
+
+    IF @ConUbicacion = 0
+    BEGIN
+        SELECT T.IDINVENTARIO,
+               T.IDTRAMO,
+               T.TRAMO,
+               T.PRESENTACION,
+               T.IDPRESENTACION,
+               SUM(T.DETALLE) AS DETALLE,
+               SUM(T.RESUMEN) AS RESUMEN,
+               T.IDPRODUCTO,
+               T.PRODUCTO,
+               T.CODIGO AS Codigo,
+               tit.det_estado AS EstadoConteo,
+               tit.res_estado AS EstadoResumen,
+               T.IdPropietario,
+               T.UMBas,
+               T.Codigo_Talla,
+               T.Codigo_Color
+          FROM (
+                SELECT tit.idinventario,
+                       tit.idtramo,
+                       bt.descripcion AS Tramo,
+                       pp.nombre AS Presentacion,
+                       pp.IdPresentacion,
+                       SUM(tid.cantidad) AS Detalle,
+                       0 AS Resumen,
+                       p.IdProducto,
+                       p.nombre AS Producto,
+                       p.codigo,
+                       p.IdPropietario,
+                       um.Nombre AS UMBas,
+                       tid.idoperador,
+                       tie.idbodega,
+                       ta.Codigo AS Codigo_Talla,
+                       co.Codigo + ' - ' + co.Nombre AS Codigo_Color
+                  FROM trans_inv_tramo tit
+                  INNER JOIN trans_inv_detalle tid
+                          ON tit.idinventario = tid.idinventarioenc
+                         AND tit.idtramo = tid.idtramo
+                  INNER JOIN bodega_tramo bt
+                          ON tit.idtramo = bt.IdTramo
+                  INNER JOIN producto p
+                          ON tid.idproducto = p.IdProducto
+                  LEFT JOIN producto_presentacion pp
+                         ON tid.IdPresentacion = pp.IdPresentacion
+                  INNER JOIN unidad_medida um
+                          ON um.IdUnidadMedida = p.IdUnidadMedidaBasica
+                  INNER JOIN trans_inv_enc tie
+                          ON tit.idinventario = tie.idinventarioenc
+                         AND tid.idinventarioenc = tie.idinventarioenc
+                         AND bt.IdBodega = tie.idbodega
+                  LEFT JOIN producto_talla_color ptc
+                         ON ptc.IdProductoTallaColor = tid.IdProductoTallaColor
+                  LEFT JOIN talla ta
+                         ON ta.IdTalla = ptc.IdTalla
+                  LEFT JOIN color co
+                         ON co.IdColor = ptc.IdColor
+                 WHERE tit.idinventario = @IdInventario
+                 GROUP BY tit.idinventario, tit.idtramo, bt.descripcion, pp.nombre,
+                          tit.det_estado, tid.nom_operador, p.IdProducto, p.nombre, p.codigo,
+                          p.IdPropietario, pp.IdPresentacion, um.Nombre, tid.idoperador, tie.idbodega,
+                          ta.Codigo, co.Nombre, co.Codigo
+
+ 
+
+                UNION ALL
+
+ 
+
+                SELECT tit.idinventario,
+                       tit.idtramo,
+                       bt.descripcion AS Tramo,
+                       pp.nombre AS Presentacion,
+                       pp.IdPresentacion,
+                       0 AS Detalle,
+                       SUM(tir.cantidad) AS Resumen,
+                       p.IdProducto,
+                       p.nombre AS Producto,
+                       p.codigo,
+                       p.IdPropietario,
+                       um.Nombre AS UMBas,
+                       tir.idoperador,
+                       tie.idbodega,
+                       ta.Codigo AS Codigo_Talla,
+                       co.Codigo + ' - ' + co.Nombre AS Codigo_Color
+                  FROM trans_inv_tramo tit
+                  INNER JOIN trans_inv_resumen tir
+                          ON tit.idinventario = tir.idinventarioenct
+                         AND tit.idtramo = tir.idtramo
+                  INNER JOIN bodega_tramo bt
+                          ON tit.idtramo = bt.IdTramo
+                  INNER JOIN producto p
+                          ON tir.idproducto = p.IdProducto
+                  LEFT JOIN producto_presentacion pp
+                         ON tir.idpresentacion = pp.IdPresentacion
+                  INNER JOIN unidad_medida um
+                          ON um.IdUnidadMedida = p.IdUnidadMedidaBasica
+                  INNER JOIN trans_inv_enc tie
+                          ON tit.idinventario = tie.idinventarioenc
+                         AND tir.idinventarioenct = tie.idinventarioenc
+                         AND bt.IdBodega = tie.idbodega
+                  LEFT JOIN producto_talla_color ptc
+                         ON ptc.IdProductoTallaColor = tir.IdProductoTallaColor
+                  LEFT JOIN talla ta
+                         ON ta.IdTalla = ptc.IdTalla
+                  LEFT JOIN color co
+                         ON co.IdColor = ptc.IdColor
+                 WHERE tit.idinventario = @IdInventario
+                 GROUP BY tit.idinventario, tit.idtramo, bt.descripcion, pp.nombre,
+                          tit.det_estado, tir.nom_operador, p.IdProducto, p.nombre, p.codigo,
+                          p.IdPropietario, pp.IdPresentacion, um.Nombre, tir.idoperador, tie.idbodega,
+                          ta.Codigo, co.Nombre, co.Codigo
+               ) AS T
+          LEFT JOIN trans_inv_tramo tit
+                 ON T.idtramo = tit.idtramo
+                AND T.idinventario = tit.idinventario
+          INNER JOIN trans_inv_enc enc
+                  ON enc.idinventarioenc = tit.idinventario
+          INNER JOIN bodega_tramo bt
+                  ON bt.IdTramo = tit.idtramo
+                 AND bt.IdBodega = enc.idbodega
+                 AND tit.idbodega = enc.idbodega
+         GROUP BY T.IDINVENTARIO, T.IDTRAMO, T.TRAMO, T.PRESENTACION, T.IDPRESENTACION,
+                  T.IDPRODUCTO, T.PRODUCTO, tit.det_estado, tit.res_estado, T.CODIGO,
+                  T.IdPropietario, T.UMBas, T.Codigo_Talla, T.Codigo_Color;
+    END
+    ELSE
+    BEGIN
+        SELECT T.IDINVENTARIO,
+               T.IDTRAMO,
+               T.TRAMO,
+               T.PRESENTACION,
+               T.IDPRESENTACION,
+               SUM(T.DETALLE) AS DETALLE,
+               SUM(T.RESUMEN) AS RESUMEN,
+               T.IDPRODUCTO,
+               T.PRODUCTO,
+               T.CODIGO AS Codigo,
+               tit.det_estado AS EstadoConteo,
+               tit.res_estado AS EstadoResumen,
+               T.IdPropietario,
+               T.UMBas,
+               T.Ubicacion_Conteo,
+               T.IdUbicacion,
+               T.Codigo_Talla,
+               T.Codigo_Color
+          FROM (
+                SELECT tit.idinventario,
+                       tit.idtramo,
+                       bt.descripcion AS Tramo,
+                       pp.nombre AS Presentacion,
+                       pp.IdPresentacion,
+                       SUM(tid.cantidad) AS Detalle,
+                       0 AS Resumen,
+                       p.IdProducto,
+                       p.nombre AS Producto,
+                       p.codigo,
+                       p.IdPropietario,
+                       um.Nombre AS UMBas,
+                       tid.idoperador,
+                       tie.idbodega,
+                       dbo.Nombre_Completo_Ubicacion(tid.IdUbicacion, tie.idbodega) AS Ubicacion_Conteo,
+                       tid.IdUbicacion,
+                       ta.Codigo AS Codigo_Talla,
+                       co.Codigo + ' - ' + co.Nombre AS Codigo_Color
+                  FROM trans_inv_tramo tit
+                  INNER JOIN trans_inv_detalle tid
+                          ON tit.idinventario = tid.idinventarioenc
+                         AND tit.idtramo = tid.idtramo
+                  INNER JOIN bodega_tramo bt
+                          ON tit.idtramo = bt.IdTramo
+                  INNER JOIN producto p
+                          ON tid.idproducto = p.IdProducto
+                  LEFT JOIN producto_presentacion pp
+                         ON tid.IdPresentacion = pp.IdPresentacion
+                  INNER JOIN unidad_medida um
+                          ON um.IdUnidadMedida = p.IdUnidadMedidaBasica
+                  INNER JOIN trans_inv_enc tie
+                          ON tit.idinventario = tie.idinventarioenc
+                         AND tid.idinventarioenc = tie.idinventarioenc
+                         AND bt.IdBodega = tie.idbodega
+                  LEFT JOIN producto_talla_color ptc
+                         ON ptc.IdProductoTallaColor = tid.IdProductoTallaColor
+                  LEFT JOIN talla ta
+                         ON ta.IdTalla = ptc.IdTalla
+                  LEFT JOIN color co
+                         ON co.IdColor = ptc.IdColor
+                 WHERE tit.idinventario = @IdInventario
+                 GROUP BY tit.idinventario, tit.idtramo, bt.descripcion, pp.nombre,
+                          tit.det_estado, tid.nom_operador, p.IdProducto, p.nombre, p.codigo,
+                          p.IdPropietario, pp.IdPresentacion, um.Nombre, tid.idoperador, tie.idbodega,
+                          tid.IdUbicacion, ta.Codigo, co.Nombre, co.Codigo
+
+ 
+
+                UNION ALL
+
+ 
+
+                SELECT tit.idinventario,
+                       tit.idtramo,
+                       bt.descripcion AS Tramo,
+                       pp.nombre AS Presentacion,
+                       pp.IdPresentacion,
+                       0 AS Detalle,
+                       SUM(tir.cantidad) AS Resumen,
+                       p.IdProducto,
+                       p.nombre AS Producto,
+                       p.codigo,
+                       p.IdPropietario,
+                       um.Nombre AS UMBas,
+                       tir.idoperador,
+                       tie.idbodega,
+                       dbo.Nombre_Completo_Ubicacion(tir.IdUbicacion, tie.idbodega) AS Ubicacion_Conteo,
+                       tir.IdUbicacion,
+                       ta.Codigo AS Codigo_Talla,
+                       co.Codigo + ' - ' + co.Nombre AS Codigo_Color
+                  FROM trans_inv_tramo tit
+                  INNER JOIN trans_inv_resumen tir
+                          ON tit.idinventario = tir.idinventarioenct
+                         AND tit.idtramo = tir.idtramo
+                  INNER JOIN bodega_tramo bt
+                          ON tit.idtramo = bt.IdTramo
+                  INNER JOIN producto p
+                          ON tir.idproducto = p.IdProducto
+                  LEFT JOIN producto_presentacion pp
+                         ON tir.idpresentacion = pp.IdPresentacion
+                  INNER JOIN unidad_medida um
+                          ON um.IdUnidadMedida = p.IdUnidadMedidaBasica
+                  INNER JOIN trans_inv_enc tie
+                          ON tit.idinventario = tie.idinventarioenc
+                         AND tir.idinventarioenct = tie.idinventarioenc
+                         AND bt.IdBodega = tie.idbodega
+                  LEFT JOIN producto_talla_color ptc
+                         ON ptc.IdProductoTallaColor = tir.IdProductoTallaColor
+                  LEFT JOIN talla ta
+                         ON ta.IdTalla = ptc.IdTalla
+                  LEFT JOIN color co
+                         ON co.IdColor = ptc.IdColor
+                 WHERE tit.idinventario = @IdInventario
+                 GROUP BY tit.idinventario, tit.idtramo, bt.descripcion, pp.nombre,
+                          tit.det_estado, tir.nom_operador, p.IdProducto, p.nombre, p.codigo,
+                          p.IdPropietario, pp.IdPresentacion, um.Nombre, tir.idoperador, tie.idbodega,
+                          tir.IdUbicacion, ta.Codigo, co.Nombre, co.Codigo
+               ) AS T
+          LEFT JOIN trans_inv_tramo tit
+                 ON T.idtramo = tit.idtramo
+                AND T.idinventario = tit.idinventario
+          INNER JOIN trans_inv_enc enc
+                  ON enc.idinventarioenc = tit.idinventario
+          INNER JOIN bodega_tramo bt
+                  ON bt.IdTramo = tit.idtramo
+                 AND bt.IdBodega = enc.idbodega
+                 AND tit.idbodega = enc.idbodega
+         GROUP BY T.IDINVENTARIO, T.IDTRAMO, T.TRAMO, T.PRESENTACION, T.IDPRESENTACION,
+                  T.IDPRODUCTO, T.PRODUCTO, tit.det_estado, tit.res_estado, T.CODIGO,
+                  T.IdPropietario, T.UMBas, T.Ubicacion_Conteo, T.IdUbicacion,
+                  T.Codigo_Talla, T.Codigo_Color;
+    END
+END
+GO
