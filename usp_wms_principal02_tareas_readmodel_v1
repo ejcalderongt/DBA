@@ -1,0 +1,201 @@
+/*
+  #EJC20260522_PRINCIPAL02_TAREAS_READMODEL
+  Read-model para el monitor de tareas de frmPrincipal02.
+
+ 
+
+  Objetivo:
+    Reducir roundtrips al refrescar el monitor principal sobre enlaces con
+    latencia. El SP concentra en una lectura los datos que la forma obtenia
+    con GetSingle/detalles por cada tarea.
+
+ 
+
+  Contrato:
+    - No escribe datos.
+    - Devuelve las columnas base de vw_tareas_activas_hh usadas por la forma.
+    - Agrega Origen, Destino, Progreso y columnas de calendario.
+*/
+
+ 
+
+SET ANSI_NULLS ON;
+GO
+SET QUOTED_IDENTIFIER ON;
+GO
+
+ 
+
+IF OBJECT_ID(N'dbo.usp_wms_principal02_tareas_readmodel_v1', N'P') IS NULL
+BEGIN
+    EXEC(N'CREATE PROCEDURE dbo.usp_wms_principal02_tareas_readmodel_v1 AS BEGIN SET NOCOUNT ON; END');
+END
+GO
+
+ 
+
+ALTER PROCEDURE dbo.usp_wms_principal02_tareas_readmodel_v1
+    @IdBodega INT,
+    @FechaDel DATE,
+    @FechaAl DATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+
+ 
+
+    ;WITH Base AS
+    (
+        SELECT *
+          FROM dbo.vw_tareas_activas_hh
+         WHERE IdBodega = @IdBodega
+           AND CAST(Inicio AS DATE) BETWEEN @FechaDel AND @FechaAl
+    ),
+    RecepcionOC AS
+    (
+        SELECT
+            ro.IdRecepcionEnc,
+            SUM(ISNULL(od.cantidad, 0)) AS CantidadSolicitada,
+            SUM(ISNULL(od.cantidad_recibida, 0)) AS CantidadRecibida,
+            MAX(ISNULL(pv.nombre, '')) AS Proveedor
+          FROM dbo.trans_re_oc AS ro
+          INNER JOIN dbo.trans_oc_enc AS oc
+                  ON oc.IdOrdenCompraEnc = ro.IdOrdenCompraEnc
+          LEFT JOIN dbo.trans_oc_det AS od
+                 ON od.IdOrdenCompraEnc = oc.IdOrdenCompraEnc
+          LEFT JOIN dbo.proveedor_bodega AS pb
+                 ON pb.IdAsignacion = oc.IdProveedorBodega
+          LEFT JOIN dbo.proveedor AS pv
+                 ON pv.IdProveedor = pb.IdProveedor
+         GROUP BY ro.IdRecepcionEnc
+    ),
+    PickingUbic AS
+    (
+        SELECT
+            pu.IdPickingEnc,
+            SUM(ISNULL(pu.cantidad_solicitada, 0)) AS CantidadSolicitada,
+            SUM(ISNULL(pu.cantidad_recibida, 0)) AS CantidadRecibida
+          FROM dbo.trans_picking_ubic AS pu
+          INNER JOIN Base AS b
+                  ON b.Tarea = N'Picking'
+                 AND b.Correlativo = pu.IdPickingEnc
+         GROUP BY pu.IdPickingEnc
+    )
+    SELECT
+        b.Correlativo,
+        b.Tarea,
+        b.Inicio,
+        b.Ult_Revision,
+        b.TTM,
+        b.Propietario,
+        b.Estado,
+        b.IdTareaHH,
+        b.Observacion,
+        b.IdBodega,
+
+ 
+
+        CASE
+            WHEN b.Tarea = N'Recepción' THEN ISNULL(roc.Proveedor, '') COLLATE DATABASE_DEFAULT
+            WHEN b.Tarea = N'Picking' THEN ISNULL(bp.nombre, '') COLLATE DATABASE_DEFAULT
+            ELSE '' COLLATE DATABASE_DEFAULT
+        END AS Origen,
+
+ 
+
+        CASE
+            WHEN b.Tarea = N'Recepción' THEN ISNULL(bd.nombre, '') COLLATE DATABASE_DEFAULT
+            ELSE '' COLLATE DATABASE_DEFAULT
+        END AS Destino,
+
+ 
+
+        CASE
+            WHEN b.Tarea = N'Recepción'
+                 AND ISNULL(roc.CantidadSolicitada, 0) > 0
+                 AND ISNULL(roc.CantidadRecibida, 0) > 0
+                THEN ROUND(CAST(roc.CantidadRecibida AS FLOAT) / NULLIF(CAST(roc.CantidadSolicitada AS FLOAT), 0), 2)
+            WHEN b.Tarea = N'Picking'
+                 AND ISNULL(pu.CantidadSolicitada, 0) > 0
+                 AND ISNULL(pu.CantidadRecibida, 0) > 0
+                THEN ROUND(CAST(pu.CantidadRecibida AS FLOAT) / NULLIF(CAST(pu.CantidadSolicitada AS FLOAT), 0), 2)
+            ELSE 0
+        END AS Progreso,
+
+ 
+
+        CASE
+            WHEN b.Tarea = N'Recepción' THEN N'Recepción# ' + CONVERT(VARCHAR(20), b.Correlativo)
+            WHEN b.Tarea = N'Picking' THEN N'Picking# ' + CONVERT(VARCHAR(20), b.Correlativo)
+            WHEN b.Tarea = N'Ubicación' THEN N'Cambio Ubicación/Estado: #' + CONVERT(VARCHAR(20), b.Correlativo)
+            ELSE '' COLLATE DATABASE_DEFAULT
+        END AS CalendarioAsunto,
+
+ 
+
+        CASE
+            WHEN b.Tarea = N'Recepción' THEN re.Fecha_recepcion
+            WHEN b.Tarea = N'Picking' THEN pe.Fecha_picking
+            WHEN b.Tarea = N'Ubicación' THEN ue.fec_agr
+            ELSE NULL
+        END AS CalendarioInicio,
+
+ 
+
+        CASE
+            WHEN b.Tarea = N'Recepción' THEN re.Hora_fin_pc
+            WHEN b.Tarea = N'Picking' THEN pe.Fecha_Fin_Preparacion
+            WHEN b.Tarea = N'Ubicación' THEN DATEADD(HOUR, 1, ue.fec_agr)
+            ELSE NULL
+        END AS CalendarioFin,
+
+ 
+
+        CASE
+            WHEN b.Tarea = N'Recepción' THEN ISNULL(re.IdMuelle, 0)
+            WHEN b.Tarea = N'Picking' THEN ISNULL(pe.IdBodegaMuelle, 0)
+            WHEN b.Tarea = N'Ubicación' THEN 1
+            ELSE 0
+        END AS CalendarioIdMuelle,
+
+ 
+
+        CASE
+            WHEN b.Tarea = N'Recepción' THEN ISNULL(re.IdRecepcionEnc, b.Correlativo)
+            WHEN b.Tarea = N'Picking' THEN ISNULL(pe.IdPickingEnc, b.Correlativo)
+            WHEN b.Tarea = N'Ubicación' THEN ISNULL(ue.IdTareaUbicacionEnc, b.Correlativo)
+            ELSE b.Correlativo
+        END AS CalendarioIdTarea,
+
+ 
+
+        CASE
+            WHEN b.Tarea = N'Recepción' THEN ISNULL(bur.descripcion, '') COLLATE DATABASE_DEFAULT
+            WHEN b.Tarea = N'Picking' THEN CONVERT(VARCHAR(30), ISNULL(pe.IdUbicacionPicking, 0)) COLLATE DATABASE_DEFAULT
+            WHEN b.Tarea = N'Ubicación' THEN '' COLLATE DATABASE_DEFAULT
+            ELSE '' COLLATE DATABASE_DEFAULT
+        END AS CalendarioUbicacion
+      FROM Base AS b
+      LEFT JOIN dbo.bodega AS bd
+             ON bd.IdBodega = @IdBodega
+      LEFT JOIN dbo.trans_re_enc AS re
+             ON b.Tarea = N'Recepción'
+            AND re.IdRecepcionEnc = b.Correlativo
+      LEFT JOIN dbo.bodega_ubicacion AS bur
+             ON bur.IdUbicacion = re.IdUbicacionRecepcion
+      LEFT JOIN RecepcionOC AS roc
+             ON roc.IdRecepcionEnc = b.Correlativo
+      LEFT JOIN dbo.trans_picking_enc AS pe
+             ON b.Tarea = N'Picking'
+            AND pe.IdPickingEnc = b.Correlativo
+      LEFT JOIN dbo.bodega AS bp
+             ON bp.IdBodega = pe.IdBodega
+      LEFT JOIN PickingUbic AS pu
+             ON pu.IdPickingEnc = b.Correlativo
+      LEFT JOIN dbo.trans_ubic_hh_enc AS ue
+             ON b.Tarea = N'Ubicación'
+            AND ue.IdTareaUbicacionEnc = b.Correlativo
+     ORDER BY b.Inicio DESC;
+END
+GO
