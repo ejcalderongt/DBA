@@ -1,0 +1,159 @@
+--#EJC20260602_STOCK_POR_LOTE_DATASET
+-- Carga unificada para Existencias por Lote:
+--   Resultset 1: detalle grid
+--   Resultset 2: riesgo de vencimiento (buckets)
+--   Resultset 3: top SKU por stock
+--   Resultset 4: utilizable vs no utilizable
+
+IF OBJECT_ID('dbo.sp_reporte_stock_por_lote_dataset', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.sp_reporte_stock_por_lote_dataset
+GO
+
+CREATE PROCEDURE dbo.sp_reporte_stock_por_lote_dataset
+    @IdBodega int,
+    @IdPropietarioBodega int,
+    @ExcluirSinExistencia bit = 0
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF OBJECT_ID('tempdb..#detalle') IS NOT NULL
+        DROP TABLE #detalle;
+
+    ;WITH cte_pickeado AS (
+        SELECT
+            r.IdStock,
+            SUM(u.cantidad_recibida) AS Cant_Pickeada
+        FROM trans_picking_ubic u
+        INNER JOIN trans_pe_enc e
+            ON e.IdPedidoEnc = u.IdPedidoEnc
+        RIGHT OUTER JOIN stock_res r
+            ON u.IdStock = r.IdStock
+           AND r.IdPedido = u.IdPedidoEnc
+           AND r.IdPedidoDet = u.IdPedidoDet
+        WHERE r.Indicador = 'PED'
+          AND e.estado NOT IN ('Despachado', 'Anulado')
+        GROUP BY r.IdStock
+    )
+    SELECT
+        v.IdProducto,
+        v.codigo,
+        v.nombre AS Producto,
+        v.NomEstado AS Estado,
+        v.IdPresentacion,
+        SUM(ISNULL(v.CantidadSF, 0)) AS CantidadUMBas,
+        v.UnidadMedida,
+        SUM(ISNULL(v.Cantidad_Presentacion, 0)) AS CantidadPresentacion,
+        v.Presentacion,
+        SUM(ISNULL(v.CantidadReservada, 0)) AS Cantidad_Reservada_UMBas,
+        SUM(ISNULL(v.Cantidad_Reservada_Pres, 0)) AS Cantidad_Reservada_Pres,
+        SUM(ISNULL(v.Disponible_UMBas, 0)) AS Disponible_UMBas,
+        SUM(ISNULL(v.Disponible_Presentacion, 0)) AS Disponible_Presentación,
+        v.peso AS Peso,
+        v.lote AS Lote,
+        v.lic_plate AS Licencia,
+        v.fecha_ingreso AS Fecha_Ingreso,
+        v.fecha_vence AS Fecha_Vence,
+        v.Nombre_Completo AS [Ubicacion],
+        v.Codigo_Poliza,
+        v.Numero_poliza AS numero_orden,
+        v.ubicacion_picking,
+        v.Area,
+        v.factor,
+        v.IdUbicacion,
+        dbo.Nombre_Tramo(v.IdTramo, v.IdBodega) AS Tramo,
+        CASE WHEN v.IdPresentacion IS NULL THEN ISNULL(t.Cant_Pickeada, 0) ELSE 0 END AS Cant_Pickeada_UMBas,
+        CASE WHEN v.IdPresentacion IS NULL THEN v.CantidadReservadaUmBas - ISNULL(t.Cant_Pickeada, 0) ELSE 0 END AS Cant_No_Pickeada_UMBas,
+        CASE WHEN v.IdPresentacion IS NOT NULL THEN ISNULL(t.Cant_Pickeada, 0) ELSE 0 END AS Cant_Pickeada_Presentacion,
+        CASE WHEN v.IdPresentacion IS NOT NULL THEN v.Cantidad_Reservada_Pres - ISNULL(t.Cant_Pickeada, 0) ELSE 0 END AS Cant_No_Pickeada_Presentacion,
+        v.Codigo_Talla AS Talla,
+        v.Codigo_Color AS Color,
+        DATEDIFF(DAY, GETDATE(), v.fecha_vence) AS Vence_En
+    INTO #detalle
+    FROM VW_Stock_Res v
+    LEFT JOIN cte_pickeado t
+        ON v.IdStock = t.IdStock
+    WHERE (@IdBodega = 0 OR v.IdBodega = @IdBodega)
+      AND (@IdPropietarioBodega = 0 OR v.IdPropietarioBodega = @IdPropietarioBodega)
+    GROUP BY
+        v.IdProducto, v.NomEstado, v.Fecha_Ingreso, Codigo,
+        v.Nombre, Presentacion, v.IdPresentacion, v.UnidadMedida, v.peso,
+        v.Lote, v.fecha_vence, v.Nombre_Completo, v.lic_plate,
+        v.Factor, v.codigo_poliza, v.Numero_poliza, v.CantidadReservada, Cantidad,
+        v.CantidadSF, v.ubicacion_picking, v.Area, v.Factor,
+        v.IdUbicacion, v.IdTramo, v.IdBodega,
+        v.Codigo_Talla, v.Codigo_Color,
+        t.Cant_Pickeada, v.CantidadReservadaUmBas, v.Cantidad_Reservada_Pres
+    HAVING (@ExcluirSinExistencia = 0 OR SUM(ISNULL(v.Disponible_UMBas, 0)) > 0);
+
+    -- Resultset 1: detalle grid
+    SELECT *
+    FROM #detalle
+    ORDER BY codigo, [Ubicacion];
+
+    -- Resultset 2: riesgo de vencimiento
+    SELECT
+        CASE
+            WHEN Fecha_Vence IS NULL OR CONVERT(date, Fecha_Vence) = '19000101' THEN 'Sin vencimiento'
+            WHEN DATEDIFF(DAY, CONVERT(date, GETDATE()), CONVERT(date, Fecha_Vence)) <= 15 THEN '0-15 dias'
+            WHEN DATEDIFF(DAY, CONVERT(date, GETDATE()), CONVERT(date, Fecha_Vence)) <= 30 THEN '16-30 dias'
+            WHEN DATEDIFF(DAY, CONVERT(date, GETDATE()), CONVERT(date, Fecha_Vence)) <= 60 THEN '31-60 dias'
+            WHEN DATEDIFF(DAY, CONVERT(date, GETDATE()), CONVERT(date, Fecha_Vence)) <= 90 THEN '61-90 dias'
+            ELSE '>90 dias'
+        END AS Rango,
+        CASE
+            WHEN Fecha_Vence IS NULL OR CONVERT(date, Fecha_Vence) = '19000101' THEN 6
+            WHEN DATEDIFF(DAY, CONVERT(date, GETDATE()), CONVERT(date, Fecha_Vence)) <= 15 THEN 1
+            WHEN DATEDIFF(DAY, CONVERT(date, GETDATE()), CONVERT(date, Fecha_Vence)) <= 30 THEN 2
+            WHEN DATEDIFF(DAY, CONVERT(date, GETDATE()), CONVERT(date, Fecha_Vence)) <= 60 THEN 3
+            WHEN DATEDIFF(DAY, CONVERT(date, GETDATE()), CONVERT(date, Fecha_Vence)) <= 90 THEN 4
+            ELSE 5
+        END AS Orden,
+        SUM(CASE WHEN IdPresentacion IS NULL THEN ISNULL(Disponible_UMBas, 0) ELSE ISNULL(Disponible_Presentación, 0) END) AS Stock
+    FROM #detalle
+    GROUP BY
+        CASE
+            WHEN Fecha_Vence IS NULL OR CONVERT(date, Fecha_Vence) = '19000101' THEN 'Sin vencimiento'
+            WHEN DATEDIFF(DAY, CONVERT(date, GETDATE()), CONVERT(date, Fecha_Vence)) <= 15 THEN '0-15 dias'
+            WHEN DATEDIFF(DAY, CONVERT(date, GETDATE()), CONVERT(date, Fecha_Vence)) <= 30 THEN '16-30 dias'
+            WHEN DATEDIFF(DAY, CONVERT(date, GETDATE()), CONVERT(date, Fecha_Vence)) <= 60 THEN '31-60 dias'
+            WHEN DATEDIFF(DAY, CONVERT(date, GETDATE()), CONVERT(date, Fecha_Vence)) <= 90 THEN '61-90 dias'
+            ELSE '>90 dias'
+        END,
+        CASE
+            WHEN Fecha_Vence IS NULL OR CONVERT(date, Fecha_Vence) = '19000101' THEN 6
+            WHEN DATEDIFF(DAY, CONVERT(date, GETDATE()), CONVERT(date, Fecha_Vence)) <= 15 THEN 1
+            WHEN DATEDIFF(DAY, CONVERT(date, GETDATE()), CONVERT(date, Fecha_Vence)) <= 30 THEN 2
+            WHEN DATEDIFF(DAY, CONVERT(date, GETDATE()), CONVERT(date, Fecha_Vence)) <= 60 THEN 3
+            WHEN DATEDIFF(DAY, CONVERT(date, GETDATE()), CONVERT(date, Fecha_Vence)) <= 90 THEN 4
+            ELSE 5
+        END
+    ORDER BY Orden;
+
+    -- Resultset 3: top SKU por stock
+    SELECT TOP (20)
+        codigo AS Codigo,
+        SUM(CASE WHEN IdPresentacion IS NULL THEN ISNULL(Disponible_UMBas, 0) ELSE ISNULL(Disponible_Presentación, 0) END) AS Stock
+    FROM #detalle
+    GROUP BY codigo
+    ORDER BY Stock DESC;
+
+    -- Resultset 4: utilizable vs no utilizable
+    SELECT
+        CASE
+            WHEN UPPER(ISNULL(Estado, '')) LIKE '%BUEN%'
+              OR UPPER(ISNULL(Estado, '')) LIKE '%UTILIZABLE%'
+            THEN 'Utilizable'
+            ELSE 'No utilizable'
+        END AS Categoria,
+        SUM(ISNULL(Disponible_UMBas, 0)) AS Stock
+    FROM #detalle
+    GROUP BY
+        CASE
+            WHEN UPPER(ISNULL(Estado, '')) LIKE '%BUEN%'
+              OR UPPER(ISNULL(Estado, '')) LIKE '%UTILIZABLE%'
+            THEN 'Utilizable'
+            ELSE 'No utilizable'
+        END;
+END
+GO
