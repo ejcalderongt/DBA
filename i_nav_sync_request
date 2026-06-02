@@ -1,0 +1,52 @@
+--#EJC20260602_SYNC_INGRESO_SAP
+-- Solicitudes livianas para que WMS ejecute la interface SAP de ingresos desde worker.
+-- Flujo: WS/BOF encola PENDIENTE; worker WMS toma PROCESANDO; termina FINALIZADO/ERROR/IGNORADO.
+
+IF OBJECT_ID('dbo.i_nav_sync_request', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.i_nav_sync_request (
+        idsyncrequest bigint IDENTITY(1,1) NOT NULL CONSTRAINT PK_i_nav_sync_request PRIMARY KEY,
+        idnavconfigenc int NOT NULL,
+        idempresa int NOT NULL,
+        idbodega int NOT NULL,
+        idusuario int NOT NULL,
+        tipo_interface int NOT NULL,
+        origen varchar(30) NOT NULL,
+        estado varchar(20) NOT NULL,
+        parametros nvarchar(max) NULL,
+        fecha_solicitud datetime NOT NULL CONSTRAINT DF_i_nav_sync_request_fecha_solicitud DEFAULT (GETDATE()),
+        fecha_inicio datetime NULL,
+        fecha_fin datetime NULL,
+        intento int NOT NULL CONSTRAINT DF_i_nav_sync_request_intento DEFAULT (0),
+        mensaje nvarchar(1000) NULL,
+        host_solicita varchar(100) NULL,
+        host_procesa varchar(100) NULL
+    );
+END
+GO
+
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.indexes
+    WHERE object_id = OBJECT_ID('dbo.i_nav_sync_request')
+      AND name = 'IX_i_nav_sync_request_estado_fecha'
+)
+BEGIN
+    CREATE INDEX IX_i_nav_sync_request_estado_fecha
+    ON dbo.i_nav_sync_request (estado, fecha_solicitud, idsyncrequest)
+    INCLUDE (idnavconfigenc, tipo_interface, idempresa, idbodega);
+END
+GO
+
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.indexes
+    WHERE object_id = OBJECT_ID('dbo.i_nav_sync_request')
+      AND name = 'UX_i_nav_sync_request_activa_config'
+)
+BEGIN
+    CREATE UNIQUE INDEX UX_i_nav_sync_request_activa_config
+    ON dbo.i_nav_sync_request (idnavconfigenc, tipo_interface)
+    WHERE estado IN ('PENDIENTE', 'PROCESANDO');
+END
+GO
