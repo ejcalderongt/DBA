@@ -1,0 +1,183 @@
+--#EJC20260602_PRODUCTIVIDAD_PICKING_DASHBOARD_V1
+-- Resumen analítico para frmProductividadPicking.
+-- Devuelve 5 result sets:
+--   1) KPI resumen
+--   2) Eficiencia por operador
+--   3) Tendencia por día
+--   4) Productividad por tipo de documento
+--   5) Detalle operativo (base para drill-down)
+-- Notas:
+--   - Mantiene la fuente canónica VW_Productividad_Picking
+--   - Filtra por bodega y rango de fechas
+--   - Evita dividir entre cero en métricas porcentuales
+
+IF OBJECT_ID('dbo.usp_wms_productividad_picking_dashboard_v1', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.usp_wms_productividad_picking_dashboard_v1
+GO
+
+CREATE PROCEDURE dbo.usp_wms_productividad_picking_dashboard_v1
+    @FechaDel DATE,
+    @FechaAl DATE,
+    @IdBodega INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF OBJECT_ID('tempdb..#base') IS NOT NULL
+        DROP TABLE #base;
+
+    SELECT
+        v.IdBodega,
+        v.[Fecha_Hora_Inicio],
+        v.[Fecha_Hora_Fin],
+        v.[Fecha_Por_Línea],
+        v.[Tipo_Documento_Pedido],
+        v.[Código_Departamento],
+        v.[Descripción_Departamento],
+        v.[Código_Categoría],
+        v.[Descripción_Categoría],
+        v.[Código_Producto],
+        v.[Nombre_Producto],
+        CAST(ISNULL(v.[Cantidad_Solicitada], 0) AS DECIMAL(18, 6)) AS Cantidad_Solicitada,
+        CAST(ISNULL(v.[Cantidad_Pickeada], 0) AS DECIMAL(18, 6)) AS Cantidad_Pickeada,
+        CAST(ISNULL(v.[Diferencia], 0) AS DECIMAL(18, 6)) AS Diferencia,
+        v.[Nombre_Estado_Producto],
+        v.[Nombre_Presentación_MPQ],
+        CAST(ISNULL(v.[Cantidad_Pickeadas_Cajas], 0) AS DECIMAL(18, 6)) AS Cantidad_Pickeadas_Cajas,
+        v.[Id_Recepción],
+        v.[Número_Picking],
+        v.[Fecha_Vence],
+        v.[Lic_Plate],
+        v.[Código_Operador],
+        v.[Descripción_Operador],
+        v.[Código_Comprador],
+        v.[Descripción_Comprador],
+        CAST(CASE
+                 WHEN ISNULL(v.[Cantidad_Solicitada], 0) > 0
+                 THEN (ISNULL(v.[Cantidad_Pickeada], 0) / NULLIF(v.[Cantidad_Solicitada], 0)) * 100.0
+                 ELSE 0
+             END AS DECIMAL(18, 4)) AS Cumplimiento_Linea_Pct,
+        CAST(CASE
+                 WHEN v.[Fecha_Hora_Inicio] IS NOT NULL AND v.[Fecha_Hora_Fin] IS NOT NULL
+                      AND v.[Fecha_Hora_Fin] >= v.[Fecha_Hora_Inicio]
+                 THEN DATEDIFF(SECOND, v.[Fecha_Hora_Inicio], v.[Fecha_Hora_Fin])
+                 ELSE 0
+             END AS INT) AS Duracion_Segundos
+    INTO #base
+    FROM dbo.VW_Productividad_Picking v WITH (NOLOCK)
+    WHERE CAST(v.[Fecha_Por_Línea] AS DATE) BETWEEN @FechaDel AND @FechaAl
+      AND v.IdBodega = @IdBodega;
+
+    -- 1) KPI resumen
+    SELECT
+        @IdBodega AS IdBodega,
+        @FechaDel AS FechaDel,
+        @FechaAl AS FechaAl,
+        COUNT(1) AS Lineas,
+        COUNT(DISTINCT [Número_Picking]) AS Pickings,
+        COUNT(DISTINCT CASE WHEN ISNULL([Código_Operador], '') <> '' THEN [Código_Operador] END) AS Operadores_Activos,
+        SUM(Cantidad_Solicitada) AS Cantidad_Solicitada,
+        SUM(Cantidad_Pickeada) AS Cantidad_Pickeada,
+        SUM(Diferencia) AS Diferencia,
+        CAST(CASE
+                 WHEN SUM(Cantidad_Solicitada) > 0
+                 THEN (SUM(Cantidad_Pickeada) / NULLIF(SUM(Cantidad_Solicitada), 0)) * 100.0
+                 ELSE 0
+             END AS DECIMAL(18, 4)) AS Cumplimiento_Pct,
+        CAST(CASE
+                 WHEN SUM(Duracion_Segundos) > 0
+                 THEN SUM(Cantidad_Pickeada) / (SUM(Duracion_Segundos) / 3600.0)
+                 ELSE 0
+             END AS DECIMAL(18, 4)) AS Picks_Por_Hora
+    FROM #base;
+
+    -- 2) Eficiencia por operador
+    SELECT
+        [Código_Operador],
+        [Descripción_Operador],
+        COUNT(1) AS Lineas,
+        COUNT(DISTINCT [Número_Picking]) AS Pickings,
+        SUM(Cantidad_Solicitada) AS Cantidad_Solicitada,
+        SUM(Cantidad_Pickeada) AS Cantidad_Pickeada,
+        SUM(Diferencia) AS Diferencia,
+        CAST(CASE
+                 WHEN SUM(Cantidad_Solicitada) > 0
+                 THEN (SUM(Cantidad_Pickeada) / NULLIF(SUM(Cantidad_Solicitada), 0)) * 100.0
+                 ELSE 0
+             END AS DECIMAL(18, 4)) AS Cumplimiento_Pct,
+        CAST(CASE
+                 WHEN SUM(Duracion_Segundos) > 0
+                 THEN SUM(Cantidad_Pickeada) / (SUM(Duracion_Segundos) / 3600.0)
+                 ELSE 0
+             END AS DECIMAL(18, 4)) AS Picks_Por_Hora
+    FROM #base
+    GROUP BY [Código_Operador], [Descripción_Operador]
+    ORDER BY Cantidad_Pickeada DESC, Cumplimiento_Pct DESC;
+
+    -- 3) Tendencia por día
+    SELECT
+        CAST([Fecha_Por_Línea] AS DATE) AS Fecha,
+        COUNT(1) AS Lineas,
+        COUNT(DISTINCT [Número_Picking]) AS Pickings,
+        SUM(Cantidad_Solicitada) AS Cantidad_Solicitada,
+        SUM(Cantidad_Pickeada) AS Cantidad_Pickeada,
+        SUM(Diferencia) AS Diferencia,
+        CAST(CASE
+                 WHEN SUM(Cantidad_Solicitada) > 0
+                 THEN (SUM(Cantidad_Pickeada) / NULLIF(SUM(Cantidad_Solicitada), 0)) * 100.0
+                 ELSE 0
+             END AS DECIMAL(18, 4)) AS Cumplimiento_Pct
+    FROM #base
+    GROUP BY CAST([Fecha_Por_Línea] AS DATE)
+    ORDER BY Fecha;
+
+    -- 4) Productividad por tipo de documento
+    SELECT
+        [Tipo_Documento_Pedido],
+        COUNT(1) AS Lineas,
+        COUNT(DISTINCT [Número_Picking]) AS Pickings,
+        SUM(Cantidad_Solicitada) AS Cantidad_Solicitada,
+        SUM(Cantidad_Pickeada) AS Cantidad_Pickeada,
+        SUM(Diferencia) AS Diferencia,
+        CAST(CASE
+                 WHEN SUM(Cantidad_Solicitada) > 0
+                 THEN (SUM(Cantidad_Pickeada) / NULLIF(SUM(Cantidad_Solicitada), 0)) * 100.0
+                 ELSE 0
+             END AS DECIMAL(18, 4)) AS Cumplimiento_Pct
+    FROM #base
+    GROUP BY [Tipo_Documento_Pedido]
+    ORDER BY Cantidad_Pickeada DESC;
+
+    -- 5) Detalle operativo
+    SELECT
+        IdBodega,
+        [Fecha_Hora_Inicio],
+        [Fecha_Hora_Fin],
+        [Fecha_Por_Línea],
+        [Tipo_Documento_Pedido],
+        [Código_Departamento],
+        [Descripción_Departamento],
+        [Código_Categoría],
+        [Descripción_Categoría],
+        [Código_Producto],
+        [Nombre_Producto],
+        Cantidad_Solicitada,
+        Cantidad_Pickeada,
+        Diferencia,
+        [Nombre_Estado_Producto],
+        [Nombre_Presentación_MPQ],
+        [Cantidad_Pickeadas_Cajas],
+        [Id_Recepción],
+        [Número_Picking],
+        [Fecha_Vence],
+        [Lic_Plate],
+        [Código_Operador],
+        [Descripción_Operador],
+        [Código_Comprador],
+        [Descripción_Comprador],
+        Cumplimiento_Linea_Pct,
+        Duracion_Segundos
+    FROM #base
+    ORDER BY [Fecha_Por_Línea], [Número_Picking], [Código_Producto];
+END
+GO
