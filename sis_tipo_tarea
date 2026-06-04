@@ -1,3 +1,8 @@
+--#GT 03062026: ajustes de inventario RFID
+
+insert into sis_tipo_tarea values(36,'AJCANTNIRFID',1)
+insert into sis_tipo_tarea values(37,'AJCANTPIRFID',1)
+
 --#CKFK20241203
 INSERT INTO sis_tipo_tarea VALUES(34,'CESTI',1)
 INSERT INTO sis_tipo_tarea VALUES(35,'CUBII',1)
