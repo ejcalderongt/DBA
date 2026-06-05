@@ -1,3 +1,17 @@
+--#EJC20260605 Se agregó campo nuevo de cantidad de etiquetas impresas
+IF COL_LENGTH('dbo.i_nav_barras_pallet', 'cant_etiquetas_presentacion_impresas') IS NULL
+BEGIN
+    ALTER TABLE dbo.i_nav_barras_pallet
+    ADD cant_etiquetas_presentacion_impresas INT NOT NULL
+        CONSTRAINT DF_i_nav_barras_pallet_cant_etiquetas_presentacion_impresas DEFAULT (0);
+END;
+GO
+ 
+UPDATE dbo.i_nav_barras_pallet
+SET cant_etiquetas_presentacion_impresas = 0
+WHERE cant_etiquetas_presentacion_impresas IS NULL;
+GO
+
 --#EJC20250505 Campos nuevos para MHS
 alter table i_nav_barras_pallet 
 add IdOrdenCompraEnc int null,
