@@ -23,6 +23,15 @@ BEGIN
     SET NOCOUNT ON;
     SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
 
+    DECLARE @IdPropietario INT = 0;
+    IF @IdPropietarioBodega > 0
+    BEGIN
+        SELECT TOP 1 @IdPropietario = pb.IdPropietario
+        FROM dbo.propietario_bodega AS pb
+        WHERE pb.IdPropietarioBodega = @IdPropietarioBodega
+          AND (@IdBodega = 0 OR pb.IdBodega = @IdBodega);
+    END
+
     ;WITH Base AS
     (
         SELECT
@@ -48,7 +57,7 @@ BEGIN
                    ON pb.IdProducto = p1.IdProducto
                   AND pb.IdBodega = @IdBodega
             WHERE (p1.codigo = b.Codigo OR p1.codigo_barra = b.Codigo)
-              AND (@IdPropietarioBodega = 0 OR pb.IdPropietarioBodega = @IdPropietarioBodega)
+              AND (@IdPropietarioBodega = 0 OR p1.IdPropietario = @IdPropietario)
             ORDER BY p1.IdProducto
         ) AS p
     )
