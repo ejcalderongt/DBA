@@ -1,0 +1,83 @@
+/*
+EJC20260605_FIX_MHS_FK_LOTE_BARRA
+Amarra i_nav_barras_pallet contra trans_oc_det_lote por IdOrdenCompraDetLote
+para trazabilidad persistente de barras impresas por lote.
+*/
+
+SET XACT_ABORT ON;
+BEGIN TRAN;
+
+IF COL_LENGTH('dbo.i_nav_barras_pallet', 'IdOrdenCompraDetLote') IS NULL
+BEGIN
+    ALTER TABLE dbo.i_nav_barras_pallet
+    ADD IdOrdenCompraDetLote INT NULL;
+END
+
+;WITH lote_match AS (
+    SELECT
+        p.IdPallet,
+        l.IdOrdenCompraDetLote,
+        rn = ROW_NUMBER() OVER (
+            PARTITION BY p.IdPallet
+            ORDER BY l.IdOrdenCompraDetLote DESC
+        )
+    FROM dbo.i_nav_barras_pallet p
+    INNER JOIN dbo.trans_oc_det_lote l
+        ON l.IdOrdenCompraEnc = p.IdOrdenCompraEnc
+       AND l.IdOrdenCompraDet = p.IdOrdenCompraDet
+       AND ISNULL(LTRIM(RTRIM(l.lote)), '') = ISNULL(LTRIM(RTRIM(p.lote)), '')
+       AND CONVERT(date, ISNULL(l.fecha_vence, '19000101')) = CONVERT(date, ISNULL(p.fecha_vence, '19000101'))
+    WHERE p.IdOrdenCompraDetLote IS NULL
+)
+UPDATE p
+   SET p.IdOrdenCompraDetLote = m.IdOrdenCompraDetLote
+FROM dbo.i_nav_barras_pallet p
+INNER JOIN lote_match m
+    ON m.IdPallet = p.IdPallet
+   AND m.rn = 1;
+
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.indexes
+    WHERE name = 'IX_i_nav_barras_pallet_OC_Det_LoteFK'
+      AND object_id = OBJECT_ID('dbo.i_nav_barras_pallet')
+)
+BEGIN
+    CREATE NONCLUSTERED INDEX IX_i_nav_barras_pallet_OC_Det_LoteFK
+        ON dbo.i_nav_barras_pallet (IdOrdenCompraEnc, IdOrdenCompraDet, IdOrdenCompraDetLote)
+        INCLUDE (Codigo_Barra, lote, fecha_vence, Impreso, cant_etiquetas_presentacion_impresas, Cantidad_Presentacion, Fecha_Agregado);
+END
+
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.indexes
+    WHERE name = 'IX_trans_oc_det_lote_IdOrdenCompraDetLote'
+      AND object_id = OBJECT_ID('dbo.trans_oc_det_lote')
+)
+BEGIN
+    CREATE NONCLUSTERED INDEX IX_trans_oc_det_lote_IdOrdenCompraDetLote
+        ON dbo.trans_oc_det_lote (IdOrdenCompraDetLote, IdOrdenCompraEnc, IdOrdenCompraDet);
+END
+
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.foreign_keys
+    WHERE name = 'FK_i_nav_barras_pallet_trans_oc_det_lote_IdOrdenCompraDetLote'
+)
+BEGIN
+    ALTER TABLE dbo.i_nav_barras_pallet WITH CHECK
+    ADD CONSTRAINT FK_i_nav_barras_pallet_trans_oc_det_lote_IdOrdenCompraDetLote
+        FOREIGN KEY (IdOrdenCompraDetLote)
+        REFERENCES dbo.trans_oc_det_lote (IdOrdenCompraDetLote);
+END
+
+COMMIT TRAN;
+GO
+
+SELECT
+    total = COUNT(1),
+    con_fk = SUM(CASE WHEN IdOrdenCompraDetLote IS NOT NULL THEN 1 ELSE 0 END),
+    sin_fk = SUM(CASE WHEN IdOrdenCompraDetLote IS NULL THEN 1 ELSE 0 END)
+FROM dbo.i_nav_barras_pallet;
+GO
+
