@@ -1,3 +1,10 @@
+-#EJC20260605 Se agregó campo nuevo IdOrdenCompraDetLote
+IF COL_LENGTH('dbo.i_nav_barras_pallet', 'IdOrdenCompraDetLote') IS NULL
+BEGIN
+    ALTER TABLE dbo.i_nav_barras_pallet
+    ADD IdOrdenCompraDetLote INT NULL;
+END
+
 --#EJC20260605 Se agregó campo nuevo de cantidad de etiquetas impresas
 IF COL_LENGTH('dbo.i_nav_barras_pallet', 'cant_etiquetas_presentacion_impresas') IS NULL
 BEGIN
