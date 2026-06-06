@@ -1,0 +1,97 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+    #EJC20260606_INV_IMPORT_TVP
+    SP: dbo.usp_wms_inventario_import_validacion_tvp_v1
+
+    Objetivo:
+      Resolver en lote (TVP) los IDs base de validacion de importacion:
+      producto, presentacion, unidad de medida y existencia de ubicacion.
+
+    Contrato:
+      Solo lectura. Se integra con fallback en BOF cuando el objeto no existe.
+*/
+CREATE OR ALTER PROCEDURE dbo.usp_wms_inventario_import_validacion_tvp_v1
+    @IdBodega INT,
+    @IdPropietarioBodega INT = 0,
+    @Filas dbo.tvp_wms_inventario_import_validacion_v1 READONLY
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+
+    ;WITH Base AS
+    (
+        SELECT
+            f.RowId,
+            LTRIM(RTRIM(f.Codigo)) AS Codigo,
+            LTRIM(RTRIM(ISNULL(f.Presentacion, ''))) AS Presentacion,
+            LTRIM(RTRIM(ISNULL(f.UnidadMedida, ''))) AS UnidadMedida,
+            ISNULL(f.Ubicacion, 0) AS Ubicacion
+        FROM @Filas AS f
+    ),
+    ProductoResuelto AS
+    (
+        SELECT
+            b.RowId,
+            p.IdProducto,
+            p.IdPropietario
+        FROM Base AS b
+        OUTER APPLY
+        (
+            SELECT TOP 1 p1.IdProducto, p1.IdPropietario
+            FROM dbo.producto AS p1
+            LEFT JOIN dbo.producto_bodega AS pb
+                   ON pb.IdProducto = p1.IdProducto
+                  AND pb.IdBodega = @IdBodega
+            WHERE (p1.codigo = b.Codigo OR p1.codigo_barra = b.Codigo)
+              AND (@IdPropietarioBodega = 0 OR pb.IdPropietarioBodega = @IdPropietarioBodega)
+            ORDER BY p1.IdProducto
+        ) AS p
+    )
+    SELECT
+        b.RowId,
+        pr.IdProducto,
+        pp.IdPresentacion,
+        um.IdUnidadMedida,
+        CAST(CASE
+                 WHEN b.Ubicacion <= 0 THEN 0
+                 WHEN bu.IdUbicacion IS NULL THEN 0
+                 ELSE 1
+             END AS BIT) AS UbicacionExiste
+    FROM Base AS b
+    LEFT JOIN ProductoResuelto AS pr
+           ON pr.RowId = b.RowId
+    OUTER APPLY
+    (
+        SELECT TOP 1 pp1.IdPresentacion
+        FROM dbo.producto_presentacion AS pp1
+        WHERE pp1.IdProducto = pr.IdProducto
+          AND b.Presentacion <> ''
+          AND (
+                pp1.nombre = b.Presentacion
+                OR pp1.nombre = REPLACE(REPLACE(b.Presentacion, CHAR(13), ''), CHAR(10), '')
+              )
+        ORDER BY pp1.IdPresentacion
+    ) AS pp
+    OUTER APPLY
+    (
+        SELECT TOP 1 um1.IdUnidadMedida
+        FROM dbo.unidad_medida AS um1
+        WHERE b.UnidadMedida <> ''
+          AND um1.Nombre = b.UnidadMedida
+          AND (
+                @IdPropietarioBodega = 0
+                OR um1.IdPropietario = pr.IdPropietario
+              )
+        ORDER BY um1.IdUnidadMedida
+    ) AS um
+    LEFT JOIN dbo.bodega_ubicacion AS bu
+           ON bu.IdBodega = @IdBodega
+          AND bu.IdUbicacion = b.Ubicacion
+    ORDER BY b.RowId;
+END
+GO

@@ -1,0 +1,18 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+    #EJC20260606_INV_IMPORT_TVP
+    TVP para validacion masiva de filas en importacion de inventario inicial.
+*/
+CREATE TYPE dbo.tvp_wms_inventario_import_validacion_v1 AS TABLE
+(
+    RowId INT NOT NULL,
+    Codigo NVARCHAR(100) NOT NULL,
+    Presentacion NVARCHAR(150) NULL,
+    UnidadMedida NVARCHAR(100) NULL,
+    Ubicacion INT NULL
+);
+GO
