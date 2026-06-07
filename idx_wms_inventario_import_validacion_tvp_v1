@@ -1,0 +1,52 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+    #EJC20260606_INV_IMPORT_TVP_IDX
+    Indices recomendados para mejorar performance de:
+      dbo.usp_wms_inventario_import_validacion_tvp_v1
+
+    Nota:
+      Script idempotente (IF NOT EXISTS).
+*/
+
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.indexes
+    WHERE object_id = OBJECT_ID('dbo.producto')
+      AND name = 'IX_producto_codigo_barra_propietario'
+)
+BEGIN
+    CREATE NONCLUSTERED INDEX IX_producto_codigo_barra_propietario
+    ON dbo.producto (codigo_barra, IdPropietario)
+    INCLUDE (IdProducto);
+END
+GO
+
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.indexes
+    WHERE object_id = OBJECT_ID('dbo.producto_presentacion')
+      AND name = 'IX_producto_presentacion_producto_nombre'
+)
+BEGIN
+    CREATE NONCLUSTERED INDEX IX_producto_presentacion_producto_nombre
+    ON dbo.producto_presentacion (IdProducto, nombre)
+    INCLUDE (IdPresentacion);
+END
+GO
+
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.indexes
+    WHERE object_id = OBJECT_ID('dbo.unidad_medida')
+      AND name = 'IX_unidad_medida_nombre_propietario'
+)
+BEGIN
+    CREATE NONCLUSTERED INDEX IX_unidad_medida_nombre_propietario
+    ON dbo.unidad_medida (Nombre, IdPropietario)
+    INCLUDE (IdUnidadMedida);
+END
+GO
