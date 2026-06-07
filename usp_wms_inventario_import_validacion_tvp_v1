@@ -32,72 +32,136 @@ BEGIN
           AND (@IdBodega = 0 OR pb.IdBodega = @IdBodega);
     END
 
-    ;WITH Base AS
+    CREATE TABLE #Base
+    (
+        RowId INT NOT NULL,
+        Codigo NVARCHAR(100) NOT NULL,
+        Presentacion NVARCHAR(150) NOT NULL,
+        PresentacionNorm NVARCHAR(150) NOT NULL,
+        UnidadMedida NVARCHAR(100) NOT NULL,
+        Ubicacion INT NOT NULL
+    );
+
+    INSERT INTO #Base (RowId, Codigo, Presentacion, PresentacionNorm, UnidadMedida, Ubicacion)
+    SELECT
+        f.RowId,
+        LTRIM(RTRIM(f.Codigo)) AS Codigo,
+        LTRIM(RTRIM(ISNULL(f.Presentacion, ''))) AS Presentacion,
+        REPLACE(REPLACE(LTRIM(RTRIM(ISNULL(f.Presentacion, ''))), CHAR(13), ''), CHAR(10), '') AS PresentacionNorm,
+        LTRIM(RTRIM(ISNULL(f.UnidadMedida, ''))) AS UnidadMedida,
+        ISNULL(f.Ubicacion, 0) AS Ubicacion
+    FROM @Filas AS f;
+
+    CREATE CLUSTERED INDEX CIX_Base_RowId ON #Base(RowId);
+    CREATE NONCLUSTERED INDEX IX_Base_Codigo ON #Base(Codigo);
+    CREATE NONCLUSTERED INDEX IX_Base_Ubicacion ON #Base(Ubicacion);
+
+    CREATE TABLE #ProductoResuelto
+    (
+        RowId INT NOT NULL PRIMARY KEY,
+        IdProducto INT NULL,
+        IdPropietario INT NULL
+    );
+
+    ;WITH ProductoCandidato AS
+    (
+        SELECT b.RowId, p1.IdProducto, p1.IdPropietario
+        FROM #Base AS b
+        JOIN dbo.producto AS p1
+          ON p1.codigo = b.Codigo COLLATE DATABASE_DEFAULT
+        WHERE (@IdPropietarioBodega = 0 OR p1.IdPropietario = @IdPropietario)
+
+        UNION ALL
+
+        SELECT b.RowId, p2.IdProducto, p2.IdPropietario
+        FROM #Base AS b
+        JOIN dbo.producto AS p2
+          ON p2.codigo_barra = b.Codigo COLLATE DATABASE_DEFAULT
+        WHERE (@IdPropietarioBodega = 0 OR p2.IdPropietario = @IdPropietario)
+    ),
+    ProductoElegido AS
     (
         SELECT
-            f.RowId,
-            LTRIM(RTRIM(f.Codigo)) AS Codigo,
-            LTRIM(RTRIM(ISNULL(f.Presentacion, ''))) AS Presentacion,
-            LTRIM(RTRIM(ISNULL(f.UnidadMedida, ''))) AS UnidadMedida,
-            ISNULL(f.Ubicacion, 0) AS Ubicacion
-        FROM @Filas AS f
-    ),
-    ProductoResuelto AS
+            pc.RowId,
+            MIN(pc.IdProducto) AS IdProducto
+        FROM ProductoCandidato AS pc
+        GROUP BY pc.RowId
+    )
+    INSERT INTO #ProductoResuelto (RowId, IdProducto, IdPropietario)
+    SELECT
+        pe.RowId,
+        pe.IdProducto,
+        p.IdPropietario
+    FROM ProductoElegido AS pe
+    JOIN dbo.producto AS p
+      ON p.IdProducto = pe.IdProducto;
+
+    CREATE TABLE #PresentacionResuelta
+    (
+        RowId INT NOT NULL PRIMARY KEY,
+        IdPresentacion INT NULL
+    );
+
+    ;WITH PresentacionCandidato AS
     (
         SELECT
             b.RowId,
-            p.IdProducto,
-            p.IdPropietario
-        FROM Base AS b
-        OUTER APPLY
-        (
-            SELECT TOP 1 p1.IdProducto, p1.IdPropietario
-            FROM dbo.producto AS p1
-            LEFT JOIN dbo.producto_bodega AS pb
-                   ON pb.IdProducto = p1.IdProducto
-                  AND pb.IdBodega = @IdBodega
-            WHERE (p1.codigo = b.Codigo OR p1.codigo_barra = b.Codigo)
-              AND (@IdPropietarioBodega = 0 OR p1.IdPropietario = @IdPropietario)
-            ORDER BY p1.IdProducto
-        ) AS p
+            MIN(pp1.IdPresentacion) AS IdPresentacion
+        FROM #Base AS b
+        JOIN #ProductoResuelto AS pr
+          ON pr.RowId = b.RowId
+        JOIN dbo.producto_presentacion AS pp1
+          ON pp1.IdProducto = pr.IdProducto
+         AND b.Presentacion <> ''
+         AND (pp1.nombre = b.Presentacion COLLATE DATABASE_DEFAULT
+              OR pp1.nombre = b.PresentacionNorm COLLATE DATABASE_DEFAULT)
+        GROUP BY b.RowId
     )
+    INSERT INTO #PresentacionResuelta (RowId, IdPresentacion)
+    SELECT pc.RowId, pc.IdPresentacion
+    FROM PresentacionCandidato AS pc;
+
+    CREATE TABLE #UnidadResuelta
+    (
+        RowId INT NOT NULL PRIMARY KEY,
+        IdUnidadMedida INT NULL
+    );
+
+    ;WITH UnidadCandidato AS
+    (
+        SELECT
+            b.RowId,
+            MIN(um1.IdUnidadMedida) AS IdUnidadMedida
+        FROM #Base AS b
+        JOIN #ProductoResuelto AS pr
+          ON pr.RowId = b.RowId
+        JOIN dbo.unidad_medida AS um1
+          ON b.UnidadMedida <> ''
+         AND um1.Nombre = b.UnidadMedida COLLATE DATABASE_DEFAULT
+         AND (@IdPropietarioBodega = 0 OR um1.IdPropietario = pr.IdPropietario)
+        GROUP BY b.RowId
+    )
+    INSERT INTO #UnidadResuelta (RowId, IdUnidadMedida)
+    SELECT uc.RowId, uc.IdUnidadMedida
+    FROM UnidadCandidato AS uc;
+
     SELECT
         b.RowId,
         pr.IdProducto,
-        pp.IdPresentacion,
+        pres.IdPresentacion,
         um.IdUnidadMedida,
         CAST(CASE
                  WHEN b.Ubicacion <= 0 THEN 0
                  WHEN bu.IdUbicacion IS NULL THEN 0
                  ELSE 1
              END AS BIT) AS UbicacionExiste
-    FROM Base AS b
-    LEFT JOIN ProductoResuelto AS pr
+    FROM #Base AS b
+    LEFT JOIN #ProductoResuelto AS pr
            ON pr.RowId = b.RowId
-    OUTER APPLY
-    (
-        SELECT TOP 1 pp1.IdPresentacion
-        FROM dbo.producto_presentacion AS pp1
-        WHERE pp1.IdProducto = pr.IdProducto
-          AND b.Presentacion <> ''
-          AND (
-                pp1.nombre = b.Presentacion
-                OR pp1.nombre = REPLACE(REPLACE(b.Presentacion, CHAR(13), ''), CHAR(10), '')
-              )
-        ORDER BY pp1.IdPresentacion
-    ) AS pp
-    OUTER APPLY
-    (
-        SELECT TOP 1 um1.IdUnidadMedida
-        FROM dbo.unidad_medida AS um1
-        WHERE b.UnidadMedida <> ''
-          AND um1.Nombre = b.UnidadMedida
-          AND (
-                @IdPropietarioBodega = 0
-                OR um1.IdPropietario = pr.IdPropietario
-              )
-        ORDER BY um1.IdUnidadMedida
-    ) AS um
+    LEFT JOIN #PresentacionResuelta AS pres
+           ON pres.RowId = b.RowId
+    LEFT JOIN #UnidadResuelta AS um
+           ON um.RowId = b.RowId
     LEFT JOIN dbo.bodega_ubicacion AS bu
            ON bu.IdBodega = @IdBodega
           AND bu.IdUbicacion = b.Ubicacion
