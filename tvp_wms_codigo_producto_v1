@@ -1,0 +1,14 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+    #EJC20260606_INV_IMPORT_PRODUCTO_TVP
+    TVP reutilizable para enviar codigos de producto en lote desde BOF/DAL.
+*/
+CREATE TYPE dbo.tvp_wms_codigo_producto_v1 AS TABLE
+(
+    Codigo NVARCHAR(100) NOT NULL PRIMARY KEY
+);
+GO

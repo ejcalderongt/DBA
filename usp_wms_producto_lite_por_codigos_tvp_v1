@@ -1,0 +1,76 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+    #EJC20260606_INV_IMPORT_PRODUCTO_TVP
+    SP: dbo.usp_wms_producto_lite_por_codigos_tvp_v1
+
+    Objetivo:
+      Resolver en una sola llamada los productos lite usados por importacion
+      de inventario inicial, evitando N consultas por codigo en el loop DAL.
+
+    Contrato:
+      Solo lectura. Devuelve el mismo shape que Get_Single_By_Codigo_For_InventarioImport.
+*/
+CREATE OR ALTER PROCEDURE dbo.usp_wms_producto_lite_por_codigos_tvp_v1
+    @Codigos dbo.tvp_wms_codigo_producto_v1 READONLY
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+
+    ;WITH Base AS
+    (
+        SELECT DISTINCT LTRIM(RTRIM(Codigo)) AS Codigo
+        FROM @Codigos
+        WHERE LTRIM(RTRIM(Codigo)) <> ''
+    ),
+    ProductoCandidato AS
+    (
+        SELECT
+            b.Codigo AS CodigoBuscado,
+            p.IdProducto,
+            ROW_NUMBER() OVER
+            (
+                PARTITION BY b.Codigo
+                ORDER BY CASE WHEN p.codigo = b.Codigo COLLATE DATABASE_DEFAULT THEN 0 ELSE 1 END,
+                         p.IdProducto
+            ) AS rn
+        FROM Base AS b
+        JOIN dbo.producto AS p
+          ON p.codigo = b.Codigo COLLATE DATABASE_DEFAULT
+          OR p.codigo_barra = b.Codigo COLLATE DATABASE_DEFAULT
+    )
+    SELECT
+        p.IdProducto,
+        p.IdPropietario,
+        prop.nombre_comercial AS PropietarioNombre,
+        p.IdUnidadMedidaBasica,
+        um.Nombre AS UnidadMedidaNombre,
+        p.IdProductoParametroA,
+        pa.Nombre AS ParametroANombre,
+        p.IdProductoParametroB,
+        pb.Nombre AS ParametroBNombre,
+        p.codigo,
+        p.nombre,
+        p.control_lote,
+        p.control_vencimiento,
+        p.costo,
+        p.precio
+    FROM ProductoCandidato AS pc
+    JOIN dbo.producto AS p
+      ON p.IdProducto = pc.IdProducto
+    LEFT JOIN dbo.propietarios AS prop
+      ON prop.IdPropietario = p.IdPropietario
+    LEFT JOIN dbo.unidad_medida AS um
+      ON um.IdUnidadMedida = p.IdUnidadMedidaBasica
+    LEFT JOIN dbo.producto_parametro_a AS pa
+      ON pa.IdProductoParametroA = p.IdProductoParametroA
+    LEFT JOIN dbo.producto_parametro_b AS pb
+      ON pb.IdProductoParametroB = p.IdProductoParametroB
+    WHERE pc.rn = 1
+    ORDER BY p.codigo;
+END
+GO
