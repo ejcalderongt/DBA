@@ -1,0 +1,41 @@
+IF TYPE_ID(N'dbo.tvp_wms_inventario_regularizacion_stock_v1') IS NULL
+BEGIN
+    EXEC('CREATE TYPE dbo.tvp_wms_inventario_regularizacion_stock_v1 AS TABLE (
+        RowId INT NOT NULL,
+        IdBodega INT NOT NULL,
+        IdPropietarioBodega INT NOT NULL,
+        IdProductoBodega INT NOT NULL,
+        IdProductoEstado INT NOT NULL,
+        IdPresentacion INT NULL,
+        IdUnidadMedida INT NULL,
+        IdUbicacion INT NOT NULL,
+        IdUbicacion_anterior INT NULL,
+        IdRecepcionEnc INT NULL,
+        IdRecepcionDet INT NULL,
+        IdPedidoEnc INT NULL,
+        IdPickingEnc INT NULL,
+        IdDespachoEnc INT NULL,
+        lote NVARCHAR(200) NOT NULL,
+        lic_plate NVARCHAR(200) NULL,
+        serial NVARCHAR(200) NULL,
+        cantidad FLOAT NULL,
+        fecha_ingreso DATETIME NULL,
+        fecha_vence DATETIME NULL,
+        uds_lic_plate FLOAT NULL,
+        no_bulto INT NULL,
+        fecha_manufactura DATETIME NULL,
+        [añada] INT NULL,
+        user_agr NVARCHAR(200) NOT NULL,
+        fec_agr DATETIME NOT NULL,
+        user_mod NVARCHAR(200) NOT NULL,
+        fec_mod DATETIME NOT NULL,
+        activo BIT NOT NULL,
+        peso FLOAT NULL,
+        temperatura FLOAT NULL,
+        atributo_variante_1 NVARCHAR(200) NULL,
+        pallet_no_estandar BIT NULL,
+        IdProductoTallaColor INT NULL,
+        PRIMARY KEY (RowId)
+    )')
+END
+GO
