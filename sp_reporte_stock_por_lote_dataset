@@ -48,7 +48,7 @@ BEGIN
         SUM(ISNULL(v.CantidadReservada, 0)) AS Cantidad_Reservada_UMBas,
         SUM(ISNULL(v.Cantidad_Reservada_Pres, 0)) AS Cantidad_Reservada_Pres,
         SUM(ISNULL(v.Disponible_UMBas, 0)) AS Disponible_UMBas,
-        SUM(ISNULL(v.Disponible_Presentacion, 0)) AS Disponible_Presentación,
+        SUM(ISNULL(v.Disponible_Presentacion, 0)) AS Disponible_Presentacion,
         v.peso AS Peso,
         v.lote AS Lote,
         v.lic_plate AS Licencia,
@@ -109,7 +109,7 @@ BEGIN
             WHEN DATEDIFF(DAY, CONVERT(date, GETDATE()), CONVERT(date, Fecha_Vence)) <= 90 THEN 4
             ELSE 5
         END AS Orden,
-        SUM(CASE WHEN IdPresentacion IS NULL THEN ISNULL(Disponible_UMBas, 0) ELSE ISNULL(Disponible_Presentación, 0) END) AS Stock
+        SUM(CASE WHEN IdPresentacion IS NULL THEN ISNULL(Disponible_UMBas, 0) ELSE ISNULL(Disponible_Presentacion, 0) END) AS Stock
     FROM #detalle
     GROUP BY
         CASE
@@ -133,7 +133,7 @@ BEGIN
     -- Resultset 3: top SKU por stock
     SELECT TOP (20)
         codigo AS Codigo,
-        SUM(CASE WHEN IdPresentacion IS NULL THEN ISNULL(Disponible_UMBas, 0) ELSE ISNULL(Disponible_Presentación, 0) END) AS Stock
+        SUM(CASE WHEN IdPresentacion IS NULL THEN ISNULL(Disponible_UMBas, 0) ELSE ISNULL(Disponible_Presentacion, 0) END) AS Stock
     FROM #detalle
     GROUP BY codigo
     ORDER BY Stock DESC;
