@@ -1,3 +1,8 @@
+--#CKFK20251118 Agregué el campo por un tipo en SAP para MAMPA
+ALTER TABLE trans_pe_enc
+ADD tipo_solicitud_erp NVARCHAR(50) null
+GO
+
 --#CKFK20251118 Agregué los campos IdEmpresaTransporte, IdPiloto
 ALTER TABLE trans_pe_enc
 ADD IdEmpresaTransporte int null,
