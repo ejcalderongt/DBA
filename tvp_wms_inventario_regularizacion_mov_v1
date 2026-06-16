@@ -1,0 +1,51 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+    #EJC20260607_INV_REG_TVP
+    TVP para insertar trans_movimientos de regularizacion de inventario inicial en lote.
+*/
+CREATE TYPE dbo.tvp_wms_inventario_regularizacion_mov_v1 AS TABLE
+(
+    RowId INT NOT NULL,
+    IdEmpresa INT NULL,
+    IdBodegaOrigen INT NULL,
+    IdTransaccion INT NULL,
+    IdPropietarioBodega INT NULL,
+    IdProductoBodega INT NULL,
+    IdUbicacionOrigen INT NULL,
+    IdUbicacionDestino INT NULL,
+    IdPresentacion INT NULL,
+    IdEstadoOrigen INT NULL,
+    IdEstadoDestino INT NULL,
+    IdUnidadMedida INT NULL,
+    IdTipoTarea INT NULL,
+    IdBodegaDestino INT NULL,
+    IdRecepcion INT NULL,
+    Cantidad FLOAT NOT NULL,
+    Serie NVARCHAR(100) NULL,
+    Peso FLOAT NULL,
+    Lote NVARCHAR(100) NULL,
+    Fecha_vence DATETIME NULL,
+    Fecha DATETIME NULL,
+    Barra_pallet NVARCHAR(100) NULL,
+    Hora_ini DATETIME NULL,
+    Hora_fin DATETIME NULL,
+    Fecha_agr DATETIME NULL,
+    Usuario_agr NVARCHAR(50) NULL,
+    Cantidad_hist FLOAT NULL,
+    Peso_hist FLOAT NULL,
+    IdOperadorBodega INT NULL,
+    Lic_plate NVARCHAR(100) NULL,
+    IdRecepcionDet INT NULL,
+    IdPedidoEnc INT NULL,
+    IdPedidoDet INT NULL,
+    IdDespachoEnc INT NULL,
+    IdDespachoDet INT NULL,
+    IdProductoTallaColor INT NULL,
+    Talla NVARCHAR(50) NULL,
+    Color NVARCHAR(50) NULL
+);
+GO

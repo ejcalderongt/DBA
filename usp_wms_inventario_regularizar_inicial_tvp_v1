@@ -1,0 +1,210 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+    #EJC20260607_INV_REG_TVP
+    SP: dbo.usp_wms_inventario_regularizar_inicial_tvp_v1
+
+    Objetivo:
+      Regularizar inventario inicial en lote, evitando un ExecuteScalar/ExecuteNonQuery por fila
+      desde BOF para stock y trans_movimientos.
+
+    Contrato:
+      - Solo para inventario inicial/tipo 1 y 2 manejado por clsLnStock.Importar_Inventario.
+      - Respeta la actualizacion de trans_inv_enc y tarea_hh que hacia el metodo VB.
+      - Inserta solo stock con Cantidad > 0, equivalente al camino previo.
+*/
+CREATE OR ALTER PROCEDURE dbo.usp_wms_inventario_regularizar_inicial_tvp_v1
+    @IdInventarioEnc INT,
+    @IdTipoInventario INT,
+    @IdBodega INT,
+    @Stocks dbo.tvp_wms_inventario_regularizacion_stock_v1 READONLY,
+    @Movimientos dbo.tvp_wms_inventario_regularizacion_mov_v1 READONLY
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    DECLARE @StockInsertados INT = 0,
+            @MovInsertados INT = 0;
+
+    BEGIN TRANSACTION;
+
+    UPDATE dbo.trans_inv_enc
+       SET Regularizado = 1,
+           Estado = 'Finalizado',
+           Activo = 0
+     WHERE IdInventarioEnc = @IdInventarioEnc;
+
+    INSERT INTO dbo.stock
+    (
+        idbodega,
+        idpropietariobodega,
+        idproductobodega,
+        idproductoestado,
+        idpresentacion,
+        idunidadmedida,
+        idubicacion,
+        Idubicacion_anterior,
+        idrecepcionenc,
+        idrecepciondet,
+        idpedidoenc,
+        idpickingenc,
+        iddespachoenc,
+        lote,
+        lic_plate,
+        serial,
+        cantidad,
+        fecha_ingreso,
+        fecha_vence,
+        uds_lic_plate,
+        no_bulto,
+        fecha_manufactura,
+        añada,
+        user_agr,
+        fec_agr,
+        user_mod,
+        fec_mod,
+        activo,
+        peso,
+        temperatura,
+        pallet_no_estandar,
+        atributo_variante_1,
+        idproductotallacolor
+    )
+    SELECT
+        @IdBodega,
+        NULLIF(s.IdPropietarioBodega, 0),
+        NULLIF(s.IdProductoBodega, 0),
+        NULLIF(s.IdProductoEstado, 0),
+        NULLIF(s.IdPresentacion, 0),
+        NULLIF(s.IdUnidadMedida, 0),
+        NULLIF(s.IdUbicacion, 0),
+        NULLIF(s.IdUbicacion_anterior, 0),
+        NULLIF(s.IdRecepcionEnc, 0),
+        NULLIF(s.IdRecepcionDet, 0),
+        NULLIF(s.IdPedidoEnc, 0),
+        NULLIF(s.IdPickingEnc, 0),
+        NULLIF(s.IdDespachoEnc, 0),
+        NULLIF(s.Lote, ''),
+        NULLIF(s.Lic_plate, ''),
+        NULLIF(s.Serial, ''),
+        s.Cantidad,
+        s.Fecha_ingreso,
+        s.Fecha_vence,
+        s.Uds_lic_plate,
+        NULLIF(s.No_bulto, 0),
+        s.Fecha_manufactura,
+        s.Añada,
+        NULLIF(s.User_agr, ''),
+        s.Fec_agr,
+        NULLIF(s.User_mod, ''),
+        s.Fec_mod,
+        s.Activo,
+        s.Peso,
+        s.Temperatura,
+        ISNULL(s.Pallet_no_estandar, 0),
+        NULLIF(s.Atributo_variante_1, ''),
+        NULLIF(s.IdProductoTallaColor, 0)
+    FROM @Stocks AS s
+    WHERE @IdTipoInventario IN (1, 2)
+      AND s.Cantidad > 0;
+
+    SET @StockInsertados = @@ROWCOUNT;
+
+    INSERT INTO dbo.trans_movimientos
+    (
+        idempresa,
+        idbodegaorigen,
+        idtransaccion,
+        idpropietariobodega,
+        idproductobodega,
+        idubicacionorigen,
+        idubicaciondestino,
+        idpresentacion,
+        idestadoorigen,
+        idestadodestino,
+        idunidadmedida,
+        idtipotarea,
+        idbodegadestino,
+        idrecepcion,
+        cantidad,
+        serie,
+        peso,
+        lote,
+        fecha_vence,
+        fecha,
+        barra_pallet,
+        hora_ini,
+        hora_fin,
+        fecha_agr,
+        usuario_agr,
+        cantidad_hist,
+        peso_hist,
+        idoperadorbodega,
+        lic_plate,
+        IdRecepcionDet,
+        IdPedidoEnc,
+        IdPedidoDet,
+        IdDespachoEnc,
+        IdDespachoDet,
+        IdProductoTallaColor,
+        Talla,
+        Color
+    )
+    SELECT
+        m.IdEmpresa,
+        m.IdBodegaOrigen,
+        m.IdTransaccion,
+        NULLIF(m.IdPropietarioBodega, 0),
+        NULLIF(m.IdProductoBodega, 0),
+        NULLIF(m.IdUbicacionOrigen, 0),
+        NULLIF(m.IdUbicacionDestino, 0),
+        NULLIF(m.IdPresentacion, 0),
+        NULLIF(m.IdEstadoOrigen, 0),
+        NULLIF(m.IdEstadoDestino, 0),
+        NULLIF(m.IdUnidadMedida, 0),
+        NULLIF(m.IdTipoTarea, 0),
+        NULLIF(m.IdBodegaDestino, 0),
+        ISNULL(m.IdRecepcion, 0),
+        m.Cantidad,
+        ISNULL(m.Serie, ''),
+        ISNULL(m.Peso, 0),
+        ISNULL(m.Lote, ''),
+        m.Fecha_vence,
+        m.Fecha,
+        ISNULL(m.Barra_pallet, ''),
+        m.Hora_ini,
+        m.Hora_fin,
+        m.Fecha_agr,
+        ISNULL(m.Usuario_agr, ''),
+        ISNULL(m.Cantidad_hist, 0),
+        ISNULL(m.Peso_hist, 0),
+        ISNULL(m.IdOperadorBodega, 0),
+        ISNULL(m.Lic_plate, ''),
+        ISNULL(m.IdRecepcionDet, 0),
+        ISNULL(m.IdPedidoEnc, 0),
+        ISNULL(m.IdPedidoDet, 0),
+        ISNULL(m.IdDespachoEnc, 0),
+        ISNULL(m.IdDespachoDet, 0),
+        ISNULL(m.IdProductoTallaColor, 0),
+        ISNULL(m.Talla, ''),
+        ISNULL(m.Color, '')
+    FROM @Movimientos AS m;
+
+    SET @MovInsertados = @@ROWCOUNT;
+
+    UPDATE dbo.tarea_hh
+       SET IdEstado = 4,
+           FechaFin = GETDATE()
+     WHERE IdTransaccion = @IdInventarioEnc
+       AND IdTipoTarea = 6;
+
+    COMMIT TRANSACTION;
+
+    SELECT @StockInsertados AS StockInsertados,
+           @MovInsertados AS MovInsertados;
+END
+GO

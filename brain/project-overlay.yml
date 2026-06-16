@@ -1,0 +1,12 @@
+version: 1
+project:
+  name: DBA
+  repo_path: C:\Users\yejc2\source\repos\DBA
+  stack: TODO
+
+inherits:
+  router: C:\Users\yejc2\source\repos\wms-brain\federated-brain-core\\brain-router.yml
+
+domains_available:
+  - domain-database
+  - domain-jira
