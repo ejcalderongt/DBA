@@ -1,3 +1,8 @@
+--#EJC20260610 Se agregó el campo nuevo por funcionalidad de MHS
+ALTER TABLE bodega
+ADD ocultar_nombre_etiquetas_impresas bit NOT NULL DEFAULT 0
+GO
+
 --#CKFK20260518 Se agregó el campo nuevo para saber si se hace el proceso automático
 ALTER TABLE bodega
 ADD ubic_implosion_auto bit NOT NULL DEFAULT 0
