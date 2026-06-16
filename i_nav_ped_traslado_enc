@@ -1,3 +1,8 @@
+--#CKFK20251107 Agregué el campo type_request_erp
+ALTER TABLE i_nav_ped_traslado_enc
+ADD type_request_erp NVARCHAR(50) NULL
+GO
+
 --#CKFK20251107 Agregué el campo  transportation_guide
 ALTER TABLE i_nav_ped_traslado_enc
 ADD transportation_guide NVARCHAR(200) null
