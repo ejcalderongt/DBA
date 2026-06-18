@@ -8,6 +8,12 @@ ALTER TABLE i_nav_ped_traslado_enc
 ADD transportation_guide NVARCHAR(200) null
 go
 
+--#EJC20260618_WMS_DBA: SAP Journal Memo para trazabilidad sin alterar columnas existentes.
+--#EJC20260617 campo SAP para conservar el Journal Memo del documento
+ALTER TABLE i_nav_ped_traslado_enc
+ADD journal_memo NVARCHAR(255) NULL
+GO
+
 --#EJC20250611 Agregué campo EsExportacion
 alter table trans_pe_enc add EsExportacion bit not null default 0
 

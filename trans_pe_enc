@@ -3,6 +3,12 @@ ALTER TABLE trans_pe_enc
 ADD tipo_solicitud_erp NVARCHAR(50) null
 GO
 
+--#EJC20260618_WMS_DBA: SAP Journal Memo para trazabilidad sin alterar columnas existentes.
+--#EJC20260617 campo SAP para conservar el Journal Memo del documento
+ALTER TABLE trans_pe_enc
+ADD journal_memo NVARCHAR(255) NULL
+GO
+
 --#CKFK20251118 Agregué los campos IdEmpresaTransporte, IdPiloto
 ALTER TABLE trans_pe_enc
 ADD IdEmpresaTransporte int null,
