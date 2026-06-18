@@ -1,3 +1,4 @@
+--#EJC20260618 Se agregaron estos nuevos indices
 CREATE NONCLUSTERED INDEX NCLI_picking_ubic_kpi_agg_2026
 ON dbo.trans_picking_ubic (no_encontrado, dañado_picking, IdPickingEnc, IdOperadorBodega_Pickeo)
 INCLUDE (fecha_picking, IdPedidoDet, IdProductoBodega, IdProductoEstado,
