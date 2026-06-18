@@ -1,3 +1,19 @@
+CREATE NONCLUSTERED INDEX NCLI_picking_ubic_kpi_agg_2026
+ON dbo.trans_picking_ubic (no_encontrado, dañado_picking, IdPickingEnc, IdOperadorBodega_Pickeo)
+INCLUDE (fecha_picking, IdPedidoDet, IdProductoBodega, IdProductoEstado,
+         cantidad_solicitada, cantidad_recibida, fecha_vence, lic_plate,
+         IdStock, IdPresentacion, IdPedidoEnc);
+ 
+CREATE NONCLUSTERED INDEX NCLI_picking_ubic_fecha_kpi_2026
+ON dbo.trans_picking_ubic (fecha_picking, no_encontrado, dañado_picking)
+INCLUDE (IdPickingEnc, IdProductoBodega, IdProductoEstado, cantidad_solicitada,
+         cantidad_recibida, fecha_vence, lic_plate, IdStock, IdPedidoEnc,
+         IdPedidoDet, IdOperadorBodega_Pickeo);
+
+UPDATE STATISTICS dbo.trans_picking_ubic WITH FULLSCAN;
+UPDATE STATISTICS dbo.trans_pe_enc       WITH FULLSCAN;
+UPDATE STATISTICS dbo.trans_pe_det       WITH FULLSCAN;
+
 --#EJC20260518
 CREATE INDEX IX_i_nav_barras_pallet
 ON dbo.i_nav_barras_pallet (Codigo_Barra);
