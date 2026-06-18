@@ -19,6 +19,15 @@
   - `IX_trans_picking_ubic_kpi_clean_fecha`
   - `IX_trans_despacho_det_kpi_fecagr`
   - `IX_trans_pe_enc_kpi_fechapedido`
+- Added follow-up indexes for the remaining slow paths:
+  - `IX_trans_despacho_enc_kpi_fecha` on `dbo.trans_despacho_enc(fecha, IdDespachoEnc)`
+  - `IX_trans_picking_ubic_kpi_verificacion_fecha` on `dbo.trans_picking_ubic(fecha_verificado, ...)` with the verification-clean filter
+
+## Current Diagnosis
+
+- `despacho` is now driven by `trans_despacho_det.fec_agr` and can use the new dispatch-date index directly.
+- `verificacion` still returns a large payload, but the date-filtered lookup path is now backed by the verification date index instead of scanning the full picking history.
+- These fixes are additive; they do not replace the existing KPI indexes.
 
 ## Notes
 
