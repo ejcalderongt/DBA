@@ -28,8 +28,8 @@ BEGIN
             v.IdUbicacion,
             v.IdBodega,
             v.IdTramo,
-            v.Nivel,
-            v.Indice_X,
+            v.nivel,
+            v.indice_x,
             v.IdStock,
             v.orientacion_pos,
             v.bloqueada,
@@ -47,11 +47,9 @@ BEGIN
             @IdTramo AS IdTramo,
             COUNT(1) AS Total_Ubicaciones,
             SUM(CASE WHEN IdStock = 0 THEN 1 ELSE 0 END) AS Ubicaciones_Vacias,
-            COUNT(DISTINCT CASE WHEN IdStock <> 0 THEN Nivel END) AS Niveles_Ocupados,
-            COUNT(DISTINCT CASE WHEN IdStock <> 0 THEN Indice_X END) AS Columnas_Ocupadas
-        FROM VW_OcupacionBodegaTramo
-        WHERE IdBodega = @IdBodega
-          AND IdTramo = @IdTramo
+            COUNT(DISTINCT CASE WHEN IdStock <> 0 THEN nivel END) AS Niveles_Ocupados,
+            COUNT(DISTINCT CASE WHEN IdStock <> 0 THEN indice_x END) AS Columnas_Ocupadas
+        FROM BaseUbicaciones
     ),
     CeldasCandidatas AS
     (
@@ -59,8 +57,8 @@ BEGIN
             b.IdUbicacion,
             b.IdBodega,
             b.IdTramo,
-            b.Nivel,
-            b.Indice_X,
+            b.nivel,
+            b.indice_x,
             b.IdStock,
             CASE WHEN b.IdStock = 0 THEN 1 ELSE 0 END AS EsVacia,
             CASE WHEN b.IdStock <> 0 THEN 1 ELSE 0 END AS EsOcupada
@@ -69,14 +67,14 @@ BEGIN
     ConteoProductoPorColumna AS
     (
         SELECT
-            s.Indice_X AS Columna,
+            s.Ubicacion_Indice_X AS Columna,
             COUNT(1) AS CantidadProducto
         FROM VW_STOCK_RES s
         WHERE s.IdBodega = @IdBodega
           AND s.IdTramo = @IdTramo
           AND s.IdProductoBodega = @IdProductoBodega
           AND s.IdStock <> 0
-        GROUP BY s.Indice_X
+        GROUP BY s.Ubicacion_Indice_X
     ),
     AtributosLote AS
     (
@@ -134,8 +132,8 @@ BEGIN
         c.IdUbicacion,
         c.IdBodega,
         c.IdTramo,
-        c.Nivel,
-        c.Indice_X,
+        c.nivel,
+        c.indice_x,
         c.IdStock,
         c.EsVacia,
         c.EsOcupada,
@@ -159,7 +157,7 @@ BEGIN
         ) THEN 1 ELSE 0 END AS MatchEstado
     FROM CeldasCandidatas c
     LEFT JOIN ConteoProductoPorColumna cp
-        ON cp.Columna = c.Indice_X
+        ON cp.Columna = c.indice_x
     WHERE c.EsVacia = 1
-    ORDER BY c.Indice_X, c.Nivel, c.IdUbicacion;
+    ORDER BY c.indice_x, c.nivel, c.IdUbicacion;
 END
