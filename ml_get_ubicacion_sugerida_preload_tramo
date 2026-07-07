@@ -1,4 +1,4 @@
-CREATE OR ALTER PROCEDURE dbo.ml_get_ubicacion_sugerida_preload_tramo
+CRETE OR ALTER PROCEDURE [dbo].[ml_get_ubicacion_sugerida_preload_tramo]
     @IdBodega INT,
     @IdTramo INT,
     @IdProductoBodega INT,
@@ -12,16 +12,18 @@ AS
 BEGIN
     SET NOCOUNT ON;
     SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
- 
+
     DECLARE @FechaVenceMin DATE = NULL;
     DECLARE @FechaVenceMax DATE = NULL;
- 
+
     IF @FechaVence IS NOT NULL
     BEGIN
         SET @FechaVenceMin = DATEADD(DAY, -30, @FechaVence);
         SET @FechaVenceMax = DATEADD(DAY, 30, @FechaVence);
     END
- 
+
+    DROP TABLE IF EXISTS #CeldasCandidatas;
+
     ;WITH BaseUbicaciones AS
     (
         SELECT
@@ -39,8 +41,23 @@ BEGIN
         FROM VW_Ubicaciones_Tramo_Disponibles v
         WHERE v.IdBodega = @IdBodega
           AND v.IdTramo = @IdTramo
-    ),
-    ResumenTramo AS
+    )
+    SELECT
+        b.IdUbicacion,
+        b.IdBodega,
+        b.IdTramo,
+        b.nivel,
+        b.indice_x,
+        b.IdStock,
+        CASE WHEN b.IdStock = 0 THEN 1 ELSE 0 END AS EsVacia,
+        CASE WHEN b.IdStock <> 0 THEN 1 ELSE 0 END AS EsOcupada
+    INTO #CeldasCandidatas
+    FROM BaseUbicaciones b;
+
+    CREATE CLUSTERED INDEX IX_CeldasCandidatas
+        ON #CeldasCandidatas (indice_x, nivel, IdUbicacion);
+
+    ;WITH ResumenTramo AS
     (
         SELECT
             @IdBodega AS IdBodega,
@@ -49,20 +66,7 @@ BEGIN
             SUM(CASE WHEN IdStock = 0 THEN 1 ELSE 0 END) AS Ubicaciones_Vacias,
             COUNT(DISTINCT CASE WHEN IdStock <> 0 THEN nivel END) AS Niveles_Ocupados,
             COUNT(DISTINCT CASE WHEN IdStock <> 0 THEN indice_x END) AS Columnas_Ocupadas
-        FROM BaseUbicaciones
-    ),
-    CeldasCandidatas AS
-    (
-        SELECT
-            b.IdUbicacion,
-            b.IdBodega,
-            b.IdTramo,
-            b.nivel,
-            b.indice_x,
-            b.IdStock,
-            CASE WHEN b.IdStock = 0 THEN 1 ELSE 0 END AS EsVacia,
-            CASE WHEN b.IdStock <> 0 THEN 1 ELSE 0 END AS EsOcupada
-        FROM BaseUbicaciones b
+        FROM #CeldasCandidatas
     ),
     ConteoProductoPorColumna AS
     (
@@ -127,7 +131,7 @@ BEGIN
         r.Niveles_Ocupados,
         r.Columnas_Ocupadas
     FROM ResumenTramo r;
- 
+
     SELECT
         c.IdUbicacion,
         c.IdBodega,
@@ -155,9 +159,10 @@ BEGIN
             FROM AtributosEstado a
             WHERE (@IdProductoEstado = 0 OR a.IdProductoEstado = @IdProductoEstado)
         ) THEN 1 ELSE 0 END AS MatchEstado
-    FROM CeldasCandidatas c
+    FROM #CeldasCandidatas c
     LEFT JOIN ConteoProductoPorColumna cp
         ON cp.Columna = c.indice_x
     WHERE c.EsVacia = 1
     ORDER BY c.indice_x, c.nivel, c.IdUbicacion;
 END
+GO
