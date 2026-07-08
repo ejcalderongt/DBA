@@ -1,4 +1,4 @@
-CRETE OR ALTER PROCEDURE [dbo].[ml_get_ubicacion_sugerida_preload_tramo]
+CREATE OR ALTER PROCEDURE [dbo].[ml_get_ubicacion_sugerida_preload_tramo]
     @IdBodega INT,
     @IdTramo INT,
     @IdProductoBodega INT,
