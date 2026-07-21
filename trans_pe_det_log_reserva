@@ -1,3 +1,6 @@
+/****** #EJC20260721******/
+ALTER TABLE dbo.trans_pe_det_log_reserva ADD TraceToken nvarchar(64) NULL;
+
 /****** #EJC202310200006******/
 alter table trans_pe_det_log_reserva add Fecha_Vence date null
 alter table trans_pe_det_log_reserva add IdPedidoDet int null
