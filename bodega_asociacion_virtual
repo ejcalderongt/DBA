@@ -1,0 +1,71 @@
+
+/* #EJC20260714_BODEGA_ASOCIACION_VIRTUAL
+   Relación bidireccional canónica entre ubicaciones con IdUbicacion idéntico.
+   Ejecutar primero en QA. No ejecutado por Codex en ninguna BD. */
+
+SET XACT_ABORT ON;
+BEGIN TRANSACTION;
+ 
+IF OBJECT_ID(N'dbo.bodega_asociacion_virtual', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.bodega_asociacion_virtual
+    (
+        IdBodegaAsociacionVirtual int IDENTITY(1,1) NOT NULL,
+        IdBodegaOrigen int NOT NULL,
+        IdUbicacionOrigen int NOT NULL,
+        IdBodegaDestino int NOT NULL,
+        IdUbicacionDestino int NOT NULL,
+        user_agr nvarchar(25) NOT NULL,
+        fec_agr datetime NOT NULL CONSTRAINT DF_bodega_asociacion_virtual_fec_agr DEFAULT (GETDATE()),
+        user_mod nvarchar(25) NULL,
+        fec_mod datetime NULL,
+        activo bit NOT NULL CONSTRAINT DF_bodega_asociacion_virtual_activo DEFAULT (1),
+        CONSTRAINT PK_bodega_asociacion_virtual PRIMARY KEY CLUSTERED (IdBodegaAsociacionVirtual),
+        CONSTRAINT CK_bodega_asociacion_virtual_bodegas_canonicas CHECK (IdBodegaOrigen < IdBodegaDestino),
+        CONSTRAINT CK_bodega_asociacion_virtual_ubicacion_igual CHECK (IdUbicacionOrigen = IdUbicacionDestino),
+        CONSTRAINT FK_bodega_asociacion_virtual_bodega_origen FOREIGN KEY (IdBodegaOrigen) REFERENCES dbo.bodega(IdBodega),
+        CONSTRAINT FK_bodega_asociacion_virtual_bodega_destino FOREIGN KEY (IdBodegaDestino) REFERENCES dbo.bodega(IdBodega)
+    );
+ 
+END;
+ 
+IF COL_LENGTH(N'dbo.bodega_asociacion_virtual', N'user_agr') IS NULL
+BEGIN
+    ALTER TABLE dbo.bodega_asociacion_virtual ADD user_agr nvarchar(25) NULL;
+    UPDATE dbo.bodega_asociacion_virtual SET user_agr=N'MIGRACION' WHERE user_agr IS NULL;
+    ALTER TABLE dbo.bodega_asociacion_virtual ALTER COLUMN user_agr nvarchar(25) NOT NULL;
+END;
+ 
+UPDATE dbo.bodega_asociacion_virtual SET activo=1 WHERE activo IS NULL;
+ALTER TABLE dbo.bodega_asociacion_virtual ALTER COLUMN activo bit NOT NULL;
+ 
+-- La relación bidireccional se guarda una sola vez, con el menor IdBodega como origen canónico.
+UPDATE dbo.bodega_asociacion_virtual
+SET IdBodegaOrigen = CASE WHEN IdBodegaOrigen < IdBodegaDestino THEN IdBodegaOrigen ELSE IdBodegaDestino END,
+    IdBodegaDestino = CASE WHEN IdBodegaOrigen < IdBodegaDestino THEN IdBodegaDestino ELSE IdBodegaOrigen END
+WHERE IdBodegaOrigen > IdBodegaDestino;
+ 
+IF NOT EXISTS (SELECT 1 FROM sys.check_constraints WHERE name=N'CK_bodega_asociacion_virtual_bodegas_canonicas')
+    ALTER TABLE dbo.bodega_asociacion_virtual WITH CHECK
+    ADD CONSTRAINT CK_bodega_asociacion_virtual_bodegas_canonicas CHECK (IdBodegaOrigen < IdBodegaDestino);
+ 
+IF NOT EXISTS (SELECT 1 FROM sys.check_constraints WHERE name=N'CK_bodega_asociacion_virtual_ubicacion_igual')
+    ALTER TABLE dbo.bodega_asociacion_virtual WITH CHECK
+    ADD CONSTRAINT CK_bodega_asociacion_virtual_ubicacion_igual CHECK (IdUbicacionOrigen = IdUbicacionDestino);
+ 
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE object_id=OBJECT_ID(N'dbo.bodega_asociacion_virtual') AND name=N'UX_bodega_asociacion_virtual_par')
+    CREATE UNIQUE INDEX UX_bodega_asociacion_virtual_par
+        ON dbo.bodega_asociacion_virtual(IdBodegaOrigen, IdUbicacionOrigen, IdBodegaDestino, IdUbicacionDestino);
+ 
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE object_id=OBJECT_ID(N'dbo.bodega_asociacion_virtual') AND name=N'IX_bodega_asociacion_virtual_destino')
+    CREATE INDEX IX_bodega_asociacion_virtual_destino
+        ON dbo.bodega_asociacion_virtual(IdBodegaDestino, IdUbicacionDestino, activo)
+        INCLUDE (IdBodegaOrigen, IdUbicacionOrigen);
+ 
+COMMIT TRANSACTION;
+ 
+-- Validación post despliegue
+SELECT IdBodegaAsociacionVirtual, IdBodegaOrigen, IdUbicacionOrigen,
+       IdBodegaDestino, IdUbicacionDestino, activo
+FROM dbo.bodega_asociacion_virtual
+ORDER BY IdBodegaOrigen, IdUbicacionOrigen, IdBodegaDestino;	
