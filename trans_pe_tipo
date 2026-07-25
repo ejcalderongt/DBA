@@ -1,3 +1,9 @@
+--#CKFK20260724 Agregué campo para que se confirme el packing de entrega
+ALTER TABLE dbo.trans_pe_tipo
+ADD confirmar_packing_entrega bit NOT NULL
+    CONSTRAINT DF_trans_pe_tipo_confirmar_packing_entrega DEFAULT (0) WITH VALUES;
+GO
+
 --#CKFK20260505 Agregué campo para generar el picking automáticamente en MAMPA
 ALTER TABLE trans_pe_tipo 
 ADD generar_picking_auto bit not null default 0
