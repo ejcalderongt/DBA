@@ -1,3 +1,9 @@
+--#CKFK20260724 Agregué campo para que se confirme el packing de entrega
+ALTER TABLE dbo.trans_picking_enc
+ADD confirmar_packing_entrega bit NOT NULL
+    CONSTRAINT DF_trans_picking_enc_confirmar_packing_entrega DEFAULT (0) WITH VALUES;
+GO
+
 --#EJC20250714 Se agregó el campo observacion en el picking
 alter table trans_picking_Enc add observacion nvarchar(3000) null 
 GO
