@@ -1,194 +1,182 @@
 /*
     #EJC20260728_TRANS_LICENCIA_EMPAQUE
 
-    Modelo independiente para licencias de empaque homogéneas o mixtas.
+    Catálogo y ciclo de vida de licencias maestras de empaque.
 
-    Alcance:
-    - No modifica tablas de pedido, stock, reserva, picking, packing o recepción.
-    - La cabecera identifica la licencia y su ciclo operativo.
-    - El detalle conserva un snapshot legible y transportable de su contenido.
-    - Las cantidades operativas se almacenan en UMBAS usando float, de acuerdo
-      con stock.cantidad, stock_res.cantidad y trans_movimientos.cantidad.
-    - Los identificadores locales son auxiliares. CodigoProducto, NombreProducto,
-      lote, vencimiento y unidad de medida conservan la lectura histórica.
+    Contrato:
+    - Una fila representa una licencia maestra de packing.
+    - El contenido no se duplica en esta estructura.
+    - dbo.trans_packing_enc conserva el detalle operativo.
+    - La asociación natural es:
+          trans_licencia_empaque.LicPlate = trans_packing_enc.no_linea
+    - dbo.i_nav_barras_pallet podrá recibir posteriormente la proyección del
+      packing finalizado para el flujo de recepción en la bodega destino.
+    - No modifica pedido, stock, reserva, picking, packing ni recepción.
 
     Estados:
-    GENERADA   : licencia creada o preimpresa, todavía sin contenido confirmado.
-    ASOCIADA   : contenido confirmado y asociado operativamente a la licencia.
+    GENERADA   : licencia creada o preimpresa, todavía sin packing asociado.
+    ASOCIADA   : licencia ocupada por al menos una línea de packing.
     DESPACHADA : licencia enviada desde la bodega actual.
     RECIBIDA   : licencia recibida en la bodega destino.
-    ANULADA    : licencia invalidada antes de completar el flujo.
+    ANULADA    : licencia invalidada.
 
-    Ejecutar primero en QA.
-    Este script no ha sido ejecutado por Codex en ninguna base de datos.
+    Migración del primer borrador:
+    - Retira trans_licencia_empaque_enc y trans_licencia_empaque_det únicamente
+      cuando ambas están vacías.
+    - Si alguna contiene datos, aborta para evitar pérdida de información.
 */
 
 SET NOCOUNT ON;
 SET XACT_ABORT ON;
+SET ANSI_NULLS ON;
+SET QUOTED_IDENTIFIER ON;
+SET ANSI_PADDING ON;
+SET ANSI_WARNINGS ON;
+SET CONCAT_NULL_YIELDS_NULL ON;
+SET ARITHABORT ON;
+SET NUMERIC_ROUNDABORT OFF;
 GO
 
 BEGIN TRY
     BEGIN TRANSACTION;
 
-    IF OBJECT_ID(N'dbo.trans_licencia_empaque_enc', N'U') IS NULL
+    IF OBJECT_ID(N'dbo.trans_licencia_empaque', N'U') IS NULL
+       AND
+       (
+           OBJECT_ID(N'dbo.trans_licencia_empaque_enc', N'U') IS NOT NULL
+           OR OBJECT_ID(N'dbo.trans_licencia_empaque_det', N'U') IS NOT NULL
+       )
     BEGIN
-        CREATE TABLE dbo.trans_licencia_empaque_enc
+        DECLARE @FilasEnc bigint = 0;
+        DECLARE @FilasDet bigint = 0;
+
+        IF OBJECT_ID(N'dbo.trans_licencia_empaque_enc', N'U') IS NOT NULL
+            SELECT @FilasEnc = COUNT_BIG(*)
+            FROM dbo.trans_licencia_empaque_enc;
+
+        IF OBJECT_ID(N'dbo.trans_licencia_empaque_det', N'U') IS NOT NULL
+            SELECT @FilasDet = COUNT_BIG(*)
+            FROM dbo.trans_licencia_empaque_det;
+
+        IF @FilasEnc > 0 OR @FilasDet > 0
+            THROW 51000,
+                  'No se puede reemplazar el modelo anterior de licencia de empaque porque contiene datos.',
+                  1;
+
+        DROP TABLE IF EXISTS dbo.trans_licencia_empaque_det;
+        DROP TABLE IF EXISTS dbo.trans_licencia_empaque_enc;
+    END;
+
+    IF OBJECT_ID(N'dbo.trans_licencia_empaque', N'U') IS NULL
+    BEGIN
+        CREATE TABLE dbo.trans_licencia_empaque
         (
-            IdLicenciaEmpaque  int IDENTITY(1,1) NOT NULL,
-            LicPlate           nvarchar(50) NOT NULL,
+            IdLicenciaEmpaque       int IDENTITY(1,1) NOT NULL,
+            LicPlate                nvarchar(50) NOT NULL,
 
-            -- Bodega propietaria de la licencia y destino previsto, si aplica.
-            IdBodega           int NOT NULL,
-            IdBodegaDestino    int NULL,
-            IdPropietario      int NULL,
+            IdBodega                int NOT NULL,
+            IdBodegaDestino         int NULL,
+            IdPropietario           int NULL,
 
-            -- Referencia desacoplada del tipo de documento operativo.
-            TipoOrigen         varchar(20) NOT NULL
-                CONSTRAINT DF_trans_lic_emp_enc_tipo_origen DEFAULT ('MANUAL'),
-            IdDocumento        bigint NULL,
-            ReferenciaDocumento nvarchar(50) NULL,
+            TipoOrigen              varchar(20) NOT NULL
+                CONSTRAINT DF_trans_lic_emp_tipo_origen DEFAULT ('MANUAL'),
+            IdDocumento             bigint NULL,
+            ReferenciaDocumento     nvarchar(50) NULL,
 
-            Estado             varchar(20) NOT NULL
-                CONSTRAINT DF_trans_lic_emp_enc_estado DEFAULT ('GENERADA'),
+            Estado                  varchar(20) NOT NULL
+                CONSTRAINT DF_trans_lic_emp_estado DEFAULT ('GENERADA'),
 
-            FechaGeneracion    datetime NOT NULL
-                CONSTRAINT DF_trans_lic_emp_enc_fecha_generacion DEFAULT (GETDATE()),
-            FechaAsociacion    datetime NULL,
-            FechaDespacho      datetime NULL,
-            FechaRecepcion     datetime NULL,
-            FechaAnulacion     datetime NULL,
+            FechaGeneracion         datetime NOT NULL
+                CONSTRAINT DF_trans_lic_emp_fecha_generacion DEFAULT (GETDATE()),
+            FechaAsociacion         datetime NULL,
+            FechaDespacho           datetime NULL,
+            FechaRecepcion          datetime NULL,
+            FechaAnulacion          datetime NULL,
 
-            Observacion        nvarchar(250) NULL,
-            MotivoAnulacion    nvarchar(250) NULL,
+            FechaPrimeraImpresion   datetime NULL,
+            FechaUltimaImpresion    datetime NULL,
+            CantidadImpresiones     int NOT NULL
+                CONSTRAINT DF_trans_lic_emp_cantidad_impresiones DEFAULT (0),
+            UsuarioUltimaImpresion  nvarchar(50) NULL,
 
-            Activo             bit NOT NULL
-                CONSTRAINT DF_trans_lic_emp_enc_activo DEFAULT (1),
-            user_agr           nvarchar(50) NOT NULL,
-            fec_agr            datetime NOT NULL
-                CONSTRAINT DF_trans_lic_emp_enc_fec_agr DEFAULT (GETDATE()),
-            user_mod           nvarchar(50) NULL,
-            fec_mod            datetime NULL,
+            Observacion             nvarchar(250) NULL,
+            MotivoAnulacion         nvarchar(250) NULL,
 
-            VersionFila        rowversion NOT NULL,
+            Activo                  bit NOT NULL
+                CONSTRAINT DF_trans_lic_emp_activo DEFAULT (1),
+            user_agr                nvarchar(50) NOT NULL,
+            fec_agr                 datetime NOT NULL
+                CONSTRAINT DF_trans_lic_emp_fec_agr DEFAULT (GETDATE()),
+            user_mod                nvarchar(50) NULL,
+            fec_mod                 datetime NULL,
 
-            CONSTRAINT PK_trans_licencia_empaque_enc
+            VersionFila             rowversion NOT NULL,
+
+            CONSTRAINT PK_trans_licencia_empaque
                 PRIMARY KEY CLUSTERED (IdLicenciaEmpaque),
 
-            -- Las nuevas licencias de empaque deben poder resolverse por escaneo
-            -- sin depender de la bodega en la que se originaron.
-            CONSTRAINT UQ_trans_licencia_empaque_enc_LicPlate
+            CONSTRAINT UQ_trans_licencia_empaque_LicPlate
                 UNIQUE (LicPlate),
 
-            CONSTRAINT CK_trans_lic_emp_enc_tipo_origen
-                CHECK (TipoOrigen IN
+            CONSTRAINT CK_trans_lic_emp_tipo_origen
+                CHECK
                 (
-                    'MANUAL',
-                    'PEDIDO',
-                    'TRANSFERENCIA',
-                    'EXPLOSION'
-                )),
+                    TipoOrigen IN
+                    (
+                        'MANUAL',
+                        'PEDIDO',
+                        'TRANSFERENCIA',
+                        'EXPLOSION'
+                    )
+                ),
 
-            CONSTRAINT CK_trans_lic_emp_enc_estado
-                CHECK (Estado IN
+            CONSTRAINT CK_trans_lic_emp_estado
+                CHECK
                 (
-                    'GENERADA',
-                    'ASOCIADA',
-                    'DESPACHADA',
-                    'RECIBIDA',
-                    'ANULADA'
-                )),
+                    Estado IN
+                    (
+                        'GENERADA',
+                        'ASOCIADA',
+                        'DESPACHADA',
+                        'RECIBIDA',
+                        'ANULADA'
+                    )
+                ),
 
-            CONSTRAINT CK_trans_lic_emp_enc_bodegas
-                CHECK (IdBodegaDestino IS NULL OR IdBodegaDestino <> IdBodega),
+            CONSTRAINT CK_trans_lic_emp_bodegas
+                CHECK
+                (
+                    IdBodegaDestino IS NULL
+                    OR IdBodegaDestino <> IdBodega
+                ),
 
-            CONSTRAINT CK_trans_lic_emp_enc_fechas_estado
+            CONSTRAINT CK_trans_lic_emp_fechas_estado
                 CHECK
                 (
                     (Estado <> 'ASOCIADA' OR FechaAsociacion IS NOT NULL)
                     AND (Estado <> 'DESPACHADA' OR FechaDespacho IS NOT NULL)
                     AND (Estado <> 'RECIBIDA' OR FechaRecepcion IS NOT NULL)
                     AND (Estado <> 'ANULADA' OR FechaAnulacion IS NOT NULL)
-                )
-        );
-    END;
+                ),
 
-    IF OBJECT_ID(N'dbo.trans_licencia_empaque_det', N'U') IS NULL
-    BEGIN
-        CREATE TABLE dbo.trans_licencia_empaque_det
-        (
-            IdLicenciaEmpaqueDet int IDENTITY(1,1) NOT NULL,
-            IdLicenciaEmpaque    int NOT NULL,
-            NoLinea              int NOT NULL,
-
-            -- Referencias técnicas locales. No constituyen el contrato para
-            -- recepción en otra bodega o en otra instalación WMS.
-            IdProducto           int NULL,
-            IdProductoBodega     int NULL,
-            IdProductoTallaColor int NULL,
-
-            -- Snapshot funcional, legible y transportable.
-            CodigoProducto       nvarchar(50) NOT NULL,
-            NombreProducto       nvarchar(150) NOT NULL,
-
-            IdUnidadMedida       int NULL,
-            CodigoUnidadMedida   nvarchar(25) NULL,
-            NombreUnidadMedida   nvarchar(50) NULL,
-
-            IdProductoEstado     int NULL,
-            NombreEstado         nvarchar(50) NULL,
-
-            IdPresentacion       int NULL,
-            NombrePresentacion   nvarchar(50) NULL,
-
-            Lote                 nvarchar(50) NULL,
-            FechaVence           datetime NULL,
-            FechaManufactura     datetime NULL,
-            Serial               nvarchar(50) NULL,
-
-            CantidadUMBas        float NOT NULL,
-
-            -- Permanecen NULL para productos sin manejo de peso.
-            PesoNeto             float NULL,
-            PesoBruto            float NULL,
-            Tara                 float NULL,
-
-            Activo               bit NOT NULL
-                CONSTRAINT DF_trans_lic_emp_det_activo DEFAULT (1),
-            user_agr             nvarchar(50) NOT NULL,
-            fec_agr              datetime NOT NULL
-                CONSTRAINT DF_trans_lic_emp_det_fec_agr DEFAULT (GETDATE()),
-            user_mod             nvarchar(50) NULL,
-            fec_mod              datetime NULL,
-
-            VersionFila          rowversion NOT NULL,
-
-            CONSTRAINT PK_trans_licencia_empaque_det
-                PRIMARY KEY CLUSTERED (IdLicenciaEmpaqueDet),
-
-            CONSTRAINT FK_trans_licencia_empaque_det_enc
-                FOREIGN KEY (IdLicenciaEmpaque)
-                REFERENCES dbo.trans_licencia_empaque_enc (IdLicenciaEmpaque),
-
-            CONSTRAINT UQ_trans_licencia_empaque_det_linea
-                UNIQUE (IdLicenciaEmpaque, NoLinea),
-
-            CONSTRAINT CK_trans_lic_emp_det_no_linea
-                CHECK (NoLinea > 0),
-
-            CONSTRAINT CK_trans_lic_emp_det_cantidad
-                CHECK (CantidadUMBas > 0),
-
-            CONSTRAINT CK_trans_lic_emp_det_pesos
+            CONSTRAINT CK_trans_lic_emp_impresiones
                 CHECK
                 (
-                    (PesoNeto IS NULL OR PesoNeto >= 0)
-                    AND (PesoBruto IS NULL OR PesoBruto >= 0)
-                    AND (Tara IS NULL OR Tara >= 0)
+                    CantidadImpresiones >= 0
                     AND
                     (
-                        PesoNeto IS NULL
-                        OR PesoBruto IS NULL
-                        OR PesoBruto >= PesoNeto
+                        (
+                            CantidadImpresiones = 0
+                            AND FechaPrimeraImpresion IS NULL
+                            AND FechaUltimaImpresion IS NULL
+                        )
+                        OR
+                        (
+                            CantidadImpresiones > 0
+                            AND FechaPrimeraImpresion IS NOT NULL
+                            AND FechaUltimaImpresion IS NOT NULL
+                            AND FechaUltimaImpresion >= FechaPrimeraImpresion
+                        )
                     )
                 )
         );
@@ -198,12 +186,12 @@ BEGIN TRY
     (
         SELECT 1
         FROM sys.indexes
-        WHERE object_id = OBJECT_ID(N'dbo.trans_licencia_empaque_enc')
-          AND name = N'IX_trans_lic_emp_enc_bodega_estado'
+        WHERE object_id = OBJECT_ID(N'dbo.trans_licencia_empaque')
+          AND name = N'IX_trans_lic_emp_bodega_estado'
     )
     BEGIN
-        CREATE NONCLUSTERED INDEX IX_trans_lic_emp_enc_bodega_estado
-            ON dbo.trans_licencia_empaque_enc
+        CREATE NONCLUSTERED INDEX IX_trans_lic_emp_bodega_estado
+            ON dbo.trans_licencia_empaque
             (
                 IdBodega,
                 Estado,
@@ -214,7 +202,8 @@ BEGIN TRY
                 LicPlate,
                 IdBodegaDestino,
                 ReferenciaDocumento,
-                FechaGeneracion
+                FechaGeneracion,
+                CantidadImpresiones
             );
     END;
 
@@ -222,12 +211,12 @@ BEGIN TRY
     (
         SELECT 1
         FROM sys.indexes
-        WHERE object_id = OBJECT_ID(N'dbo.trans_licencia_empaque_enc')
-          AND name = N'IX_trans_lic_emp_enc_documento'
+        WHERE object_id = OBJECT_ID(N'dbo.trans_licencia_empaque')
+          AND name = N'IX_trans_lic_emp_documento'
     )
     BEGIN
-        CREATE NONCLUSTERED INDEX IX_trans_lic_emp_enc_documento
-            ON dbo.trans_licencia_empaque_enc
+        CREATE NONCLUSTERED INDEX IX_trans_lic_emp_documento
+            ON dbo.trans_licencia_empaque
             (
                 TipoOrigen,
                 IdDocumento
@@ -237,58 +226,34 @@ BEGIN TRY
                 LicPlate,
                 Estado,
                 IdBodega,
+                ReferenciaDocumento,
+                CantidadImpresiones
+            );
+    END;
+
+    IF NOT EXISTS
+    (
+        SELECT 1
+        FROM sys.indexes
+        WHERE object_id = OBJECT_ID(N'dbo.trans_licencia_empaque')
+          AND name = N'IX_trans_lic_emp_pendiente_impresion'
+    )
+    BEGIN
+        CREATE NONCLUSTERED INDEX IX_trans_lic_emp_pendiente_impresion
+            ON dbo.trans_licencia_empaque
+            (
+                IdBodega,
+                FechaGeneracion
+            )
+            INCLUDE
+            (
+                LicPlate,
+                TipoOrigen,
+                IdDocumento,
                 ReferenciaDocumento
-            );
-    END;
-
-    IF NOT EXISTS
-    (
-        SELECT 1
-        FROM sys.indexes
-        WHERE object_id = OBJECT_ID(N'dbo.trans_licencia_empaque_det')
-          AND name = N'IX_trans_lic_emp_det_producto_lote'
-    )
-    BEGIN
-        CREATE NONCLUSTERED INDEX IX_trans_lic_emp_det_producto_lote
-            ON dbo.trans_licencia_empaque_det
-            (
-                CodigoProducto,
-                Lote
             )
-            INCLUDE
-            (
-                IdLicenciaEmpaque,
-                CantidadUMBas,
-                FechaVence,
-                PesoNeto,
-                PesoBruto
-            );
-    END;
-
-    IF NOT EXISTS
-    (
-        SELECT 1
-        FROM sys.indexes
-        WHERE object_id = OBJECT_ID(N'dbo.trans_licencia_empaque_det')
-          AND name = N'IX_trans_lic_emp_det_licencia_activo'
-    )
-    BEGIN
-        CREATE NONCLUSTERED INDEX IX_trans_lic_emp_det_licencia_activo
-            ON dbo.trans_licencia_empaque_det
-            (
-                IdLicenciaEmpaque,
-                Activo
-            )
-            INCLUDE
-            (
-                NoLinea,
-                CodigoProducto,
-                NombreProducto,
-                Lote,
-                FechaVence,
-                CantidadUMBas,
-                PesoNeto
-            );
+            WHERE Activo = 1
+              AND CantidadImpresiones = 0;
     END;
 
     COMMIT TRANSACTION;
@@ -306,24 +271,21 @@ SELECT
     t.name AS Tabla,
     i.name AS Indice,
     i.is_unique AS EsUnico,
-    i.is_primary_key AS EsLlavePrimaria
+    i.is_primary_key AS EsLlavePrimaria,
+    i.has_filter AS EsFiltrado,
+    i.filter_definition AS Filtro
 FROM sys.tables AS t
 LEFT JOIN sys.indexes AS i
     ON i.object_id = t.object_id
    AND i.index_id > 0
-WHERE t.object_id IN
-(
-    OBJECT_ID(N'dbo.trans_licencia_empaque_enc'),
-    OBJECT_ID(N'dbo.trans_licencia_empaque_det')
-)
-ORDER BY t.name, i.index_id;
+WHERE t.object_id = OBJECT_ID(N'dbo.trans_licencia_empaque')
+ORDER BY i.index_id;
 GO
 
 /*
-    Rollback manual, únicamente antes de que las tablas entren en operación:
+    Rollback manual, únicamente antes de que la tabla entre en operación:
 
     BEGIN TRANSACTION;
-    DROP TABLE IF EXISTS dbo.trans_licencia_empaque_det;
-    DROP TABLE IF EXISTS dbo.trans_licencia_empaque_enc;
+    DROP TABLE IF EXISTS dbo.trans_licencia_empaque;
     COMMIT TRANSACTION;
 */
