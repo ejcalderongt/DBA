@@ -859,7 +859,27 @@ FROM            dbo.usuario INNER JOIN
                          dbo.trans_re_enc.IdMuelle = dbo.bodega_muelles.IdMuelle AND dbo.trans_re_enc.IdRecepcionEnc = dbo.trans_re_oc.IdRecepcionEnc
 GO
 
-
+'CM: Agregué Cantidad_presentacion en VW_MOVIMIENTOS.
+ALTER VIEW [dbo].[VW_Movimientos]
+AS
+SELECT        pr.nombre_comercial AS Propietario, p.nombre AS Producto, pp.nombre AS Presentación, pe1.nombre AS [Estado Origen], pe2.nombre AS [Estado Destino], 
+                         u.Nombre AS [Unidad de Medida], m.cantidad, m.peso, m.lote, u1.descripcion AS Origen, u2.descripcion AS Destino, stt.Nombre AS [Tipo Tarea], m.IdBodegaOrigen, 
+                         m.fecha, p.IdProducto, p.codigo, p.codigo_barra, m.barra_pallet, m.fecha_vence, m.cantidad / pp.factor AS Cantidad_Presentacion
+FROM            dbo.trans_movimientos AS m LEFT OUTER JOIN
+                         dbo.propietario_bodega AS prb ON m.IdPropietarioBodega = prb.IdPropietarioBodega INNER JOIN
+                         dbo.propietarios AS pr ON prb.IdPropietario = pr.IdPropietario LEFT OUTER JOIN
+                         dbo.producto_bodega AS pb ON m.IdProductoBodega = pb.IdProductoBodega INNER JOIN
+                         dbo.producto AS p ON pb.IdProducto = p.IdProducto LEFT OUTER JOIN
+                         dbo.bodega_ubicacion AS u1 ON m.IdUbicacionOrigen = u1.IdUbicacion LEFT OUTER JOIN
+                         dbo.bodega_ubicacion AS u2 ON m.IdUbicacionDestino = u2.IdUbicacion LEFT OUTER JOIN
+                         dbo.producto_presentacion AS pp ON m.IdPresentacion = pp.IdPresentacion AND p.IdProducto = pp.IdProducto LEFT OUTER JOIN
+                         dbo.producto_estado AS pe1 ON m.IdEstadoOrigen = pe1.IdEstado AND pe1.IdPropietario = pr.IdPropietario LEFT OUTER JOIN
+                         dbo.producto_estado AS pe2 ON m.IdEstadoDestino = pe2.IdEstado AND pe2.IdPropietario = pr.IdPropietario LEFT OUTER JOIN
+                         dbo.unidad_medida AS u ON m.IdUnidadMedida = u.IdUnidadMedida AND u.IdPropietario = pr.IdPropietario LEFT OUTER JOIN
+                         dbo.sis_tipo_tarea AS stt ON m.IdTipoTarea = stt.IdTipoTarea
+GROUP BY pr.nombre_comercial, p.nombre, pp.nombre, pe1.nombre, pe2.nombre, u.Nombre, m.cantidad, m.peso, m.lote, u1.descripcion, u2.descripcion, stt.Nombre, 
+                         m.IdBodegaOrigen, m.fecha, p.IdProducto, p.codigo, p.codigo_barra, m.barra_pallet, m.fecha_vence, pp.IdPresentacion, pp.factor, m.cantidad / pp.factor
+GO
 
 insert into menu_sistema values('7.8','Servicio de Impresión Principal','rpgServicioImpresiones',2,7,0)
 insert into menu_sistema values('7.8.1','Servicio de impresión','cmdPrintSvr',3,7.8,0)
