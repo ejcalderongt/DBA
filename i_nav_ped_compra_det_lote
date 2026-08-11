@@ -1,3 +1,64 @@
+SET XACT_ABORT ON;
+GO
+
+BEGIN TRY
+    BEGIN TRANSACTION;
+
+    DECLARE @NombrePK sysname;
+    DECLARE @SQL nvarchar(MAX);
+
+    -- Obtener el nombre actual de la llave primaria.
+    SELECT @NombrePK = kc.[name]
+    FROM sys.key_constraints AS kc
+    WHERE kc.[type] = 'PK'
+      AND kc.[parent_object_id] =
+          OBJECT_ID(N'[dbo].[i_nav_ped_compra_det_lote]');
+
+    -- Eliminarla si existe.
+    IF @NombrePK IS NOT NULL
+    BEGIN
+        SET @SQL =
+            N'ALTER TABLE [dbo].[i_nav_ped_compra_det_lote] ' +
+            N'DROP CONSTRAINT ' + QUOTENAME(@NombrePK) + N';';
+
+        EXEC sys.sp_executesql @SQL;
+    END;
+
+    -- Agregar el campo Identity si todavía no existe.
+    IF COL_LENGTH(
+        N'dbo.i_nav_ped_compra_det_lote',
+        N'IdNavPedCompraDetLote'
+    ) IS NULL
+    BEGIN
+        ALTER TABLE [dbo].[i_nav_ped_compra_det_lote]
+            ADD [IdNavPedCompraDetLote] INT IDENTITY(1,1) NOT NULL;
+    END;
+
+    -- Crear la nueva llave primaria.
+    IF NOT EXISTS
+    (
+        SELECT 1
+        FROM sys.key_constraints
+        WHERE [type] = 'PK'
+          AND [parent_object_id] =
+              OBJECT_ID(N'[dbo].[i_nav_ped_compra_det_lote]')
+    )
+    BEGIN
+        ALTER TABLE [dbo].[i_nav_ped_compra_det_lote]
+            ADD CONSTRAINT [PK_i_nav_ped_compra_det_lote]
+            PRIMARY KEY CLUSTERED ([IdNavPedCompraDetLote]);
+    END;
+
+    COMMIT TRANSACTION;
+END TRY
+BEGIN CATCH
+    IF @@TRANCOUNT > 0
+        ROLLBACK TRANSACTION;
+
+    THROW;
+END CATCH;
+GO
+
 --#EJC campos nuevos MHS
 ALTER TABLE [dbo].[i_nav_ped_compra_det_lote]
 ADD 
