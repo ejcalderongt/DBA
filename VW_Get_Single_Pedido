@@ -1,4 +1,6 @@
---#CKKF20260611 Agregué el campo comentarios
+--#CKKF20260901 Agregué el campo referencia_serie_numero
+ALTER VIEW [dbo].[VW_Get_Single_Pedido]
+AS
 SELECT     dbo.trans_pe_enc.IdPedidoEnc, dbo.trans_pe_enc.IdBodega, dbo.trans_pe_enc.IdCliente, dbo.trans_pe_enc.IdMuelle, dbo.trans_pe_enc.IdPropietarioBodega, dbo.trans_pe_enc.IdTipoPedido, dbo.trans_pe_enc.IdPickingEnc, dbo.trans_pe_enc.Fecha_Pedido, dbo.trans_pe_enc.hora_ini, 
                   dbo.trans_pe_enc.hora_fin, dbo.trans_pe_enc.ubicacion, dbo.trans_pe_enc.estado, dbo.trans_pe_enc.no_despacho, dbo.trans_pe_enc.activo, dbo.trans_pe_enc.user_agr, dbo.trans_pe_enc.fec_agr, dbo.trans_pe_enc.user_mod, dbo.trans_pe_enc.fec_mod, 
                   dbo.trans_pe_enc.no_documento, dbo.trans_pe_enc.local, dbo.trans_pe_enc.pallet_primero, dbo.trans_pe_enc.dias_cliente, dbo.trans_pe_enc.anulado, dbo.trans_pe_enc.RoadKilometraje, dbo.trans_pe_enc.RoadFechaEntr, dbo.trans_pe_enc.RoadDirEntrega, 
@@ -22,6 +24,8 @@ FROM        dbo.propietarios INNER JOIN
 GO
 
 --#CKKF20260611 Agregué el campo comentarios
+ALTER VIEW [dbo].[VW_Get_Single_Pedido]
+AS
 SELECT     dbo.trans_pe_enc.IdPedidoEnc, dbo.trans_pe_enc.IdBodega, dbo.trans_pe_enc.IdCliente, dbo.trans_pe_enc.IdMuelle, dbo.trans_pe_enc.IdPropietarioBodega, dbo.trans_pe_enc.IdTipoPedido, dbo.trans_pe_enc.IdPickingEnc, dbo.trans_pe_enc.Fecha_Pedido, dbo.trans_pe_enc.hora_ini, 
                   dbo.trans_pe_enc.hora_fin, dbo.trans_pe_enc.ubicacion, dbo.trans_pe_enc.estado, dbo.trans_pe_enc.no_despacho, dbo.trans_pe_enc.activo, dbo.trans_pe_enc.user_agr, dbo.trans_pe_enc.fec_agr, dbo.trans_pe_enc.user_mod, dbo.trans_pe_enc.fec_mod, 
                   dbo.trans_pe_enc.no_documento, dbo.trans_pe_enc.local, dbo.trans_pe_enc.pallet_primero, dbo.trans_pe_enc.dias_cliente, dbo.trans_pe_enc.anulado, dbo.trans_pe_enc.RoadKilometraje, dbo.trans_pe_enc.RoadFechaEntr, dbo.trans_pe_enc.RoadDirEntrega, 
