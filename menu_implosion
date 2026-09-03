@@ -1,0 +1,168 @@
+BEGIN TRY
+    BEGIN TRANSACTION;
+
+    DECLARE @IdMenuMovimientos nvarchar(50);
+    DECLARE @IdMenuGrupo nvarchar(50);
+    DECLARE @IdMenuImplosion nvarchar(50);
+    DECLARE @SiguienteGrupo int;
+    DECLARE @PrimerIdMenuRol int;
+    DECLARE @Ahora datetime = GETDATE();
+    DECLARE @Usuario nvarchar(50) = N'Codex - MHS DEV';
+
+    SELECT @IdMenuMovimientos = MIN(IdMenu)
+    FROM dbo.menu_sistema WITH (UPDLOCK, HOLDLOCK)
+    WHERE nivel = 1
+      AND (nombre_lgco = N'rpMovimientos' OR titulo = N'Movimientos');
+
+    IF @IdMenuMovimientos IS NULL
+        THROW 50006, 'No se encontro la pagina de nivel 1 rpMovimientos/Movimientos.', 1;
+
+    IF (SELECT COUNT(*)
+        FROM dbo.menu_sistema
+        WHERE nivel = 1
+          AND (nombre_lgco = N'rpMovimientos' OR titulo = N'Movimientos')) <> 1
+        THROW 50007, 'La pagina Movimientos no es unica; se requiere revision manual.', 1;
+
+    SELECT @IdMenuGrupo = IdMenu
+    FROM dbo.menu_sistema WITH (UPDLOCK, HOLDLOCK)
+    WHERE nombre_lgco = N'RibbonPageGroup2'
+      AND nivel = 2;
+
+    IF @IdMenuGrupo IS NULL
+    BEGIN
+        SELECT @SiguienteGrupo = ISNULL(MAX(TRY_CONVERT(int,
+            SUBSTRING(IdMenu, LEN(@IdMenuMovimientos) + 2, 50))), 0) + 1
+        FROM dbo.menu_sistema WITH (UPDLOCK, HOLDLOCK)
+        WHERE padre = @IdMenuMovimientos
+          AND nivel = 2
+          AND IdMenu LIKE @IdMenuMovimientos + N'.%';
+
+        SET @IdMenuGrupo = @IdMenuMovimientos + N'.' + CONVERT(nvarchar(11), @SiguienteGrupo);
+
+        INSERT dbo.menu_sistema
+            (IdMenu, titulo, nombre_lgco, nivel, padre, solicitar_clave_autorizacion)
+        VALUES
+            (@IdMenuGrupo, N'Implosion', N'RibbonPageGroup2', 2, @IdMenuMovimientos, 0);
+    END;
+
+    SELECT @IdMenuImplosion = IdMenu
+    FROM dbo.menu_sistema WITH (UPDLOCK, HOLDLOCK)
+    WHERE nombre_lgco = N'mnuImplosion'
+      AND nivel = 3;
+
+    IF @IdMenuImplosion IS NULL
+    BEGIN
+        SET @IdMenuImplosion = @IdMenuGrupo + N'.1';
+
+        IF EXISTS (SELECT 1 FROM dbo.menu_sistema WHERE IdMenu = @IdMenuImplosion)
+            THROW 50008, 'El IdMenu propuesto para mnuImplosion ya esta ocupado.', 1;
+
+        INSERT dbo.menu_sistema
+            (IdMenu, titulo, nombre_lgco, nivel, padre, solicitar_clave_autorizacion)
+        VALUES
+            (@IdMenuImplosion, N'Implosion', N'mnuImplosion', 3, @IdMenuGrupo, 0);
+    END;
+
+    IF EXISTS (
+        SELECT 1
+        FROM dbo.menu_sistema
+        WHERE IdMenu = @IdMenuGrupo
+          AND (padre <> @IdMenuMovimientos OR nivel <> 2)
+    )
+        THROW 50009, 'RibbonPageGroup2 existe fuera de la jerarquia de Movimientos.', 1;
+
+    IF EXISTS (
+        SELECT 1
+        FROM dbo.menu_sistema
+        WHERE IdMenu = @IdMenuImplosion
+          AND (padre <> @IdMenuGrupo OR nivel <> 3)
+    )
+        THROW 50010, 'mnuImplosion existe fuera de RibbonPageGroup2.', 1;
+
+    IF NOT EXISTS (
+        SELECT 1
+        FROM dbo.menu_rol
+        WHERE IdMenu = @IdMenuMovimientos AND activo = 1 AND visible = 1
+    )
+        THROW 50011, 'Movimientos no tiene roles activos y visibles para heredar.', 1;
+
+    DECLARE @Permisos TABLE
+    (
+        IdMenu nvarchar(50) NOT NULL,
+        IdRol int NOT NULL,
+        activo bit NOT NULL,
+        visible bit NOT NULL,
+        Leer bit NOT NULL,
+        Modificar bit NOT NULL,
+        Eliminar bit NOT NULL,
+        PRIMARY KEY (IdMenu, IdRol)
+    );
+
+    INSERT @Permisos (IdMenu, IdRol, activo, visible, Leer, Modificar, Eliminar)
+    SELECT Destino.IdMenu, Padre.IdRol, Padre.activo, Padre.visible,
+           Padre.Leer, Padre.Modificar, Padre.Eliminar
+    FROM dbo.menu_rol AS Padre
+    CROSS JOIN (VALUES (@IdMenuGrupo), (@IdMenuImplosion)) AS Destino(IdMenu)
+    WHERE Padre.IdMenu = @IdMenuMovimientos
+      AND Padre.activo = 1
+      AND Padre.visible = 1;
+
+    SELECT @PrimerIdMenuRol = ISNULL(MAX(IdMenuRol), 0)
+    FROM dbo.menu_rol WITH (UPDLOCK, HOLDLOCK);
+
+    ;WITH Faltantes AS
+    (
+        SELECT P.*,
+               ROW_NUMBER() OVER (ORDER BY P.IdMenu, P.IdRol) AS Secuencia
+        FROM @Permisos AS P
+        WHERE NOT EXISTS
+        (
+            SELECT 1
+            FROM dbo.menu_rol AS MR
+            WHERE MR.IdMenu = P.IdMenu
+              AND MR.IdRol = P.IdRol
+        )
+    )
+    INSERT dbo.menu_rol
+        (IdMenuRol, IdMenu, IdRol, user_agr, fec_agr, user_mod, fec_mod,
+         activo, visible, Leer, Modificar, Eliminar)
+    SELECT @PrimerIdMenuRol + Secuencia, IdMenu, IdRol,
+           @Usuario, @Ahora, @Usuario, @Ahora,
+           activo, visible, Leer, Modificar, Eliminar
+    FROM Faltantes;
+
+    UPDATE MR
+       SET MR.activo = P.activo,
+           MR.visible = P.visible,
+           MR.Leer = P.Leer,
+           MR.Modificar = P.Modificar,
+           MR.Eliminar = P.Eliminar,
+           MR.user_mod = @Usuario,
+           MR.fec_mod = @Ahora
+    FROM dbo.menu_rol AS MR
+    INNER JOIN @Permisos AS P
+        ON P.IdMenu = MR.IdMenu
+       AND P.IdRol = MR.IdRol
+    WHERE MR.activo <> P.activo
+       OR MR.visible <> P.visible
+       OR MR.Leer <> P.Leer
+       OR MR.Modificar <> P.Modificar
+       OR MR.Eliminar <> P.Eliminar;
+
+    COMMIT TRANSACTION;
+
+    SELECT IdMenu, titulo, nombre_lgco, nivel, padre, solicitar_clave_autorizacion
+    FROM dbo.menu_sistema
+    WHERE IdMenu IN (@IdMenuMovimientos, @IdMenuGrupo, @IdMenuImplosion)
+    ORDER BY nivel, IdMenu;
+
+    SELECT MR.IdMenu, MR.IdRol, MR.activo, MR.visible,
+           MR.Leer, MR.Modificar, MR.Eliminar
+    FROM dbo.menu_rol AS MR
+    WHERE MR.IdMenu IN (@IdMenuGrupo, @IdMenuImplosion)
+    ORDER BY MR.IdMenu, MR.IdRol;
+END TRY
+BEGIN CATCH
+    IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+    THROW;
+END CATCH;
