@@ -1,0 +1,205 @@
+/****** Object:  StoredProcedure [dbo].[usp_wms_prevalidar_destino_fisico_mhs]    Script Date: 08-Sep-26 8:23:03 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[usp_wms_prevalidar_destino_fisico_mhs]
+    @IdBodegaOrigen int,
+    @IdUbicacionOrigen int,
+    @IdBodegaDestino int,
+    @IdUbicacionDestino int,
+    @Licencia nvarchar(50) = NULL,
+    @BloqueoTransaccional bit = 0
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    IF @IdBodegaDestino <= 0 OR @IdUbicacionDestino <= 0
+        THROW 51002, 'La bodega y ubicacion destino son obligatorias.', 1;
+
+    DECLARE @LicenciaNormalizada nvarchar(50) = NULLIF(UPPER(LTRIM(RTRIM(@Licencia))), N'');
+
+    CREATE TABLE #Grupo
+    (
+        IdBodega int NOT NULL,
+        IdUbicacion int NOT NULL,
+        CONSTRAINT PK_GrupoPrevalidacionMhs PRIMARY KEY (IdBodega, IdUbicacion)
+    );
+
+    INSERT INTO #Grupo(IdBodega, IdUbicacion)
+    VALUES (@IdBodegaDestino, @IdUbicacionDestino);
+
+    DECLARE @Filas int = 1;
+    WHILE @Filas > 0
+    BEGIN
+        INSERT INTO #Grupo(IdBodega, IdUbicacion)
+        SELECT DISTINCT C.IdBodega, C.IdUbicacion
+        FROM
+        (
+            SELECT A.IdBodegaDestino AS IdBodega, A.IdUbicacionDestino AS IdUbicacion
+            FROM dbo.bodega_asociacion_virtual A
+            INNER JOIN #Grupo G
+                ON G.IdBodega = A.IdBodegaOrigen
+               AND G.IdUbicacion = A.IdUbicacionOrigen
+            WHERE A.activo = 1
+
+            UNION
+
+            SELECT A.IdBodegaOrigen, A.IdUbicacionOrigen
+            FROM dbo.bodega_asociacion_virtual A
+            INNER JOIN #Grupo G
+                ON G.IdBodega = A.IdBodegaDestino
+               AND G.IdUbicacion = A.IdUbicacionDestino
+            WHERE A.activo = 1
+        ) C
+        WHERE NOT EXISTS
+        (
+            SELECT 1 FROM #Grupo E
+            WHERE E.IdBodega = C.IdBodega
+              AND E.IdUbicacion = C.IdUbicacion
+        );
+        SET @Filas = @@ROWCOUNT;
+    END;
+
+    IF @BloqueoTransaccional = 1 AND (SELECT COUNT(*) FROM #Grupo) > 1
+    BEGIN
+        IF @@TRANCOUNT = 0
+            THROW 51003, 'La validacion transaccional requiere una transaccion activa.', 1;
+
+        DECLARE @NodoCanonico nvarchar(80);
+        SELECT TOP (1) @NodoCanonico = CONCAT(IdBodega, N':', IdUbicacion)
+        FROM #Grupo
+        ORDER BY IdBodega, IdUbicacion;
+
+        DECLARE @Recurso nvarchar(255) = N'MHS-ESPACIO-' +
+            CONVERT(nvarchar(64), HASHBYTES('SHA2_256', @NodoCanonico), 2);
+        DECLARE @ResultadoLock int;
+
+        EXEC @ResultadoLock = sys.sp_getapplock
+            @Resource = @Recurso,
+            @LockMode = 'Exclusive',
+            @LockOwner = 'Transaction',
+            @LockTimeout = 15000;
+
+        IF @ResultadoLock < 0
+            THROW 51000, 'No fue posible bloquear el espacio fisico asociado.', 1;
+    END;
+
+    DECLARE @IdBodegaConflicto int = 0;
+    DECLARE @IdUbicacionConflicto int = 0;
+    DECLARE @BodegaConflicto nvarchar(150) = N'';
+    DECLARE @UbicacionConflicto nvarchar(200) = N'';
+
+    SELECT TOP (1)
+        @IdBodegaConflicto = G.IdBodega,
+        @IdUbicacionConflicto = G.IdUbicacion,
+        @BodegaConflicto = CONCAT(B.codigo, N' - ', B.nombre),
+        @UbicacionConflicto = dbo.Nombre_Completo_Ubicacion(G.IdUbicacion, G.IdBodega)
+    FROM #Grupo G
+    INNER JOIN dbo.stock S WITH (READCOMMITTEDLOCK)
+        ON S.IdBodega = G.IdBodega
+       AND S.IdUbicacion = G.IdUbicacion
+    LEFT JOIN dbo.bodega B ON B.IdBodega = G.IdBodega
+    WHERE NOT (G.IdBodega = @IdBodegaDestino AND G.IdUbicacion = @IdUbicacionDestino)
+      AND S.activo = 1
+      AND S.cantidad > 0
+    ORDER BY G.IdBodega, G.IdUbicacion;
+
+    DECLARE @IdTramo int = 0;
+    DECLARE @IdTramoOrigen int = 0;
+    DECLARE @LimiteLicencias int = 0;
+    DECLARE @LicenciasActuales int = 0;
+    DECLARE @LicenciasProyectadas int = 0;
+
+    SELECT
+        @IdTramo = U.IdTramo,
+        @LimiteLicencias = ISNULL(T.limite_licencias, 0)
+    FROM dbo.bodega_ubicacion U
+    INNER JOIN dbo.bodega_tramo T
+        ON T.IdBodega = U.IdBodega
+       AND T.IdTramo = U.IdTramo
+    WHERE U.IdBodega = @IdBodegaDestino
+      AND U.IdUbicacion = @IdUbicacionDestino;
+
+    SELECT @IdTramoOrigen = ISNULL(U.IdTramo, 0)
+    FROM dbo.bodega_ubicacion U
+    WHERE U.IdBodega = @IdBodegaOrigen
+      AND U.IdUbicacion = @IdUbicacionOrigen;
+
+    IF @IdTramo > 0
+    BEGIN
+        SELECT @LicenciasActuales = COUNT(DISTINCT NULLIF(UPPER(LTRIM(RTRIM(S.lic_plate))), N''))
+        FROM dbo.stock S
+        INNER JOIN dbo.bodega_ubicacion U
+            ON U.IdBodega = S.IdBodega
+           AND U.IdUbicacion = S.IdUbicacion
+        WHERE S.IdBodega = @IdBodegaDestino
+          AND U.IdTramo = @IdTramo
+          AND S.activo = 1
+          AND S.cantidad > 0;
+    END;
+
+    SET @LicenciasProyectadas = @LicenciasActuales;
+
+    IF @LicenciaNormalizada IS NOT NULL
+       AND NOT (@IdBodegaOrigen = @IdBodegaDestino AND @IdTramoOrigen = @IdTramo)
+       AND NOT EXISTS
+       (
+           SELECT 1
+           FROM dbo.stock S
+           INNER JOIN dbo.bodega_ubicacion U
+               ON U.IdBodega = S.IdBodega
+              AND U.IdUbicacion = S.IdUbicacion
+           WHERE S.IdBodega = @IdBodegaDestino
+             AND U.IdTramo = @IdTramo
+             AND S.activo = 1
+             AND S.cantidad > 0
+             AND NULLIF(UPPER(LTRIM(RTRIM(S.lic_plate))), N'') = @LicenciaNormalizada
+       )
+    BEGIN
+        SET @LicenciasProyectadas += 1;
+    END;
+
+    DECLARE @TieneConflicto bit = IIF(@IdBodegaConflicto > 0, 1, 0);
+    DECLARE @ExcedeLimite bit = IIF(@LimiteLicencias > 0 AND @LicenciasProyectadas > @LimiteLicencias, 1, 0);
+    DECLARE @Mensaje nvarchar(500) = N'';
+    DECLARE @Advertencia nvarchar(500) = N'';
+
+    IF @TieneConflicto = 1
+    BEGIN
+        SET @Mensaje = CONCAT(
+            N'No se puede utilizar la ubicacion destino porque el espacio asociado ',
+            @BodegaConflicto, N' / ', @UbicacionConflicto,
+            N' ya contiene producto.');
+    END;
+
+    IF @ExcedeLimite = 1
+    BEGIN
+        SET @Advertencia = CONCAT(
+            N'El tramo permite ', @LimiteLicencias,
+            N' licencias. Actualmente contiene ', @LicenciasActuales,
+            N' y la operacion dejaria ', @LicenciasProyectadas,
+            N'. Desea continuar?');
+    END;
+
+    SELECT
+        CAST(IIF(@TieneConflicto = 1, 0, 1) AS bit) AS Permitido,
+        @TieneConflicto AS TieneConflictoEspacio,
+        @ExcedeLimite AS ExcedeLimiteTramo,
+        @Mensaje AS Mensaje,
+        @Advertencia AS Advertencia,
+        @IdTramo AS IdTramo,
+        @LimiteLicencias AS LimiteLicencias,
+        @LicenciasActuales AS LicenciasActuales,
+        @LicenciasProyectadas AS LicenciasProyectadas,
+        @IdBodegaConflicto AS IdBodegaConflicto,
+        @IdUbicacionConflicto AS IdUbicacionConflicto,
+        @BodegaConflicto AS BodegaConflicto,
+        @UbicacionConflicto AS UbicacionConflicto;
+END;
+GO
+
+
