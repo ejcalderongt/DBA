@@ -1,3 +1,8 @@
+--#CKFK20260911 Agregué el campo restringir_ubicacion_solapada
+ALTER TABLE Bodega 
+ADD restringir_ubicacion_solapada bit not null default 0;
+GO
+
 --#EJC20260610 Se agregó el campo nuevo por funcionalidad de MHS
 ALTER TABLE bodega
 ADD ocultar_nombre_etiquetas_impresas bit NOT NULL DEFAULT 0
