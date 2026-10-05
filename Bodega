@@ -1,3 +1,36 @@
+--#CKFK20260915 Agregué campos nuevos a bodega para parametrizar tiempo de inactividad y recordar el usuario 
+IF COL_LENGTH('dbo.bodega', 'tiempo_inactividad_hh_minutos') IS NULL
+BEGIN
+    ALTER TABLE dbo.bodega
+    ADD tiempo_inactividad_hh_minutos INT NOT NULL
+        CONSTRAINT DF_bodega_tiempo_inactividad_hh_minutos
+        DEFAULT (10) WITH VALUES;
+END;
+GO
+
+IF COL_LENGTH('dbo.bodega', 'permitir_recordar_usuario_hh') IS NULL
+BEGIN
+    ALTER TABLE dbo.bodega
+    ADD permitir_recordar_usuario_hh BIT NOT NULL
+        CONSTRAINT DF_bodega_permitir_recordar_usuario_hh
+        DEFAULT (0) WITH VALUES;
+END;
+GO
+
+IF NOT EXISTS
+(
+    SELECT 1
+    FROM sys.check_constraints
+    WHERE name = 'CK_bodega_tiempo_inactividad_hh_minutos'
+      AND parent_object_id = OBJECT_ID('dbo.bodega')
+)
+BEGIN
+    ALTER TABLE dbo.bodega WITH CHECK
+    ADD CONSTRAINT CK_bodega_tiempo_inactividad_hh_minutos
+        CHECK (tiempo_inactividad_hh_minutos BETWEEN 1 AND 1440);
+END;
+GO
+
 --#CKFK20260911 Agregué el campo restringir_ubicacion_solapada
 ALTER TABLE Bodega 
 ADD restringir_ubicacion_solapada bit not null default 0;
