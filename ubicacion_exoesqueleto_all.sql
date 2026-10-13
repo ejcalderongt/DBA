@@ -1,8 +1,13 @@
 /*
     #EJC20261012_PICKING_EXOESQUELETO
 
-    Instalación consolidada del modelo persistente del exoesqueleto de bodega.
-    Incluye cabecera versionada, nodos, enlaces y accesos a posiciones de picking.
+    Instalación consolidada de las tres tablas centrales del exoesqueleto:
+    1. bodega_ubicacion_exoesqueleto
+    2. bodega_ubicacion_exoesqueleto_nodo
+    3. bodega_ubicacion_exoesqueleto_enlace
+
+    La tabla bodega_ubicacion_exoesqueleto_acceso se mantiene como una
+    extensión opcional y se instala mediante su script individual.
 
     Seguridad:
     - @Aplicar = 0 crea y valida todo dentro de una transacción y luego revierte;
@@ -121,52 +126,10 @@ BEGIN TRY
             ON dbo.bodega_ubicacion_exoesqueleto_enlace (IdVersion, IdNodoDestino);
     END;
 
-    IF OBJECT_ID(N'dbo.bodega_ubicacion_exoesqueleto_acceso', N'U') IS NULL
-    BEGIN
-        CREATE TABLE dbo.bodega_ubicacion_exoesqueleto_acceso
-        (
-            IdVersion          bigint NOT NULL,
-            IdAcceso           int NOT NULL,
-            IdBodega           int NOT NULL,
-            IdUbicacion        int NOT NULL,
-            IdNodoAcceso       int NOT NULL,
-            CoordenadaX        decimal(18,4) NOT NULL,
-            CoordenadaY        decimal(18,4) NOT NULL,
-            Cara               varchar(20) NULL,
-            Estado             varchar(20) NOT NULL,
-            Confianza          decimal(5,2) NULL,
-            Origen             varchar(20) NOT NULL,
-            Observacion        nvarchar(250) NULL,
-
-            CONSTRAINT PK_bodega_ubicacion_exoesqueleto_acceso
-                PRIMARY KEY CLUSTERED (IdVersion, IdAcceso),
-            CONSTRAINT UQ_bodega_ubicacion_exoesqueleto_acceso_ubicacion
-                UNIQUE (IdVersion, IdBodega, IdUbicacion),
-            CONSTRAINT CK_bodega_ubicacion_exoesqueleto_acceso_coordenadas
-                CHECK (CoordenadaX >= 0 AND CoordenadaY >= 0),
-            CONSTRAINT CK_bodega_ubicacion_exoesqueleto_acceso_confianza
-                CHECK (Confianza IS NULL OR Confianza BETWEEN 0 AND 100),
-            CONSTRAINT CK_bodega_ubicacion_exoesqueleto_acceso_estado
-                CHECK (Estado IN ('SUGERIDO', 'REVISAR', 'APROBADO', 'INVALIDO')),
-            CONSTRAINT FK_bodega_ubicacion_exoesqueleto_acceso_version
-                FOREIGN KEY (IdVersion, IdBodega)
-                REFERENCES dbo.bodega_ubicacion_exoesqueleto (IdVersion, IdBodega),
-            CONSTRAINT FK_bodega_ubicacion_exoesqueleto_acceso_nodo
-                FOREIGN KEY (IdVersion, IdNodoAcceso)
-                REFERENCES dbo.bodega_ubicacion_exoesqueleto_nodo (IdVersion, IdNodo),
-            CONSTRAINT FK_bodega_ubicacion_exoesqueleto_acceso_ubicacion
-                FOREIGN KEY (IdUbicacion, IdBodega)
-                REFERENCES dbo.bodega_ubicacion (IdUbicacion, IdBodega)
-        );
-
-        CREATE INDEX IX_bodega_ubicacion_exoesqueleto_acceso_nodo
-            ON dbo.bodega_ubicacion_exoesqueleto_acceso (IdVersion, IdNodoAcceso);
-    END;
-
     IF @Aplicar = 1
     BEGIN
         COMMIT TRANSACTION;
-        PRINT 'Estructura de exoesqueleto aplicada.';
+        PRINT 'Tres tablas centrales del exoesqueleto aplicadas.';
     END
     ELSE
     BEGIN
