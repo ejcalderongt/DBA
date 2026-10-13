@@ -4,6 +4,8 @@
     Requiere ejecutar primero los scripts 01 y 02.
 */
 
+SET ANSI_NULLS ON;
+SET QUOTED_IDENTIFIER ON;
 SET NOCOUNT ON;
 SET XACT_ABORT ON;
 

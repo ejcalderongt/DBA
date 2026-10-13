@@ -4,6 +4,8 @@
     Requiere ejecutar primero 20261012_01_bodega_ubicacion_exoesqueleto.sql.
 */
 
+SET ANSI_NULLS ON;
+SET QUOTED_IDENTIFIER ON;
 SET NOCOUNT ON;
 SET XACT_ABORT ON;
 

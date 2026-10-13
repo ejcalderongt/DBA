@@ -14,6 +14,8 @@
     - cambiarlo a 1 únicamente después de la revisión y autorización DBA.
 */
 
+SET ANSI_NULLS ON;
+SET QUOTED_IDENTIFIER ON;
 SET NOCOUNT ON;
 SET XACT_ABORT ON;
 

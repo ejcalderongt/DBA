@@ -3,6 +3,8 @@
     Cabecera versionada y autorizable del exoesqueleto de una bodega.
 */
 
+SET ANSI_NULLS ON;
+SET QUOTED_IDENTIFIER ON;
 SET NOCOUNT ON;
 SET XACT_ABORT ON;
 
