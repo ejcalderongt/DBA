@@ -1,3 +1,7 @@
+--Menu encabezado Prefactura
+INSERT INTO menu_sistema (IdMenu, titulo, nombre_lgco, nivel, padre, solicitar_clave_autorizacion)
+VALUES ('8.3', 'PrFacturacion', 'pgPreFacturacion', 2, '8', 0)
+
 --#EJC20260513 Menu de Ajustes
 insert into menu_sistema values ('5.5', 'Ajuste - Indicadores', 'pgAjusteInventarioIndicadores', 2,5,0)
 insert into menu_sistema values ('5.5.1', 'Ajuste - Indicadores - mnuIndicadores', 'mnuIndicadoresAjustes', 3,'5.5',0)
