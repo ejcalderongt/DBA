@@ -1,0 +1,19 @@
+{
+  "Database": "TOMWMS_MHS_DEV",
+  "PreviousStateMatched": true,
+  "AlreadyFinal": false,
+  "FinalZplVerified": true,
+  "HasGlobalOrientation": false,
+  "OrphanState": "ANULADA",
+  "OrphanActive": false,
+  "Markers": [
+    "{6}",
+    "{3}",
+    "{3}",
+    "{0}",
+    "{7}",
+    "{5}",
+    "{8}",
+    "{9}"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "fecha": "2026-10-23T13:41:41.8201239-06:00",
+  "servidor": "MHS-APP-QA",
+  "base": "TOMWMS_MHS_DEV",
+  "tabla": "dbo.trans_pe_enc",
+  "columna": "Referencia_Serie_Numero",
+  "tipo": "nvarchar(20)",
+  "nullable": true,
+  "default": null,
+  "resultado": "Aplicado y confirmado mediante sys.columns",
+  "referencia": "SQL local TOMWMS_CAREMED_PRD: nvarchar(20) NULL sin DEFAULT"
+}

@@ -1,0 +1,8 @@
+{
+  "base": "TOMWMS_MHS_DEV",
+  "etiqueta": 14,
+  "antes": "^FO30,74^BQN,2,14^FDLA,{3}^FS",
+  "despues": "^FO30,50^BQN,2,9^FDLA,{3}^FS",
+  "campos_dinamicos_conservados": true,
+  "lectura_posterior_correcta": true
+}

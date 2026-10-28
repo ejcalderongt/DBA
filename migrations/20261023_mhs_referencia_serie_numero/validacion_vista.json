@@ -1,0 +1,12 @@
+﻿{
+  "fecha": "2026-10-23T13:54:57.9971995-06:00",
+  "base": "TOMWMS_MHS_DEV",
+  "vista": "dbo.VW_Get_Single_Pedido",
+  "columna_presente": true,
+  "campos_cargador": 73,
+  "faltantes": [
+    "confirmar_packing_entrega",
+    "NombreRutaDespacho"
+  ],
+  "consulta_real_filas": 1
+}

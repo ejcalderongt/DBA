@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "migrations": [
+    {
+      "id": "20260915.001",
+      "description": "Agrega el tiempo de inactividad de la HH por bodega",
+      "script": "sql/V20260915_001__bodega_tiempo_inactividad_hh.sql"
+    }
+  ]
+}
