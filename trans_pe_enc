@@ -1,3 +1,9 @@
+--#CKFK20260724 Agregué campo para que se confirme el packing de entrega
+ALTER TABLE dbo.trans_pe_enc
+ADD confirmar_packing_entrega bit NOT NULL
+    CONSTRAINT DF_trans_pe_enc_confirmar_packing_entrega DEFAULT (0) WITH VALUES;
+GO
+
 --#CKFK20260612 Agregué el campo por un tipo en SAP para MAMPA
 ALTER TABLE trans_pe_enc
 ADD tipo_solicitud_erp NVARCHAR(50) null

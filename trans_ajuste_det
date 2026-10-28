@@ -1,3 +1,47 @@
+--#CKFK20261023 Agregué los campos no_contenedor,idproveedor,codigo_proveedor,nombre_proveedor,IdRecepcionEnc
+SET NOCOUNT ON;
+SET XACT_ABORT ON;
+
+BEGIN TRY
+   
+    IF OBJECT_ID(N'dbo.trans_ajuste_det', N'U') IS NULL
+        THROW 51001, 'No existe dbo.trans_ajuste_det.', 1;
+
+    BEGIN TRANSACTION;
+    IF COL_LENGTH(N'dbo.trans_ajuste_det', N'no_contenedor') IS NULL
+        ALTER TABLE dbo.trans_ajuste_det ADD [no_contenedor] nvarchar(100) NULL;
+    IF COL_LENGTH(N'dbo.trans_ajuste_det', N'idproveedor') IS NULL
+        ALTER TABLE dbo.trans_ajuste_det ADD [idproveedor] int NULL;
+    IF COL_LENGTH(N'dbo.trans_ajuste_det', N'codigo_proveedor') IS NULL
+        ALTER TABLE dbo.trans_ajuste_det ADD [codigo_proveedor] nvarchar(50) NULL;
+    IF COL_LENGTH(N'dbo.trans_ajuste_det', N'nombre_proveedor') IS NULL
+        ALTER TABLE dbo.trans_ajuste_det ADD [nombre_proveedor] nvarchar(200) NULL;
+    IF COL_LENGTH(N'dbo.trans_ajuste_det', N'IdRecepcionEnc') IS NULL
+        ALTER TABLE dbo.trans_ajuste_det ADD [IdRecepcionEnc] int NULL;
+
+    -- Detener ante una columna preexistente incompatible, sin truncarla.
+    IF EXISTS (
+        SELECT 1 FROM sys.columns
+        WHERE object_id = OBJECT_ID(N'dbo.trans_ajuste_det')
+          AND name = N'no_contenedor'
+          AND (system_type_id <> TYPE_ID(N'nvarchar') OR
+               (max_length <> -1 AND max_length < 200))
+    )
+        THROW 51002, 'no_contenedor debe ser nvarchar(100) o mayor. Revisar antes de continuar.', 1;
+
+    COMMIT TRANSACTION;
+    SELECT DB_NAME() AS base_validada, N'trans_ajuste_det' AS tabla,
+           c.name AS columna, TYPE_NAME(c.user_type_id) AS tipo,
+           c.max_length, c.is_nullable
+    FROM sys.columns c
+    WHERE c.object_id = OBJECT_ID(N'dbo.trans_ajuste_det')
+      AND c.name IN (N'no_contenedor', N'idproveedor', N'codigo_proveedor', N'nombre_proveedor', N'IdRecepcionEnc');
+END TRY
+BEGIN CATCH
+    IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+    THROW;
+END CATCH;
+
 #EJC20260425 Agregué el campo IdRecepcionEnc
 alter table trans_ajuste_det 
 add IdRecepcionEnc int null

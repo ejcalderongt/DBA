@@ -1,0 +1,33 @@
+
+IF OBJECT_ID('dbo.trans_inv_ciclico_consolidado_det', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.trans_inv_ciclico_consolidado_det
+    (
+        IdConteoConsolidadoDet bigint IDENTITY(1,1) NOT NULL,
+        IdConteoConsolidado bigint NOT NULL,
+        IdInvCiclico int NOT NULL,
+        IdStockOriginal int NOT NULL,
+        Licencia nvarchar(100) NOT NULL CONSTRAINT DF_inv_cic_consolidado_det_Licencia DEFAULT (N'0'),
+        CantidadTeoricaOrigen decimal(18,6) NOT NULL,
+        CantidadContadaDistribuida decimal(18,6) NOT NULL,
+        OrdenDistribucion int NOT NULL,
+        IdStockResuelto int NULL,
+        ResultadoLinaje varchar(40) NULL,
+        DetalleLinaje nvarchar(1000) NULL,
+        CONSTRAINT PK_trans_inv_ciclico_consolidado_det PRIMARY KEY CLUSTERED (IdConteoConsolidadoDet),
+        CONSTRAINT FK_inv_cic_consolidado_det_enc FOREIGN KEY (IdConteoConsolidado)
+            REFERENCES dbo.trans_inv_ciclico_consolidado (IdConteoConsolidado),
+        CONSTRAINT CK_inv_cic_consolidado_det_Cantidades CHECK
+            (CantidadTeoricaOrigen >= 0 AND CantidadContadaDistribuida >= 0),
+        CONSTRAINT CK_inv_cic_consolidado_det_Orden CHECK (OrdenDistribucion > 0)
+    );
+
+    CREATE UNIQUE INDEX UX_inv_cic_consolidado_det_Linea
+        ON dbo.trans_inv_ciclico_consolidado_det (IdConteoConsolidado, IdInvCiclico);
+
+    CREATE INDEX IX_inv_cic_consolidado_det_IdStockOriginal
+        ON dbo.trans_inv_ciclico_consolidado_det (IdStockOriginal);
+END;
+
+-- #EJC20260910: compatible con instalaciones que ya crearon el detalle.
+ALTER TABLE dbo.trans_inv_ciclico_consolidado_det ALTER COLUMN Licencia nvarchar(100) NOT NULL;

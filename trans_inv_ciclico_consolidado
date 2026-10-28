@@ -1,0 +1,45 @@
+
+IF OBJECT_ID('dbo.trans_inv_ciclico_consolidado', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.trans_inv_ciclico_consolidado
+    (
+        IdConteoConsolidado bigint IDENTITY(1,1) NOT NULL,
+        IdInventarioEnc int NOT NULL,
+        GrupoHash varchar(64) NOT NULL,
+        VersionConteo int NOT NULL,
+        EsVigente bit NOT NULL CONSTRAINT DF_inv_cic_consolidado_EsVigente DEFAULT (1),
+        IdPropietario int NOT NULL,
+        IdBodega int NOT NULL,
+        IdUbicacion int NOT NULL,
+        Gondola nvarchar(100) NOT NULL CONSTRAINT DF_inv_cic_consolidado_Gondola DEFAULT (N''),
+        IdProductoBodega int NOT NULL,
+        LoteStock nvarchar(50) NOT NULL CONSTRAINT DF_inv_cic_consolidado_LoteStock DEFAULT (N''),
+        FechaVenceStock datetime NOT NULL,
+        IdProductoEstado int NOT NULL,
+        IdPresentacion int NOT NULL,
+        IdUnidadMedida int NOT NULL,
+        CantidadTeorica decimal(18,6) NOT NULL,
+        CantidadContada decimal(18,6) NOT NULL,
+        CantidadLicencias int NOT NULL,
+        CantidadRegistrosSinLicencia int NOT NULL,
+        IdOperador int NOT NULL,
+        Usuario nvarchar(50) NOT NULL,
+        FechaConteo datetime NOT NULL CONSTRAINT DF_inv_cic_consolidado_FechaConteo DEFAULT (GETDATE()),
+        EstadoRegularizacion varchar(40) NULL,
+        DetalleRegularizacion nvarchar(1000) NULL,
+        RowVersion rowversion NOT NULL,
+        CONSTRAINT PK_trans_inv_ciclico_consolidado PRIMARY KEY CLUSTERED (IdConteoConsolidado),
+        CONSTRAINT FK_inv_cic_consolidado_inv_enc FOREIGN KEY (IdInventarioEnc)
+            REFERENCES dbo.trans_inv_enc (IdInventarioEnc),
+        CONSTRAINT CK_inv_cic_consolidado_Version CHECK (VersionConteo > 0),
+        CONSTRAINT CK_inv_cic_consolidado_Cantidades CHECK
+            (CantidadTeorica >= 0 AND CantidadContada >= 0)
+    );
+
+    CREATE UNIQUE INDEX UX_inv_cic_consolidado_Version
+        ON dbo.trans_inv_ciclico_consolidado (IdInventarioEnc, GrupoHash, VersionConteo);
+
+    CREATE UNIQUE INDEX UX_inv_cic_consolidado_Vigente
+        ON dbo.trans_inv_ciclico_consolidado (IdInventarioEnc, GrupoHash)
+        WHERE EsVigente = 1;
+END;

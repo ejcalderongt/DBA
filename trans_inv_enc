@@ -1,0 +1,7 @@
+--#CKFK20260911 Agregué el campo conteo_consolidado_sin_licencia para el inventario cíclico
+IF COL_LENGTH('dbo.trans_inv_enc', 'Conteo_Consolidado_Sin_Licencia') IS NULL
+BEGIN
+    ALTER TABLE dbo.trans_inv_enc
+        ADD Conteo_Consolidado_Sin_Licencia bit NOT NULL
+            CONSTRAINT DF_trans_inv_enc_ConteoConsolidadoSinLicencia DEFAULT (0) WITH VALUES;
+END;

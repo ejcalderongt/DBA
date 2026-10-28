@@ -1,0 +1,622 @@
+
+/* #EJC20261001_MHS_PICKING_DESTINO_Y_DESPACHO_DIRECTO
+   Soporte BD unificado para dos funcionalidades excluyentes por tipo de documento:
+   1. Confirmar desde HH una tarima completa directamente en la ubicacion fisica
+      de la bodega destino.
+   2. Procesar la salida y el ingreso por licencia inmediatamente durante el picking,
+      dejando la recepcion fisica pendiente en la bodega destino.
+
+   Dependencia: ejecutar previamente 20260803_mhs_espacios_virtuales_capacidad_tramo.sql.
+   Idempotente. Ejecutar primero en QA. No ejecutado por Codex en ninguna BD.
+*/
+
+SET NOCOUNT ON;
+SET XACT_ABORT ON;
+
+BEGIN TRY
+    BEGIN TRANSACTION;
+
+    IF COL_LENGTH(N'dbo.trans_pe_tipo', N'requiere_ubicacion_destino_picking') IS NULL
+    BEGIN
+        ALTER TABLE dbo.trans_pe_tipo
+            ADD requiere_ubicacion_destino_picking bit NOT NULL
+                CONSTRAINT DF_trans_pe_tipo_requiere_ubicacion_destino_picking DEFAULT (0);
+    END;
+
+    IF COL_LENGTH(N'dbo.trans_pe_tipo', N'despacho_directo_picking') IS NULL
+    BEGIN
+        ALTER TABLE dbo.trans_pe_tipo
+            ADD despacho_directo_picking bit NOT NULL
+                CONSTRAINT DF_trans_pe_tipo_despacho_directo_picking DEFAULT (0);
+    END;
+
+    IF COL_LENGTH(N'dbo.trans_picking_ubic', N'IdBodegaDestino') IS NULL
+        ALTER TABLE dbo.trans_picking_ubic ADD IdBodegaDestino int NOT NULL
+            CONSTRAINT DF_trans_picking_ubic_IdBodegaDestino DEFAULT (0);
+
+    IF COL_LENGTH(N'dbo.trans_picking_ubic', N'IdUbicacionBodegaDestino') IS NULL
+        ALTER TABLE dbo.trans_picking_ubic ADD IdUbicacionBodegaDestino int NOT NULL
+            CONSTRAINT DF_trans_picking_ubic_IdUbicacionBodegaDestino DEFAULT (0);
+
+    IF COL_LENGTH(N'dbo.trans_picking_ubic_stock', N'IdBodegaDestino') IS NULL
+        ALTER TABLE dbo.trans_picking_ubic_stock ADD IdBodegaDestino int NOT NULL
+            CONSTRAINT DF_trans_picking_ubic_stock_IdBodegaDestino DEFAULT (0);
+
+    IF COL_LENGTH(N'dbo.trans_picking_ubic_stock', N'IdUbicacionBodegaDestino') IS NULL
+        ALTER TABLE dbo.trans_picking_ubic_stock ADD IdUbicacionBodegaDestino int NOT NULL
+            CONSTRAINT DF_trans_picking_ubic_stock_IdUbicacionBodegaDestino DEFAULT (0);
+
+    /* Parametro MHS conservador: si no existe, las ubicaciones solapadas bloquean. */
+    IF COL_LENGTH(N'dbo.bodega', N'restringir_ubicacion_solapada') IS NULL
+    BEGIN
+        ALTER TABLE dbo.bodega
+            ADD restringir_ubicacion_solapada bit NOT NULL
+                CONSTRAINT DF_bodega_restringir_ubicacion_solapada DEFAULT (1);
+    END;
+
+    /* Control operativo e idempotencia del despacho directo por licencia. */
+    IF OBJECT_ID(N'dbo.trans_picking_despacho_directo', N'U') IS NULL
+    BEGIN
+        EXEC sys.sp_executesql N'
+            CREATE TABLE dbo.trans_picking_despacho_directo
+            (
+                IdPickingUbic int NOT NULL,
+                IdPickingEnc int NOT NULL,
+                IdPedidoEnc int NOT NULL,
+                IdPedidoDet int NOT NULL,
+                IdBodegaOrigen int NOT NULL,
+                IdBodegaDestino int NOT NULL,
+                LicPlate nvarchar(50) NOT NULL,
+                Cantidad float NOT NULL,
+                Peso float NOT NULL
+                    CONSTRAINT DF_trans_picking_despacho_directo_Peso DEFAULT (0),
+                IdOrdenCompraEnc int NOT NULL,
+                IdOrdenCompraDet int NULL,
+                IdOrdenCompraDetLote int NULL,
+                IdRecepcionEnc int NOT NULL,
+                IdTransaccionOut int NULL,
+                IdPallet int NULL,
+                IdDespachoEnc int NULL,
+                IdDespachoDet int NULL,
+                Estado nvarchar(30) NOT NULL,
+                FechaSalida datetime NOT NULL,
+                FechaRecepcion datetime NULL,
+                FechaIncorporadoDespacho datetime NULL,
+                UserAgr nvarchar(50) NOT NULL,
+                FecAgr datetime NOT NULL,
+                UserMod nvarchar(50) NOT NULL,
+                FecMod datetime NULL,
+                CONSTRAINT PK_trans_picking_despacho_directo
+                    PRIMARY KEY CLUSTERED (IdPickingUbic),
+                CONSTRAINT CK_trans_picking_despacho_directo_cantidad
+                    CHECK (Cantidad > 0),
+                CONSTRAINT CK_trans_picking_despacho_directo_estado
+                    CHECK (Estado IN (N''SALIDA_PROCESADA'', N''RECIBIDA'', N''INCORPORADA_DESPACHO''))
+            );
+
+            CREATE INDEX IX_trans_picking_despacho_directo_pedido_estado
+                ON dbo.trans_picking_despacho_directo(IdPedidoEnc, Estado)
+                INCLUDE (IdPickingUbic, IdOrdenCompraEnc, IdRecepcionEnc, Cantidad);
+
+            CREATE INDEX IX_trans_picking_despacho_directo_recepcion
+                ON dbo.trans_picking_despacho_directo(IdRecepcionEnc, IdPallet, LicPlate)
+                INCLUDE (Estado, FechaRecepcion);
+
+            CREATE INDEX IX_trans_picking_despacho_directo_despacho
+                ON dbo.trans_picking_despacho_directo(IdDespachoEnc)
+                INCLUDE (IdPickingUbic, IdDespachoDet, Cantidad, Estado);';
+    END;
+
+    IF NOT EXISTS
+    (
+        SELECT 1 FROM sys.check_constraints
+        WHERE parent_object_id = OBJECT_ID(N'dbo.trans_picking_ubic')
+          AND name = N'CK_trans_picking_ubic_destino_completo'
+    )
+    BEGIN
+        EXEC sys.sp_executesql N'
+            ALTER TABLE dbo.trans_picking_ubic WITH CHECK
+                ADD CONSTRAINT CK_trans_picking_ubic_destino_completo CHECK
+                (
+                    (IdBodegaDestino = 0 AND IdUbicacionBodegaDestino = 0)
+                    OR
+                    (IdBodegaDestino > 0 AND IdUbicacionBodegaDestino > 0)
+                );';
+    END;
+
+    IF NOT EXISTS
+    (
+        SELECT 1 FROM sys.check_constraints
+        WHERE parent_object_id = OBJECT_ID(N'dbo.trans_picking_ubic_stock')
+          AND name = N'CK_trans_picking_ubic_stock_destino_completo'
+    )
+    BEGIN
+        EXEC sys.sp_executesql N'
+            ALTER TABLE dbo.trans_picking_ubic_stock WITH CHECK
+                ADD CONSTRAINT CK_trans_picking_ubic_stock_destino_completo CHECK
+                (
+                    (IdBodegaDestino = 0 AND IdUbicacionBodegaDestino = 0)
+                    OR
+                    (IdBodegaDestino > 0 AND IdUbicacionBodegaDestino > 0)
+                );';
+    END;
+
+    IF NOT EXISTS
+    (
+        SELECT 1 FROM sys.indexes
+        WHERE object_id = OBJECT_ID(N'dbo.trans_picking_ubic')
+          AND name = N'IX_trans_picking_ubic_destino_pendiente_mhs'
+    )
+    BEGIN
+        EXEC sys.sp_executesql N'
+            CREATE INDEX IX_trans_picking_ubic_destino_pendiente_mhs
+                ON dbo.trans_picking_ubic
+                   (IdBodegaDestino, IdUbicacionBodegaDestino, activo)
+                INCLUDE (lic_plate, cantidad_recibida, cantidad_despachada, IdPedidoEnc);';
+    END;
+
+    IF NOT EXISTS
+    (
+        SELECT 1 FROM sys.indexes
+        WHERE object_id = OBJECT_ID(N'dbo.trans_picking_ubic_stock')
+          AND name = N'IX_trans_picking_ubic_stock_destino_mhs'
+    )
+    BEGIN
+        EXEC sys.sp_executesql N'
+            CREATE INDEX IX_trans_picking_ubic_stock_destino_mhs
+                ON dbo.trans_picking_ubic_stock
+                   (IdBodegaDestino, IdUbicacionBodegaDestino, activo)
+                INCLUDE (licencia, cantidad_recibida, cantidad_despachada, IdPickingUbic);';
+    END;
+
+    COMMIT TRANSACTION;
+END TRY
+BEGIN CATCH
+    IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+    THROW;
+END CATCH;
+GO
+
+CREATE OR ALTER PROCEDURE dbo.usp_wms_prevalidar_destino_fisico_mhs
+    @IdBodegaOrigen int,
+    @IdUbicacionOrigen int,
+    @IdBodegaDestino int,
+    @IdUbicacionDestino int,
+    @Licencia nvarchar(50) = NULL,
+    @BloqueoTransaccional bit = 0,
+    @ConfirmarConflictoEspacio bit = 0
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    IF @IdBodegaDestino <= 0 OR @IdUbicacionDestino <= 0
+        THROW 51002, 'La bodega y ubicacion destino son obligatorias.', 1;
+
+    IF NOT EXISTS
+    (
+        SELECT 1
+        FROM dbo.bodega_ubicacion U
+        WHERE U.IdBodega = @IdBodegaDestino
+          AND U.IdUbicacion = @IdUbicacionDestino
+          AND ISNULL(U.activo, 0) = 1
+          AND ISNULL(U.bloqueada, 0) = 0
+          AND ISNULL(U.[dañado], 0) = 0
+          AND ISNULL(U.acepta_pallet, 0) = 1
+    )
+        THROW 51004, 'La ubicacion destino no existe, esta inactiva, bloqueada, dañada o no acepta tarimas.', 1;
+
+    DECLARE @LicenciaNormalizada nvarchar(50) =
+        NULLIF(UPPER(LTRIM(RTRIM(@Licencia))), N'');
+
+    CREATE TABLE #Grupo
+    (
+        IdBodega int NOT NULL,
+        IdUbicacion int NOT NULL,
+        CONSTRAINT PK_GrupoPrevalidacionMhs PRIMARY KEY (IdBodega, IdUbicacion)
+    );
+
+    INSERT INTO #Grupo(IdBodega, IdUbicacion)
+    VALUES (@IdBodegaDestino, @IdUbicacionDestino);
+
+    DECLARE @Filas int = 1;
+    WHILE @Filas > 0
+    BEGIN
+        INSERT INTO #Grupo(IdBodega, IdUbicacion)
+        SELECT DISTINCT C.IdBodega, C.IdUbicacion
+        FROM
+        (
+            SELECT A.IdBodegaDestino, A.IdUbicacionDestino
+            FROM dbo.bodega_asociacion_virtual A
+            INNER JOIN #Grupo G
+                ON G.IdBodega = A.IdBodegaOrigen
+               AND G.IdUbicacion = A.IdUbicacionOrigen
+            WHERE A.activo = 1
+
+            UNION
+
+            SELECT A.IdBodegaOrigen, A.IdUbicacionOrigen
+            FROM dbo.bodega_asociacion_virtual A
+            INNER JOIN #Grupo G
+                ON G.IdBodega = A.IdBodegaDestino
+               AND G.IdUbicacion = A.IdUbicacionDestino
+            WHERE A.activo = 1
+        ) C
+        WHERE NOT EXISTS
+        (
+            SELECT 1 FROM #Grupo E
+            WHERE E.IdBodega = C.IdBodega
+              AND E.IdUbicacion = C.IdUbicacion
+        );
+
+        SET @Filas = @@ROWCOUNT;
+    END;
+
+    IF @BloqueoTransaccional = 1
+    BEGIN
+        IF @@TRANCOUNT = 0
+            THROW 51003, 'La validacion transaccional requiere una transaccion activa.', 1;
+
+        DECLARE @NodoCanonico nvarchar(80);
+        SELECT TOP (1) @NodoCanonico = CONCAT(IdBodega, N':', IdUbicacion)
+        FROM #Grupo ORDER BY IdBodega, IdUbicacion;
+
+        DECLARE @Recurso nvarchar(255) = N'MHS-ESPACIO-' +
+            CONVERT(nvarchar(64), HASHBYTES('SHA2_256', @NodoCanonico), 2);
+        DECLARE @ResultadoLock int;
+
+        EXEC @ResultadoLock = sys.sp_getapplock
+            @Resource = @Recurso,
+            @LockMode = 'Exclusive',
+            @LockOwner = 'Transaction',
+            @LockTimeout = 15000;
+
+        IF @ResultadoLock < 0
+            THROW 51000, 'No fue posible bloquear el espacio fisico asociado.', 1;
+    END;
+
+    CREATE TABLE #Ocupacion
+    (
+        IdBodega int NOT NULL,
+        IdUbicacion int NOT NULL,
+        Licencia nvarchar(50) NULL,
+        Fuente char(1) NOT NULL
+    );
+
+    /* Inventario que ya existe fisicamente en la bodega. */
+    INSERT INTO #Ocupacion(IdBodega, IdUbicacion, Licencia, Fuente)
+    SELECT S.IdBodega,
+           S.IdUbicacion,
+           NULLIF(UPPER(LTRIM(RTRIM(S.lic_plate))), N''),
+           'S'
+    FROM dbo.stock S WITH (READCOMMITTEDLOCK)
+    INNER JOIN #Grupo G
+        ON G.IdBodega = S.IdBodega
+       AND G.IdUbicacion = S.IdUbicacion
+    WHERE S.activo = 1
+      AND S.cantidad > 0;
+
+    /* Tarimas ya colocadas fisicamente por HH, pendientes de despacho/recepcion. */
+    INSERT INTO #Ocupacion(IdBodega, IdUbicacion, Licencia, Fuente)
+    SELECT P.IdBodegaDestino,
+           P.IdUbicacionBodegaDestino,
+           NULLIF(UPPER(LTRIM(RTRIM(P.lic_plate))), N''),
+           'P'
+    FROM dbo.trans_picking_ubic P WITH (READCOMMITTEDLOCK)
+    INNER JOIN #Grupo G
+        ON G.IdBodega = P.IdBodegaDestino
+       AND G.IdUbicacion = P.IdUbicacionBodegaDestino
+    WHERE P.IdBodegaDestino > 0
+      AND P.IdUbicacionBodegaDestino > 0
+      AND ISNULL(P.activo, 0) = 1
+      AND ISNULL(P.cantidad_recibida, 0) > ISNULL(P.cantidad_despachada, 0)
+      AND NULLIF(UPPER(LTRIM(RTRIM(P.lic_plate))), N'') IS NOT NULL;
+
+    DECLARE @IdBodegaConflicto int = 0;
+    DECLARE @IdUbicacionConflicto int = 0;
+    DECLARE @BodegaConflicto nvarchar(150) = N'';
+    DECLARE @UbicacionConflicto nvarchar(200) = N'';
+
+    SELECT TOP (1)
+        @IdBodegaConflicto = O.IdBodega,
+        @IdUbicacionConflicto = O.IdUbicacion,
+        @BodegaConflicto = CONCAT(B.codigo, N' - ', B.nombre),
+        @UbicacionConflicto = dbo.Nombre_Completo_Ubicacion(O.IdUbicacion, O.IdBodega)
+    FROM #Ocupacion O
+    LEFT JOIN dbo.bodega B ON B.IdBodega = O.IdBodega
+    WHERE NOT (O.IdBodega = @IdBodegaDestino AND O.IdUbicacion = @IdUbicacionDestino)
+    ORDER BY O.IdBodega, O.IdUbicacion;
+
+    DECLARE @IdTramo int = 0;
+    DECLARE @IdTramoOrigen int = 0;
+    DECLARE @LimiteLicencias int = 0;
+    DECLARE @LicenciasActuales int = 0;
+    DECLARE @LicenciasProyectadas int = 0;
+
+    SELECT @IdTramo = U.IdTramo,
+           @LimiteLicencias = ISNULL(T.limite_licencias, 0)
+    FROM dbo.bodega_ubicacion U
+    INNER JOIN dbo.bodega_tramo T
+        ON T.IdBodega = U.IdBodega
+       AND T.IdTramo = U.IdTramo
+    WHERE U.IdBodega = @IdBodegaDestino
+      AND U.IdUbicacion = @IdUbicacionDestino;
+
+    SELECT @IdTramoOrigen = ISNULL(U.IdTramo, 0)
+    FROM dbo.bodega_ubicacion U
+    WHERE U.IdBodega = @IdBodegaOrigen
+      AND U.IdUbicacion = @IdUbicacionOrigen;
+
+    IF @IdTramo > 0
+    BEGIN
+        SELECT @LicenciasActuales = COUNT(DISTINCT X.Licencia)
+        FROM
+        (
+            SELECT NULLIF(UPPER(LTRIM(RTRIM(S.lic_plate))), N'') AS Licencia
+            FROM dbo.stock S WITH (READCOMMITTEDLOCK)
+            INNER JOIN dbo.bodega_ubicacion U
+                ON U.IdBodega = S.IdBodega
+               AND U.IdUbicacion = S.IdUbicacion
+            WHERE S.IdBodega = @IdBodegaDestino
+              AND U.IdTramo = @IdTramo
+              AND S.activo = 1
+              AND S.cantidad > 0
+
+            UNION
+
+            SELECT NULLIF(UPPER(LTRIM(RTRIM(P.lic_plate))), N'')
+            FROM dbo.trans_picking_ubic P WITH (READCOMMITTEDLOCK)
+            INNER JOIN dbo.bodega_ubicacion U
+                ON U.IdBodega = P.IdBodegaDestino
+               AND U.IdUbicacion = P.IdUbicacionBodegaDestino
+            WHERE P.IdBodegaDestino = @IdBodegaDestino
+              AND U.IdTramo = @IdTramo
+              AND P.IdUbicacionBodegaDestino > 0
+              AND ISNULL(P.activo, 0) = 1
+              AND ISNULL(P.cantidad_recibida, 0) > ISNULL(P.cantidad_despachada, 0)
+        ) X
+        WHERE X.Licencia IS NOT NULL;
+    END;
+
+    SET @LicenciasProyectadas = @LicenciasActuales;
+
+    IF @LicenciaNormalizada IS NOT NULL
+       AND NOT (@IdBodegaOrigen = @IdBodegaDestino AND @IdTramoOrigen = @IdTramo)
+       AND NOT EXISTS
+       (
+           SELECT 1
+           FROM
+           (
+               SELECT NULLIF(UPPER(LTRIM(RTRIM(S.lic_plate))), N'') AS Licencia
+               FROM dbo.stock S
+               INNER JOIN dbo.bodega_ubicacion U
+                   ON U.IdBodega = S.IdBodega AND U.IdUbicacion = S.IdUbicacion
+               WHERE S.IdBodega = @IdBodegaDestino
+                 AND U.IdTramo = @IdTramo
+                 AND S.activo = 1 AND S.cantidad > 0
+
+               UNION
+
+               SELECT NULLIF(UPPER(LTRIM(RTRIM(P.lic_plate))), N'')
+               FROM dbo.trans_picking_ubic P
+               INNER JOIN dbo.bodega_ubicacion U
+                   ON U.IdBodega = P.IdBodegaDestino
+                  AND U.IdUbicacion = P.IdUbicacionBodegaDestino
+               WHERE P.IdBodegaDestino = @IdBodegaDestino
+                 AND U.IdTramo = @IdTramo
+                 AND ISNULL(P.activo, 0) = 1
+                 AND ISNULL(P.cantidad_recibida, 0) > ISNULL(P.cantidad_despachada, 0)
+           ) L
+           WHERE L.Licencia = @LicenciaNormalizada
+       )
+    BEGIN
+        SET @LicenciasProyectadas += 1;
+    END;
+
+    DECLARE @RestringirSolapada bit = 1;
+    SELECT @RestringirSolapada = ISNULL(B.restringir_ubicacion_solapada, 1)
+    FROM dbo.bodega B
+    WHERE B.IdBodega = @IdBodegaDestino;
+
+    DECLARE @TieneConflicto bit = IIF(@IdBodegaConflicto > 0, 1, 0);
+    DECLARE @ConflictoBloqueante bit =
+        IIF(@TieneConflicto = 1 AND @RestringirSolapada = 1, 1, 0);
+    DECLARE @ExcedeLimite bit =
+        IIF(@LimiteLicencias > 0 AND @LicenciasProyectadas > @LimiteLicencias, 1, 0);
+    DECLARE @Mensaje nvarchar(500) = N'';
+    DECLARE @Advertencia nvarchar(500) = N'';
+
+    IF @TieneConflicto = 1
+    BEGIN
+        IF @ConflictoBloqueante = 1
+            SET @Mensaje = CONCAT(N'No se puede utilizar la ubicacion destino porque el espacio asociado ',
+                                  @BodegaConflicto, N' / ', @UbicacionConflicto,
+                                  N' ya contiene producto.');
+        ELSE
+            SET @Advertencia = CONCAT(N'El espacio asociado ', @BodegaConflicto, N' / ',
+                                      @UbicacionConflicto,
+                                      N' ya contiene producto, pero la bodega permite ubicaciones solapadas.');
+    END;
+
+    IF @ExcedeLimite = 1
+    BEGIN
+        SET @Advertencia = CONCAT(
+            CASE WHEN LEN(@Advertencia) > 0 THEN @Advertencia + N' ' ELSE N'' END,
+            N'El tramo permite ', @LimiteLicencias,
+            N' licencias; actualmente contiene ', @LicenciasActuales,
+            N' y la operacion dejaria ', @LicenciasProyectadas, N'.');
+    END;
+
+    SELECT
+        CAST(IIF(@ConflictoBloqueante = 1, 0, 1) AS bit) AS Permitido,
+        @TieneConflicto AS TieneConflictoEspacio,
+        CAST(0 AS bit) AS RequiereConfirmacionConflictoEspacio,
+        @ExcedeLimite AS ExcedeLimiteTramo,
+        @Mensaje AS Mensaje,
+        @Advertencia AS Advertencia,
+        @IdTramo AS IdTramo,
+        @LimiteLicencias AS LimiteLicencias,
+        @LicenciasActuales AS LicenciasActuales,
+        @LicenciasProyectadas AS LicenciasProyectadas,
+        @IdBodegaConflicto AS IdBodegaConflicto,
+        @IdUbicacionConflicto AS IdUbicacionConflicto,
+        @BodegaConflicto AS BodegaConflicto,
+        @UbicacionConflicto AS UbicacionConflicto;
+END;
+GO
+
+/* Validaciones posteriores al despliegue. */
+SELECT COL_LENGTH(N'dbo.trans_pe_tipo', N'requiere_ubicacion_destino_picking') AS ColUbicacionDestinoTipoDocumento,
+       COL_LENGTH(N'dbo.trans_pe_tipo', N'despacho_directo_picking') AS ColDespachoDirectoTipoDocumento,
+       COL_LENGTH(N'dbo.trans_picking_ubic', N'IdBodegaDestino') AS ColBodegaDestino,
+       COL_LENGTH(N'dbo.trans_picking_ubic', N'IdUbicacionBodegaDestino') AS ColUbicacionDestino,
+       COL_LENGTH(N'dbo.trans_picking_ubic_stock', N'IdBodegaDestino') AS ColStockBodegaDestino,
+       COL_LENGTH(N'dbo.trans_picking_ubic_stock', N'IdUbicacionBodegaDestino') AS ColStockUbicacionDestino,
+       OBJECT_ID(N'dbo.trans_picking_despacho_directo', N'U') AS IdTablaDespachoDirecto;
+
+SELECT OBJECT_ID(N'dbo.usp_wms_prevalidar_destino_fisico_mhs', N'P') AS IdProcedimiento;
+GO
+
+/* #EJC20261001_MHS_PICKING_DESTINO_Y_DESPACHO_DIRECTO_VALIDACION
+   Ejecutar despues del despliegue y durante pruebas QA.
+*/
+
+SET NOCOUNT ON;
+
+/* 1. Estructura requerida. Todos los valores deben ser distintos de NULL. */
+SELECT
+    COL_LENGTH(N'dbo.trans_pe_tipo', N'requiere_ubicacion_destino_picking') AS TipoDocumentoUbicacionDestino,
+    COL_LENGTH(N'dbo.trans_pe_tipo', N'despacho_directo_picking') AS TipoDocumentoDespachoDirecto,
+    COL_LENGTH(N'dbo.trans_picking_ubic', N'IdBodegaDestino') AS PickingBodega,
+    COL_LENGTH(N'dbo.trans_picking_ubic', N'IdUbicacionBodegaDestino') AS PickingUbicacion,
+    COL_LENGTH(N'dbo.trans_picking_ubic_stock', N'IdBodegaDestino') AS TrazaBodega,
+    COL_LENGTH(N'dbo.trans_picking_ubic_stock', N'IdUbicacionBodegaDestino') AS TrazaUbicacion,
+    COL_LENGTH(N'dbo.bodega', N'restringir_ubicacion_solapada') AS PoliticaSolapamiento,
+    OBJECT_ID(N'dbo.trans_picking_despacho_directo', N'U') AS TablaDespachoDirecto;
+
+/* 2. Tipos habilitados y configuraciones incompatibles. No debe devolver filas. */
+SELECT IdTipoPedido,
+       Nombre,
+       transferir_ubicacion,
+       permitir_despacho_parcial,
+       requerir_cliente_es_bodega_wms,
+       Generar_pedido_ingreso_bodega_destino,
+       generar_recepcion_auto_bodega_destino,
+       recibir_producto_auto_bodega_destino
+FROM dbo.trans_pe_tipo
+WHERE requiere_ubicacion_destino_picking = 1
+  AND
+  (
+      ISNULL(transferir_ubicacion, 0) = 1
+      OR ISNULL(permitir_despacho_parcial, 0) = 1
+      OR ISNULL(requerir_cliente_es_bodega_wms, 0) = 0
+      OR ISNULL(Generar_pedido_ingreso_bodega_destino, 0) = 0
+      OR ISNULL(generar_recepcion_auto_bodega_destino, 0) = 0
+      OR ISNULL(recibir_producto_auto_bodega_destino, 0) = 0
+  );
+
+/* 3. Picks confirmados de estos documentos sin destino. No debe devolver filas. */
+SELECT P.IdPickingUbic,
+       P.IdPedidoEnc,
+       P.lic_plate,
+       P.cantidad_recibida,
+       P.cantidad_despachada,
+       P.IdBodegaDestino,
+       P.IdUbicacionBodegaDestino
+FROM dbo.trans_picking_ubic P
+INNER JOIN dbo.trans_pe_enc E ON E.IdPedidoEnc = P.IdPedidoEnc
+INNER JOIN dbo.trans_pe_tipo T ON T.IdTipoPedido = E.IdTipoPedido
+WHERE T.requiere_ubicacion_destino_picking = 1
+  AND ISNULL(P.activo, 0) = 1
+  AND ISNULL(P.cantidad_recibida, 0) > 0
+  AND (P.IdBodegaDestino <= 0 OR P.IdUbicacionBodegaDestino <= 0);
+
+/* 4. Picks parciales. No debe devolver filas. */
+SELECT P.IdPickingUbic,
+       P.IdPedidoEnc,
+       P.lic_plate,
+       P.cantidad_solicitada,
+       P.cantidad_recibida
+FROM dbo.trans_picking_ubic P
+INNER JOIN dbo.trans_pe_enc E ON E.IdPedidoEnc = P.IdPedidoEnc
+INNER JOIN dbo.trans_pe_tipo T ON T.IdTipoPedido = E.IdTipoPedido
+WHERE T.requiere_ubicacion_destino_picking = 1
+  AND ISNULL(P.cantidad_recibida, 0) > 0
+  AND ROUND(ISNULL(P.cantidad_recibida, 0), 6) <> ROUND(ISNULL(P.cantidad_solicitada, 0), 6);
+
+/* 5. Trazabilidad que no coincide con el destino operativo. No debe devolver filas. */
+SELECT S.IdPickingUbicStock,
+       S.IdPickingUbic,
+       S.licencia,
+       P.IdBodegaDestino AS PickingBodega,
+       S.IdBodegaDestino AS TrazaBodega,
+       P.IdUbicacionBodegaDestino AS PickingUbicacion,
+       S.IdUbicacionBodegaDestino AS TrazaUbicacion
+FROM dbo.trans_picking_ubic_stock S
+INNER JOIN dbo.trans_picking_ubic P ON P.IdPickingUbic = S.IdPickingUbic
+WHERE P.IdBodegaDestino > 0
+  AND
+  (
+      P.IdBodegaDestino <> S.IdBodegaDestino
+      OR P.IdUbicacionBodegaDestino <> S.IdUbicacionBodegaDestino
+  );
+
+/* 6. Las dos modalidades son excluyentes. No debe devolver filas. */
+SELECT IdTipoPedido,
+       Nombre,
+       requiere_ubicacion_destino_picking,
+       despacho_directo_picking
+FROM dbo.trans_pe_tipo
+WHERE requiere_ubicacion_destino_picking = 1
+  AND despacho_directo_picking = 1;
+
+/* 7. Configuracion incompatible con despacho directo. No debe devolver filas. */
+SELECT IdTipoPedido,
+       Nombre,
+       transferir_ubicacion,
+       permitir_despacho_parcial,
+       generar_picking_auto,
+       Verificar,
+       requerir_cliente_es_bodega_wms,
+       Generar_pedido_ingreso_bodega_destino,
+       trasladar_lotes_doc_ingreso,
+       generar_recepcion_auto_bodega_destino,
+       recibir_producto_auto_bodega_destino
+FROM dbo.trans_pe_tipo
+WHERE despacho_directo_picking = 1
+  AND
+  (
+      ISNULL(requiere_ubicacion_destino_picking, 0) = 1
+      OR ISNULL(transferir_ubicacion, 0) = 1
+      OR ISNULL(permitir_despacho_parcial, 0) = 1
+      OR ISNULL(generar_picking_auto, 0) = 1
+      OR ISNULL(Verificar, 0) = 0
+      OR ISNULL(requerir_cliente_es_bodega_wms, 0) = 0
+      OR ISNULL(Generar_pedido_ingreso_bodega_destino, 0) = 0
+      OR ISNULL(trasladar_lotes_doc_ingreso, 0) = 0
+      OR ISNULL(generar_recepcion_auto_bodega_destino, 0) = 0
+      OR ISNULL(recibir_producto_auto_bodega_destino, 0) = 1
+  );
+
+/* 8. Filas de control incompletas o con estado no reconocido. No debe devolver filas. */
+SELECT D.*
+FROM dbo.trans_picking_despacho_directo D
+WHERE D.IdPickingUbic <= 0
+   OR D.IdPedidoEnc <= 0
+   OR D.IdBodegaOrigen <= 0
+   OR D.IdBodegaDestino <= 0
+   OR D.IdOrdenCompraEnc <= 0
+   OR D.IdRecepcionEnc <= 0
+   OR D.Cantidad <= 0
+   OR NULLIF(LTRIM(RTRIM(D.LicPlate)), N'') IS NULL
+   OR D.Estado NOT IN (N'SALIDA_PROCESADA', N'RECIBIDA', N'INCORPORADA_DESPACHO');
+
+/* 9. Control directo sin picking origen. No debe devolver filas. */
+SELECT D.IdPickingUbic,
+       D.IdPedidoEnc,
+       D.LicPlate,
+       D.Estado
+FROM dbo.trans_picking_despacho_directo D
+LEFT JOIN dbo.trans_picking_ubic P ON P.IdPickingUbic = D.IdPickingUbic
+WHERE P.IdPickingUbic IS NULL;
+GO

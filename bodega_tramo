@@ -1,1 +1,5 @@
+ALTER TABLE bodega_tramo ADD limite_licencias int null
+GO
+
 alter table bodega_tramo add orden_descendente bit null default 0
+GO

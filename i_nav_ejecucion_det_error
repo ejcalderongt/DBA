@@ -1,0 +1,43 @@
+
+/*
+  #EJC20260826_MAMPA_BITACORA_RESERVA
+  Agrega datos estructurados para identificar talla y color en errores por linea.
+  El script es idempotente y no modifica datos existentes.
+*/
+SET NOCOUNT ON;
+SET XACT_ABORT ON;
+
+BEGIN TRY
+    BEGIN TRANSACTION;
+
+    IF COL_LENGTH('dbo.i_nav_ejecucion_det_error', 'human_error') IS NULL
+    BEGIN
+        ALTER TABLE dbo.i_nav_ejecucion_det_error
+            ADD human_error NVARCHAR(1000) NULL;
+    END;
+
+    IF COL_LENGTH('dbo.i_nav_ejecucion_det_error', 'talla') IS NULL
+    BEGIN
+        ALTER TABLE dbo.i_nav_ejecucion_det_error
+            ADD talla NVARCHAR(50) NULL;
+    END;
+
+    IF COL_LENGTH('dbo.i_nav_ejecucion_det_error', 'color') IS NULL
+    BEGIN
+        ALTER TABLE dbo.i_nav_ejecucion_det_error
+            ADD color NVARCHAR(50) NULL;
+    END;
+	
+	IF COL_LENGTH('dbo.i_nav_ejecucion_det_error', 'cantidad') IS NULL
+    BEGIN
+        ALTER TABLE dbo.i_nav_ejecucion_det_error
+           ADD cantidad DECIMAL(18,4) NULL;
+    END;
+
+    COMMIT TRANSACTION;
+END TRY
+BEGIN CATCH
+    IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+    THROW;
+END CATCH;
+

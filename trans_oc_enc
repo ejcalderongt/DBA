@@ -1,3 +1,8 @@
+--#CKFK20250916 Aumenté la longitud del campo no_documento
+ALTER TABLE trans_oc_enc
+ALTER COLUMN no_documento NVARCHAR(60)NULL
+GO
+
 --#CKFK20250815 Agregamos estos campos nuevos por interface de MAMPA
 ALTER TABLE trans_oc_enc
 ADD usr_documento NVARCHAR(100) NULL,
