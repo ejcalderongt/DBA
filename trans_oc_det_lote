@@ -1,3 +1,6 @@
+--#AT20261028 Campo nuevo por packing en MHS
+ALTER TABLE dbo.trans_oc_det_lote ADD licencia_packing VARCHAR(50) NULL;
+
 --#EJC20260504 Campo nuevo MHS
 ALTER TABLE trans_oc_det_lote 
 ADD peso_licencia float default 0
