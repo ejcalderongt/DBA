@@ -1,3 +1,16 @@
+#AT20261027 Nuevo tipo de documento de ingreso
+INSERT INTO dbo.trans_oc_ti
+(
+    IdTipoIngresoOC,    Nombre,    es_devolucion,    user_agr,    fec_agr,    user_mod,    fec_mod,    activo,    control_poliza,
+    requerir_documento_ref,    es_poliza_consolidada,    genera_tarea_ingreso,    requerir_proveedor_es_bodega_wms,    requerir_documento_ref_wms,
+    requerir_ubic_rec_ingreso,    exigir_campo_referencia,    marcar_registros_enviados_mi3,    preguntar_en_backorder,
+    bloquear_lotes,    permitir_excedente_lotes,    es_importacion,    permitir_vencido_ingreso,    IdPropietario,    IdProductoEstado)
+SELECT    17,    'Transferencia de Ingreso con Packing',    es_devolucion,    user_agr,    fec_agr,    user_mod,
+    fec_mod,    activo,    control_poliza,    requerir_documento_ref,    es_poliza_consolidada,    genera_tarea_ingreso,    requerir_proveedor_es_bodega_wms,
+    requerir_documento_ref_wms,    requerir_ubic_rec_ingreso,    exigir_campo_referencia,    marcar_registros_enviados_mi3,
+    preguntar_en_backorder,    bloquear_lotes,    permitir_excedente_lotes,    es_importacion,    permitir_vencido_ingreso,
+    IdPropietario,    IdProductoEstadoFROM dbo.trans_oc_tiWHERE IdTipoIngresoOC = 8;
+
 --#GT25032025: campos para asociar opcionalmente, un Estado y Propietario al documento de ingreso.
 
 alter table trans_oc_ti add IdProductoEstado int null
@@ -40,6 +53,7 @@ INSERT INTO trans_oc_ti VALUES(7,'Ingreso consolidado',0,1,GETDATE(),1,GETDATE()
 9	Orden de Compra Interna
 10 Ingreso Almacén General con Póliza
 11 Liquidación de ruta
+17 Transferencia de Ingreso con Packing
 
 --Las coloqué aquí del 5 a a 9 porque en mis bases de datos solo tenía las 4 primeras
 INSERT INTO trans_oc_ti VALUES(5,'Ingreso Almacén Fiscal',             0,1,GETDATE(),1,GETDATE(), 1,1,0,0,0,0,0)
