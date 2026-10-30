@@ -3,6 +3,7 @@
     Mantenimientos > Bodega > Configuración de asignación de picking.
     nombre_lgco coincide con el BarButtonItem mnuConfiguracionPickingOp de BOF.
     Instalar primero 20261029_configuracion_picking_op_proposal.sql si falta.
+    Copia MERCOSAL local antigua: ejecutar antes 20261029_local_mercosal_menu_rol_compat.sql.
     Hereda consulta/modificación de mnuMantOperadores. No concede eliminación.
     Conserva permisos explícitos que ya existan para esta opción, incluidos denegados.
     Cambiar destino explícitamente para copias locales; no usar en producción remota.
@@ -59,8 +60,13 @@ BEGIN TRY
         FROM dbo.menu_sistema WITH(UPDLOCK,HOLDLOCK)
         WHERE padre=@Padre AND nivel=4;
         SET @IdMenu=@Padre+N'.'+CONVERT(nvarchar(11),@Siguiente);
-        IF EXISTS(SELECT 1 FROM dbo.menu_sistema WHERE IdMenu=@IdMenu)
-            THROW 51107,N'El ID de menú calculado ya está ocupado.',1;
+        -- Hay copias históricas con IDs bajo este prefijo pero padre inconsistente.
+        -- No moverlas: saltar sus IDs ocupados y reservar el siguiente libre.
+        WHILE EXISTS(SELECT 1 FROM dbo.menu_sistema WITH(UPDLOCK,HOLDLOCK) WHERE IdMenu=@IdMenu)
+        BEGIN
+            SET @Siguiente+=1;
+            SET @IdMenu=@Padre+N'.'+CONVERT(nvarchar(11),@Siguiente);
+        END;
         INSERT dbo.menu_sistema(IdMenu,titulo,nombre_lgco,nivel,padre,solicitar_clave_autorizacion)
         VALUES(@IdMenu,N'Configuración de asignación de picking',@NombreMenu,4,@Padre,@SolicitarClave);
         SET @MenuCreado=1;
