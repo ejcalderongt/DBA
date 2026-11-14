@@ -1,9 +1,136 @@
-/****** Object:  View [dbo].[VW_ProximosVencimiento]    Script Date: 5/12/2021 23:27:36 ******/
+#AT20261113 Se agregaron campos nuevos a la vista
+/****** Objeto: View [dbo].[VW_EstacionalidadProducto] Fecha de script: 3/11/2026 11:16:54 ******/
 SET ANSI_NULLS ON
 GO
 
 SET QUOTED_IDENTIFIER ON
 GO
+
+ALTER VIEW [dbo].[VW_EstacionalidadProducto]
+AS
+SELECT
+    p.nombre_comercial AS Propietario,
+    prd.codigo,
+    prd.codigo_barra AS Barra,
+    prd.nombre,
+    um.Nombre AS UnidadMedida,
+    pp.nombre AS Presentacion,
+    pp_producto.nombre AS PresentacionProducto,
+    s.lote,
+    s.lic_plate,
+    s.fecha_ingreso,
+    s.fecha_vence,
+    CAST(GETDATE() AS date) AS FechaProyectada,
+    DATEDIFF(DAY, s.fecha_ingreso, GETDATE()) AS Tolerancia_Dias,
+    s.cantidad AS CantidadSF,
+    pe.nombre AS NomEstado,
+    s.IdUbicacion,
+    ROUND(s.cantidad / NULLIF(pp.factor, 0), 2) AS Cantidad,
+    prd.IdProducto,
+    pbod.IdPropietarioBodega,
+    pbod.IdBodega,
+    dbo.Nombre_Completo_Ubicacion(s.IdUbicacion, pbod.IdBodega) AS UbicacionCompleta,
+    prov.Nombre AS Proveedor,
+    pf.Nombre AS Familia,
+    pt.NombreTipoProducto AS Tipo_Producto,
+    pc.Nombre AS Clasificacion,
+    dbo.Nombre_Area(bu.IdArea, bu.IdBodega) AS Area,
+    MAX(mov.FechaUltimoDespacho) AS FechaUltimoDespacho,
+    MAX(mov.CantDespachos) AS CantDespachos
+FROM dbo.stock AS s
+INNER JOIN dbo.producto_bodega AS pb
+    ON pb.IdProductoBodega = s.IdProductoBodega
+INNER JOIN dbo.propietario_bodega AS pbod
+    ON pbod.IdPropietarioBodega = s.IdPropietarioBodega
+INNER JOIN dbo.propietarios AS p
+    ON p.IdPropietario = pbod.IdPropietario
+INNER JOIN dbo.unidad_medida AS um
+    ON um.IdUnidadMedida = s.IdUnidadMedida
+INNER JOIN dbo.producto_estado AS pe
+    ON pe.IdEstado = s.IdProductoEstado
+INNER JOIN dbo.bodega_ubicacion AS bu
+    ON bu.IdUbicacion = s.IdUbicacion
+   AND bu.IdBodega = pbod.IdBodega
+LEFT JOIN dbo.producto_presentacion AS pp
+    ON pp.IdPresentacion = s.IdPresentacion
+LEFT JOIN dbo.producto AS prd
+    ON prd.IdProducto = pb.IdProducto
+LEFT JOIN dbo.producto_familia AS pf
+    ON pf.IdFamilia = prd.IdFamilia
+LEFT JOIN dbo.producto_clasificacion AS pc
+    ON pc.IdClasificacion = prd.IdClasificacion
+LEFT JOIN dbo.producto_tipo AS pt
+    ON pt.IdTipoProducto = prd.IdTipoProducto
+LEFT JOIN dbo.trans_re_det AS rd
+    ON rd.IdRecepcionEnc = s.IdRecepcionEnc
+   AND rd.IdRecepcionDet = s.IdRecepcionDet
+LEFT JOIN dbo.trans_oc_det AS od
+    ON od.IdOrdenCompraEnc = rd.IdOrdenCompraEnc
+   AND od.No_Linea = rd.No_Linea
+   AND od.IdProductoBodega = rd.IdProductoBodega
+LEFT JOIN dbo.trans_oc_enc AS oe
+    ON oe.IdOrdenCompraEnc = od.IdOrdenCompraEnc
+LEFT JOIN dbo.proveedor_bodega AS pbd
+    ON pbd.IdAsignacion = oe.IdProveedorBodega
+LEFT JOIN dbo.proveedor AS prov
+    ON prov.IdProveedor = pbd.IdProveedor
+OUTER APPLY (
+    SELECT
+        ISNULL(MAX(m.fecha),'') AS FechaUltimoDespacho,
+        ISNULL(COUNT(DISTINCT m.IdTransaccion),0) AS CantDespachos
+    FROM dbo.trans_movimientos AS m
+    WHERE m.IdProductoBodega = s.IdProductoBodega
+      AND ISNULL(m.IdPropietarioBodega, 0) = s.IdPropietarioBodega
+      AND ISNULL(m.IdBodegaOrigen, 0) = pbod.IdBodega
+      AND ISNULL(m.lote, '') collate Modern_Spanish_CI_AS = ISNULL(s.lote, '')
+      AND ISNULL(m.barra_pallet, '') collate Modern_Spanish_CI_AS= ISNULL(s.lic_plate, '')
+      AND ISNULL(m.IdPresentacion, 0) = ISNULL(s.IdPresentacion, 0)
+      AND ISNULL(m.IdTransaccion, 0) <> 0
+	  AND ISNULL(m.IdProductoTallaColor, 0) =ISNULL( s.IdProductoTallaColor, 0)
+	  AND m.IdTipoTarea = 5 
+) AS mov
+LEFT JOIN (
+    SELECT
+        IdProducto,
+        nombre,
+        ROW_NUMBER() OVER (
+            PARTITION BY IdProducto
+            ORDER BY IdPresentacion
+        ) AS NumeroFila
+    FROM dbo.producto_presentacion
+) AS pp_producto ON pp_producto.IdProducto = prd.IdProducto AND pp_producto.NumeroFila = 1
+WHERE prd.control_vencimiento = 1
+GROUP BY
+    p.nombre_comercial,
+    prd.codigo,
+    prd.codigo_barra,
+    prd.nombre,
+    um.Nombre,
+    pp.nombre,
+    s.lote,
+    s.lic_plate,
+    s.fecha_ingreso,
+    s.fecha_vence,
+    s.cantidad,
+    pe.nombre,
+    s.IdUbicacion,
+    pp.factor,
+    prd.IdProducto,
+    pbod.IdPropietarioBodega,
+    pbod.IdBodega,
+    prov.Nombre,
+    pf.Nombre,
+    pt.NombreTipoProducto,
+    pc.Nombre,
+    bu.IdArea,
+    bu.IdBodega,
+    s.IdStock,
+    s.IdPedidoEnc,
+    s.IdDespachoEnc,
+    pp_producto.nombre
+GO
+
+
 
 CREATE VIEW [dbo].[VW_EstacionalidadProducto]
 AS
