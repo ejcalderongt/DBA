@@ -1,3 +1,10 @@
+--#CKFK20261120 Opcion de motivos de verificación
+INSERT INTO dbo.menu_sistema (IdMenu,titulo,nombre_lgco,nivel,padre,solicitar_clave_autorizacion)
+VALUES('1.1.1.8','Motivo Verificacion','mnuMantMotivoVerificacion',4,'1.1.1',0);
+IF NOT EXISTS(SELECT idmenu FROM menu_rol WHERE IdMenu = '1.1.1.8')
+insert into menu_rol values((select Max(IdMenuRol)+1 from menu_rol),'1.1.1.8',1,'Erik Calderón',getdate(),'DTS',GETDATE(),1,1,1,1,1)
+GO
+
 --#AT20261113 Reportes nuevos por solicitud de La Cumbre
 INSERT INTO dbo.menu_sistema (IdMenu,titulo,nombre_lgco,nivel,padre,solicitar_clave_autorizacion)
 VALUES('3.6.1.5','Productos no reservados por pedido','cmdProductosNoReservadosPorPedido',4,'3.6.1',0);
