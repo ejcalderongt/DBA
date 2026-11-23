@@ -1,3 +1,745 @@
+--#MA20261120 Modifique el Id a Identity
+SET NOCOUNT ON;
+SET XACT_ABORT ON;
+SET LOCK_TIMEOUT 30000;
+
+IF OBJECT_ID(N'dbo.trans_inv_resumen', N'U') IS NULL
+    THROW 51001, 'No existe dbo.trans_inv_resumen.', 1;
+
+IF COLUMNPROPERTY(
+       OBJECT_ID(N'dbo.trans_inv_resumen'),
+       N'idinventariores',
+       'IsIdentity') = 1
+    THROW 51002, 'La migración de trans_inv_resumen a IDENTITY ya fue aplicada.', 1;
+
+IF OBJECT_ID(
+       N'dbo.trans_inv_resumen_identity_migration_stage',
+       N'U') IS NOT NULL
+    THROW 51003, 'Ya existe la tabla de etapa de migración.', 1;
+
+DECLARE @ColumnasEsperadas TABLE
+(
+    column_id int NOT NULL,
+    nombre sysname NOT NULL,
+    tipo sysname NOT NULL,
+    max_length smallint NOT NULL,
+    precision_val tinyint NOT NULL,
+    scale_val tinyint NOT NULL,
+    nullable bit NOT NULL,
+    collation_name sysname NULL,
+    identity_val bit NOT NULL,
+    computed_val bit NOT NULL,
+    rowguid_val bit NOT NULL,
+    sparse_val bit NOT NULL
+);
+
+INSERT INTO @ColumnasEsperadas
+(
+    column_id,
+    nombre,
+    tipo,
+    max_length,
+    precision_val,
+    scale_val,
+    nullable,
+    collation_name,
+    identity_val,
+    computed_val,
+    rowguid_val,
+    sparse_val
+)
+VALUES
+(1,  N'idinventariores',      N'int',       4,   10, 0, 0, NULL,                    0, 0, 0, 0),
+(2,  N'idinventarioenct',     N'int',       4,   10, 0, 0, NULL,                    0, 0, 0, 0),
+(3,  N'idtramo',              N'int',       4,   10, 0, 0, NULL,                    0, 0, 0, 0),
+(4,  N'idproducto',           N'int',       4,   10, 0, 0, NULL,                    0, 0, 0, 0),
+(5,  N'idoperador',           N'int',       4,   10, 0, 1, NULL,                    0, 0, 0, 0),
+(6,  N'IdUnidadMedida',       N'int',       4,   10, 0, 1, NULL,                    0, 0, 0, 0),
+(7,  N'idpresentacion',       N'int',       4,   10, 0, 1, NULL,                    0, 0, 0, 0),
+(8,  N'idproductoestado',     N'int',       4,   10, 0, 1, NULL,                    0, 0, 0, 0),
+(9,  N'cantidad',             N'float',     8,   53, 0, 1, NULL,                    0, 0, 0, 0),
+(10, N'fecha_captura',        N'datetime',  8,   23, 3, 1, NULL,                    0, 0, 0, 0),
+(11, N'host',                 N'nvarchar',  100, 0,  0, 1, N'Modern_Spanish_CI_AS', 0, 0, 0, 0),
+(12, N'nom_producto',         N'nvarchar',  500, 0,  0, 1, N'Modern_Spanish_CI_AS', 0, 0, 0, 0),
+(13, N'nom_operador',         N'nvarchar',  100, 0,  0, 1, N'Modern_Spanish_CI_AS', 0, 0, 0, 0),
+(14, N'idbodega',             N'int',       4,   10, 0, 0, NULL,                    0, 0, 0, 0),
+(15, N'idubicacion',          N'int',       4,   10, 0, 0, NULL,                    0, 0, 0, 0),
+(16, N'lic_plate',            N'nvarchar',  200, 0,  0, 1, N'Modern_Spanish_CI_AS', 0, 0, 0, 0),
+(17, N'IdProductoTallaColor', N'int',       4,   10, 0, 1, NULL,                    0, 0, 0, 0),
+(18, N'IdSolicitud',          N'varchar',   36,  0,  0, 1, N'Modern_Spanish_CI_AS', 0, 0, 0, 0);
+
+DECLARE @DependenciasEsperadas TABLE
+(
+    objeto nvarchar(517) NOT NULL PRIMARY KEY
+);
+
+INSERT INTO @DependenciasEsperadas (objeto)
+VALUES
+(N'[dbo].[CLBD_INICIARBD]'),
+(N'[dbo].[CLBD_PRC]'),
+(N'[dbo].[CLBD_PRC_BY_IDBODEGA]');
+
+-- Validación bidireccional de la estructura actual.
+IF EXISTS
+(
+    SELECT
+        e.column_id, e.nombre, e.tipo, e.max_length,
+        e.precision_val, e.scale_val, e.nullable,
+        e.collation_name, e.identity_val, e.computed_val,
+        e.rowguid_val, e.sparse_val
+    FROM @ColumnasEsperadas e
+
+    EXCEPT
+
+    SELECT
+        c.column_id, c.name, TYPE_NAME(c.user_type_id),
+        c.max_length, c.precision, c.scale, c.is_nullable,
+        c.collation_name, c.is_identity, c.is_computed,
+        c.is_rowguidcol, c.is_sparse
+    FROM sys.columns c
+    WHERE c.object_id = OBJECT_ID(N'dbo.trans_inv_resumen')
+)
+OR EXISTS
+(
+    SELECT
+        c.column_id, c.name, TYPE_NAME(c.user_type_id),
+        c.max_length, c.precision, c.scale, c.is_nullable,
+        c.collation_name, c.is_identity, c.is_computed,
+        c.is_rowguidcol, c.is_sparse
+    FROM sys.columns c
+    WHERE c.object_id = OBJECT_ID(N'dbo.trans_inv_resumen')
+
+    EXCEPT
+
+    SELECT
+        e.column_id, e.nombre, e.tipo, e.max_length,
+        e.precision_val, e.scale_val, e.nullable,
+        e.collation_name, e.identity_val, e.computed_val,
+        e.rowguid_val, e.sparse_val
+    FROM @ColumnasEsperadas e
+)
+    THROW 51004, 'La estructura actual no coincide con las 18 columnas validadas.', 1;
+
+-- Valores predeterminados.
+IF (SELECT COUNT(*)
+    FROM sys.default_constraints
+    WHERE parent_object_id = OBJECT_ID(N'dbo.trans_inv_resumen')) <> 3
+    THROW 51005, 'La cantidad de defaults cambió.', 1;
+
+IF NOT EXISTS
+(
+    SELECT 1
+    FROM sys.default_constraints dc
+    JOIN sys.columns c
+      ON c.object_id = dc.parent_object_id
+     AND c.column_id = dc.parent_column_id
+    WHERE dc.parent_object_id = OBJECT_ID(N'dbo.trans_inv_resumen')
+      AND dc.name = N'DF_inv_ini_resumen_cant'
+      AND c.name = N'cantidad'
+      AND dc.definition = N'((0))'
+)
+    THROW 51006, 'No coincide el default de cantidad.', 1;
+
+IF NOT EXISTS
+(
+    SELECT 1
+    FROM sys.default_constraints dc
+    JOIN sys.columns c
+      ON c.object_id = dc.parent_object_id
+     AND c.column_id = dc.parent_column_id
+    WHERE dc.parent_object_id = OBJECT_ID(N'dbo.trans_inv_resumen')
+      AND dc.name = N'DF__trans_inv__idbod__54F9AAF4'
+      AND c.name = N'idbodega'
+      AND dc.definition = N'((0))'
+)
+    THROW 51007, 'No coincide el default de idbodega.', 1;
+
+IF NOT EXISTS
+(
+    SELECT 1
+    FROM sys.default_constraints dc
+    JOIN sys.columns c
+      ON c.object_id = dc.parent_object_id
+     AND c.column_id = dc.parent_column_id
+    WHERE dc.parent_object_id = OBJECT_ID(N'dbo.trans_inv_resumen')
+      AND dc.name = N'DF__trans_inv__idubi__55EDCF2D'
+      AND c.name = N'idubicacion'
+      AND dc.definition = N'((0))'
+)
+    THROW 51008, 'No coincide el default de idubicacion.', 1;
+
+-- Índices actuales.
+IF (SELECT COUNT(*)
+    FROM sys.indexes
+    WHERE object_id = OBJECT_ID(N'dbo.trans_inv_resumen')
+      AND index_id > 0) <> 2
+    THROW 51009, 'La cantidad de índices cambió.', 1;
+
+IF NOT EXISTS
+(
+    SELECT 1
+    FROM sys.indexes i
+    JOIN sys.index_columns ic
+      ON ic.object_id = i.object_id
+     AND ic.index_id = i.index_id
+    JOIN sys.columns c
+      ON c.object_id = ic.object_id
+     AND c.column_id = ic.column_id
+    JOIN sys.data_spaces ds
+      ON ds.data_space_id = i.data_space_id
+    WHERE i.object_id = OBJECT_ID(N'dbo.trans_inv_resumen')
+      AND i.name = N'PK_trans_inv_ini_resumen'
+      AND i.is_primary_key = 1
+      AND i.is_unique = 1
+      AND i.type = 1
+      AND c.name = N'idinventariores'
+      AND ic.key_ordinal = 1
+      AND ic.is_descending_key = 0
+      AND ds.name = N'PRIMARY'
+)
+    THROW 51010, 'La PK actual no coincide.', 1;
+
+IF NOT EXISTS
+(
+    SELECT 1
+    FROM sys.indexes i
+    JOIN sys.index_columns ic
+      ON ic.object_id = i.object_id
+     AND ic.index_id = i.index_id
+    JOIN sys.columns c
+      ON c.object_id = ic.object_id
+     AND c.column_id = ic.column_id
+    JOIN sys.data_spaces ds
+      ON ds.data_space_id = i.data_space_id
+    WHERE i.object_id = OBJECT_ID(N'dbo.trans_inv_resumen')
+      AND i.name = N'UX_trans_inv_resumen_IdSolicitud'
+      AND i.is_unique = 1
+      AND i.type = 2
+      AND i.has_filter = 1
+      AND i.filter_definition = N'([IdSolicitud] IS NOT NULL)'
+      AND c.name = N'IdSolicitud'
+      AND ic.key_ordinal = 1
+      AND ds.name = N'PRIMARY'
+)
+    THROW 51011, 'El índice de IdSolicitud no coincide.', 1;
+
+-- Relación actual.
+IF (SELECT COUNT(*)
+    FROM sys.foreign_keys
+    WHERE parent_object_id = OBJECT_ID(N'dbo.trans_inv_resumen')
+       OR referenced_object_id = OBJECT_ID(N'dbo.trans_inv_resumen')) <> 1
+    THROW 51012, 'Las relaciones de la tabla cambiaron.', 1;
+
+IF NOT EXISTS
+(
+    SELECT 1
+    FROM sys.foreign_keys fk
+    JOIN sys.foreign_key_columns fkc
+      ON fkc.constraint_object_id = fk.object_id
+    JOIN sys.columns pc
+      ON pc.object_id = fkc.parent_object_id
+     AND pc.column_id = fkc.parent_column_id
+    JOIN sys.columns rc
+      ON rc.object_id = fkc.referenced_object_id
+     AND rc.column_id = fkc.referenced_column_id
+    WHERE fk.name = N'FK_inv_ini_resumen_inv_enc'
+      AND fk.parent_object_id = OBJECT_ID(N'dbo.trans_inv_resumen')
+      AND fk.referenced_object_id = OBJECT_ID(N'dbo.trans_inv_enc')
+      AND pc.name = N'idinventarioenct'
+      AND rc.name = N'idinventarioenc'
+      AND fk.delete_referential_action = 1
+      AND fk.update_referential_action = 0
+      AND fk.is_disabled = 0
+      AND fk.is_not_trusted = 0
+      AND fk.is_not_for_replication = 0
+)
+    THROW 51013, 'La FK actual no coincide.', 1;
+
+-- Dependencias exactas.
+IF EXISTS
+(
+    SELECT e.objeto
+    FROM @DependenciasEsperadas e
+
+    EXCEPT
+
+    SELECT DISTINCT
+        QUOTENAME(OBJECT_SCHEMA_NAME(d.referencing_id)) +
+        N'.' +
+        QUOTENAME(OBJECT_NAME(d.referencing_id))
+    FROM sys.sql_expression_dependencies d
+    WHERE d.referenced_id = OBJECT_ID(N'dbo.trans_inv_resumen')
+      AND d.referencing_id <> OBJECT_ID(N'dbo.trans_inv_resumen')
+)
+OR EXISTS
+(
+    SELECT DISTINCT
+        QUOTENAME(OBJECT_SCHEMA_NAME(d.referencing_id)) +
+        N'.' +
+        QUOTENAME(OBJECT_NAME(d.referencing_id))
+    FROM sys.sql_expression_dependencies d
+    WHERE d.referenced_id = OBJECT_ID(N'dbo.trans_inv_resumen')
+      AND d.referencing_id <> OBJECT_ID(N'dbo.trans_inv_resumen')
+
+    EXCEPT
+
+    SELECT e.objeto
+    FROM @DependenciasEsperadas e
+)
+    THROW 51014, 'Las dependencias actuales de la tabla cambiaron.', 1;
+
+IF EXISTS
+(
+    SELECT 1
+    FROM sys.crypt_properties
+    WHERE class = 1
+      AND major_id IN
+      (
+          OBJECT_ID(N'dbo.CLBD_INICIARBD'),
+          OBJECT_ID(N'dbo.CLBD_PRC'),
+          OBJECT_ID(N'dbo.CLBD_PRC_BY_IDBODEGA')
+      )
+)
+    THROW 51015, 'Un procedimiento dependiente está firmado.', 1;
+
+IF EXISTS
+(
+    SELECT 1
+    FROM sys.triggers
+    WHERE parent_id = OBJECT_ID(N'dbo.trans_inv_resumen')
+)
+OR EXISTS
+(
+    SELECT 1
+    FROM sys.extended_properties
+    WHERE major_id = OBJECT_ID(N'dbo.trans_inv_resumen')
+)
+OR EXISTS
+(
+    SELECT 1
+    FROM sys.database_permissions
+    WHERE class = 1
+      AND major_id = OBJECT_ID(N'dbo.trans_inv_resumen')
+)
+OR EXISTS
+(
+    SELECT 1
+    FROM sys.synonyms
+    WHERE base_object_name LIKE N'%trans_inv_resumen%'
+)
+    THROW 51016, 'Existen objetos adicionales no contemplados por la migración.', 1;
+
+DECLARE @FilasEsperadas bigint = 27;
+DECLARE @FilasActuales bigint;
+DECLARE @MaxId int;
+DECLARE @ResultadoBloqueo int;
+
+BEGIN TRY
+    BEGIN TRANSACTION;
+
+    EXEC @ResultadoBloqueo = sys.sp_getapplock
+        @Resource = N'TOMWMS_TRANS_INV_RESUMEN_IDENTITY_SCHEMA_CHANGE',
+        @LockMode = N'Exclusive',
+        @LockOwner = N'Transaction',
+        @LockTimeout = 30000;
+
+    IF @ResultadoBloqueo < 0
+        THROW 51017, 'No fue posible obtener el bloqueo exclusivo.', 1;
+
+    SELECT
+        @FilasActuales = COUNT_BIG(idinventariores),
+        @MaxId = ISNULL(MAX(idinventariores), 0)
+    FROM dbo.trans_inv_resumen WITH (TABLOCKX, HOLDLOCK);
+
+    IF @FilasActuales <> @FilasEsperadas
+        THROW 51018, 'La tabla ya no contiene los 27 registros validados.', 1;
+
+    IF EXISTS
+    (
+        SELECT idinventariores
+        FROM dbo.trans_inv_resumen
+        GROUP BY idinventariores
+        HAVING COUNT_BIG(idinventariores) > 1
+    )
+        THROW 51019, 'Existen IDs duplicados.', 1;
+
+    IF EXISTS
+    (
+        SELECT IdSolicitud
+        FROM dbo.trans_inv_resumen
+        WHERE IdSolicitud IS NOT NULL
+        GROUP BY IdSolicitud
+        HAVING COUNT_BIG(IdSolicitud) > 1
+    )
+        THROW 51020, 'Existen IdSolicitud duplicados.', 1;
+
+    CREATE TABLE dbo.trans_inv_resumen_identity_migration_stage
+    (
+        idinventariores      int IDENTITY(1,1) NOT NULL,
+        idinventarioenct     int NOT NULL,
+        idtramo              int NOT NULL,
+        idproducto           int NOT NULL,
+        idoperador           int NULL,
+        IdUnidadMedida       int NULL,
+        idpresentacion       int NULL,
+        idproductoestado     int NULL,
+        cantidad             float NULL,
+        fecha_captura        datetime NULL,
+        host                 nvarchar(50) COLLATE Modern_Spanish_CI_AS NULL,
+        nom_producto         nvarchar(250) COLLATE Modern_Spanish_CI_AS NULL,
+        nom_operador         nvarchar(50) COLLATE Modern_Spanish_CI_AS NULL,
+        idbodega             int NOT NULL,
+        idubicacion          int NOT NULL,
+        lic_plate            nvarchar(100) COLLATE Modern_Spanish_CI_AS NULL,
+        IdProductoTallaColor int NULL,
+        IdSolicitud          varchar(36) COLLATE Modern_Spanish_CI_AS NULL
+    ) ON [PRIMARY];
+
+    SET IDENTITY_INSERT
+        dbo.trans_inv_resumen_identity_migration_stage ON;
+
+    INSERT INTO dbo.trans_inv_resumen_identity_migration_stage
+    (
+        idinventariores,
+        idinventarioenct,
+        idtramo,
+        idproducto,
+        idoperador,
+        IdUnidadMedida,
+        idpresentacion,
+        idproductoestado,
+        cantidad,
+        fecha_captura,
+        host,
+        nom_producto,
+        nom_operador,
+        idbodega,
+        idubicacion,
+        lic_plate,
+        IdProductoTallaColor,
+        IdSolicitud
+    )
+    SELECT
+        idinventariores,
+        idinventarioenct,
+        idtramo,
+        idproducto,
+        idoperador,
+        IdUnidadMedida,
+        idpresentacion,
+        idproductoestado,
+        cantidad,
+        fecha_captura,
+        host,
+        nom_producto,
+        nom_operador,
+        idbodega,
+        idubicacion,
+        lic_plate,
+        IdProductoTallaColor,
+        IdSolicitud
+    FROM dbo.trans_inv_resumen;
+
+    SET IDENTITY_INSERT
+        dbo.trans_inv_resumen_identity_migration_stage OFF;
+
+    IF
+    (
+        SELECT COUNT_BIG(idinventariores)
+        FROM dbo.trans_inv_resumen_identity_migration_stage
+    ) <> @FilasActuales
+        THROW 51021, 'La cantidad de registros copiados no coincide.', 1;
+
+    -- Original menos etapa.
+    IF EXISTS
+    (
+        SELECT
+            idinventariores, idinventarioenct, idtramo, idproducto,
+            idoperador, IdUnidadMedida, idpresentacion, idproductoestado,
+            cantidad, fecha_captura, host, nom_producto, nom_operador,
+            idbodega, idubicacion, lic_plate, IdProductoTallaColor,
+            IdSolicitud
+        FROM dbo.trans_inv_resumen
+
+        EXCEPT
+
+        SELECT
+            idinventariores, idinventarioenct, idtramo, idproducto,
+            idoperador, IdUnidadMedida, idpresentacion, idproductoestado,
+            cantidad, fecha_captura, host, nom_producto, nom_operador,
+            idbodega, idubicacion, lic_plate, IdProductoTallaColor,
+            IdSolicitud
+        FROM dbo.trans_inv_resumen_identity_migration_stage
+    )
+        THROW 51022, 'La etapa no contiene todos los registros originales.', 1;
+
+    -- Etapa menos original.
+    IF EXISTS
+    (
+        SELECT
+            idinventariores, idinventarioenct, idtramo, idproducto,
+            idoperador, IdUnidadMedida, idpresentacion, idproductoestado,
+            cantidad, fecha_captura, host, nom_producto, nom_operador,
+            idbodega, idubicacion, lic_plate, IdProductoTallaColor,
+            IdSolicitud
+        FROM dbo.trans_inv_resumen_identity_migration_stage
+
+        EXCEPT
+
+        SELECT
+            idinventariores, idinventarioenct, idtramo, idproducto,
+            idoperador, IdUnidadMedida, idpresentacion, idproductoestado,
+            cantidad, fecha_captura, host, nom_producto, nom_operador,
+            idbodega, idubicacion, lic_plate, IdProductoTallaColor,
+            IdSolicitud
+        FROM dbo.trans_inv_resumen
+    )
+        THROW 51023, 'La etapa contiene registros distintos o adicionales.', 1;
+
+    DROP TABLE dbo.trans_inv_resumen;
+
+    EXEC sys.sp_rename
+        N'dbo.trans_inv_resumen_identity_migration_stage',
+        N'trans_inv_resumen',
+        N'OBJECT';
+
+    ALTER TABLE dbo.trans_inv_resumen
+        ADD CONSTRAINT DF_inv_ini_resumen_cant
+        DEFAULT ((0)) FOR cantidad;
+
+    ALTER TABLE dbo.trans_inv_resumen
+        ADD CONSTRAINT DF__trans_inv__idbod__54F9AAF4
+        DEFAULT ((0)) FOR idbodega;
+
+    ALTER TABLE dbo.trans_inv_resumen
+        ADD CONSTRAINT DF__trans_inv__idubi__55EDCF2D
+        DEFAULT ((0)) FOR idubicacion;
+
+    ALTER TABLE dbo.trans_inv_resumen
+        ADD CONSTRAINT PK_trans_inv_ini_resumen
+        PRIMARY KEY CLUSTERED (idinventariores ASC)
+        WITH
+        (
+            PAD_INDEX = OFF,
+            STATISTICS_NORECOMPUTE = OFF,
+            IGNORE_DUP_KEY = OFF,
+            ALLOW_ROW_LOCKS = ON,
+            ALLOW_PAGE_LOCKS = ON,
+            OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF
+        ) ON [PRIMARY];
+
+    CREATE UNIQUE NONCLUSTERED INDEX UX_trans_inv_resumen_IdSolicitud
+        ON dbo.trans_inv_resumen (IdSolicitud ASC)
+        WHERE IdSolicitud IS NOT NULL
+        WITH
+        (
+            PAD_INDEX = OFF,
+            STATISTICS_NORECOMPUTE = OFF,
+            IGNORE_DUP_KEY = OFF,
+            ALLOW_ROW_LOCKS = ON,
+            ALLOW_PAGE_LOCKS = ON,
+            OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF
+        ) ON [PRIMARY];
+
+    ALTER TABLE dbo.trans_inv_resumen WITH CHECK
+        ADD CONSTRAINT FK_inv_ini_resumen_inv_enc
+        FOREIGN KEY (idinventarioenct)
+        REFERENCES dbo.trans_inv_enc (idinventarioenc)
+        ON DELETE CASCADE;
+
+    ALTER TABLE dbo.trans_inv_resumen
+        CHECK CONSTRAINT FK_inv_ini_resumen_inv_enc;
+
+    DECLARE @ComandoReseed nvarchar(300);
+
+    SET @ComandoReseed =
+        N'DBCC CHECKIDENT (''dbo.trans_inv_resumen'', RESEED, ' +
+        CONVERT(nvarchar(20), @MaxId) +
+        N') WITH NO_INFOMSGS;';
+
+    EXEC sys.sp_executesql @ComandoReseed;
+
+    EXEC sys.sp_refreshsqlmodule N'dbo.CLBD_INICIARBD';
+    EXEC sys.sp_refreshsqlmodule N'dbo.CLBD_PRC';
+    EXEC sys.sp_refreshsqlmodule N'dbo.CLBD_PRC_BY_IDBODEGA';
+
+    UPDATE @ColumnasEsperadas
+    SET identity_val = 1
+    WHERE column_id = 1;
+
+    -- Estructura final bidireccional.
+    IF EXISTS
+    (
+        SELECT
+            e.column_id, e.nombre, e.tipo, e.max_length,
+            e.precision_val, e.scale_val, e.nullable,
+            e.collation_name, e.identity_val, e.computed_val,
+            e.rowguid_val, e.sparse_val
+        FROM @ColumnasEsperadas e
+
+        EXCEPT
+
+        SELECT
+            c.column_id, c.name, TYPE_NAME(c.user_type_id),
+            c.max_length, c.precision, c.scale, c.is_nullable,
+            c.collation_name, c.is_identity, c.is_computed,
+            c.is_rowguidcol, c.is_sparse
+        FROM sys.columns c
+        WHERE c.object_id = OBJECT_ID(N'dbo.trans_inv_resumen')
+    )
+    OR EXISTS
+    (
+        SELECT
+            c.column_id, c.name, TYPE_NAME(c.user_type_id),
+            c.max_length, c.precision, c.scale, c.is_nullable,
+            c.collation_name, c.is_identity, c.is_computed,
+            c.is_rowguidcol, c.is_sparse
+        FROM sys.columns c
+        WHERE c.object_id = OBJECT_ID(N'dbo.trans_inv_resumen')
+
+        EXCEPT
+
+        SELECT
+            e.column_id, e.nombre, e.tipo, e.max_length,
+            e.precision_val, e.scale_val, e.nullable,
+            e.collation_name, e.identity_val, e.computed_val,
+            e.rowguid_val, e.sparse_val
+        FROM @ColumnasEsperadas e
+    )
+        THROW 51024, 'La estructura final no coincide.', 1;
+
+    IF (SELECT COUNT_BIG(idinventariores)
+        FROM dbo.trans_inv_resumen) <> @FilasActuales
+        THROW 51025, 'La cantidad final de registros no coincide.', 1;
+
+    IF (SELECT COUNT(*)
+        FROM sys.default_constraints
+        WHERE parent_object_id = OBJECT_ID(N'dbo.trans_inv_resumen')) <> 3
+        THROW 51026, 'Los defaults finales no coinciden.', 1;
+
+    IF (SELECT COUNT(*)
+        FROM sys.indexes
+        WHERE object_id = OBJECT_ID(N'dbo.trans_inv_resumen')
+          AND index_id > 0) <> 2
+        THROW 51027, 'La cantidad final de índices no coincide.', 1;
+
+    IF NOT EXISTS
+    (
+        SELECT 1
+        FROM sys.indexes
+        WHERE object_id = OBJECT_ID(N'dbo.trans_inv_resumen')
+          AND name = N'PK_trans_inv_ini_resumen'
+          AND is_primary_key = 1
+          AND is_unique = 1
+          AND type = 1
+    )
+        THROW 51028, 'No se recreó correctamente la PK.', 1;
+
+    IF NOT EXISTS
+    (
+        SELECT 1
+        FROM sys.indexes
+        WHERE object_id = OBJECT_ID(N'dbo.trans_inv_resumen')
+          AND name = N'UX_trans_inv_resumen_IdSolicitud'
+          AND is_unique = 1
+          AND type = 2
+          AND has_filter = 1
+          AND filter_definition = N'([IdSolicitud] IS NOT NULL)'
+    )
+        THROW 51029, 'No se recreó correctamente el índice de IdSolicitud.', 1;
+
+    IF NOT EXISTS
+    (
+        SELECT 1
+        FROM sys.foreign_keys
+        WHERE name = N'FK_inv_ini_resumen_inv_enc'
+          AND parent_object_id = OBJECT_ID(N'dbo.trans_inv_resumen')
+          AND referenced_object_id = OBJECT_ID(N'dbo.trans_inv_enc')
+          AND delete_referential_action = 1
+          AND update_referential_action = 0
+          AND is_disabled = 0
+          AND is_not_trusted = 0
+    )
+        THROW 51030, 'No se recreó correctamente la FK.', 1;
+
+    -- Dependencias después de reconstruir y refrescar.
+    IF EXISTS
+    (
+        SELECT e.objeto
+        FROM @DependenciasEsperadas e
+
+        EXCEPT
+
+        SELECT DISTINCT
+            QUOTENAME(OBJECT_SCHEMA_NAME(d.referencing_id)) +
+            N'.' +
+            QUOTENAME(OBJECT_NAME(d.referencing_id))
+        FROM sys.sql_expression_dependencies d
+        WHERE d.referenced_id = OBJECT_ID(N'dbo.trans_inv_resumen')
+          AND d.referencing_id <> OBJECT_ID(N'dbo.trans_inv_resumen')
+    )
+    OR EXISTS
+    (
+        SELECT DISTINCT
+            QUOTENAME(OBJECT_SCHEMA_NAME(d.referencing_id)) +
+            N'.' +
+            QUOTENAME(OBJECT_NAME(d.referencing_id))
+        FROM sys.sql_expression_dependencies d
+        WHERE d.referenced_id = OBJECT_ID(N'dbo.trans_inv_resumen')
+          AND d.referencing_id <> OBJECT_ID(N'dbo.trans_inv_resumen')
+
+        EXCEPT
+
+        SELECT e.objeto
+        FROM @DependenciasEsperadas e
+    )
+        THROW 51031, 'Las dependencias no quedaron asociadas a la tabla reconstruida.', 1;
+
+    IF IDENT_CURRENT(N'dbo.trans_inv_resumen') <> @MaxId
+        THROW 51032, 'El valor actual de IDENTITY no coincide con el máximo histórico.', 1;
+
+    IF EXISTS
+    (
+        SELECT IdSolicitud
+        FROM dbo.trans_inv_resumen
+        WHERE IdSolicitud IS NOT NULL
+        GROUP BY IdSolicitud
+        HAVING COUNT_BIG(IdSolicitud) > 1
+    )
+        THROW 51033, 'Se detectaron IdSolicitud duplicados al finalizar.', 1;
+
+    COMMIT TRANSACTION;
+
+    SELECT
+        DB_NAME() AS BaseDatos,
+        COUNT_BIG(idinventariores) AS Registros,
+        MIN(idinventariores) AS IdMinimo,
+        MAX(idinventariores) AS IdMaximo,
+        IDENT_CURRENT(N'dbo.trans_inv_resumen') AS IdentityActual,
+        COLUMNPROPERTY(
+            OBJECT_ID(N'dbo.trans_inv_resumen'),
+            N'idinventariores',
+            'IsIdentity') AS EsIdentity
+    FROM dbo.trans_inv_resumen;
+
+    SELECT DISTINCT
+        QUOTENAME(OBJECT_SCHEMA_NAME(d.referencing_id)) +
+        N'.' +
+        QUOTENAME(OBJECT_NAME(d.referencing_id)) AS DependenciaVerificada
+    FROM sys.sql_expression_dependencies d
+    WHERE d.referenced_id = OBJECT_ID(N'dbo.trans_inv_resumen')
+      AND d.referencing_id <> OBJECT_ID(N'dbo.trans_inv_resumen')
+    ORDER BY DependenciaVerificada;
+
+END TRY
+BEGIN CATCH
+    IF XACT_STATE() <> 0
+        ROLLBACK TRANSACTION;
+
+    THROW;
+END CATCH;
+GO
+
 /***************AT20251116 Campo talla color MAMPA************************/
 alter table trans_inv_resumen add IdProductoTallaColor int
 
