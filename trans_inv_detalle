@@ -1,3 +1,155 @@
+-- INTEGRACIÓN DE IDSOLICITUD – CONTEO
+--
+-- IdSolicitud identifica de forma única cada acción de guardado enviada por la
+-- HH. Permite reconocer reintentos de la misma solicitud y evita que un fallo
+-- de comunicación o una ejecución simultánea inserte dos conteos iguales.
+-- Este script agrega IdSolicitud a dbo.trans_inv_detalle cuando no existe,
+-- normaliza valores vacíos, valida el formato y la ausencia de duplicados, y
+-- crea un índice único filtrado para proteger únicamente solicitudes informadas.
+-- Es seguro para reejecución y no modifica la columna IDENTITY existente.
+--
+-- #MA20261123_INV_INICIAL_IDSOLICITUD_CONTEO
+-- ============================================================================
+
+SET NOCOUNT ON;
+SET XACT_ABORT ON;
+
+IF DB_NAME() IN (N'master', N'model', N'msdb', N'tempdb')
+    THROW 50001, 'Seleccione la base TOMWMS correspondiente.', 1;
+
+IF OBJECT_ID(N'dbo.trans_inv_detalle', N'U') IS NULL
+    THROW 50002, 'No existe dbo.trans_inv_detalle.', 1;
+
+BEGIN TRY
+    BEGIN TRANSACTION;
+
+    DECLARE @ResultadoBloqueo int;
+
+    EXEC @ResultadoBloqueo = sys.sp_getapplock
+        @Resource = N'TOMWMS_Integracion_IdSolicitud_trans_inv_detalle',
+        @LockMode = N'Exclusive',
+        @LockOwner = N'Transaction',
+        @LockTimeout = 15000;
+
+    IF @ResultadoBloqueo < 0
+        THROW 50003, 'No fue posible obtener el bloqueo para integrar IdSolicitud en trans_inv_detalle.', 1;
+
+    IF COL_LENGTH(N'dbo.trans_inv_detalle', N'IdSolicitud') IS NULL
+    BEGIN
+        EXEC(N'ALTER TABLE dbo.trans_inv_detalle
+               ADD IdSolicitud varchar(36) NULL;');
+    END;
+
+    IF NOT EXISTS (
+        SELECT 1
+        FROM sys.columns AS c
+        INNER JOIN sys.types AS t
+            ON t.user_type_id = c.user_type_id
+        WHERE c.object_id = OBJECT_ID(N'dbo.trans_inv_detalle')
+          AND c.name = N'IdSolicitud'
+          AND t.name = N'varchar'
+          AND c.max_length = 36
+          AND c.is_nullable = 1
+    )
+        THROW 50004, 'La columna dbo.trans_inv_detalle.IdSolicitud no tiene la definición esperada varchar(36) NULL.', 1;
+
+    EXEC sys.sp_executesql N'
+        UPDATE dbo.trans_inv_detalle
+        SET IdSolicitud = NULL
+        WHERE IdSolicitud IS NOT NULL
+          AND LTRIM(RTRIM(IdSolicitud)) = '''';
+
+        IF EXISTS (
+            SELECT 1
+            FROM dbo.trans_inv_detalle
+            WHERE IdSolicitud IS NOT NULL
+              AND TRY_CONVERT(uniqueidentifier, IdSolicitud) IS NULL
+        )
+            THROW 50005, ''IdSolicitud inválido en trans_inv_detalle.'', 1;
+
+        IF EXISTS (
+            SELECT IdSolicitud
+            FROM dbo.trans_inv_detalle
+            WHERE IdSolicitud IS NOT NULL
+            GROUP BY IdSolicitud
+            HAVING COUNT(*) > 1
+        )
+            THROW 50006, ''IdSolicitud duplicado en trans_inv_detalle.'', 1;
+    ';
+
+    IF EXISTS (
+        SELECT 1
+        FROM sys.indexes
+        WHERE object_id = OBJECT_ID(N'dbo.trans_inv_detalle')
+          AND name = N'UX_trans_inv_detalle_IdSolicitud'
+    )
+    AND NOT EXISTS (
+        SELECT 1
+        FROM sys.indexes AS i
+        WHERE i.object_id = OBJECT_ID(N'dbo.trans_inv_detalle')
+          AND i.name = N'UX_trans_inv_detalle_IdSolicitud'
+          AND i.is_unique = 1
+          AND i.has_filter = 1
+          AND REPLACE(i.filter_definition, N' ', N'') IN
+              (N'([IdSolicitud]ISNOTNULL)', N'[IdSolicitud]ISNOTNULL')
+          AND (
+              SELECT COUNT(*)
+              FROM sys.index_columns AS ic
+              WHERE ic.object_id = i.object_id
+                AND ic.index_id = i.index_id
+                AND ic.key_ordinal > 0
+          ) = 1
+          AND EXISTS (
+              SELECT 1
+              FROM sys.index_columns AS ic
+              INNER JOIN sys.columns AS c
+                  ON c.object_id = ic.object_id
+                 AND c.column_id = ic.column_id
+              WHERE ic.object_id = i.object_id
+                AND ic.index_id = i.index_id
+                AND ic.key_ordinal = 1
+                AND c.name = N'IdSolicitud'
+          )
+    )
+        THROW 50007, 'El índice UX_trans_inv_detalle_IdSolicitud existe, pero su definición no es la esperada.', 1;
+
+    IF NOT EXISTS (
+        SELECT 1
+        FROM sys.indexes
+        WHERE object_id = OBJECT_ID(N'dbo.trans_inv_detalle')
+          AND name = N'UX_trans_inv_detalle_IdSolicitud'
+    )
+    BEGIN
+        EXEC(N'
+            CREATE UNIQUE NONCLUSTERED INDEX
+                UX_trans_inv_detalle_IdSolicitud
+            ON dbo.trans_inv_detalle(IdSolicitud)
+            WHERE IdSolicitud IS NOT NULL;
+        ');
+    END;
+
+    IF NOT EXISTS (
+        SELECT 1
+        FROM sys.indexes AS i
+        WHERE i.object_id = OBJECT_ID(N'dbo.trans_inv_detalle')
+          AND i.name = N'UX_trans_inv_detalle_IdSolicitud'
+          AND i.is_unique = 1
+          AND i.has_filter = 1
+    )
+        THROW 50008, 'No fue posible validar el índice único filtrado de trans_inv_detalle.IdSolicitud.', 1;
+
+    COMMIT TRANSACTION;
+
+    PRINT 'Integración de IdSolicitud para Conteo completada correctamente.';
+END TRY
+BEGIN CATCH
+    IF @@TRANCOUNT > 0
+        ROLLBACK TRANSACTION;
+
+    THROW;
+END CATCH;
+
+
 /***************AT20251116 Campo talla color MAMPA************************/
 alter table trans_inv_detalle add IdProductoTallaColor int
 
